@@ -1,0 +1,180 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
+
+    </style>
+
+    <style name="MyMaterialThemeNormal" parent="MyMaterialTheme.Normal">
+
+    </style>
+
+
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <style name="MyMaterialTheme.Normal" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="MyThemeAnimation" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <!--<item name="android:windowAnimationStyle">@style/DialogAnimation</item>-->
+    </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+
+    <style name="MyTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+
+    <style name="textView_medium_grey_normal_medium">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeMedium</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_medium_grey_normal_large">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeLarge</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_medium_grey_normal_xlarge">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeExtraLarge</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_dark_grey_normal_small">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeSmall</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_dark_grey_normal_medium">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeMedium</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_dark_grey_normal_large">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeLarge</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_dark_grey_normal_xlarge">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeExtraLarge</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="textView_medium_grey_bold_small">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeSmall</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_medium_grey_bold_medium">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeMedium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_medium_grey_bold_large">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeLarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_medium_grey_bold_xlarge">
+        <item name="android:textColor">@color/app_medium_grey</item>
+        <item name="android:textSize">@dimen/textSizeExtraLarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_dark_grey_bold_small">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeSmall</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_dark_grey_bold_medium">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeMedium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_dark_grey_bold_large">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeLarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="textView_dark_grey_bold_xlarge">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeExtraLarge</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+
+
+    <style name="TextLabel" parent="TextAppearance.AppCompat">
+
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/dark_gray</item>
+        <item name="android:textSize">20sp</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+
+    </style>
+
+</resources>

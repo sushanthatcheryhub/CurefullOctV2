@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#278be9</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="app_medium_grey">#646663</color>
+    <color name="app_dark_grey">#666666</color>
+
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="snackTextColor">#e7505a</color>
+    <color name="bgColor">#80000000</color>
+
+    <color name="top_bar">#161f37</color>
+    <color name="list_item_selected">#007aff</color>
+
+    <color name="menu_color">#074e68</color>
+    <color name="unselected_tab_color">#acacac</color>
+    <drawable name="com_naco_drawable_drawer_item_selected">#e2e2e2</drawable>
+    <drawable name="com_naco_drawable_drawer_item_unselected">#ffffff</drawable>
+
+    <color name="hint_color">#808080</color>
+    <drawable name="transarent_game">#00000000</drawable>
+
+    <color name="StatusBar">#0c1a2b</color>
+    <color name="lsit_unselected">#726868</color>
+    <color name="lsit_selected">#0B0101</color>
+    <color name="text_colors">#999</color>
+    <color name="spinner_selected">#3EF921</color>
+    <color name="spinner_unselected">#95A493</color>
+    <color name="translucent_pink">#a7e7e7</color>
+    <color name="open_task_type_text_color">#24a5d5</color>
+    <color name="red">#ff0000</color>
+    <color name="blue">#278be9</color>
+    <color name="color_overlay">#A6000000</color>
+    <color name="black">#000000</color>
+    <color name="statusbar">#0c1a2b</color>
+    <color name="dark_gray">#666666</color>
+    <color name="blue_trans">#02078be9</color>
+    <color name="light_gray">#278be9</color>
+    <color name="white">#ffffff</color>
+    <color name="white_one">#fafafa</color>
+    <color name="holo_light">#ebebeb</color>
+    <color name="holo_dark">#cbcbcb</color>
+    <color name="green">#1cca8b</color>
+    <color name="transparent_bg_list">#00000000</color>
+    <color name="progress_solo_seeekbar">#626063</color>
+    <color name="progress_seekbar">#d9d9d7</color>
+    <color name="light_gray_header_color">#646663</color>
+    <color name="dark_black">#A6000000</color>
+    <color name="yellow">#ffb82c</color>
+    <color name="blue_sky">#1afeef</color>
+    <color name="blue_sky_trans">#33278be9</color>
+    <color name="grey_interpid">#989898</color>
+    <color name="blue_interpid">#0099cc</color>
+    <color name="challenge_black">#3a3d44</color>
+    <color name="challenge_navyblue">#225165</color>
+    <color name="challenge_green">#01b598</color>
+    <color name="challenge_orange">#f26760</color>
+    <color name="drawer_color">#0f1a26</color>
+    <color name="drawer_touch_color">#4c75bf</color>
+    <color name="drawer_text_color">#616263</color>
+
+    <color name="tab_text_color">#444444</color>
+
+
+    <drawable name="actiontransparent">#00000000</drawable>
+
+
+    <color name="blackpercentage">#BF000000</color>
+    <color name="black_low_percentage">#4D000000</color>
+    <color name="black_normal_percentage">#CD000000</color>
+    <color name="black_low_high_percentage">#FF000000</color>
+    <color name="black_very_low_percentage">#4D000000</color>
+    <color name="btnShadow">#00965f</color>
+    <color name="menu_color_selected_screens">#CC0a1624</color>
+    <color name="gradient_start_color">#0d1d2a</color>
+    <color name="gradient_center_color">#2C4253</color>
+    <color name="gradient_bottom_color">#0e1d2e</color>
+    <color name="bg_color">#0d1d2b</color>
+    <color name="transi_black">#60000000</color>
+
+    <color name="accent">#00BCD4</color>
+    <color name="super_light_grey">#FAFAFA</color>
+    <color name="cure_full_text">#223b52</color>
+    <color name="cure_bg_color">#0E1A25</color>
+    <color name="cure_inner_bg_color">#070f17</color>
+    <color name="cure_hint_color">#c5c7c7</color>
+    <color name="cure_top_boader">#2573B5</color>
+    <color name="cure_action_bar">#182837</color>
+    <color name="doctor_text_color">#1C1A1D</color>
+    <color name="doctor_text_color_blue">#035FAA</color>
+    <color name="doctor_text_color_green">#10895E</color>
+    <color name="doctor_dashboard_top_boader">#0889E5</color>
+
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="half_black">#808080</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+
+    <color name="edit_color">#EF7335</color>
+    <color name="full_view_color">#6A98A5</color>
+    <color name="share_color">#4782A2</color>
+    <color name="save_color">#60A75B</color>
+    <color name="print_color">#41A7FB</color>
+
+</resources>

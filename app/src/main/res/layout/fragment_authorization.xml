@@ -1,0 +1,109 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/blue"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/relative_logo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100dp"
+            android:background="@color/white">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_30dp"
+                android:src="@drawable/logo" />
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_30dp"
+            android:layout_marginRight="@dimen/_30dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:orientation="vertical">
+
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                style="@style/textView_dark_grey_normal_large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_20dp"
+                android:gravity="center"
+                android:padding="@dimen/_5dp"
+                android:text="Authorization Information"
+                android:textColor="@color/white" />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"
+                android:theme="@style/TextLabel"
+                android:textColorHint="@color/white">
+
+                <customsTextViews.CustomEditTextViewOpenSanRegular
+                    android:id="@+id/input_password"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"
+                android:theme="@style/TextLabel"
+                android:textColorHint="@color/white">
+
+                <customsTextViews.CustomEditTextViewOpenSanRegular
+                    android:id="@+id/input_confrim_password"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/btn_reset"
+                style="@style/textView_dark_grey_normal_large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_20dp"
+                android:background="@drawable/login_patient_button_selector"
+                android:elevation="@dimen/_10dp"
+                android:gravity="center"
+                android:padding="@dimen/_5dp"
+                android:text="Reset"
+                android:textColor="@color/blue" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
