@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@color/blue"
+    android:background="@drawable/login_gradient"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
@@ -14,44 +14,30 @@
         android:orientation="vertical">
 
 
-        <RelativeLayout
-            android:id="@+id/relative_logo"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_100dp"
-            android:background="@color/white">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_30dp"
-                android:src="@drawable/logo" />
-
-        </RelativeLayout>
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_30dp"
             android:layout_marginRight="@dimen/_30dp"
-            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_20dp"
             android:orientation="vertical">
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_first_name"
+                android:id="@+id/input_layout_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/liner_layout_face"
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/input_first_name"
-                    style="@style/textView_dark_grey_normal_medium"
+                <EditText
+                    android:id="@+id/input_name"
+                    style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="First Name"
-                    android:inputType="textPersonName"
+                    android:drawableLeft="@drawable/ic_person_white_18dp"
+                    android:drawablePadding="@dimen/_5dp"
+                    android:hint="Name"
+                    android:inputType="textCapSentences"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
@@ -60,36 +46,19 @@
                 android:id="@+id/input_layout_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
+                android:layout_marginTop="@dimen/_20dp"
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <android.support.v7.widget.AppCompatEditText
+                <EditText
                     android:id="@+id/input_email"
-                    style="@style/textView_dark_grey_normal_medium"
+                    style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email Address"
+                    android:drawableLeft="@drawable/ic_mail_outline_white_18dp"
+                    android:drawablePadding="@dimen/_5dp"
+                    android:hint="Email id"
                     android:inputType="textEmailAddress"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
-                android:textColorHint="@color/white"
-                android:theme="@style/TextLabel">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/input_mobile"
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Mobile"
-                    android:inputType="number"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
@@ -99,94 +68,27 @@
                 android:id="@+id/input_layout_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_20dp"
+                android:gravity="center_vertical"
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <android.support.v7.widget.AppCompatEditText
+                <EditText
                     android:id="@+id/input_password"
-                    style="@style/textView_dark_grey_normal_medium"
+                    style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/white"
+                    android:drawableLeft="@drawable/ic_lock_outline_white_18dp"
+                    android:drawablePadding="@dimen/_5dp"
                     android:hint="Password"
                     android:inputType="textPassword"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
+
+
             </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_confirm_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
-                android:textColorHint="@color/white"
-                android:theme="@style/TextLabel">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/input_confrim_password"
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Confirm Password"
-                    android:inputType="textPassword"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
-            </android.support.design.widget.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    android:id="@+id/btn_create_new"
-                    style="@style/textView_dark_grey_normal_small"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:paddingBottom="@dimen/_5dp"
-                    android:paddingTop="@dimen/_5dp"
-                    android:text="Birthday (option)"
-                    android:textColor="@color/white" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:orientation="horizontal">
-
-                    <RadioGroup
-                        android:id="@+id/radioGender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/radioEmail"
-                            style="@style/textView_dark_grey_normal_small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:text="Female" />
-
-
-                        <RadioButton
-                            android:id="@+id/radioMobile"
-                            style="@style/textView_dark_grey_normal_small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:text="Male" />
-
-                    </RadioGroup>
-                </LinearLayout>
-
-            </LinearLayout>
 
 
             <customsTextViews.CustomTextViewOpenSanRegular
@@ -201,9 +103,10 @@
                 android:gravity="center"
                 android:padding="@dimen/_5dp"
                 android:text="Sign Up"
-                android:textColor="@color/blue" />
-        </LinearLayout>
+                android:textColor="@color/health_login_text" />
 
+
+        </LinearLayout>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

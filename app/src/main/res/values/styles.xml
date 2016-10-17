@@ -29,10 +29,11 @@
     <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
 
@@ -50,6 +51,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">true</item>
         <!--<item name="android:windowAnimationStyle">@style/DialogAnimation</item>-->
     </style>
 
@@ -92,6 +94,19 @@
     <style name="textView_dark_grey_normal_small">
         <item name="android:textColor">@color/app_dark_grey</item>
         <item name="android:textSize">@dimen/textSizeSmall</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+
+
+    <style name="textView_dark_grey_normal_micro">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeMicro</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="textView_dark_grey_normal_micro_mini">
+        <item name="android:textColor">@color/app_dark_grey</item>
+        <item name="android:textSize">@dimen/textSizeMicroMini</item>
         <item name="android:textStyle">normal</item>
     </style>
 
@@ -164,17 +179,37 @@
 
 
 
-    <style name="TextLabel" parent="TextAppearance.AppCompat">
+    <style name="TextLabel" parent="Widget.Design.TextInputLayout">
 
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/dark_gray</item>
         <item name="android:textSize">20sp</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/white</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">@color/white</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/white</item>
 
+    </style>
+
+
+    <style name="SeekArc">
+        <item name="arcColor">@color/progress_gray_dark</item>
+    </style>
+
+    <style name="SeekArcLight">
+        <item name="arcColor">@color/progress_gray</item>
+    </style>
+    <style name="TickerTextAppearance">
+        <item name="android:textColor">@color/health_blue</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TickerTextAppearance2">
+        <item name="android:textColor">@color/health_brown</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

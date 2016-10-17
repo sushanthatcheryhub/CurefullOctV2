@@ -12,6 +12,9 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import java.io.IOException;
+
+import LazyLoaderLibs.ImageType;
+import LazyLoaderLibs.PhoneSpecificImage;
 import operations.DatabaseHelper;
 import utils.FlowOrganizer;
 
@@ -34,7 +37,7 @@ public class CureFull extends Application {
     public boolean isEditext() {
         return isEditext;
     }
-
+    private PhoneSpecificImage fullImageLoader;
     public void setEditext(boolean editext) {
         isEditext = editext;
     }
@@ -89,13 +92,20 @@ public class CureFull extends Application {
         return _flow;
     }
 //
-//    public FlowOrganizer getFlowInstanseAll() {
-//        if (_flowAll == null) {
-//            _flowAll = new FlowOrganizer(_activity, R.id.framge_child);
-//
-//        }
-//        return _flowAll;
-//    }
+    public FlowOrganizer getFlowInstanseAll() {
+        if (_flowAll == null) {
+            _flowAll = new FlowOrganizer(_activity, R.id.framge_child);
+
+        }
+        return _flowAll;
+    }
+    public PhoneSpecificImage getFullImageLoader() {
+        if (fullImageLoader == null) {
+            fullImageLoader = new PhoneSpecificImage(_activity,
+                    ImageType.THUMB_IMAGE);
+        }
+        return fullImageLoader;
+    }
 
 
     public static synchronized CureFull getInstanse() {

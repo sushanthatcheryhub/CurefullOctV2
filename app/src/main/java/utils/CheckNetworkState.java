@@ -11,13 +11,13 @@ import android.os.Build;
  */
 public class CheckNetworkState {
 
-    private Context context;
+    public static Context context;
 
     public CheckNetworkState(Context context) {
         this.context = context;
     }
 
-    public boolean isNetworkAvailable() {
+    public static boolean isNetworkAvailable(Context context) {
         boolean isNetworkAvailable = false;
         if (context != null) {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

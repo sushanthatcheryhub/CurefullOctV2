@@ -3,9 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/relative_logo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_160dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/logo" />
+
+    </RelativeLayout>
+
     <FrameLayout
         android:id="@+id/framge_parent"
         android:layout_width="match_parent"
+        android:layout_below="@+id/relative_logo"
         android:layout_height="match_parent" />
 
 </RelativeLayout>

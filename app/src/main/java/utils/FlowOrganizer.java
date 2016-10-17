@@ -155,12 +155,176 @@ public class FlowOrganizer {
         if (isAllowBack) {
             _fragment_transiction.addToBackStack(_last_fragment_name);
             _list_back_state.add(new InstanseState(toFragment, bundle,
-                    isAllowBack, FragmentType.ADD));
+                    isAllowBack, FragmentType.REPLACE));
         }
         _fragment_transiction.replace(_id_parent_frame_view, toFragment,
                 toFragment.getClass().getName()).commit();
         _last_fragment_name = toFragment.getClass().getName();
         _list_back_state.clear();
+    }
+
+
+    public void replaceWithTopBottomAnimation(Fragment toFragment, Bundle bundle,
+                                              boolean isAllowBack) {
+        hideVirtualKeyboard();
+        if (toFragment == null)
+            return;
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _fragment_transiction.setCustomAnimations(
+                    R.anim.slide_in_right_to_left,
+                    R.anim.slide_out_right_to_left,
+                    R.anim.slide_in_left_to_right,
+                    R.anim.slide_out_left_to_right);
+        }
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+            return;
+        }
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+        }
+
+        _fragment_transiction.replace(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commit();
+        _last_fragment_name = toFragment.getClass().getName();
+    }
+    public void replaceWithZoomAnimation(Fragment toFragment, Bundle bundle,
+                                              boolean isAllowBack) {
+        hideVirtualKeyboard();
+        if (toFragment == null)
+            return;
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _fragment_transiction.setCustomAnimations(R.anim.gla_there_come,
+                    R.anim.gla_there_gone, R.anim.gla_back_gone,
+                    R.anim.gla_back_come);
+        }
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+            return;
+        }
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+        }
+
+        _fragment_transiction.replace(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commit();
+        _last_fragment_name = toFragment.getClass().getName();
+    }
+
+
+    public void replaceWithleftrightAnimation(Fragment toFragment, Bundle bundle,
+                                         boolean isAllowBack) {
+        hideVirtualKeyboard();
+        if (toFragment == null)
+            return;
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _fragment_transiction.setCustomAnimations(
+                    R.anim.slide_in_left_to_right,
+                    R.anim.slide_out_left_to_right,
+                    R.anim.slide_in_right_to_left,
+                    R.anim.slide_out_right_to_left);
+        }
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+            return;
+        }
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+        }
+
+        _fragment_transiction.replace(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commit();
+        _last_fragment_name = toFragment.getClass().getName();
+    }
+
+
+    public void replaceWithBottomTopAnimation(Fragment toFragment, Bundle bundle,
+                                              boolean isAllowBack) {
+        hideVirtualKeyboard();
+        if (toFragment == null)
+            return;
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _fragment_transiction.setCustomAnimations(
+                    R.anim.slide_in_left_to_right,
+                    R.anim.slide_out_left_to_right,
+                    R.anim.slide_in_right_to_left,
+                    R.anim.slide_out_right_to_left);
+        }
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+            return;
+        }
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+        }
+
+        _fragment_transiction.replace(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commit();
+        _last_fragment_name = toFragment.getClass().getName();
     }
 
     /**
@@ -270,6 +434,48 @@ public class FlowOrganizer {
         _last_fragment_name = toFragment.getClass().getName();
     }
 
+
+    public void addWithCardFlip(Fragment toFragment, Bundle bundle,
+                                boolean isAllowBack) {
+        hideVirtualKeyboard();
+        if (toFragment == null)
+            return;
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _fragment_transiction.setCustomAnimations(
+                    R.anim.slide_in_right_to_left,
+                    R.anim.slide_out_right_to_left,
+                    R.anim.slide_in_left_to_right,
+                    R.anim.slide_out_left_to_right);
+        }
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.ADD));
+            return;
+        }
+
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.ADD));
+        }
+
+        _fragment_transiction.add(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commit();
+        _last_fragment_name = toFragment.getClass().getName();
+    }
+
     public void addWithTopBottomAnimation(Fragment toFragment, Bundle bundle,
                                           boolean isAllowBack) {
         hideVirtualKeyboard();
@@ -310,6 +516,9 @@ public class FlowOrganizer {
                 toFragment.getClass().getName()).commit();
         _last_fragment_name = toFragment.getClass().getName();
     }
+
+
+
 
     private boolean isToAdd(Fragment toFragment) {
         List<Fragment> _list_fragment = _fragmnet_manager.getFragments();

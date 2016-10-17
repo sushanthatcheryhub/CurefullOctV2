@@ -33,4 +33,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.4.0'
     compile 'com.google.android.gms:play-services-plus:9.4.0'
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
+    compile 'com.google.android.gms:play-services-fitness:9.4.0'
+    compile 'com.google.android.gms:play-services-contextmanager:9.4.0'
+    compile 'com.nineoldandroids:library:2.4.0+'
 }

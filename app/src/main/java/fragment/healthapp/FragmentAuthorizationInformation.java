@@ -28,6 +28,8 @@ public class FragmentAuthorizationInformation extends Fragment implements View.O
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_authorization,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         btn_reset = (TextView) rootView.findViewById(R.id.btn_reset);
         btn_reset.setOnClickListener(this);
         return rootView;

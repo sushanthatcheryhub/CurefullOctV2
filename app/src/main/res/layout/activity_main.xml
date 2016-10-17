@@ -13,12 +13,10 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <include
+            layout="@layout/home_screen1"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="?android:attr/actionBarSize"></include>
 
 
     </android.support.design.widget.AppBarLayout>
@@ -42,11 +40,10 @@
             android:layout_marginLeft="@dimen/_5dp"
             android:background="#182837"
             android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer" />
+            app:menu="@menu/activity_main_drawer"
+            app:headerLayout="@layout/nav_header_main" />
 
     </android.support.v4.widget.DrawerLayout>
-
 
 </RelativeLayout>
 

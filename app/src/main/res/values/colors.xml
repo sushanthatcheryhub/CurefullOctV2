@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#278be9</color>
+    <color name="colorPrimary">#C64236</color>
+    <color name="colorPrimaryDark">#C64236</color>
     <color name="colorAccent">#FF4081</color>
     <color name="app_medium_grey">#646663</color>
     <color name="app_dark_grey">#666666</color>
@@ -52,7 +52,7 @@
     <color name="blue_sky">#1afeef</color>
     <color name="blue_sky_trans">#33278be9</color>
     <color name="grey_interpid">#989898</color>
-    <color name="blue_interpid">#0099cc</color>
+    <color name="blue_interpid">#4C6FA9</color>
     <color name="challenge_black">#3a3d44</color>
     <color name="challenge_navyblue">#225165</color>
     <color name="challenge_green">#01b598</color>
@@ -107,5 +107,15 @@
     <color name="share_color">#4782A2</color>
     <color name="save_color">#60A75B</color>
     <color name="print_color">#41A7FB</color>
-
+    <color name="health_boader">#F1F7F7</color>
+    <color name="health_boader_inner">#454746</color>
+    <color name="health_blue">#23A5F0</color>
+    <color name="health_pink">#BE28CF</color>
+    <color name="health_green">#24BC71</color>
+    <color name="health_brown">#402021</color>
+    <color name="health_yellow">#EFAF4E</color>
+    <color name="progress_gray">#FFD8D8D8</color>
+    <color name="progress_gray_dark">#FF383838</color>
+    <color name="default_blue_light">#ff33b5e5</color>
+    <color name="health_login_text">#EB4748</color>
 </resources>

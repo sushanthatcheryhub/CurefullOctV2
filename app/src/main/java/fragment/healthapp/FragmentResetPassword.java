@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 
 
@@ -25,7 +26,9 @@ public class FragmentResetPassword extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reset_password,
                 container, false);
-
+        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+        CureFull.getInstanse().getActivityIsntanse().showLogo(true);
 
         return rootView;
     }

@@ -6,11 +6,13 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://192.168.1.103:8080";
+        String HOST_IP = "http://127.0.0.1:8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
-        String LOGIN = URL + "login/user";
+        String LOGIN = URL + "signup/endUser";
+        String SIGN_UP = URL + "signup/endUser";
+        String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String ADD_SYMPTOMS_BY_DOCTOR = URL + "prescription/getDoctorSymptomsListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_INVESTIGATION_BY_DOCTOR = URL + "prescription/getDoctorDiagonsisListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
@@ -40,7 +42,7 @@ public class MyConstants {
         String REFER_TO_OTHER_DOCTOR = URL + "refer/referPatient";
         String PRESCRIPTION_HISTORY_FULL_IMAGE = URL + "prescription/getPrescriptionImage";
         String PRESCRIPTION_HISTORY_BY_DATE = URL + "prescription/getPrescriptionThumbnailByDate";
-        String FILE_UPLOAD=URL+"refer/uploadPrescription";
+        String FILE_UPLOAD = URL + "refer/uploadPrescription";
 
     }
 
@@ -48,7 +50,9 @@ public class MyConstants {
         String No_INTERNET_USAGE = "No Internet Connection";
         String ISSUE_WITH_DATA = "Issue with data";
         String No_DATA = "No data";
+        String ISSUES_WITH_SERVER = "Issue with sever error";
     }
+
 
     public interface RequestType {
         int REGISTER = 1;
@@ -65,6 +69,8 @@ public class MyConstants {
         String PROFILE_ID = "id";
         String USER_NAME = "userName";
         String PASSWORD = "password";
+        String NAME = "name";
+        String EMAIL = "emailId";
         String HEADERS = "headers";
         String USER_ID = "userId";
         String USER_ROLE = "userRole";
@@ -83,12 +89,15 @@ public class MyConstants {
         String HEADERS = "headers";
         String USER_ID = "user_id";
         String USERNAME = "user_name";
+        String INSTITUTE_NAME="instituteName";
+        String INSTITUTE_TYPE="instituteType";
+
         String PATIENT_PROFILE_ID = "patientProfileId";
         String FIRST_NAME = "firstName";
         String GENDER = "gender";
         String BIRTH_DATE = "dateOfBirth";
         String PATIENT_ID = "patient_id";
-        String EMAIL_ID = "emailId";
+        String EMAIL_ID = "email_id";
         String STREET = "street";
         String CITY = "city";
         String PINCODE = "pincode";

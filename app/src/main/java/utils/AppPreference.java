@@ -26,45 +26,24 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         _prefrence = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void setSubjectTimeStamp(long timeStamp) {
+
+    public void setFacebookUserName(String className) {
         if (_prefrence != null)
-            _prefrence.edit().putLong(PREF_SUBJECTS_TIME_STAMP, timeStamp).commit();
+            _prefrence.edit().putString(USER_NAME, className).commit();
     }
 
-    public long getSubjectTimeStamp() {
+    public String getFacebookUserName() {
         if (_prefrence != null)
-            return _prefrence.getLong(PREF_SUBJECTS_TIME_STAMP, 0);
-        return 0;
-    }
-
-    public void setClassID(int classId) {
-        if (_prefrence != null)
-            _prefrence.edit().putInt(PREF_CLASS_ID, classId).commit();
-    }
-
-    public int getClassId() {
-        if (_prefrence != null)
-            return _prefrence.getInt(PREF_CLASS_ID, 0);
-        return 0;
-    }
-
-    public void setClassName(String className) {
-        if (_prefrence != null)
-            _prefrence.edit().putString(PREF_CLASS_ID, className).commit();
-    }
-
-    public String getClassName() {
-        if (_prefrence != null)
-            return _prefrence.getString(PREF_CLASS_ID, null);
+            return _prefrence.getString(USER_NAME, null);
         return null;
     }
 
-    public void setProfileImage(String className) {
+    public void setFacebookProfileImage(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString(PROFILE_PIC, className).commit();
     }
 
-    public String getProfileImage() {
+    public String getFacebookProfileImage() {
         if (_prefrence != null)
             return _prefrence.getString(PROFILE_PIC, "");
         return "";
@@ -130,15 +109,26 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return "";
     }
 
-
-    public void setDoctorHealhcareProviderId(String className) {
+    public void setUserName(String className) {
         if (_prefrence != null)
-            _prefrence.edit().putString("doctorHealhcareProviderId", className).commit();
+            _prefrence.edit().putString(USER_NAME, className).commit();
     }
 
-    public String getDoctorHealhcareProviderId() {
+    public String getUserName() {
         if (_prefrence != null)
-            return _prefrence.getString("doctorHealhcareProviderId", "");
+            return _prefrence.getString(USER_NAME, "");
+        return "";
+    }
+
+
+    public void setNearLocation(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("location", className).commit();
+    }
+
+    public String getNearLocation() {
+        if (_prefrence != null)
+            return _prefrence.getString("location", "");
         return "";
     }
 
