@@ -10,7 +10,7 @@
         android:layout_centerInParent="true"
         android:layout_margin="@dimen/_30dp"
         android:src="@drawable/logo" />
-
+z
     <customsTextViews.CustomTextViewOpenSanBold
         style="@style/textView_dark_grey_bold_xlarge"
         android:layout_width="wrap_content"

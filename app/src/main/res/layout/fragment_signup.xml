@@ -29,15 +29,16 @@
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <EditText
+                <customsTextViews.CustomEditTextViewMontserratHairLine
                     android:id="@+id/input_name"
                     style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_person_white_18dp"
+                    android:drawableLeft="@drawable/user_icon"
                     android:drawablePadding="@dimen/_5dp"
                     android:hint="Name"
                     android:inputType="textCapSentences"
+                    android:paddingBottom="@dimen/_12dp"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
@@ -50,15 +51,16 @@
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <EditText
+                <customsTextViews.CustomEditTextViewMontserratHairLine
                     android:id="@+id/input_email"
                     style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_mail_outline_white_18dp"
+                    android:drawableLeft="@drawable/email_icon"
                     android:drawablePadding="@dimen/_5dp"
                     android:hint="Email id"
                     android:inputType="textEmailAddress"
+                    android:paddingBottom="@dimen/_12dp"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
@@ -74,16 +76,17 @@
                 android:textColorHint="@color/white"
                 android:theme="@style/TextLabel">
 
-                <EditText
+                <customsTextViews.CustomEditTextViewMontserratHairLine
                     android:id="@+id/input_password"
                     style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@android:color/white"
-                    android:drawableLeft="@drawable/ic_lock_outline_white_18dp"
+                    android:drawableLeft="@drawable/password_icon"
                     android:drawablePadding="@dimen/_5dp"
                     android:hint="Password"
                     android:inputType="textPassword"
+                    android:paddingBottom="@dimen/_12dp"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
 

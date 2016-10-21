@@ -55,4 +55,36 @@
     <string name="condition_windy">Windy</string>
 
     <string name="error_weather">Oops, there was an error getting the weather information!</string>
+
+    <!-- Transitions -->
+    <string name="transition_avatar">AvatarTransition</string>
+    <string name="transition_morph_view" translatable="false">morph_view_transition</string>
+    <string name="transition_name" translatable="false">square_transition</string>
+    <string name="transition_toolbar_name" translatable="false">toolbar_transition</string>
+    <string name="transition_shared_toolbar" translatable="false">shared_toolbar_transition</string>
+
+    <string name="duplicate">DUPLICATE</string>
+    <string name="schedule">SCHEDULE</string>
+    <string name="delete">DELETE</string>
+
+    <string name="text_morph_me">Morph me!</string>
+    <!-- Content Descriptions -->
+    <string name="content_description_image_header">Image header</string>
+    <string name="content_description_image_smile_emoticon">Smile emotion</string>
+    <!-- Popup activity -->
+    <string name="text_ok_go_now">OK, you can go now</string>
+    <string name="text_hello_message">Think of all the great things you could use this transition for!</string>
+
+
+    <!-- Default simple date format -->
+    <string name="simple_date_format" translatable="false">yyyy-MM-dd \'at\' HH:mm</string>
+
+    <!-- Title -->
+    <string name="label_datetime_dialog">DateTime</string>
+
+    <string name="positive_button_datetime_picker">OK</string>
+    <string name="negative_button_datetime_picker">Cancel</string>
+
+    <!-- Image description -->
+    <string name="img_datetime">Image datetime</string>
 </resources>

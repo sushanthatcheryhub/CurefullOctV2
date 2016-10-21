@@ -262,6 +262,8 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
+
+                                Log.e("name", " " + userInfo.getUser_name());
                             }
                         } else {
                             Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Invalid Details", Toast.LENGTH_SHORT).show();

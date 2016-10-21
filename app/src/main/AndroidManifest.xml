@@ -40,7 +40,8 @@
             android:configChanges="keyboardHidden|orientation|screenLayout|touchscreen"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified" />
-
+        <activity android:name=".PopupActivity"
+            android:theme="@style/TranslucentActivity"/>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

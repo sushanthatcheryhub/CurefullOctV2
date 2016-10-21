@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -14,6 +15,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,6 +73,7 @@ import java.util.Arrays;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
+import curefull.healthapp.PopupActivity;
 import curefull.healthapp.R;
 import item.property.EduationDetails;
 import item.property.UserInfo;
@@ -92,7 +95,7 @@ public class FragmentLogin extends Fragment implements
     CallbackManager callbackManager;
     TextView login_button, btn_create_new, btn_click_forgot, sign_out_button_facebook;
     private boolean showPwd = false;
-    private AppCompatEditText edtInputEmail, edtInputPassword;
+    private EditText edtInputEmail, edtInputPassword;
     private RequestQueue requestQueue;
 
     @Override
@@ -103,8 +106,8 @@ public class FragmentLogin extends Fragment implements
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        edtInputEmail = (AppCompatEditText) rootView.findViewById(R.id.input_email);
-        edtInputPassword = (AppCompatEditText) rootView.findViewById(R.id.input_password);
+        edtInputEmail = (EditText) rootView.findViewById(R.id.input_email);
+        edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
         sign_out_button_facebook = (TextView) rootView.findViewById(R.id.sign_out_button_facebook);
         btn_create_new = (TextView) rootView.findViewById(R.id.btn_create_new);
         btn_click_forgot = (TextView) rootView.findViewById(R.id.btn_click_forgot);
@@ -145,17 +148,14 @@ public class FragmentLogin extends Fragment implements
                                         eduationDetails.setInstituteType(jsonObject.getString("type"));
                                         eduationDetailses.add(eduationDetails);
                                     }
-
-//                                    jsonFacebookLogin(object.getString("id"), object.getString("name"), object.getString("email"), object.getString("birthday"), object.getString("gender"), object.getString("relationship_status"), friendsJsonObject1.getString("url"), friendsJsonObject1.getString("device"), eduationDetailses);
+                                    jsonFacebookLogin(object.getString("id"), object.getString("name"), object.getString("email"), object.getString("birthday"), object.getString("gender"), object.getString("relationship_status"), friendsJsonObject1.getString("url"), friendsJsonObject1.getString("device"), eduationDetailses);
 
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 // Application code
-                                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                CureFull.getInstanse().getFlowInstanse()
-                                        .replace(new FragmentHomeScreenAll(), false);
+
                             }
                         });
                 Bundle parameters = new Bundle();
@@ -193,7 +193,6 @@ public class FragmentLogin extends Fragment implements
                 meassgeTxt.indexOf(comma) + comma.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-
         sb.setSpan(new ForegroundColorSpan(getActivity().getResources()
                         .getColor(R.color.blue_interpid)), meassgeTxt.indexOf(gameName),
                 meassgeTxt.indexOf(gameName) + gameName.length(),
@@ -201,6 +200,7 @@ public class FragmentLogin extends Fragment implements
         sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
                 meassgeTxt.indexOf(gameName), meassgeTxt.indexOf(gameName)
                         + gameName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new RelativeSizeSpan(1.5f), 11, 19, 0);
         sign_out_button_facebook.setText(sb);
 
 
@@ -316,11 +316,14 @@ public class FragmentLogin extends Fragment implements
                         .replaceWithBottomTopAnimation(new FragmentResetPassword(), null, true);
                 break;
             case R.id.btn_login:
-
-                NotificationUtils notificationUtils = new NotificationUtils(CureFull.getInstanse().getActivityIsntanse());
-                notificationUtils.notificationWaterInTake();
-                notificationUtils.notificationWithImage();
-
+//                Intent login = PopupActivity.getStartIntent(getActivity(), PopupActivity.MORPH_TYPE_BUTTON);
+//                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation
+//                        (getActivity(), rootView, getString(R.string.transition_morph_view));
+//                startActivity(login, options.toBundle());
+//                NotificationUtils notificationUtils = new NotificationUtils(CureFull.getInstanse().getActivityIsntanse());
+//                notificationUtils.notificationWaterInTake();
+//                notificationUtils.notificationWithImage();
+//
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentHomeScreenAll(), false);
@@ -431,10 +434,9 @@ public class FragmentLogin extends Fragment implements
                             e.printStackTrace();
                         }
                         if (responseStatus == 100) {
-                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
-                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-                                AppPreference.getInstance().setUserID(userInfo.getUser_id());
-                            }
+                            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentHomeScreenAll(), false);
                         } else {
                             Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Invalid Details", Toast.LENGTH_SHORT).show();
                         }

@@ -40,6 +40,7 @@ public class FragmentHealthApp extends Fragment implements View.OnClickListener 
         rootView = inflater.inflate(R.layout.fragment_health_view,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().changeColorActionBar("#737373");
+        CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         liner_walking = (LinearLayout) rootView.findViewById(R.id.liner_walking);
         liner_running = (LinearLayout) rootView.findViewById(R.id.liner_running);
         liner_cycling = (LinearLayout) rootView.findViewById(R.id.liner_cycling);
@@ -63,8 +64,6 @@ public class FragmentHealthApp extends Fragment implements View.OnClickListener 
         liner_cycling.setOnClickListener(this);
 
         setProgressUpdateAnimation(60);
-
-
         txt_walking_km.setText(Html.fromHtml("" + 3.2 + "<sup><small>" + "km" + "</small></sup>"));
         txt_running_km.setText(Html.fromHtml("" + 1.2 + "<sup><small>" + "km" + "</small></sup>"));
         txt_cycling_km.setText(Html.fromHtml("" + 0.0 + "<sup><small>" + "km" + "</small></sup>"));

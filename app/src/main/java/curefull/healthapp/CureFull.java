@@ -30,14 +30,18 @@ public class CureFull extends Application {
     private static CureFull _application;
     private RequestQueue requestQueue;
     public final String TAG = CureFull.class.getName();
-//    private DatabaseHelper _db_configuration;
+    //    private DatabaseHelper _db_configuration;
     private Typeface opensansTypefaceRegular;
+    private Typeface opensansTypefaceLine;
     private Typeface opensansTypefaceBold;
     private Typeface opensansTypefaceSemiBold;
+
     public boolean isEditext() {
         return isEditext;
     }
+
     private PhoneSpecificImage fullImageLoader;
+
     public void setEditext(boolean editext) {
         isEditext = editext;
     }
@@ -91,7 +95,8 @@ public class CureFull extends Application {
         }
         return _flow;
     }
-//
+
+    //
     public FlowOrganizer getFlowInstanseAll() {
         if (_flowAll == null) {
             _flowAll = new FlowOrganizer(_activity, R.id.framge_child);
@@ -99,6 +104,7 @@ public class CureFull extends Application {
         }
         return _flowAll;
     }
+
     public PhoneSpecificImage getFullImageLoader() {
         if (fullImageLoader == null) {
             fullImageLoader = new PhoneSpecificImage(_activity,
@@ -147,6 +153,13 @@ public class CureFull extends Application {
             opensansTypefaceRegular = Typeface.createFromAsset(context.getAssets(),
                     "Montserrat-Regular.ttf");
         return opensansTypefaceRegular;
+    }
+
+    public Typeface getMontserratHairLine(Context context) {
+        if (opensansTypefaceLine == null)
+            opensansTypefaceLine = Typeface.createFromAsset(context.getAssets(),
+                    "montserrat-hairline.ttf");
+        return opensansTypefaceLine;
     }
 
     public Typeface getOpenSansBold(Context context) {

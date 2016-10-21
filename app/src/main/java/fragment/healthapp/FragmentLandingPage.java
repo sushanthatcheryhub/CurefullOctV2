@@ -2,19 +2,30 @@ package fragment.healthapp;
 
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +57,11 @@ import java.util.concurrent.TimeUnit;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import ticker.TickerUtils;
+import ticker.TickerView;
 import utils.AppPreference;
 import utils.CircularImageView;
+import utils.SeekArc;
 
 
 /**
@@ -56,8 +70,8 @@ import utils.CircularImageView;
 public class FragmentLandingPage extends Fragment {
 
     private View rootView;
-    private TextView txt_name, text_steps_count, txt_health_note, txt_ehr_upload, txt_data_analytics;
-    private CircularImageView circularImageView;
+    private TextView txt_name, txt_health_note;
+    //    private CircularImageView circularImageView;
     public static final String TAG = "BasicSensorsApi";
     // [START auth_variable_references]
     private GoogleApiClient mClient = null;
@@ -73,31 +87,68 @@ public class FragmentLandingPage extends Fragment {
 
     private LinearLayout linear_health_app;
     private ActivityRecognition arclient;
+    private RelativeLayout realtive_notes;
+    private TickerView ticker1, text_steps_count;
+    private FloatingActionButton img_fab;
+    ImageButton imageButton;
+    LinearLayout revealView, layoutButtons;
+    Animation alphaAnimation;
+    float pixelDensity;
+    boolean flag = true;
+    private static final char[] NUMBER_LIST = TickerUtils.getDefaultNumberList();
+    private SeekArc seekArcComplete;
+    private Boolean isFabOpen = false;
+    private Animation fab_open, fab_close, rotate_forward, rotate_backward;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_landing_page,
+        rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
-        CureFull.getInstanse().getActivityIsntanse().changeColorActionBar("#000000");
-        linear_health_app = (LinearLayout) rootView.findViewById(R.id.linear_health_app);
-        txt_data_analytics = (TextView) rootView.findViewById(R.id.txt_data_analytics);
-        txt_ehr_upload = (TextView) rootView.findViewById(R.id.txt_ehr_upload);
+        CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
+        seekArcComplete = (SeekArc) rootView.findViewById(R.id.seekArcComplete);
+        text_steps_count = (TickerView) rootView.findViewById(R.id.text_steps_count);
+        ticker1 = (TickerView) rootView.findViewById(R.id.ticker1);
+        text_steps_count.setCharacterList(NUMBER_LIST);
+        ticker1.setCharacterList(NUMBER_LIST);
+        ticker1.setText("60" + "%");
+
+
+        img_fab = (FloatingActionButton) rootView.findViewById(R.id.img_fab);
+        pixelDensity = getResources().getDisplayMetrics().density;
+//
+//        imageView = (ImageView) rootView.findViewById(R.id.imageView);
+//        imageButton = (ImageButton) rootView.findViewById(R.id.launchTwitterAnimation);
+        revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
+        layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
+//
+        realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
+        img_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animateFAB();
+                launchTwitter(view);
+            }
+        });
+//
+        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+//        linear_health_app = (LinearLayout) rootView.findViewById(R.id.linear_health_app);
+
         txt_health_note = (TextView) rootView.findViewById(R.id.txt_health_note);
-        text_steps_count = (TextView) rootView.findViewById(R.id.text_steps_count);
-        txt_name = (TextView) rootView.findViewById(R.id.txt_name);
-        circularImageView = (CircularImageView) rootView.findViewById(R.id.circularImageView);
-        txt_name.setText("Hi ! " + AppPreference.getInstance().getFacebookUserName());
+
+//        txt_name = (TextView) rootView.findViewById(R.id.txt_name);
+//        circularImageView = (CircularImageView) rootView.findViewById(R.id.circularImageView);
+//        txt_name.setText("Hi ! " + AppPreference.getInstance().getFacebookUserName());
         Log.e("image", ": " + AppPreference.getInstance().getFacebookProfileImage());
-        URL url = null;
-        try {
-            url = new URL(AppPreference.getInstance().getFacebookProfileImage());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            circularImageView.setImageBitmap(bmp);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        URL url = null;
+//        try {
+//            url = new URL(AppPreference.getInstance().getFacebookProfileImage());
+//            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//            circularImageView.setImageBitmap(bmp);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         // When permissions are revoked the app is restarted so onCreate is sufficient to check for
@@ -107,17 +158,30 @@ public class FragmentLandingPage extends Fragment {
         }
 
 
-        linear_health_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replaceWithTopBottomAnimation(new FragmentHealthApp(), null, true);
-            }
-        });
+//        linear_health_app.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                CureFull.getInstanse().getFlowInstanseAll()
+//                        .replaceWithTopBottomAnimation(new FragmentHealthApp(), null, true);
+//            }
+//        });
 
 //        CureFull.getInstanse().getFullImageLoader().startLazyLoading(AppPreference.getInstance().getFacebookProfileImage(), circularImageView);
+
+        setProgressUpdateAnimation(60);
+
+        rotate_forward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_backward);
         return rootView;
     }
+
+    public void setProgressUpdateAnimation(int value) {
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(seekArcComplete, "progress", 0, value);
+        progressAnimator.setDuration(1000);
+        progressAnimator.setInterpolator(new LinearInterpolator());
+        progressAnimator.start();
+    }
+
 
     @Override
     public void onResume() {
@@ -276,7 +340,7 @@ public class FragmentLandingPage extends Fragment {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            txt_ehr_upload.setText("" + field.getName());
+//                                                            txt_ehr_upload.setText("" + field.getName());
                                                             text_steps_count.setText("" + val);
                                                             txt_health_note.setText("" + getDistanceRun(val) + " KM");
                                                         }
@@ -528,7 +592,7 @@ public class FragmentLandingPage extends Fragment {
 
                                 float feelsLikeTemperature = weather.getFeelsLikeTemperature(Weather.CELSIUS);
 
-                                txt_data_analytics.setText("" + stringBuilder.toString() + " humidity: " + weather.getHumidity() + " temperature: " + weather.getTemperature(Weather.CELSIUS) + " dewPoint:" + dewPoint + " feelsLikeTemperature: " + feelsLikeTemperature);
+//                                txt_data_analytics.setText("" + stringBuilder.toString() + " humidity: " + weather.getHumidity() + " temperature: " + weather.getTemperature(Weather.CELSIUS) + " dewPoint:" + dewPoint + " feelsLikeTemperature: " + feelsLikeTemperature);
                             } else {
                                 Snackbar.make(rootView,
                                         getString(R.string.error_weather),
@@ -564,4 +628,105 @@ public class FragmentLandingPage extends Fragment {
         }
     }
 
+
+    public void launchTwitter(View view) {
+        /*
+         MARGIN_RIGHT = 16;
+         FAB_BUTTON_RADIUS = 28;
+         */
+        int x = realtive_notes.getRight();
+        int y = realtive_notes.getBottom();
+        x -= ((28 * pixelDensity) + (16 * pixelDensity));
+        int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
+
+        if (flag) {
+
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+
+            FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                    revealView.getLayoutParams();
+            parameters.height = realtive_notes.getHeight();
+            revealView.setLayoutParams(parameters);
+
+            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
+            anim.setDuration(700);
+
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    layoutButtons.setVisibility(View.VISIBLE);
+                    layoutButtons.startAnimation(alphaAnimation);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+
+            revealView.setVisibility(View.VISIBLE);
+            anim.start();
+
+            flag = false;
+        } else {
+
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+
+            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
+            anim.setDuration(400);
+
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    revealView.setVisibility(View.GONE);
+                    layoutButtons.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+
+            anim.start();
+            flag = true;
+        }
+    }
+
+    public void animateFAB() {
+
+        if (isFabOpen) {
+            img_fab.startAnimation(rotate_backward);
+            isFabOpen = false;
+            Log.d("Raj", "close");
+        } else {
+            img_fab.startAnimation(rotate_forward);
+            isFabOpen = true;
+            Log.d("Raj", "open");
+
+        }
+
+    }
 }

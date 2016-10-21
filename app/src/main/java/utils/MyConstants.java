@@ -6,7 +6,7 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://127.0.0.1:8080";
+        String HOST_IP = "http://192.168.1.111:8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";

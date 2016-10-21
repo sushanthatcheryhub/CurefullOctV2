@@ -61,6 +61,8 @@ public class MainActivity extends BaseMainActivity {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private GoogleApiClient mClient = null;
     private RelativeLayout relative_logo;
+    private ActionBarDrawerToggle toggle;
+    private boolean mToolBarNavigationListenerIsRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,7 @@ public class MainActivity extends BaseMainActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);
         setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -110,6 +112,26 @@ public class MainActivity extends BaseMainActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+
+        } else if (id == android.R.id.home) {
+            // Home/Up logic handled by onBackPressed implementation
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
     private CharSequence getMessageText(Intent intent) {
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
         if (remoteInput != null) {
@@ -138,6 +160,48 @@ public class MainActivity extends BaseMainActivity {
         }
 
 
+    }
+
+    public void showUpButton(boolean show) {
+        // To keep states of ActionBar and ActionBarDrawerToggle synchronized,
+        // when you enable on one, you disable on the other.
+        // And as you may notice, the order for this operation is disable first, then enable - VERY VERY IMPORTANT.
+        if (show) {
+            // Remove hamburger
+            toggle.setDrawerIndicatorEnabled(false);
+            // Show back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // when DrawerToggle is disabled i.e. setDrawerIndicatorEnabled(false), navigation icon
+            // clicks are disabled i.e. the UP button will not work.
+            // We need to add a listener, as in below, so DrawerToggle will forward
+            // click events to this listener.
+            if (!mToolBarNavigationListenerIsRegistered) {
+                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onBackPressed();
+                    }
+                });
+
+                mToolBarNavigationListenerIsRegistered = true;
+            }
+
+        } else {
+            // Remove back button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            // Show hamburger
+            toggle.setDrawerIndicatorEnabled(true);
+            // Remove the/any drawer toggle listener
+            toggle.setToolbarNavigationClickListener(null);
+            mToolBarNavigationListenerIsRegistered = false;
+        }
+
+        // So, one may think "Hmm why not simplify to:
+        // .....
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(enable);
+        // mDrawer.setDrawerIndicatorEnabled(!enable);
+        // ......
+        // To re-iterate, the order in which you enable and disable views IS important #dontSimplify.
     }
 
     public void showLogo(boolean b) {
