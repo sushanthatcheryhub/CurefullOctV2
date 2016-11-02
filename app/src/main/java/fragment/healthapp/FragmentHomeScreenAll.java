@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import utils.AppPreference;
 
 
 /**
@@ -26,6 +27,7 @@ public class FragmentHomeScreenAll extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.home_screen,
                 container, false);
+        AppPreference.getInstance().setIsLogin(true);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);

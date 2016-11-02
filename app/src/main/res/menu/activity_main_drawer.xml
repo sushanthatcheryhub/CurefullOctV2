@@ -6,6 +6,11 @@
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_menu_send"
             android:title="Dashboard" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_local_drink_black_18dp"
+            android:title="Logout" />
         <!--<item-->
         <!--android:id="@+id/nav_data"-->
         <!--android:icon="@drawable/ic_build_black"-->

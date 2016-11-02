@@ -27,8 +27,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.awareness.Awareness;
@@ -56,20 +59,23 @@ public class MainActivity extends BaseMainActivity {
     public static final String TAG = "MainActivity";
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     private int location_Permission, phone_Permission,
-            storageRead_Permission, storageWrite_Permission;
+            storageRead_Permission, storageWrite_Permission, read_contact, camera;
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private GoogleApiClient mClient = null;
     private RelativeLayout relative_logo;
     private ActionBarDrawerToggle toggle;
+    private ProgressBar progress_bar;
     private boolean mToolBarNavigationListenerIsRegistered = false;
+    private TextView txt_hospital_name_drawee_layout, txt_doctor_name_edu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
+        progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);
@@ -81,22 +87,33 @@ public class MainActivity extends BaseMainActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
+        View header = navigationView.getHeaderView(0);
+        txt_hospital_name_drawee_layout = (TextView) header.findViewById(R.id.txt_hospital_name_drawee_layout);
+        txt_doctor_name_edu = (TextView) header.findViewById(R.id.txt_doctor_name_edu);
+
         getKeyHash();
         showActionBarToggle(false);
         disableDrawer();
-        if (!checkPermissions()) {
-            requestPermissions();
+        if (checkAndRequestPermissions()) {
         }
         changeTitle("cureFull");
-        Intent serviceIntent = new Intent(this, LocationService.class);
-        startService(serviceIntent);
+//        Intent serviceIntent = new Intent(this, LocationService.class);
+//        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
             Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
         } else {
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentLogin(), false);
+
+            if (AppPreference.getInstance().isLogin()) {
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentHomeScreenAll(), false);
+            } else {
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentLogin(), false);
+            }
+
         }
 //        Toast.makeText(this, getMessageText(getIntent()), Toast.LENGTH_SHORT).show();
 
@@ -129,6 +146,11 @@ public class MainActivity extends BaseMainActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setActionDrawerHeading(String name, String edu) {
+        txt_doctor_name_edu.setText("" + name);
+        txt_hospital_name_drawee_layout.setText("" + edu);
     }
 
 
@@ -213,6 +235,15 @@ public class MainActivity extends BaseMainActivity {
 
     }
 
+    public void showProgressBar(boolean b) {
+        if (b) {
+            progress_bar.setVisibility(View.VISIBLE);
+        } else {
+            progress_bar.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
 
     public void changeColorActionBar(String color) {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor(color));
@@ -257,7 +288,10 @@ public class MainActivity extends BaseMainActivity {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE);
         storageWrite_Permission = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
+        read_contact = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
+                Manifest.permission.READ_CONTACTS);
+        camera = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
+                Manifest.permission.CAMERA);
         List<String> listPermissionsNeeded = new ArrayList<String>();
 
         if (location_Permission != PackageManager.PERMISSION_GRANTED) {
@@ -275,6 +309,14 @@ public class MainActivity extends BaseMainActivity {
                     .add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
+        if (read_contact != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded
+                    .add(android.Manifest.permission.READ_CONTACTS);
+        }
+        if (camera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded
+                    .add(Manifest.permission.CAMERA);
+        }
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(CureFull.getInstanse().getActivityIsntanse(), listPermissionsNeeded
                             .toArray(new String[listPermissionsNeeded.size()]),
@@ -290,6 +332,11 @@ public class MainActivity extends BaseMainActivity {
                               DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(CureFull.getInstanse().getActivityIsntanse()).setMessage(message).setCancelable(false)
                 .setPositiveButton("OK", okListener).show();
+    }
+
+    public void startFitService() {
+        Intent intent = new Intent(this, FitGoogleService.class);
+        startService(intent);
     }
 
 
@@ -321,36 +368,85 @@ public class MainActivity extends BaseMainActivity {
     }
 
 
-    /**
-     * Callback received when a permissions request has been completed.
-     */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        Log.e(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.e(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission was granted.
-            } else {
-                // Permission denied.
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ID_MULTIPLE_PERMISSIONS: {
+                Map<String, Integer> perms = new HashMap<String, Integer>();
+                // Initialize the map with both permissions
+                perms.put(Manifest.permission.READ_CONTACTS,
+                        PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.READ_PHONE_STATE,
+                        PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                        PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.CAMERA,
+                        PackageManager.PERMISSION_GRANTED);
+                // Fill with actual results from user
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < permissions.length; i++)
+                        perms.put(permissions[i], grantResults[i]);
+                    // Check for both permissions
+                    if (perms.get(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    } else {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                CureFull.getInstanse().getActivityIsntanse(), android.Manifest.permission.CAMERA)
+                                || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.READ_PHONE_STATE)
+                                || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.CAMERA)) {
+                            showDialogOK("Permission Required For This App",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which) {
+                                            switch (which) {
+                                                case DialogInterface.BUTTON_POSITIVE:
 
-                // In this Activity we've chosen to notify the user that they
-                // have rejected a core permission for the app since it makes the Activity useless.
-                // We're communicating this message in a Snackbar since this is a sample app, but
-                // core permissions would typically be best requested during a welcome-screen flow.
+                                                    CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
 
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
+                                                        @Override
+                                                        public void run() {
+                                                            checkAndRequestPermissions();
+                                                        }
+                                                    });
 
+                                                    break;
+
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                }
             }
+
         }
+
     }
 
 

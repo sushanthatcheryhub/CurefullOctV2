@@ -1,7 +1,12 @@
 package asyns;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import item.property.HealthNoteItems;
 import item.property.SignUpInfo;
 import item.property.UserInfo;
 import utils.MyConstants;
@@ -55,5 +60,28 @@ public class ParseJsonData implements MyConstants.JsonUtils {
             e.printStackTrace();
         }
         return user;
+    }
+
+
+    public List<HealthNoteItems> getHealthNoteListItem(String response) {
+        HealthNoteItems details = null;
+        ArrayList<HealthNoteItems> detailListing = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                JSONArray jsonPayload = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
+                detailListing = new ArrayList<HealthNoteItems>();
+                for (int i = 0; i < jsonPayload.length(); i++) {
+                    JSONObject jsonObject = jsonPayload.getJSONObject(i);
+                    details = new HealthNoteItems(jsonObject);
+                    detailListing.add(details);
+                }
+            } catch (Exception e) {
+
+            }
+        }
+        return detailListing;
     }
 }

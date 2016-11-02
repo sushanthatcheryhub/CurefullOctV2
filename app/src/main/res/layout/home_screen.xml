@@ -7,17 +7,10 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-    <View
-        android:id="@+id/viewLine"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#AAA8A9" />
-
     <FrameLayout
         android:id="@+id/framge_child"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/viewLine">
+        android:layout_height="match_parent">
 
     </FrameLayout>
 

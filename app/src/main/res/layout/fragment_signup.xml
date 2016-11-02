@@ -6,6 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:focusable="true"
+    android:clickable="true"
     android:focusableInTouchMode="true">
 
     <LinearLayout
@@ -42,7 +43,28 @@
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20dp"
+                android:textColorHint="@color/white"
+                android:theme="@style/TextLabel">
 
+                <customsTextViews.CustomEditTextViewMontserratHairLine
+                    android:id="@+id/edt_phone"
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/email_icon"
+                    android:drawablePadding="@dimen/_5dp"
+                    android:hint="Phone No"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:paddingBottom="@dimen/_12dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_email"
                 android:layout_width="match_parent"
@@ -66,45 +88,20 @@
             </android.support.design.widget.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/_20dp"
-                android:gravity="center_vertical"
-                android:textColorHint="@color/white"
-                android:theme="@style/TextLabel">
-
-                <customsTextViews.CustomEditTextViewMontserratHairLine
-                    android:id="@+id/input_password"
-                    style="@style/textView_dark_grey_normal_small"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@android:color/white"
-                    android:drawableLeft="@drawable/password_icon"
-                    android:drawablePadding="@dimen/_5dp"
-                    android:hint="Password"
-                    android:inputType="textPassword"
-                    android:paddingBottom="@dimen/_12dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
 
 
-            </android.support.design.widget.TextInputLayout>
+
 
 
             <customsTextViews.CustomTextViewOpenSanRegular
                 android:id="@+id/btn_signup"
-                style="@style/textView_dark_grey_normal_large"
+                style="@style/textView_dark_grey_normal_medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_20dp"
-                android:background="@drawable/login_patient_button_selector"
-                android:elevation="@dimen/_10dp"
+                android:background="@drawable/login_button_selector_new"
                 android:gravity="center"
-                android:padding="@dimen/_5dp"
                 android:text="Sign Up"
                 android:textColor="@color/health_login_text" />
 

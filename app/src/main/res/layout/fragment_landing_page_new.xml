@@ -5,8 +5,22 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="#E9E9E9"
+    android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/img_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/_5dp"
+        android:src="@drawable/ic_add_white_18dp"
+        app:fabSize="mini"
+        app:layout_anchor="@id/realtive_notes"
+        app:layout_anchorGravity="bottom|right|end" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +29,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/realtive_click"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#E9E9E9"
@@ -34,7 +49,7 @@
                 android:textColor="#01707B" />
 
             <customsTextViews.CustomTextViewOpenSanRegular
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_set_goal"
                 style="@style/textView_dark_grey_normal_micro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,6 +70,7 @@
 
 
         <LinearLayout
+            android:id="@+id/liner_click"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_5dp"
@@ -140,20 +156,10 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/logo" />
-
-
-                <ticker.TickerView
-                    android:id="@+id/text_steps_count"
-                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    android:textAppearance="@style/TickerTextAppearance"
-                    app:ticker_animationDuration="1000" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/step_count_icon" />
+
 
                 <!--<customsTextViews.CustomTextViewOpenSanBold-->
                 <!--android:id="@+id/text_steps_count"-->
@@ -167,7 +173,8 @@
                 <!--android:textStyle="bold" />-->
 
                 <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_micro"
+                    android:id="@+id/customTextViewOpenSanRegular"
+                    style="@style/textView_dark_grey_normal_micro_mini"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -175,6 +182,15 @@
                     android:textColor="#036F79"
                     android:textStyle="bold" />
 
+                <ticker.TickerView
+                    android:id="@+id/text_steps_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:textAppearance="@style/TickerTextAppearance"
+                    app:ticker_animationDuration="1000" />
 
             </LinearLayout>
 
@@ -188,39 +204,37 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/logo" />
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    android:id="@+id/txt_health_note"
-                    style="@style/textView_dark_grey_normal_small"
-                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="571"
-                    android:textAllCaps="true"
-                    android:textColor="#036F79"
-                    android:textStyle="bold" />
-
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/calory_burnt_icon" />
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/customTextViewOpenSanBold"
+                    style="@style/textView_dark_grey_normal_micro_mini"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="Calories burnt"
+                    android:textColor="#036F79"
+                    android:textStyle="bold" />
+
+                <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/txt_health_note"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Distance"
+                    android:text="571 Kcal"
+                    android:textAllCaps="true"
                     android:textColor="#036F79"
                     android:textStyle="bold" />
-
 
             </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".5"
                 android:gravity="center_vertical"
@@ -228,9 +242,9 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/logo" />
+                    android:src="@drawable/water_bottle" />
             </LinearLayout>
 
         </LinearLayout>
@@ -250,16 +264,16 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5dp">
+                    android:layout_marginLeft="@dimen/_2dp"
+                    android:padding="@dimen/_5dp">
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_health_text"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_15dp"
+                        android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/_5dp"
-                        android:layout_marginTop="@dimen/_5dp"
                         android:elevation="@dimen/_10dp"
                         android:gravity="center"
                         android:padding="@dimen/_2dp"
@@ -267,20 +281,23 @@
                         android:textColor="@color/white" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/txt_health_text"
-                        android:src="@drawable/logo" />
+                        android:src="@drawable/notebook" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="@dimen/_5dp"
-                        android:src="@drawable/logo" />
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/how_to" />
 
                 </RelativeLayout>
 
@@ -297,11 +314,11 @@
                         <RelativeLayout
                             android:id="@+id/realtive_notes"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:visibility="visible">
+                            android:layout_height="match_parent">
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_no_list_health_note"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -309,12 +326,14 @@
                                 android:elevation="@dimen/_10dp"
                                 android:gravity="center"
                                 android:padding="@dimen/_2dp"
-                                android:text="No Health Notes Yet !! Please Add Some Notes"
-                                android:textColor="@color/white" />
-                            <!--<ListView-->
-                            <!--android:id="@+id/notes"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"></ListView>-->
+                                android:textColor="@color/white"
+                                android:visibility="gone" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/recyclerView_notes"
+                                android:layout_width="match_parent"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
                         </RelativeLayout>
 
@@ -331,93 +350,301 @@
                                 android:id="@+id/layoutButtons"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="@dimen/_20dp"
+                                android:layout_marginLeft="@dimen/_10dp"
                                 android:orientation="vertical"
                                 android:visibility="gone">
-
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
+                                    android:orientation="horizontal">
 
                                     <LinearLayout
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
+                                        android:orientation="vertical">
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
+                                        <LinearLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:gravity="center_horizontal"
-                                            android:paddingBottom="@dimen/_5dp"
-                                            android:paddingTop="@dimen/_5dp"
-                                            android:singleLine="true"
-                                            android:text="Add Note"
-                                            android:textColor="@color/white" />
+                                            android:orientation="horizontal">
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro_mini"
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                style="@style/textView_dark_grey_normal_micro"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="Add Note"
+                                                android:textColor="@color/white" />
+
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                style="@style/textView_dark_grey_normal_micro_mini"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingLeft="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="(max 20 Characters)"
+                                                android:textColor="@color/white"
+                                                android:visibility="gone" />
+                                        </LinearLayout>
+
+                                        <LinearLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:gravity="center_horizontal"
-                                            android:paddingBottom="@dimen/_5dp"
-                                            android:paddingLeft="@dimen/_5dp"
-                                            android:paddingTop="@dimen/_5dp"
-                                            android:singleLine="true"
-                                            android:text="(max 20 Characters)"
-                                            android:textColor="@color/white" />
+                                            android:orientation="horizontal">
+
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_100dp"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/search_bar_add"
+                                                android:orientation="horizontal">
+
+
+                                                <customsTextViews.CustomEditTextViewOpenSanRegular
+                                                    android:id="@+id/edt_subject"
+                                                    style="@style/textView_dark_grey_normal_micro"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_gravity="center_horizontal"
+                                                    android:layout_marginRight="@dimen/_3dp"
+                                                    android:background="@android:color/transparent"
+                                                    android:ellipsize="end"
+                                                    android:hint="Subject"
+                                                    android:inputType="textCapWords"
+                                                    android:marqueeRepeatLimit="marquee_forever"
+                                                    android:padding="@dimen/_4dp"
+                                                    android:singleLine="true"
+                                                    android:textColor="#282828"
+                                                    android:textColorHint="@color/cure_hint_color" />
+
+                                            </LinearLayout>
+
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                android:id="@+id/txt_click_here_add"
+                                                style="@style/textView_dark_grey_normal_micro_mini"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingLeft="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="Clear hear to Add more details"
+                                                android:textColor="@color/white"
+                                                android:visibility="visible" />
+
+                                        </LinearLayout>
                                     </LinearLayout>
 
                                     <LinearLayout
-                                        android:layout_width="match_parent"
+                                        android:id="@+id/date_time_picker"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
+                                        android:layout_marginLeft="@dimen/_5dp"
+                                        android:orientation="vertical"
+                                        android:visibility="gone">
 
                                         <LinearLayout
-                                            android:layout_width="@dimen/_100dp"
+                                            android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:background="@drawable/search_bar_add"
                                             android:orientation="horizontal">
 
-
-                                            <customsTextViews.CustomEditTextViewOpenSanRegular
-                                                android:id="@+id/edt_patient_name"
+                                            <customsTextViews.CustomTextViewOpenSanRegular
                                                 style="@style/textView_dark_grey_normal_micro"
-                                                android:layout_width="fill_parent"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="Date"
+                                                android:textColor="@color/white" />
+
+                                        </LinearLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
+
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_50dp"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/search_bar_add"
+                                                android:orientation="horizontal">
+
+
+                                                <customsTextViews.CustomTextViewOpenSanRegular
+                                                    android:id="@+id/txt_date_time"
+                                                    style="@style/textView_dark_grey_normal_micro"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_gravity="center_horizontal"
+                                                    android:layout_marginRight="@dimen/_3dp"
+                                                    android:background="@android:color/transparent"
+                                                    android:ellipsize="end"
+                                                    android:hint="27 oct"
+                                                    android:inputType="textCapWords"
+                                                    android:marqueeRepeatLimit="marquee_forever"
+                                                    android:padding="@dimen/_4dp"
+                                                    android:singleLine="true"
+                                                    android:textColor="#282828"
+                                                    android:textColorHint="@color/cure_hint_color" />
+
+                                            </LinearLayout>
+
+
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/liner_date_t"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_5dp"
+                                        android:orientation="vertical"
+                                        android:visibility="gone">
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
+
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                style="@style/textView_dark_grey_normal_micro"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="Time"
+                                                android:textColor="@color/white" />
+
+                                        </LinearLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
+
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_45dp"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/search_bar_add"
+                                                android:orientation="horizontal">
+
+
+                                                <customsTextViews.CustomTextViewOpenSanRegular
+                                                    android:id="@+id/txt_time"
+                                                    style="@style/textView_dark_grey_normal_micro"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_gravity="center_horizontal"
+                                                    android:layout_marginRight="@dimen/_3dp"
+                                                    android:background="@android:color/transparent"
+                                                    android:ellipsize="end"
+                                                    android:hint="11"
+                                                    android:inputType="textCapWords"
+                                                    android:marqueeRepeatLimit="marquee_forever"
+                                                    android:padding="@dimen/_4dp"
+                                                    android:singleLine="true"
+                                                    android:textColor="#282828"
+                                                    android:textColorHint="@color/cure_hint_color" />
+
+
+                                            </LinearLayout>
+
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                style="@style/textView_dark_grey_normal_micro"
+                                                android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:layout_gravity="center_horizontal"
-                                                android:layout_marginRight="@dimen/_3dp"
                                                 android:background="@android:color/transparent"
                                                 android:ellipsize="end"
-                                                android:hint="Subject"
                                                 android:inputType="textCapWords"
                                                 android:marqueeRepeatLimit="marquee_forever"
                                                 android:padding="@dimen/_4dp"
                                                 android:singleLine="true"
-                                                android:textColor="#282828"
-                                                android:textColorHint="@color/cure_hint_color" />
+                                                android:text="To"
+                                                android:textColor="@color/white" />
+
+
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/liner_to_time"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:visibility="gone">
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
+
+                                            <customsTextViews.CustomTextViewOpenSanRegular
+                                                style="@style/textView_dark_grey_normal_micro"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center_horizontal"
+                                                android:paddingBottom="@dimen/_5dp"
+                                                android:paddingTop="@dimen/_5dp"
+                                                android:singleLine="true"
+                                                android:text="Date"
+                                                android:textColor="@color/white"
+                                                android:visibility="invisible" />
 
                                         </LinearLayout>
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro_mini"
+                                        <LinearLayout
+
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:gravity="center_horizontal"
-                                            android:paddingBottom="@dimen/_5dp"
-                                            android:paddingLeft="@dimen/_5dp"
-                                            android:paddingTop="@dimen/_5dp"
-                                            android:singleLine="true"
-                                            android:text="Clear hear to Add more details"
-                                            android:textColor="@color/white" />
+                                            android:orientation="horizontal">
+
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_45dp"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/search_bar_add"
+                                                android:orientation="horizontal">
+
+
+                                                <customsTextViews.CustomTextViewOpenSanRegular
+                                                    android:id="@+id/txt_to_time"
+                                                    style="@style/textView_dark_grey_normal_micro"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_gravity="center_horizontal"
+                                                    android:layout_marginRight="@dimen/_3dp"
+                                                    android:background="@android:color/transparent"
+                                                    android:ellipsize="end"
+                                                    android:hint="01"
+                                                    android:inputType="textCapWords"
+                                                    android:marqueeRepeatLimit="marquee_forever"
+                                                    android:padding="@dimen/_4dp"
+                                                    android:singleLine="true"
+                                                    android:textColor="#282828"
+                                                    android:textColorHint="@color/cure_hint_color" />
+
+                                            </LinearLayout>
+
+
+                                        </LinearLayout>
                                     </LinearLayout>
+
                                 </LinearLayout>
 
-
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical">
 
@@ -433,28 +660,55 @@
                                         android:text="Details"
                                         android:textColor="@color/white" />
 
-
                                     <LinearLayout
-                                        android:layout_width="@dimen/_200dp"
-                                        android:layout_height="@dimen/_60dp"
-                                        android:background="@drawable/search_bar_add"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
                                         android:orientation="horizontal">
 
+                                        <LinearLayout
+                                            android:layout_width="@dimen/_200dp"
+                                            android:layout_height="@dimen/_60dp"
+                                            android:background="@drawable/search_bar_add"
+                                            android:orientation="horizontal">
 
-                                        <customsTextViews.CustomEditTextViewOpenSanRegular
+
+                                            <customsTextViews.CustomEditTextViewOpenSanRegular
+                                                android:id="@+id/edt_deatils"
+                                                style="@style/textView_dark_grey_normal_micro"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:layout_gravity="top"
+                                                android:layout_marginRight="@dimen/_3dp"
+                                                android:background="@android:color/transparent"
+                                                android:ellipsize="end"
+                                                android:gravity="top"
+                                                android:inputType="textMultiLine"
+                                                android:marqueeRepeatLimit="marquee_forever"
+                                                android:padding="@dimen/_4dp"
+                                                android:singleLine="true"
+                                                android:textColor="#282828"
+                                                android:textColorHint="@color/cure_hint_color" />
+
+
+                                        </LinearLayout>
+
+                                        <customsTextViews.CustomTextViewOpenSanRegular
+                                            android:id="@+id/btn_done"
                                             style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="fill_parent"
+                                            android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:ellipsize="end"
-                                            android:inputType="textMultiLine"
-                                            android:marqueeRepeatLimit="marquee_forever"
-                                            android:padding="@dimen/_4dp"
-                                            android:singleLine="true"
-                                            android:textColor="#282828"
-                                            android:textColorHint="@color/cure_hint_color" />
+                                            android:layout_gravity="bottom"
+                                            android:layout_marginLeft="@dimen/_10dp"
+                                            android:background="@drawable/login_patient_button_selector"
+                                            android:elevation="@dimen/_10dp"
+                                            android:gravity="center_vertical"
+                                            android:paddingBottom="@dimen/_2dp"
+                                            android:paddingLeft="@dimen/_15dp"
+                                            android:paddingRight="@dimen/_15dp"
+                                            android:paddingTop="@dimen/_2dp"
+                                            android:text="Done"
+                                            android:textColor="@color/health_login_text" />
+
                                     </LinearLayout>
                                 </LinearLayout>
 
@@ -480,23 +734,35 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_5dp"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
                     <customsTextViews.CustomTextViewOpenSanBold
                         style="@style/textView_dark_grey_normal_medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
                         android:text="EHR"
                         android:textColor="@color/health_app_text"
                         android:textStyle="bold" />
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_30dp"
+                        android:src="@drawable/info" />
+
                     <customsTextViews.CustomTextViewOpenSanBold
-                        style="@style/textView_dark_grey_normal_small"
+                        style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_30dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_5dp"
                         android:text="Time to take medicine"
                         android:textColor="@color/health_app_text" />
                 </LinearLayout>
@@ -507,6 +773,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/linear_prescription_click"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -516,14 +783,15 @@
 
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="20dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/logo" />
+                            android:src="@drawable/prescription_icon" />
 
                         <customsTextViews.CustomTextViewOpenSanBold
                             style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5dp"
                             android:gravity="center_horizontal"
                             android:text="Prescriptions"
                             android:textAllCaps="true"
@@ -541,6 +809,7 @@
                         android:background="#8DB9BC" />
 
                     <LinearLayout
+                        android:id="@+id/linear_lab_report_click"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -550,14 +819,15 @@
 
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="20dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/logo" />
+                            android:src="@drawable/reports_icon" />
 
                         <customsTextViews.CustomTextViewOpenSanBold
                             style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5dp"
                             android:gravity="center_horizontal"
                             android:text="LAB test report"
                             android:textAllCaps="true"
@@ -574,17 +844,4 @@
 
         </LinearLayout>
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/img_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="@dimen/_5dp"
-        android:src="@drawable/ic_add_white_18dp"
-        app:fabSize="mini"
-        app:layout_anchor="@id/realtive_notes"
-        app:layout_anchorGravity="bottom|right|end" />
 </android.support.design.widget.CoordinatorLayout>

@@ -5,14 +5,14 @@
 
     <RelativeLayout
         android:id="@+id/relative_logo"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_160dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/home_background">
 
         <ImageView
             android:id="@+id/logo"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_50dp"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/logo" />
 
@@ -21,7 +21,15 @@
     <FrameLayout
         android:id="@+id/framge_parent"
         android:layout_width="match_parent"
-        android:layout_below="@+id/relative_logo"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relative_logo" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_centerInParent="true" />
+
 
 </RelativeLayout>

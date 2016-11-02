@@ -6,6 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@color/blue"
     android:focusable="true"
+    android:clickable="true"
     android:focusableInTouchMode="true">
 
     <LinearLayout

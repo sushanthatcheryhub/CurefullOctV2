@@ -26,13 +26,15 @@ public class SignUpInfo {
         if (jsonObject == null)
             return;
         try {
+            JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
+            setUser_id(jsonResponse1.getString(MyConstants.PrefrenceKeys.EMAIL));
+            setUser_name(jsonResponse1.getString(MyConstants.PrefrenceKeys.NAME));
 
             JSONObject jsonResponse = jsonObject.getJSONObject(MyConstants.JsonUtils.HEADERS);
 //            setFname(jsonResponse.getString(MyConstants.JsonUtils.FNAME));
             setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
             setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
-            setUser_id(jsonResponse.getString(MyConstants.JsonUtils.EMAIL_ID));
-            setUser_name(jsonResponse.getString(MyConstants.JsonUtils.USERNAME));
+
 
         } catch (Exception e) {
             e.printStackTrace();

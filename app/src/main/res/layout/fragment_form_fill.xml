@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
+    android:clickable="true"
     android:background="@drawable/login_gradient"
     android:focusable="true"
     android:focusableInTouchMode="true">
@@ -11,196 +12,615 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_20dp"
         android:orientation="vertical">
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/_10dp"
+            android:orientation="vertical">
 
 
             <LinearLayout
-                android:layout_width="@dimen/_100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:gravity="left"
-                    android:text="Gender"
-                    android:textColor="@color/white" />
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
+                <LinearLayout
+                    android:layout_width="@dimen/_100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="Gender"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_15dp"
+                        android:gravity="right"
+                        android:text="-"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+
+                <RadioGroup
+                    android:id="@+id/radioCalender"
                     android:layout_width="match_parent"
-                    android:gravity="right"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_15dp"
-                    android:text="-"
-                    android:textColor="@color/white" />
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomRadioButtonOpenSanRegular
+                        android:id="@+id/radioEmail"
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:text="Male"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomRadioButtonOpenSanRegular
+                        android:id="@+id/radioMobile"
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_15dp"
+                        android:clickable="true"
+                        android:text="Female"
+                        android:textColor="@color/white" />
+
+                </RadioGroup>
             </LinearLayout>
 
-
-            <RadioGroup
-                android:id="@+id/radioCalender"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_15dp"
-                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_15dp"
                 android:orientation="horizontal">
 
-                <customsTextViews.CustomRadioButtonOpenSanRegular
-                    android:id="@+id/radioEmail"
-                    style="@style/textView_dark_grey_normal_micro"
+                <LinearLayout
+                    android:layout_width="@dimen/_100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="Age"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:gravity="right"
+                        android:text="-"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:text="Male"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20dp"
+                    android:text="Years"
                     android:textColor="@color/white" />
 
-                <customsTextViews.CustomRadioButtonOpenSanRegular
-                    android:id="@+id/radioMobile"
-                    style="@style/textView_dark_grey_normal_micro"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="@dimen/_100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="Height"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:gravity="right"
+                        android:text="-"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20dp"
+                    android:text="Feet"
+                    android:textColor="@color/white" />
+
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20dp"
+                    android:text="Inchs"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="@dimen/_100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="Weight"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:gravity="right"
+                        android:text="-"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20dp"
+                    android:text="KG"
+                    android:textColor="@color/white" />
+
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_20dp"
+                    android:text="Grams"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight=".7"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="BMI"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="31.6 (obesity)"
+                        android:textColor="@color/health_yellow" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="BMR"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1717 Calories/day"
+                        android:textColor="@color/health_yellow" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="left"
+                        android:text="Ideal Weight"
+                        android:textColor="@color/white" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="69.7 Kg"
+                        android:textColor="@color/health_yellow" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginTop="@dimen/_5dp"
+                android:orientation="horizontal">
+
+                <customsTextViews.CustomTextViewOpenSanBold
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recommended Daily exercise-"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_15dp"
-                    android:clickable="true"
-                    android:text="Female"
-                    android:textColor="@color/white" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            </RadioGroup>
-        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15dp"
-            android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/step_count_yellow_icon" />
+                    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="@dimen/_100dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="Steps"
+                            android:textColor="@color/white"
+                            />
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_micro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_name"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="7585"
+                            android:textColor="@color/health_yellow"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/_2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_15dp"
+                    android:layout_marginRight="@dimen/_15dp"
+                    android:background="#7e7e7e" />
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:gravity="left"
-                    android:text="Age"
-                    android:textColor="@color/white" />
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:gravity="right"
-                    android:layout_marginLeft="@dimen/_25dp"
-                    android:text="-"
-                    android:textColor="@color/white" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/calory_burnt_yellow_icon" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_name"
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="Calories burn"
+                            android:textColor="@color/white"
+                            />
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_micro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_name"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="420 kcal"
+                            android:textColor="@color/health_yellow"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
             </LinearLayout>
-
-            <customsTextViews.CustomTextViewOpenSanRegular
-                style="@style/textView_dark_grey_normal_medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/_20dp"
-                android:text="Years"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15dp"
-            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="@dimen/_100dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:gravity="left"
-                    android:text="Height"
-                    android:textColor="@color/white" />
-
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:gravity="right"
-                    android:layout_marginLeft="@dimen/_25dp"
-                    android:text="-"
-                    android:textColor="@color/white" />
-            </LinearLayout>
-
-            <customsTextViews.CustomTextViewOpenSanRegular
-                style="@style/textView_dark_grey_normal_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/_20dp"
-                android:text="Years"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="@dimen/_100dp"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10dp"
                 android:orientation="horizontal">
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:gravity="left"
-                    android:text="Weight"
-                    android:textColor="@color/white" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_15dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    style="@style/textView_dark_grey_normal_medium"
-                    android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/distance_yellow_icon" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="Steps"
+                            android:textColor="@color/white"
+                            />
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_micro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_name"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="7585"
+                            android:textColor="@color/health_yellow"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/_2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_15dp"
+                    android:layout_marginRight="@dimen/_15dp"
+                    android:background="#7e7e7e" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:gravity="right"
-                    android:layout_marginLeft="@dimen/_25dp"
-                    android:text="-"
-                    android:textColor="@color/white" />
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/water_bottle_yellow" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="Calories burn"
+                            android:textColor="@color/white"
+                            />
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_micro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_name"
+                            android:layout_centerInParent="true"
+                            android:gravity="left"
+                            android:text="420 kcal"
+                            android:textColor="@color/health_yellow"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
-            <customsTextViews.CustomTextViewOpenSanRegular
-                style="@style/textView_dark_grey_normal_medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/_20dp"
-                android:text="Years"
-                android:textColor="@color/white" />
-
         </LinearLayout>
+</LinearLayout>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

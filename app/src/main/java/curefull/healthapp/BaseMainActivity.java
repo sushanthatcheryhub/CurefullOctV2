@@ -1,7 +1,9 @@
 package curefull.healthapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,14 +16,19 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import fragment.healthapp.FragmentLandingPage;
+import fragment.healthapp.FragmentLogin;
+import utils.AppPreference;
 
 public class BaseMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private int _backBtnCount = 0;
+    SharedPreferences preferences;
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -35,8 +42,12 @@ public class BaseMainActivity extends AppCompatActivity
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentLandingPage(), false);
             }
+        } else if (id == R.id.nav_logout) {
+            AppPreference.getInstance().setIsLogin(false);
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentLogin(), false);
         }
-//        } else if (id == R.id.nav_data) {
 //
 //        } else if (id == R.id.nav_ehr) {
 //
@@ -88,6 +99,9 @@ public class BaseMainActivity extends AppCompatActivity
             else {
                 _backBtnCount++;
                 if (_backBtnCount == 2) {
+                    preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                    preferences.edit().putBoolean("destroy", true).commit();
+                    CureFull.getInstanse().getActivityIsntanse().startFitService();
                     System.exit(0);
                     finish();
                     return;
@@ -135,6 +149,51 @@ public class BaseMainActivity extends AppCompatActivity
             inputManager.hideSoftInputFromWindow(focused.getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+
+    public String formatMonth(String month) throws ParseException {
+
+        try {
+            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
+            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
+            return monthDisplay.format(monthParse.parse(month));
+        } catch (java.text.ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String updateTime(int hours, int mins) {
+
+
+        int selctHour = hours;
+
+        String timeSet = "";
+        if (selctHour > 12) {
+            selctHour -= 12;
+            timeSet = "pm";
+        } else if (selctHour == 0) {
+            selctHour += 12;
+            timeSet = "pm";
+        } else if (selctHour == 12) {
+            timeSet = "pm";
+        } else {
+            timeSet = "am";
+        }
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+//        // Append in a StringBuilder
+//        String aTime = new StringBuilder().append(selctHour).append(':')
+//                .append(minutes).append(" ").append(timeSet).toString();
+        String aTime = new StringBuilder().append(selctHour).append(timeSet).toString();
+        return aTime;
     }
 
 }

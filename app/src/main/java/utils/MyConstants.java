@@ -10,10 +10,16 @@ public class MyConstants {
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
-        String LOGIN = URL + "signup/endUser";
+        String LOGIN = URL + "login/endUser";
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
-        String ADD_SYMPTOMS_BY_DOCTOR = URL + "prescription/getDoctorSymptomsListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
+        String HEALTH_NOTE_ADD = URL + "healthNote/addhealthNote";
+        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=DemoTrans&password=DemoTrans&senderid=ADMGTR&channel=trans&DCS=0&flashsms=0&number=";
+        String OTP_MESSAGE = "&text=";
+        String OTP_LAST = "&route=2";
+        String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes";
+        String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
+
         String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_INVESTIGATION_BY_DOCTOR = URL + "prescription/getDoctorDiagonsisListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_ALLERGY_BY_DOCTOR = URL + "prescription/getDoctorAllergyTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
@@ -69,6 +75,9 @@ public class MyConstants {
         String PROFILE_ID = "id";
         String USER_NAME = "userName";
         String PASSWORD = "password";
+        String AT = "a_t";
+        String RT = "r_t";
+        String MOBILE_NO = "mobileNumber";
         String NAME = "name";
         String EMAIL = "emailId";
         String HEADERS = "headers";
@@ -84,13 +93,19 @@ public class MyConstants {
 
         //Patient List
         String FNAME = "fname";
+        String ID = "healthNoteId";
+        String NOTE_DATE = "dateOfNote";
+        String NOTE_TIME = "fromTime";
+        String NOTE_TIME_TO = "toTime";
+        String NOTE_HEADING = "subject";
+        String NOTE_DEATILS = "details";
         String A_T = "a_t";
         String R_T = "r_t";
         String HEADERS = "headers";
         String USER_ID = "user_id";
         String USERNAME = "user_name";
-        String INSTITUTE_NAME="instituteName";
-        String INSTITUTE_TYPE="instituteType";
+        String INSTITUTE_NAME = "instituteName";
+        String INSTITUTE_TYPE = "instituteType";
 
         String PATIENT_PROFILE_ID = "patientProfileId";
         String FIRST_NAME = "firstName";
@@ -187,5 +202,48 @@ public class MyConstants {
         String[] listPopUpWeightGms = {"100", "200", "300", "400", "500", "600", "700", "800", "900"};
         String[] listPopUpBloodGrp = {"0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"};
         String[] listPopUpDate = {"Older", "Latest"};
+
+    }
+
+    public static int getMonthName(String month) {
+        switch (month) {
+            case "Jan":
+                return 1;
+
+            case "Feb":
+                return 2;
+
+            case "Mar":
+                return 3;
+
+            case "Apr":
+                return 4;
+
+            case "May":
+                return 5;
+
+            case "Jun":
+                return 6;
+
+            case "Jul":
+                return 7;
+
+            case "Aug":
+                return 8;
+
+            case "Sep":
+                return 9;
+
+            case "Oct":
+                return 10;
+
+            case "Nov":
+                return 11;
+
+            case "Dec":
+                return 12;
+        }
+
+        return 0;
     }
 }

@@ -33,12 +33,32 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject toSignUp(String userName, String email, String password) {
+    public static JSONObject toSignUp(String userName, String email, String password, String mobileNo) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put(NAME, userName);
             jsonParent.put(EMAIL, email);
             jsonParent.put(PASSWORD, password);
+            jsonParent.put(MOBILE_NO, mobileNo);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toAddHealthNote(String subject, String details, String date, String fromTime, String toTime) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("subject", subject);
+            jsonParent.put("details", details);
+            jsonParent.put("date", date);
+            jsonParent.put("fromTime", fromTime);
+            jsonParent.put("toTime", "");
+
 
         } catch (Exception e) {
 
@@ -57,7 +77,19 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
             jsonParent.put("name", name);
             jsonParent.put("emailId", emailId);
             jsonParent.put("dateOfBirth", dateOfBirth);
+            if (gender.equalsIgnoreCase("male")) {
+                gender = "MALE";
+            } else if (gender.equalsIgnoreCase("female")) {
+                gender = "FEMALE";
+            } else {
+                gender = "OTHER";
+            }
             jsonParent.put("gender", gender);
+            if (relationshipStatus.equalsIgnoreCase("single")) {
+                relationshipStatus = "SINGLE";
+            } else {
+                relationshipStatus = "MARRIED";
+            }
             jsonParent.put("relationshipStatus", relationshipStatus);
             jsonParent.put("profileImageUrl", profileImageUrl);
             jsonParent.put("devices", devices);
@@ -73,6 +105,7 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
+            jsonParent.put("educationDetails", obj1);
         } catch (Exception e) {
 
             e.printStackTrace();

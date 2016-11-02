@@ -61,6 +61,28 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return "";
     }
 
+    public void setAt(String password) {
+        if (_prefrence != null)
+            _prefrence.edit().putString(AT, password).commit();
+    }
+
+    public String getAt() {
+        if (_prefrence != null)
+            return _prefrence.getString(AT, "");
+        return "";
+    }
+
+    public void setRt(String password) {
+        if (_prefrence != null)
+            _prefrence.edit().putString(RT, password).commit();
+    }
+
+    public String getRt() {
+        if (_prefrence != null)
+            return _prefrence.getString(RT, "");
+        return "";
+    }
+
     public void setIsLogin(boolean isLogin) {
         if (_prefrence != null) {
             _prefrence.edit().putBoolean(PREF_IS_LOGIN, isLogin).commit();
@@ -70,6 +92,18 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     public boolean isLogin() {
         if (_prefrence != null)
             return _prefrence.getBoolean(PREF_IS_LOGIN, false);
+        return false;
+    }
+
+    public void setIsDestroy(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("destroy", isLogin).commit();
+        }
+    }
+
+    public boolean isDestory() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("destroy", false);
         return false;
     }
 

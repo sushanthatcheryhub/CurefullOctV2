@@ -37,10 +37,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:layout_marginLeft="@dimen/_5dp"
-            android:background="#182837"
+            android:background="@drawable/login_gradient"
             android:fitsSystemWindows="true"
-            app:menu="@menu/activity_main_drawer"
-            app:headerLayout="@layout/nav_header_main" />
+            app:headerLayout="@layout/nav_header_main"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:menu="@menu/activity_main_drawer" />
 
     </android.support.v4.widget.DrawerLayout>
 

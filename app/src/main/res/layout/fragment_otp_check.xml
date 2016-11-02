@@ -1,0 +1,159 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/login_gradient"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:nestedScrollingEnabled="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_30dp"
+                android:layout_marginRight="@dimen/_30dp"
+                android:layout_marginTop="@dimen/_5dp"
+                android:orientation="vertical">
+
+
+                <customsTextViews.CustomTextViewMontserratHairLine
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:gravity="left"
+                    android:padding="@dimen/_5dp"
+                    android:text="Please enter OTP which we have sent your mobile number."
+                    android:textColor="@color/white" />
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_otp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:textColorHint="@color/white"
+                    android:theme="@style/TextLabel">
+
+                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                        android:id="@+id/edt_otp_password"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/email_icon"
+                        android:drawablePadding="@dimen/_5dp"
+                        android:hint="One Time Password"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:paddingBottom="@dimen/_12dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:gravity="center_vertical"
+                    android:textColorHint="@color/white"
+                    android:theme="@style/TextLabel">
+
+                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                        android:id="@+id/input_password"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:color/white"
+                        android:drawableLeft="@drawable/password_icon"
+                        android:drawablePadding="@dimen/_5dp"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:paddingBottom="@dimen/_12dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white" />
+
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:gravity="center_vertical"
+                    android:textColorHint="@color/white"
+                    android:theme="@style/TextLabel">
+
+                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                        android:id="@+id/input_confirm_password"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:color/white"
+                        android:drawableLeft="@drawable/password_icon"
+                        android:drawablePadding="@dimen/_5dp"
+                        android:hint="Confirm Password"
+                        android:inputType="textPassword"
+                        android:paddingBottom="@dimen/_12dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white" />
+
+
+                </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewMontserratHairLine
+                        android:id="@+id/btn_click_resend_otp"
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:padding="@dimen/_5dp"
+                        android:text="Resend OTP"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/btn_done"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_15dp"
+                    android:background="@drawable/login_button_selector_new"
+                    android:gravity="center"
+                    android:text="Done"
+                    android:textColor="@color/health_login_text" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+</android.support.design.widget.CoordinatorLayout>

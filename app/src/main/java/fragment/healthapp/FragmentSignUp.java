@@ -1,55 +1,36 @@
 package fragment.healthapp;
 
 
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatEditText;
-import android.text.InputType;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Random;
 
-import asyns.JsonUtilsObject;
-import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import item.property.SignUpInfo;
-import item.property.UserInfo;
-import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
 
@@ -62,10 +43,10 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
     private View rootView;
     private TextView btn_signup;
-    private EditText edtInput_name, edtInputEmail, edtInputPassword;
+    private EditText edtInput_name, edtInputEmail, edt_phone;
     private RequestQueue requestQueue;
     private boolean showPwd = false;
-    private TextInputLayout input_layout_name, inputLayoutEmail, inputLayoutPassword;
+    private TextInputLayout input_layout_name, inputLayoutEmail;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,14 +58,19 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         input_layout_name = (TextInputLayout) rootView.findViewById(R.id.input_layout_name);
         inputLayoutEmail = (TextInputLayout) rootView.findViewById(R.id.input_layout_email);
-        inputLayoutPassword = (TextInputLayout) rootView.findViewById(R.id.input_layout_password);
+        edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
         edtInput_name = (EditText) rootView.findViewById(R.id.input_name);
         edtInputEmail = (EditText) rootView.findViewById(R.id.input_email);
-        edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
+
         btn_signup = (TextView) rootView.findViewById(R.id.btn_signup);
         btn_signup.setOnClickListener(this);
-
-
+        Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+        c.moveToFirst();
+        TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+        edt_phone.setText("" + tMgr.getLine1Number().replace("+91",""));
+        edtInputEmail.setText("" + getAllAccount());
+        c.close();
         return rootView;
     }
 
@@ -171,7 +157,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private boolean validateName() {
         String email = edtInput_name.getText().toString().trim();
         if (email.isEmpty()) {
-            input_layout_name.setError("Email Id cannot be left blank.");
+            input_layout_name.setError("Name cannot be left blank.");
             requestFocus(edtInput_name);
             return false;
         } else {
@@ -193,15 +179,24 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         return true;
     }
 
-    private boolean validatePassword() {
-        if (edtInputPassword.getText().toString().trim().isEmpty()) {
-            inputLayoutPassword.setError("Please Enter Password");
-            requestFocus(edtInputPassword);
-            return false;
-        } else {
-            inputLayoutPassword.setErrorEnabled(false);
-        }
 
+
+
+    private boolean validateMobileNo() {
+        String email = edt_phone.getText().toString().trim();
+
+        if (email.isEmpty() || email.length() != 10) {
+            if (email.length() < 10 && email.length() > 1) {
+                edt_phone.setError("Mobile Number cannot be less than 10 numbers.");
+            } else {
+                edt_phone.setError("Mobile Number cannot be left blank.");
+            }
+            requestFocus(edt_phone);
+            return false;
+
+        } else {
+            edt_phone.setError(null);
+        }
         return true;
     }
 
@@ -226,11 +221,14 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
             return;
         }
 
-        if (!validatePassword()) {
+
+        if (!validateMobileNo()) {
             return;
         }
+
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            jsonLoginCheck();
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            sendOTPService();
         } else {
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
@@ -239,67 +237,130 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
     }
 
-
-    public void jsonLoginCheck() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-//        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
-        JSONObject data = JsonUtilsObject.toSignUp(edtInput_name.getText().toString().trim(), edtInputEmail.getText().toString().trim(), edtInputPassword.getText().toString().trim());
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
-                new Response.Listener<JSONObject>() {
+    private void sendOTPService() {
+        Random rnd = new Random();
+        final int n = 100000 + rnd.nextInt(900000);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "CureFull" + n + MyConstants.WebUrls.OTP_LAST,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e("FragmentLogin, URL 3.", response.toString());
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == 100) {
-                            SignUpInfo userInfo = ParseJsonData.getInstance().getSignUpData(response.toString());
-                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-                                AppPreference.getInstance().setUserName(userInfo.getUser_name());
-                                AppPreference.getInstance().setUserID(userInfo.getUser_id());
-
-                                Log.e("name", " " + userInfo.getUser_name());
-                            }
-                        } else {
-                            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Invalid Details", Toast.LENGTH_SHORT).show();
-                        }
-
-
+                    public void onResponse(String response) {
+                        Log.e("getSymptomsList, URL 1.", response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("NAME", edtInput_name.getText().toString().trim());
+                        bundle.putString("EMAIL", edtInputEmail.getText().toString().trim());
+                        bundle.putString("MOBILE", edt_phone.getText().toString().trim());
+                        bundle.putInt("otp", n);
+                        CureFull.getInstanse().getFlowInstanse()
+                                .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-        }) {
-
-
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                try {
-                    String jsonString = new String(response.data,
-                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-//                    Log.e("headers", "" +  response.headers.get("a_t"));
-                    JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
-                    return Response.success(jsonResponse,
-                            HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    return Response.error(new ParseError(e));
-                } catch (JSONException je) {
-                    return Response.error(new ParseError(je));
+                        error.printStackTrace();
+                    }
                 }
+        ) {
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+//    public void jsonLoginCheck() {
+//        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+////        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
+//        JSONObject data = JsonUtilsObject.toSignUp(edtInput_name.getText().toString().trim(), edtInputEmail.getText().toString().trim(), edtInputPassword.getText().toString().trim(), edt_phone.getText().toString().trim());
+//        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.e("FragmentLogin, URL 3.", response.toString());
+//                        int responseStatus = 0;
+//                        JSONObject json = null;
+//                        try {
+//                            json = new JSONObject(response.toString());
+//                            responseStatus = json.getInt("responseStatus");
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        if (responseStatus == 100) {
+//                            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+//                            CureFull.getInstanse().getFlowInstanse()
+//                                    .replace(new FragmentHomeScreenAll(), false);
+//
+////                            SignUpInfo userInfo = ParseJsonData.getInstance().getSignUpData(response.toString());
+////                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
+////                                AppPreference.getInstance().setUserName(userInfo.getUser_name());
+////                                AppPreference.getInstance().setUserID(userInfo.getUser_id());
+////
+////                                Log.e("name", " " + userInfo.getUser_name());
+////                            }
+//                        } else {
+//                            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Invalid Details", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//            }
+//        }) {
+//
+//
+//            @Override
+//            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+//                try {
+//                    String jsonString = new String(response.data,
+//                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+////                    Log.e("headers", "" +  response.headers.get("a_t"));
+//                    JSONObject jsonResponse = new JSONObject(jsonString);
+//                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+//                    return Response.success(jsonResponse,
+//                            HttpHeaderParser.parseCacheHeaders(response));
+//                } catch (UnsupportedEncodingException e) {
+//                    return Response.error(new ParseError(e));
+//                } catch (JSONException je) {
+//                    return Response.error(new ParseError(je));
+//                }
+//            }
+//
+//
+//        };
+//        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+//    }
+
+    private String getAllAccount() {
+        AccountManager am = AccountManager.get(getActivity());
+        Account[] accounts = am.getAccounts();
+        String acname = "";
+        String mobile_no = "";
+        String email = "";
+
+        for (Account ac : accounts) {
+            acname = ac.name;
+
+//            if (acname.startsWith("91")) {
+//                mobile_no = acname;
+//            } else
+
+
+            if (acname.endsWith("@gmail.com") || acname.endsWith("@yahoo.com") || acname.endsWith("@hotmail.com")) {
+                email = acname;
             }
 
+            // Take your time to look at all available accounts
+            Log.i("Accounts : ", "Accounts : " + acname);
+        }
 
-        };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        return email;
     }
 }
