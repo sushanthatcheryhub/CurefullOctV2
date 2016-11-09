@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -57,6 +58,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.EduationDetails;
 import item.property.UserInfo;
+import sticky.header.UnderlineTextView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CustomTypefaceSpan;
@@ -73,7 +75,7 @@ public class FragmentLogin extends Fragment implements
     private ProgressDialog mProgressDialog;
     private View rootView;
     CallbackManager callbackManager;
-    TextView login_button, btn_create_new, btn_click_forgot, sign_out_button_facebook;
+    TextView login_button, btn_create_new, btn_click_forgot, sign_out_button_facebook, txt_term_conditions;
     private boolean showPwd = false;
     private EditText edtInputEmail, edtInputPassword;
     private RequestQueue requestQueue;
@@ -87,6 +89,8 @@ public class FragmentLogin extends Fragment implements
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         CureFull.getInstanse().getActivityIsntanse().showLogo(true);
+        CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(false);
+        txt_term_conditions = (TextView) rootView.findViewById(R.id.txt_term_conditions);
         edtInputEmail = (EditText) rootView.findViewById(R.id.input_email);
         edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
         sign_out_button_facebook = (TextView) rootView.findViewById(R.id.sign_out_button_facebook);
@@ -182,6 +186,31 @@ public class FragmentLogin extends Fragment implements
         sign_out_button_facebook.setText(sb);
 
 
+        String you = "You agree to";
+        String termCondtiions = " Term and Conditions ";
+        String submit = "of Curefull. After clicking submit";
+
+        String meassgeNew = you + termCondtiions + submit;
+
+        Spannable sb1 = new SpannableString(meassgeNew);
+        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+                        .getColor(R.color.white)), meassgeNew.indexOf(you),
+                meassgeNew.indexOf(you) + you.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+                        .getColor(R.color.health_yellow)), meassgeNew.indexOf(termCondtiions),
+                meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb1.setSpan(new UnderlineSpan(), meassgeNew.indexOf(termCondtiions),
+                meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+                        .getColor(R.color.white)), meassgeNew.indexOf(submit),
+                meassgeNew.indexOf(submit) + submit.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        txt_term_conditions.setText(sb1);
+
+
         edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -198,11 +227,13 @@ public class FragmentLogin extends Fragment implements
                                 showPwd = true;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
                             }
                         }
@@ -409,7 +440,7 @@ public class FragmentLogin extends Fragment implements
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSignUpFacebook(facebookId, name, emailId, dateOfBirth, gender, relationshipStatus, profileImageUrl, devices, eduationDeatilsResults);
 
-        Log.e("facbook",":- "+data.toString());
+        Log.e("facbook", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FACEBOOK_SIGNUP, data,
                 new Response.Listener<JSONObject>() {

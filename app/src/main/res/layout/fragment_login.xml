@@ -99,10 +99,8 @@
                     android:id="@+id/input_layout_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_20dp"
-                    android:gravity="center_vertical"
                     android:textColorHint="@color/white"
+                    android:layout_marginTop="@dimen/_20dp"
                     android:theme="@style/TextLabel">
 
                     <customsTextViews.CustomEditTextViewMontserratHairLine
@@ -110,17 +108,14 @@
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
                         android:drawablePadding="@dimen/_7dp"
-                        android:drawableRight="@drawable/eye_icon"
                         android:hint="Password"
                         android:inputType="textPassword"
+                        android:drawableRight="@drawable/password_hide"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white" />
-
-
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -194,6 +189,27 @@
                         android:textStyle="bold" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal">
+
+
+                    <customsTextViews.CustomTextViewMontserratHairLine
+                        android:id="@+id/txt_term_conditions"
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/_5dp"
+                        android:layout_marginLeft="@dimen/_5dp"
+                        android:paddingTop="@dimen/_5dp"
+                        android:text="@string/forgot_password"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>

@@ -24,6 +24,7 @@
     <style name="MyMaterialThemeNormal" parent="MyMaterialTheme.Normal">
 
     </style>
+
     <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -55,6 +56,7 @@
         <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
+
     <style name="MyThemeAnimation" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
@@ -66,8 +68,8 @@
     </style>
 
     <!--<style name="DialogAnimation">-->
-        <!--<item name="android:windowEnterAnimation">@anim/fade_in</item>-->
-        <!--<item name="android:windowExitAnimation">@anim/fade_out</item>-->
+    <!--<item name="android:windowEnterAnimation">@anim/fade_in</item>-->
+    <!--<item name="android:windowExitAnimation">@anim/fade_out</item>-->
     <!--</style>-->
 
 
@@ -115,12 +117,12 @@
     </style>
 
 
-
     <style name="textView_dark_grey_normal_micro">
         <item name="android:textColor">@color/app_dark_grey</item>
         <item name="android:textSize">@dimen/textSizeMicro</item>
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="textView_dark_grey_normal_micro_mini">
         <item name="android:textColor">@color/app_dark_grey</item>
         <item name="android:textSize">@dimen/textSizeMicroMini</item>
@@ -194,15 +196,13 @@
     </style>
 
 
-
-
     <style name="TextLabel" parent="Widget.Design.TextInputLayout">
 
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/dark_gray</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/white</item>
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@color/health_edit_line</item>
         <item name="colorControlActivated">@color/white</item>
         <item name="colorControlHighlight">@color/white</item>
 
@@ -216,6 +216,7 @@
     <style name="SeekArcLight">
         <item name="arcColor">@color/progress_gray</item>
     </style>
+
     <style name="TickerTextAppearance">
         <item name="android:textColor">@color/health_app_text</item>
         <item name="android:textSize">16sp</item>
@@ -227,6 +228,7 @@
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TitleTextStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -257,5 +259,13 @@
         <item name="android:windowBackground">@color/scrim</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="MenuLabelsStyle">
+        <item name="android:background">#80C64236</item>
+        <item name="android:textColor">@color/health_yellow</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
     </style>
 </resources>

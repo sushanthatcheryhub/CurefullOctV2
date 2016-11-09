@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_dashboard"
-            android:icon="@drawable/ic_menu_send"
-            android:title="Dashboard" />
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/drawer_profile"
+            android:title="Profile" />
 
         <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_local_drink_black_18dp"
-            android:title="Logout" />
-        <!--<item-->
-        <!--android:id="@+id/nav_data"-->
-        <!--android:icon="@drawable/ic_build_black"-->
-        <!--android:title="Data Analytics" />-->
-        <!--<item-->
-        <!--android:id="@+id/nav_ehr"-->
-        <!--android:icon="@drawable/ic_cloud_black"-->
-        <!--android:title="EHR" />-->
-        <!--<item-->
-        <!--android:id="@+id/nav_setting"-->
-        <!--android:icon="@drawable/ic_menu_manage"-->
-        <!--android:title="Setting" />-->
-        <!--<item-->
-        <!--android:id="@+id/nav_help"-->
-        <!--android:icon="@drawable/ic_help_black"-->
-        <!--android:title="Help" />-->
+            android:id="@+id/nav_reminder"
+            android:icon="@drawable/drawer_notification_bell"
+            android:title="Reminder" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/drawer_share"
+            android:title="Share" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/drawer_setting"
+            android:title="Setting" />
+        <item
+            android:id="@+id/nav_how_works"
+            android:icon="@drawable/drawer_howitworks"
+            android:title="How it Works?" />
+        <item
+            android:id="@+id/nav_contact"
+            android:icon="@drawable/drawer_contact"
+            android:title="Contact" />
+        <item
+            android:id="@+id/nav_policy"
+            android:icon="@drawable/drawer_termspolicy"
+            android:title="Terms Policy" />
     </group>
 
 </menu>

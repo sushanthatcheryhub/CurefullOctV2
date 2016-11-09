@@ -30,6 +30,7 @@ public class FragmentHomeScreenAll extends Fragment {
         AppPreference.getInstance().setIsLogin(true);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
+        CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(true);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
         CureFull.getInstanse().getFlowInstanseAll()

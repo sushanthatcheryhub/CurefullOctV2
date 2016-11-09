@@ -22,6 +22,7 @@ import java.util.List;
 
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
+import fragment.healthapp.FragmentProfile;
 import utils.AppPreference;
 
 public class BaseMainActivity extends AppCompatActivity
@@ -36,17 +37,18 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.nav_dashboard) {
+        if (id == R.id.nav_profile) {
             if (!item.isChecked()) {
+                item.setIcon(R.color.accent);
                 CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLandingPage(), false);
+                        .replace(new FragmentProfile(), false);
             }
-        } else if (id == R.id.nav_logout) {
-            AppPreference.getInstance().setIsLogin(false);
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentLogin(), false);
+        } else if (id == R.id.nav_reminder) {
+
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentLandingPage(), false);
         }
 //
 //        } else if (id == R.id.nav_ehr) {
@@ -101,7 +103,7 @@ public class BaseMainActivity extends AppCompatActivity
                 if (_backBtnCount == 2) {
                     preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     preferences.edit().putBoolean("destroy", true).commit();
-                    CureFull.getInstanse().getActivityIsntanse().startFitService();
+//                    CureFull.getInstanse().getActivityIsntanse().startFitService();
                     System.exit(0);
                     finish();
                     return;

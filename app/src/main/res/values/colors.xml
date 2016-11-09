@@ -118,13 +118,10 @@
     <color name="progress_gray_dark">#FF383838</color>
     <color name="default_blue_light">#ff33b5e5</color>
     <color name="health_login_text">#EB4748</color>
-    <color name="health_set_goal">#046F79</color>
+    <color name="health_set_goal">#046F78</color>
     <color name="health_app_text">#036F79</color>
-    <color name="health_app_progress">#159741</color>
-
-
-
-
+    <color name="health_app_progress">#159640</color>
+    <color name="health_edit_line">#e49374</color>
     <color name="dateTimeColorAccent">#494949</color>
     <color name="scrim">#99323232</color>
 </resources>

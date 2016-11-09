@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
-    android:focusable="true"
     android:clickable="true"
+    android:focusable="true"
     android:focusableInTouchMode="true">
 
     <LinearLayout
@@ -43,6 +43,7 @@
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_phone"
                 android:layout_width="match_parent"
@@ -56,7 +57,7 @@
                     style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/email_icon"
+                    android:drawableLeft="@drawable/mobile_icon"
                     android:drawablePadding="@dimen/_5dp"
                     android:hint="Phone No"
                     android:inputType="number"
@@ -65,6 +66,7 @@
                     android:textColor="@color/white"
                     android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_email"
                 android:layout_width="match_parent"
@@ -88,11 +90,6 @@
             </android.support.design.widget.TextInputLayout>
 
 
-
-
-
-
-
             <customsTextViews.CustomTextViewOpenSanRegular
                 android:id="@+id/btn_signup"
                 style="@style/textView_dark_grey_normal_medium"
@@ -102,7 +99,7 @@
                 android:layout_marginTop="@dimen/_20dp"
                 android:background="@drawable/login_button_selector_new"
                 android:gravity="center"
-                android:text="Sign Up"
+                android:text="Verify"
                 android:textColor="@color/health_login_text" />
 
 

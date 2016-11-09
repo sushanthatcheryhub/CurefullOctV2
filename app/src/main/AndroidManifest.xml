@@ -73,10 +73,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDq7kHf0j33Z7aeCXCA6f7bEYOhz-3mdgI" />
 
-        <!--<service android:name="ActivityRecognitionService"></service>-->
         <service
             android:name=".FitGoogleService"
-            android:enabled="true"
             android:exported="false"></service>
     </application>
 

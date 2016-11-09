@@ -3,6 +3,13 @@ package adpter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,9 +39,12 @@ import java.util.Map;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import fragment.healthapp.FragmentHealthApp;
+import fragment.healthapp.FragmentHealthNote;
 import item.property.HealthNoteItems;
 import sticky.header.StickyListHeadersAdapter;
 import utils.AppPreference;
+import utils.CustomTypefaceSpan;
 import utils.MyConstants;
 
 public class Health_Note_ListAdpter extends BaseAdapter implements
@@ -42,11 +52,13 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
     Context applicationContext;
     List<HealthNoteItems> healthNoteItemses;
     private RequestQueue requestQueue;
+    FragmentHealthNote fragmentHealthNotes;
 
     public Health_Note_ListAdpter(Context applicationContexts,
-                                  List<HealthNoteItems> patientList) {
+                                  List<HealthNoteItems> patientList, FragmentHealthNote fragmentHealthNote) {
         this.healthNoteItemses = patientList;
         this.applicationContext = applicationContexts;
+        this.fragmentHealthNotes = fragmentHealthNote;
     }
 
     @Override
@@ -95,8 +107,8 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                     .findViewById(R.id.txt_date_time);
             holder.txt_title = (TextView) convertView
                     .findViewById(R.id.txt_title);
-            holder.txt_deatils = (TextView) convertView
-                    .findViewById(R.id.txt_deatils);
+//            holder.txt_deatils = (TextView) convertView
+//                    .findViewById(R.id.txt_deatils);
             holder.img_delete = (LinearLayout) convertView.findViewById(R.id.img_delete);
             convertView.setTag(holder);
 
@@ -118,14 +130,41 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        holder.txt_title.setText("" + healthNoteItemses.get(position).getNote_heading());
-        holder.txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
-        holder.txt_deatils.setSelected(true);
+//        holder.txt_title.setText("" + healthNoteItemses.get(position).getNote_heading());
+//        holder.txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
+//        holder.txt_deatils.setSelected(true);
+
+        String name = healthNoteItemses.get(position).getNote_heading();
+        String comma = " : ";
+        String gameName = healthNoteItemses.get(position).getDeatils();
+
+        String meassgeTxt = name + comma + gameName;
+
+        Spannable sb = new SpannableString(meassgeTxt);
+        Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                meassgeTxt.indexOf(comma) + comma.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
+                meassgeTxt.indexOf(gameName) + gameName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.txt_title.setText(sb);
         Log.e("date old ", ":- " + healthNoteItemses.get(position).getNote_year());
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAllHealthList(healthNoteItemses.get(position).getNote_id(),position);
+                getAllHealthList(healthNoteItemses.get(position).getNote_id(), position);
             }
         });
         return convertView;
@@ -160,7 +199,6 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
     public static class ViewHolder {
         public TextView txt_date_time;
         public TextView txt_title;
-        public TextView txt_deatils;
         public LinearLayout img_delete;
 
     }
@@ -186,7 +224,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
     private void getAllHealthList(final int id, final int postis) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.POST, MyConstants.WebUrls.HEALTH_LIST_DELETE + id,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.HEALTH_LIST_DELETE + id,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -204,6 +242,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                         if (responseStatus == 100) {
                             healthNoteItemses.remove(postis);
                             notifyDataSetChanged();
+                            fragmentHealthNotes.checkSize();
                         }
                     }
                 },

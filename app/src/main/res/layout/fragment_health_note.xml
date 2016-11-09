@@ -471,6 +471,23 @@
             android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
 
+            <RelativeLayout
+                android:id="@+id/realtive_no_health"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/_5dp"
+                android:visibility="gone">
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="No Health Note"
+                    android:textColor="@color/white" />
+
+            </RelativeLayout>
 
             <sticky.header.ExpandableStickyListHeadersListView
                 android:id="@+id/list"
@@ -482,7 +499,8 @@
                 android:overScrollMode="never"
                 android:padding="16dp"
                 android:scrollbarStyle="outsideOverlay"
-                android:visibility="visible" />
+                android:visibility="gone" />
+
 
         </LinearLayout>
 
@@ -550,7 +568,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/step_count_small_icon" />
+                    android:src="@drawable/step_count_small_icon_1" />
             </LinearLayout>
 
             <View

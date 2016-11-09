@@ -1,6 +1,7 @@
 package curefull.healthapp;
 
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -27,7 +28,11 @@ import com.google.android.gms.fitness.request.DataSourcesRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.gms.fitness.result.DataSourcesResult;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -76,10 +81,49 @@ public class FitGoogleService extends IntentService {
 
         if (mClient.isConnected()) {
             Log.e(TAG, "done done");
-//            findFitnessDataSources();
+            findFitnessDataSources();
         } else {
             //Not connected
             Log.e(TAG, "Fit wasn't able to connect, so the request failed.");
+        }
+    }
+
+    private void handleDetectedActivities(List<DetectedActivity> probableActivities) {
+        for (DetectedActivity activity : probableActivities) {
+            switch (activity.getType()) {
+                case DetectedActivity.IN_VEHICLE: {
+                    Log.e("ActivityRecogition", "In Vehicle: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.ON_BICYCLE: {
+                    Log.e("ActivityRecogition", "On Bicycle: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.ON_FOOT: {
+                    Log.e("ActivityRecogition", "On Foot: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.RUNNING: {
+                    Log.e("ActivityRecogition", "Running: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.STILL: {
+                    Log.e("ActivityRecogition", "Still: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.TILTING: {
+                    Log.e("ActivityRecogition", "Tilting: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.WALKING: {
+                    Log.e("ActivityRecogition", "Walking: " + activity.getConfidence());
+                    break;
+                }
+                case DetectedActivity.UNKNOWN: {
+                    Log.e("ActivityRecogition", "Unknown: " + activity.getConfidence());
+                    break;
+                }
+            }
         }
     }
 
@@ -88,7 +132,9 @@ public class FitGoogleService extends IntentService {
         Log.e(TAG, "Done");
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Fitness.SENSORS_API)
+                .addApi(ActivityRecognition.API)
                 .addScope(new Scope(Scopes.FITNESS_BODY_READ))
+                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
                 .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
                 .addConnectionCallbacks(
                         new GoogleApiClient.ConnectionCallbacks() {
@@ -97,6 +143,7 @@ public class FitGoogleService extends IntentService {
                                 Log.e(TAG, "Connected!!!");
                                 mTryingToConnect = false;
                                 findFitnessDataSources();
+
                             }
 
                             @Override
@@ -169,7 +216,8 @@ public class FitGoogleService extends IntentService {
                         DataType.TYPE_STEP_COUNT_CUMULATIVE,
                         DataType.TYPE_DISTANCE_CUMULATIVE,
                         DataType.TYPE_CYCLING_WHEEL_RPM,
-                        DataType.TYPE_SPEED, DataType.TYPE_LOCATION_SAMPLE, DataType.TYPE_CALORIES_EXPENDED, DataType.AGGREGATE_STEP_COUNT_DELTA, DataType.TYPE_CALORIES_CONSUMED, DataType.TYPE_LOCATION_TRACK
+                        DataType.AGGREGATE_STEP_COUNT_DELTA,
+                        DataType.TYPE_DISTANCE_DELTA
                 )
                 .setDataSourceTypes(DataSource.TYPE_RAW, DataSource.TYPE_DERIVED)
                 .build())

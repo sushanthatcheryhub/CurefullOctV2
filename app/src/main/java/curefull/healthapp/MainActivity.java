@@ -1,6 +1,9 @@
 package curefull.healthapp;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.RemoteInput;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,36 +13,26 @@ import android.content.pm.Signature;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.awareness.Awareness;
-import com.google.android.gms.awareness.snapshot.WeatherResult;
-import com.google.android.gms.awareness.state.Weather;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,12 +42,13 @@ import java.util.List;
 import java.util.Map;
 
 import fragment.healthapp.FragmentHomeScreenAll;
+import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import utils.AppPreference;
 import utils.NotificationUtils;
 
 public class MainActivity extends BaseMainActivity {
-    private Toolbar toolbar;
+    //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
@@ -63,11 +57,13 @@ public class MainActivity extends BaseMainActivity {
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private GoogleApiClient mClient = null;
-    private RelativeLayout relative_logo;
+    private RelativeLayout relative_logo, relative_action_bar;
     private ActionBarDrawerToggle toggle;
     private ProgressBar progress_bar;
     private boolean mToolBarNavigationListenerIsRegistered = false;
-    private TextView txt_hospital_name_drawee_layout, txt_doctor_name_edu;
+    private TextView txt_doctor_name_edu;
+    private ImageView img_drawer;
+    private LinearLayout liner_logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +71,22 @@ public class MainActivity extends BaseMainActivity {
         CureFull.getInstanse().initActivity(this);
 
         setContentView(R.layout.activity_main);
+        liner_logout = (LinearLayout) findViewById(R.id.liner_logout);
+        img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        relative_action_bar = (RelativeLayout) findViewById(R.id.relative_action_bar);
         relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         View header = navigationView.getHeaderView(0);
-        txt_hospital_name_drawee_layout = (TextView) header.findViewById(R.id.txt_hospital_name_drawee_layout);
         txt_doctor_name_edu = (TextView) header.findViewById(R.id.txt_doctor_name_edu);
 
         getKeyHash();
@@ -103,7 +101,6 @@ public class MainActivity extends BaseMainActivity {
         if (getIntent().getAction() != null) {
             Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
         } else {
-
             if (AppPreference.getInstance().isLogin()) {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
@@ -111,10 +108,33 @@ public class MainActivity extends BaseMainActivity {
             } else {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentHomeScreenAll(), false);
+            }
+        }
+
+        img_drawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (drawer.isDrawerOpen(Gravity.LEFT)) {
+                    drawer.closeDrawer(Gravity.LEFT);
+                } else {
+                    drawer.openDrawer(Gravity.LEFT);
+                }
+
+            }
+        });
+
+        liner_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppPreference.getInstance().setIsLogin(false);
+                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
             }
+        });
 
-        }
 //        Toast.makeText(this, getMessageText(getIntent()), Toast.LENGTH_SHORT).show();
 
 //        if (checkAndRequestPermissions()) {
@@ -150,7 +170,6 @@ public class MainActivity extends BaseMainActivity {
 
     public void setActionDrawerHeading(String name, String edu) {
         txt_doctor_name_edu.setText("" + name);
-        txt_hospital_name_drawee_layout.setText("" + edu);
     }
 
 
@@ -172,14 +191,14 @@ public class MainActivity extends BaseMainActivity {
 
 
     public void showActionBarToggle(boolean ischeck) {
-        if (ischeck == true) {
-
-            getSupportActionBar().show();
-//            toolbar.setVisibility(View.VISIBLE);
-        } else {
-            getSupportActionBar().hide();
-//            toolbar.setVisibility(View.GONE);
-        }
+//        if (ischeck == true) {
+//
+//            getSupportActionBar().show();
+////            toolbar.setVisibility(View.VISIBLE);
+//        } else {
+//            getSupportActionBar().hide();
+////            toolbar.setVisibility(View.GONE);
+//        }
 
 
     }
@@ -188,35 +207,35 @@ public class MainActivity extends BaseMainActivity {
         // To keep states of ActionBar and ActionBarDrawerToggle synchronized,
         // when you enable on one, you disable on the other.
         // And as you may notice, the order for this operation is disable first, then enable - VERY VERY IMPORTANT.
-        if (show) {
-            // Remove hamburger
-            toggle.setDrawerIndicatorEnabled(false);
-            // Show back button
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            // when DrawerToggle is disabled i.e. setDrawerIndicatorEnabled(false), navigation icon
-            // clicks are disabled i.e. the UP button will not work.
-            // We need to add a listener, as in below, so DrawerToggle will forward
-            // click events to this listener.
-            if (!mToolBarNavigationListenerIsRegistered) {
-                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onBackPressed();
-                    }
-                });
-
-                mToolBarNavigationListenerIsRegistered = true;
-            }
-
-        } else {
-            // Remove back button
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            // Show hamburger
-            toggle.setDrawerIndicatorEnabled(true);
-            // Remove the/any drawer toggle listener
-            toggle.setToolbarNavigationClickListener(null);
-            mToolBarNavigationListenerIsRegistered = false;
-        }
+//        if (show) {
+//            // Remove hamburger
+//            toggle.setDrawerIndicatorEnabled(false);
+//            // Show back button
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            // when DrawerToggle is disabled i.e. setDrawerIndicatorEnabled(false), navigation icon
+//            // clicks are disabled i.e. the UP button will not work.
+//            // We need to add a listener, as in below, so DrawerToggle will forward
+//            // click events to this listener.
+//            if (!mToolBarNavigationListenerIsRegistered) {
+//                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        onBackPressed();
+//                    }
+//                });
+//
+//                mToolBarNavigationListenerIsRegistered = true;
+//            }
+//
+//        } else {
+//            // Remove back button
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//            // Show hamburger
+//            toggle.setDrawerIndicatorEnabled(true);
+//            // Remove the/any drawer toggle listener
+//            toggle.setToolbarNavigationClickListener(null);
+//            mToolBarNavigationListenerIsRegistered = false;
+//        }
 
         // So, one may think "Hmm why not simplify to:
         // .....
@@ -235,6 +254,16 @@ public class MainActivity extends BaseMainActivity {
 
     }
 
+
+    public void showRelativeActionBar(boolean b) {
+        if (b) {
+            relative_action_bar.setVisibility(View.VISIBLE);
+        } else {
+            relative_action_bar.setVisibility(View.GONE);
+        }
+
+    }
+
     public void showProgressBar(boolean b) {
         if (b) {
             progress_bar.setVisibility(View.VISIBLE);
@@ -247,11 +276,11 @@ public class MainActivity extends BaseMainActivity {
 
     public void changeColorActionBar(String color) {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor(color));
-        getSupportActionBar().setBackgroundDrawable(colorDrawable);
+//        getSupportActionBar().setBackgroundDrawable(colorDrawable);
     }
 
     public void changeTitle(String tile) {
-        getSupportActionBar().setTitle("CureFull");
+//        getSupportActionBar().setTitle("CureFull");
     }
 
     public void getKeyHash() {
@@ -447,6 +476,13 @@ public class MainActivity extends BaseMainActivity {
 
         }
 
+    }
+
+    public void iconAnim(View icon) {
+        Animator iconAnim = ObjectAnimator.ofPropertyValuesHolder(icon,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.5f, 1f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.5f, 1f));
+        iconAnim.start();
     }
 
 

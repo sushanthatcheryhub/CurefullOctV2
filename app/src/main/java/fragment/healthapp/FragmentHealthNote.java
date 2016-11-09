@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -76,6 +77,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private ExpandableStickyListHeadersListView mListView;
     WeakHashMap<View, Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
     private Health_Note_ListAdpter adapterRecentNew;
+    private RelativeLayout realtive_no_health;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +87,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        realtive_no_health = (RelativeLayout) rootView.findViewById(R.id.realtive_no_health);
         txt_click_here_add = (TextView) rootView.findViewById(R.id.txt_click_here_add);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);
         txt_to_time = (TextView) rootView.findViewById(R.id.txt_to_time);
@@ -126,10 +129,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
             @Override
             public void onPositiveButtonClick(Date date) {
-
                 Log.e("date ", ":- " + date.toString());
-
-
                 String dateTime = date.toString();
                 String[] dateParts = dateTime.split(" ");
                 String days = dateParts[0];
@@ -142,7 +142,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 String[] dateParts1 = times.split(":");
                 String hrs = dateParts1[0];
                 String mins = dateParts1[1];
-
                 firstDate = "" + year + "-" + MyConstants.getMonthName(month) + "-" + dates;
                 firstTime = hrs + ":" + mins;
                 txt_time.setText("" + updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
@@ -220,7 +219,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 if (!validateDeatils()) {
                     return;
                 }
-
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 jsonHealthNoteCheck();
 
                 break;
@@ -416,6 +415,9 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                         if (responseStatus == 100) {
                             healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
                             showAdpter();
+                        } else {
+                            realtive_no_health.setVisibility(View.VISIBLE);
+                            mListView.setVisibility(View.GONE);
                         }
                     }
                 },
@@ -458,13 +460,26 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
     public void showAdpter() {
         if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
+            realtive_no_health.setVisibility(View.GONE);
+            mListView.setVisibility(View.VISIBLE);
             adapterRecentNew = new Health_Note_ListAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                    healthNoteItemses);
+                    healthNoteItemses, FragmentHealthNote.this);
             mListView.setAdapter(adapterRecentNew);
         } else {
+            realtive_no_health.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.GONE);
         }
 
     }
+
+    public void checkSize() {
+
+        if (healthNoteItemses.size() == 0) {
+            realtive_no_health.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.GONE);
+        }
+    }
+
 
     //animation executor
     class AnimationExecutor implements ExpandableStickyListHeadersListView.IAnimationExecutor {

@@ -87,4 +87,5 @@
 
     <!-- Image description -->
     <string name="img_datetime">Image datetime</string>
+    <string name="txt_height">Ft &amp; In</string>
 </resources>

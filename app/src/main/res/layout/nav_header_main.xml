@@ -16,7 +16,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_95dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="#CC2C34"
             android:gravity="bottom"
@@ -26,39 +26,30 @@
             <ImageView
                 android:id="@+id/placeholder"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_45dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"
+                android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/profile_new" />
 
             <customsTextViews.CustomTextViewOpenSanRegular
                 android:id="@+id/txt_doctor_name_edu"
-                style="@style/textView_dark_grey_normal_micro"
+                style="@style/textView_dark_grey_normal_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/placeholder"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="@dimen/_7dp"
                 android:layout_marginTop="@dimen/_5dp"
                 android:gravity="center_horizontal"
                 android:paddingLeft="@dimen/_5dp"
                 android:paddingRight="@dimen/_5dp"
-                android:text="Amit kumar(Neurosurgeon)"
-                android:textColor="@color/white"
+                android:text="Amit kumar"
+                android:textColor="@color/health_yellow"
 
                 />
 
-            <customsTextViews.CustomTextViewOpenSanRegular
-                android:id="@+id/txt_hospital_name_drawee_layout"
-                style="@style/textView_dark_grey_normal_micro_mini"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txt_doctor_name_edu"
-                android:layout_marginLeft="@dimen/_7dp"
-                android:gravity="center_horizontal"
-                android:paddingLeft="@dimen/_5dp"
-                android:paddingRight="@dimen/_5dp"
-                android:text="Fortis Hospital,New Delhi"
-                android:textColor="@color/white" />
 
         </RelativeLayout>
 

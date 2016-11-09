@@ -11,11 +11,11 @@
         android:layout_marginTop="@dimen/_5dp"
         android:orientation="horizontal">
 
-        <View
-            android:layout_width="@dimen/_30dp"
-            android:layout_height="1dp"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@color/health_yellow" />
+            android:background="@drawable/line_left" />
 
         <customsTextViews.CustomTextViewOpenSanRegular
             android:id="@+id/recent_date"
@@ -30,10 +30,10 @@
             android:text="Year - 2016 "
             android:textColor="@color/health_yellow" />
 
-        <View
-            android:layout_width="@dimen/_30dp"
-            android:layout_height="1dp"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@color/health_yellow" />
+            android:background="@drawable/line_right" />
     </LinearLayout>
 </RelativeLayout>

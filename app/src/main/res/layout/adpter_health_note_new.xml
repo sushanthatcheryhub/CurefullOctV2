@@ -22,7 +22,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1.1"
+                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
@@ -49,7 +49,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewOpenSanBold
+                <customsTextViews.CustomTextViewMontserratHairLine
                     android:id="@+id/txt_title"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="wrap_content"
@@ -58,30 +58,30 @@
                     android:gravity="left"
                     android:text="Health App"
                     android:textColor="@color/white"
-                    android:textStyle="bold" />
+                     />
 
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text=" : "
-                    android:textColor="@color/yellow"
-                    android:textStyle="bold" />
+                <!--<customsTextViews.CustomTextViewOpenSanBold-->
+                    <!--style="@style/textView_dark_grey_normal_micro"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center_horizontal"-->
+                    <!--android:text=" : "-->
+                    <!--android:textColor="@color/yellow"-->
+                    <!--android:textStyle="bold" />-->
 
-                <customsTextViews.CustomTextViewOpenSanBold
-                    android:id="@+id/txt_deatils"
-                    style="@style/textView_dark_grey_normal_micro_mini"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_3dp"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:text="Health App"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
+                <!--<customsTextViews.CustomTextViewOpenSanBold-->
+                    <!--android:id="@+id/txt_deatils"-->
+                    <!--style="@style/textView_dark_grey_normal_micro_mini"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginLeft="@dimen/_3dp"-->
+                    <!--android:ellipsize="marquee"-->
+                    <!--android:gravity="center_horizontal"-->
+                    <!--android:marqueeRepeatLimit="marquee_forever"-->
+                    <!--android:singleLine="true"-->
+                    <!--android:text="Health App"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--android:textStyle="bold" />-->
 
             </LinearLayout>
 
@@ -90,14 +90,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight=".5"
+                android:layout_weight=".7"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="@dimen/_10dp">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="@dimen/_5dp"

@@ -5,7 +5,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -29,6 +28,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -105,8 +105,6 @@ import utils.MyConstants;
 import utils.SeekArc;
 import utils.SwitchDateTimeDialogFragment;
 
-import static java.text.DateFormat.getDateInstance;
-
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -152,6 +150,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
     private String firstDate = "", firstTime = "", toFirstTime = "";
     SharedPreferences preferences;
+    private ImageView img_pre;
+
     @Override
     public boolean onBackPressed() {
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
@@ -167,6 +167,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
+        img_pre = (ImageView) rootView.findViewById(R.id.img_pre);
         recyclerView_notes = (RecyclerView) rootView.findViewById(R.id.recyclerView_notes);
         txt_no_list_health_note = (TextView) rootView.findViewById(R.id.txt_no_list_health_note);
         txt_click_here_add = (TextView) rootView.findViewById(R.id.txt_click_here_add);
@@ -327,7 +328,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             txt_no_list_health_note.setVisibility(View.VISIBLE);
             recyclerView_notes.setVisibility(View.GONE);
             animateFAB();
-            launchTwitter(rootView);
+            txt_no_list_health_note.post(new Runnable() {
+                @Override
+                public void run() {
+                    launchTwitter(rootView);
+                }
+            });
+
         }
 
     }
@@ -983,34 +990,43 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         switch (view.getId()) {
             case R.id.realtive_click:
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .add(new FragmentHealthAppNew(), true);
+                        .replace(new FragmentHealthAppNew(), true);
                 break;
             case R.id.liner_click:
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .add(new FragmentHealthAppNew(), true);
+                        .replace(new FragmentHealthAppNew(), true);
                 break;
             case R.id.btn_set_goal:
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .add(new FragmentEditGoal(), true);
+                        .replace(new FragmentEditGoal(), true);
                 break;
             case R.id.linear_lab_report_click:
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .add(new FragmentLabTestReport(), true);
+                        .replace(new FragmentLabTestReport(), true);
                 break;
             case R.id.linear_prescription_click:
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_pre);
+//                BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
+//                TransitionDrawable td = new TransitionDrawable(new Drawable[]{new ColorDrawable(0xDEDEDE), bd});
+//                image1.setImageDrawable(td);
+//                td.startTransition(1000);
 //
-//                CureFull.getInstanse().getFlowInstanseAll()
-//                        .add(new FragmentPrescriptionCheck(), true);
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .add(new FragmentHealthNote(), true);
+                        .replace(new FragmentPrescriptionCheck(), true);
+//                CureFull.getInstanse().getFlowInstanseAll()
+//                        .replace(new FragmentHealthNote(), true);
 
                 break;
             case R.id.img_fab:
                 if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
                     animateFAB();
-                    launchTwitter(view);
+                    txt_no_list_health_note.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
                 }
-
                 break;
             case R.id.txt_date_time:
                 dateTimeFragment.show(getActivity().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
@@ -1033,7 +1049,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 if (!validateDeatils()) {
                     return;
                 }
-
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 jsonHealthNoteCheck();
 
                 break;
@@ -1123,7 +1139,12 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                             getAllHealthList();
                             isFabOpen = true;
                             animateFAB();
-                            launchTwitter(rootView);
+                            txt_no_list_health_note.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitter(rootView);
+                                }
+                            });
                             txt_time.setText("");
                             txt_to_time.setText("");
                             txt_date_time.setText("");
@@ -1212,12 +1233,27 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                         if (responseStatus == 100) {
                             healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
                             showAdpter();
+                        } else {
+                            animateFAB();
+                            txt_no_list_health_note.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitter(rootView);
+                                }
+                            });
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        animateFAB();
+                        txt_no_list_health_note.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchTwitter(rootView);
+                            }
+                        },500);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         error.printStackTrace();
                     }

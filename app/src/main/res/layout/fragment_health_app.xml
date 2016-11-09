@@ -155,7 +155,7 @@
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:layout_weight=".5"
                             android:gravity="center_horizontal"
@@ -203,14 +203,15 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/_2dp"
                         android:gravity="center_horizontal"
                         android:orientation="horizontal">
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:layout_weight=".5"
                             android:gravity="center_horizontal"
@@ -225,7 +226,7 @@
                             <View
                                 android:layout_width="@dimen/_4dp"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="@dimen/_7dp"
+                                android:layout_marginLeft="@dimen/_5dp"
                                 android:background="@color/health_app_text" />
                         </LinearLayout>
 

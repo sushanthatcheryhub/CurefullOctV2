@@ -22,7 +22,7 @@ public class ActivityRecognitionService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e("hello","hello");
+        Log.e("hello", "hello");
     }
 
     @Override

@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:clickable="true"
     android:background="@drawable/login_gradient"
+    android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
@@ -24,10 +24,12 @@
             android:orientation="vertical">
 
 
-            <ListView
-                android:id="@+id/list_view"
+            <ImageView
+                android:id="@+id/img_vew"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></ListView>
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/upload_icon" />
 
         </LinearLayout>
 
@@ -95,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/step_count_small_icon" />
+                    android:src="@drawable/step_count_small_icon_1" />
             </LinearLayout>
 
             <View
@@ -144,8 +146,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:layout_marginTop="@dimen/_5dp">
+                android:layout_marginTop="@dimen/_5dp"
+                android:gravity="center_vertical">
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_health_text"
@@ -170,36 +172,37 @@
 
 
                 <LinearLayout
+                    android:id="@+id/liner_upload_new"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_10dp"
                     android:orientation="horizontal">
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5dp"
-                        android:elevation="@dimen/_10dp"
                         android:layout_gravity="center_vertical"
-                        android:gravity="center"
-                        android:padding="@dimen/_2dp"
+                        android:gravity="right"
+                        android:singleLine="true"
                         android:text="Upload new test report"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/health_yellow" />
+
 
                     <ImageView
+                        android:id="@+id/img_upload"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginRight="@dimen/_5dp"
+                        android:padding="@dimen/_5dp"
                         android:src="@drawable/upload_icon" />
                 </LinearLayout>
             </RelativeLayout>
 
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_15dp"
                 android:layout_marginTop="@dimen/_15dp"
@@ -208,143 +211,293 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/search_bar_add"
-                    android:orientation="horizontal">
+                    android:layout_gravity="bottom"
 
-
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        android:id="@+id/txt_sort_date"
-                        style="@style/textView_dark_grey_normal_micro_mini"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:singleLine="true"
-                        android:text="Doctor Name"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#ffffff" />
-
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_5dp"
-                        android:background="@color/health_yellow" />
+                    android:gravity="bottom"
+                    android:orientation="vertical">
 
                     <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/filter_icon" />
+
+                    <View
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:src="@drawable/ic_add_white_18dp" />
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="@color/health_yellow" />
                 </LinearLayout>
+
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/health_yellow" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/search_bar_add"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        style="@style/textView_dark_grey_normal_micro_mini"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:singleLine="true"
-                        android:text="Disease Name"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#ffffff" />
+                        android:layout_marginBottom="@dimen/_5dp"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="@dimen/_90dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/search_bar_add"
+                            android:orientation="horizontal">
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_sort_date"
+                                style="@style/textView_dark_grey_normal_micro_mini"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:singleLine="true"
+                                android:text="Doctor Name"
+                                android:textColor="#ffffff"
+                                android:textColorHint="#ffffff" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="@dimen/_5dp"
+                                    android:background="@color/health_yellow" />
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:src="@drawable/ic_add_white_18dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:background="@drawable/search_bar_add"
+                            android:orientation="horizontal">
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro_mini"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:singleLine="true"
+                                android:text="Test Name"
+                                android:textColor="#ffffff"
+                                android:textColorHint="#ffffff" />
+
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="@dimen/_5dp"
+                                android:background="@color/health_yellow" />
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:src="@drawable/ic_add_white_18dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_10dp"
+                            android:background="@drawable/search_bar_add"
+                            android:orientation="horizontal">
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro_mini"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:singleLine="true"
+                                android:text="Date"
+                                android:textColor="#ffffff"
+                                android:textColorHint="#ffffff" />
+
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="@dimen/_5dp"
+                                android:background="@color/health_yellow" />
+
+                            <ImageView
+                                android:id="@+id/img_select_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:src="@drawable/ic_add_white_18dp" />
+                        </LinearLayout>
+                    </LinearLayout>
 
 
                     <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_5dp"
-                        android:background="@color/health_yellow" />
-
-                    <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:src="@drawable/ic_add_white_18dp" />
+                        android:layout_height="1dp"
+                        android:background="@color/health_yellow" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/search_bar_add"
-                    android:orientation="horizontal">
-
-
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        style="@style/textView_dark_grey_normal_micro_mini"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:singleLine="true"
-                        android:text="Uploaded By"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#ffffff" />
-
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_5dp"
-                        android:background="@color/health_yellow" />
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:src="@drawable/ic_add_white_18dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/search_bar_add"
-                    android:orientation="horizontal">
-
-
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        style="@style/textView_dark_grey_normal_micro_mini"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:singleLine="true"
-                        android:text="Date"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#ffffff" />
-
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_5dp"
-                        android:background="@color/health_yellow" />
-
-                    <ImageView
-                        android:id="@+id/img_select_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:padding="@dimen/_4dp"
-                        android:src="@drawable/ic_add_white_18dp" />
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:background="#CCCF3734"
+                    android:gravity="right"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/layoutButtons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_5dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:id="@+id/liner_animation_upload"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:orientation="horizontal">
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="@dimen/_190dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="right"
+                                android:singleLine="true"
+                                android:text="Upload new test report"
+                                android:textColor="@color/health_yellow" />
+
+
+                            <ImageView
+                                android:id="@+id/img_upload_animation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/_5dp"
+                                android:src="@drawable/upload_icon" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/liner_gallery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:orientation="horizontal">
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="right"
+                                android:singleLine="true"
+                                android:text="Browse"
+                                android:textColor="@color/health_yellow" />
+
+
+                            <ImageView
+                                android:id="@+id/img_gallery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/_5dp"
+                                android:src="@drawable/gallery_yellow" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/liner_camera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:orientation="horizontal">
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="right"
+                                android:singleLine="true"
+                                android:text="Take a picture"
+                                android:textColor="@color/health_yellow" />
+
+
+                            <ImageView
+                                android:id="@+id/img_camera"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/_5dp"
+                                android:src="@drawable/camera_yellow" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/realtive_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                </RelativeLayout>
+
+            </FrameLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 
