@@ -114,6 +114,56 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
+
+    public static JSONObject toSetGoals(String targetSteps, String targetCaloriesToBurn, String targetWaterInTake) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("targetSteps", targetSteps);
+            jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn);
+            jsonParent.put("targetWaterInTake", targetWaterInTake);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject toSetGoalsDetails(String height, String weight, String dateOfBirth, String gender) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("height", height);
+            jsonParent.put("weight", weight);
+            jsonParent.put("dateOfBirth", dateOfBirth);
+            jsonParent.put("gender", gender);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toSaveHealthAppDetails(String steps, String running, String cycling, String waterIntake, String date, String time) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("steps", steps);
+            jsonParent.put("running", running);
+            jsonParent.put("cycling", cycling);
+            jsonParent.put("waterIntake", waterIntake);
+            jsonParent.put("date", date);
+            jsonParent.put("time", time);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
     public static JSONObject toForgotPassword(String resendPasswordId, String resendPasswordType) {
         JSONObject jsonParent = new JSONObject();
         try {

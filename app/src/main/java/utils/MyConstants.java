@@ -19,6 +19,11 @@ public class MyConstants {
         String OTP_LAST = "&route=2";
         String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes";
         String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
+        String SET_GOALS=URL+"endUser/healthapp/setgoal";
+        String SET_GOALS_DEATILS=URL+"endUser/healthapp/setHealthappProfileDetails";
+        String GET_SET_GOALS_DEATILS=URL+"endUser/healthapp/getgoal";
+        String SAVE_HELTHAPP_DETALS=URL+"endUser/healthapp/savehealthappDailyDetails";
+
 
         String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_INVESTIGATION_BY_DOCTOR = URL + "prescription/getDoctorDiagonsisListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
