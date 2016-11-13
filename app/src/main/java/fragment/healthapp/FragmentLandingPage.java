@@ -998,10 +998,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                         .replace(new FragmentHealthAppNew(), true);
                 break;
             case R.id.btn_set_goal:
-                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(getActivity());
-                dialogFullViewPrescription.show();
-//                CureFull.getInstanse().getFlowInstanseAll()
-//                        .replace(new FragmentEditGoal(), true);
+//                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(getActivity());
+//                dialogFullViewPrescription.show();
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentEditGoal(), true);
                 break;
             case R.id.linear_lab_report_click:
                 CureFull.getInstanse().getFlowInstanseAll()
