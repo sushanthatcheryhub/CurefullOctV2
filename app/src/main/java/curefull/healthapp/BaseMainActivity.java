@@ -39,7 +39,6 @@ public class BaseMainActivity extends AppCompatActivity
 
         if (id == R.id.nav_profile) {
             if (!item.isChecked()) {
-                item.setIcon(R.color.accent);
                 CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentProfile(), false);

@@ -113,7 +113,10 @@
     <color name="health_pink">#BE28CF</color>
     <color name="health_green">#24BC71</color>
     <color name="health_brown">#402021</color>
-    <color name="health_yellow">#EFAF4E</color>
+    <color name="health_yellow">#fdb832</color>
+    <color name="health_yellow_bottom">#fecc1c</color>
+    <color name="health_yellow_drawer">#fecc1d</color>
+    <color name="health_red_drawer">#cd2c35</color>
     <color name="progress_gray">#FFD8D8D8</color>
     <color name="progress_gray_dark">#FF383838</color>
     <color name="default_blue_light">#ff33b5e5</color>
@@ -122,6 +125,8 @@
     <color name="health_app_text">#036F79</color>
     <color name="health_app_progress">#159640</color>
     <color name="health_edit_line">#e49374</color>
+    <color name="health_hint_color">#b1b1b1</color>
+
     <color name="dateTimeColorAccent">#494949</color>
     <color name="scrim">#99323232</color>
 </resources>

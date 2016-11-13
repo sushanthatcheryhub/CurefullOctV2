@@ -199,7 +199,7 @@
     <style name="TextLabel" parent="Widget.Design.TextInputLayout">
 
         <!-- Hint color and label color in FALSE state -->
-        <item name="android:textColorHint">@color/dark_gray</item>
+        <item name="android:textColorHint">@color/health_hint_color</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/white</item>
         <item name="colorControlNormal">@color/health_edit_line</item>

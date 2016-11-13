@@ -18,7 +18,6 @@
             android:id="@+id/liner_profile_pic"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_150dp"
-            android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
 
             <ImageView
@@ -34,7 +33,8 @@
             android:id="@+id/liner_upload_new"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_5dp"
+            android:layout_marginLeft="@dimen/_15dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -263,7 +263,7 @@
                         android:id="@+id/layoutButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginLeft="@dimen/_15dp"
                         android:layout_marginTop="@dimen/_5dp"
                         android:orientation="vertical"
                         android:visibility="gone">

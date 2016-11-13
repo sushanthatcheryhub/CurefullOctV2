@@ -62,7 +62,7 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:text="Health Note"
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_yellow_bottom"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -76,7 +76,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_yellow_bottom" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -93,7 +93,7 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:text="Health App"
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_yellow_bottom"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -107,7 +107,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_yellow_bottom" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -124,7 +124,7 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:text="Lab Report"
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_yellow_bottom"
                     android:textStyle="bold" />
 
                 <ImageView

@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:layout_marginLeft="@dimen/_5dp"
-            android:background="@color/health_yellow"
+            android:background="@color/health_yellow_drawer"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header_main"
             app:itemBackground="@drawable/nav_item_background"

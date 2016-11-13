@@ -19,17 +19,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="#CC2C34"
-            android:gravity="bottom"
-            android:paddingBottom="@dimen/_10dp">
+            android:gravity="bottom">
 
 
             <ImageView
                 android:id="@+id/placeholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5dp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_5dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/profile_new" />
 
@@ -40,11 +39,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/placeholder"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="@dimen/_7dp"
-                android:layout_marginTop="@dimen/_5dp"
                 android:gravity="center_horizontal"
-                android:paddingLeft="@dimen/_5dp"
-                android:paddingRight="@dimen/_5dp"
+                android:padding="@dimen/_5dp"
                 android:text="Amit kumar"
                 android:textColor="@color/health_yellow"
 

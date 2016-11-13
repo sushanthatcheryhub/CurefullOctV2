@@ -69,7 +69,6 @@ public class MainActivity extends BaseMainActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
-
         setContentView(R.layout.activity_main);
         liner_logout = (LinearLayout) findViewById(R.id.liner_logout);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
