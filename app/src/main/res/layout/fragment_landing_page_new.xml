@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="#E9E9E9"
+    android:background="@color/health_yellow"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
@@ -32,7 +32,7 @@
             android:id="@+id/realtive_click"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E9E9E9"
+            android:background="@color/health_yellow"
             android:orientation="horizontal">
 
             <customsTextViews.CustomTextViewOpenSanRegular
@@ -46,7 +46,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_2dp"
                 android:text="Today's status"
-                android:textColor="@color/health_set_goal" />
+                android:textColor="@color/health_red_drawer" />
 
             <customsTextViews.CustomTextViewOpenSanRegular
                 android:id="@+id/btn_set_goal"
@@ -64,7 +64,7 @@
                 android:paddingRight="@dimen/_5dp"
                 android:paddingTop="@dimen/_2dp"
                 android:text="Set goals"
-                android:textColor="@color/white" />
+                android:textColor="@color/health_red_drawer" />
 
         </RelativeLayout>
 
@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_5dp"
-            android:background="#E9E9E9"
+            android:background="@color/health_yellow"
             android:orientation="horizontal">
 
 
@@ -108,7 +108,7 @@
                             app:ticker_animationDuration="100" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
-                            style="@style/textView_dark_grey_normal_micro"
+                            style="@style/textView_dark_grey_normal_micro_mini"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/ticker1"
@@ -129,13 +129,13 @@
                         android:layout_alignParentTop="true"
                         android:elevation="@dimen/_10dp"
                         android:padding="@dimen/_5dp"
-                        app:arcColor="#ADD4BB"
+                        app:arcColor="@color/health_edit_line"
                         app:arcWidth="@dimen/_6dp"
                         app:clockwise="true"
                         app:enabled="false"
                         app:max="100"
-                        app:progress="20"
-                        app:progressColor="@color/health_app_progress"
+                        app:progress="0"
+                        app:progressColor="@color/health_red_drawer"
                         app:progressWidth="@dimen/_6dp"
                         app:rotation="0"
                         app:roundEdges="true"
@@ -181,25 +181,26 @@
                     android:text="Steps"
                     android:textColor="#036F79"
                     android:textStyle="bold" />
+
                 <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/txt_steps_counter"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="571 Kcal"
+                    android:text="0"
                     android:textAllCaps="true"
-                    android:textColor="#036F79"
-                    />
+                    android:textColor="#036F79" />
 
                 <ticker.TickerView
                     android:id="@+id/text_steps_count"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:visibility="gone"
                     android:layout_gravity="center_horizontal"
                     android:gravity="center_horizontal"
                     android:textAppearance="@style/TickerTextAppearance"
+                    android:visibility="gone"
                     app:ticker_animationDuration="1000" />
 
             </LinearLayout>
@@ -228,14 +229,14 @@
                     android:textStyle="bold" />
 
                 <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/txt_calories"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="571 Kcal"
+                    android:text="0"
                     android:textAllCaps="true"
-                    android:textColor="#036F79"
-              />
+                    android:textColor="#036F79" />
 
             </LinearLayout>
 
@@ -248,11 +249,39 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
-                <ImageView
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/water_bottle" />
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/img_minus_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/minus_icon" />
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/water_bottle" />
+
+                    <ImageView
+                        android:id="@+id/img_plus_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/plus_icon" />
+
+
+                </LinearLayout>
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/customTextViewOpenSanBold"
@@ -265,14 +294,13 @@
                     android:textStyle="bold" />
 
                 <customsTextViews.CustomTextViewOpenSanBold
-                    android:id="@+id/txt_health_note"
+                    android:id="@+id/txt_water_level"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="1 Ltr."
-                    android:textColor="#036F79"
-                    />
+                    android:text=" Ltr."
+                    android:textColor="#036F79" />
             </LinearLayout>
 
         </LinearLayout>
@@ -360,8 +388,8 @@
                             <android.support.v7.widget.RecyclerView
                                 android:id="@+id/recyclerView_notes"
                                 android:layout_width="match_parent"
-                                android:layout_marginTop="@dimen/_5dp"
-                                android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_5dp"></android.support.v7.widget.RecyclerView>
 
                         </RelativeLayout>
 
@@ -463,7 +491,7 @@
                                                 android:paddingLeft="@dimen/_5dp"
                                                 android:paddingTop="@dimen/_5dp"
                                                 android:singleLine="true"
-                                                android:text="Clear hear to Add more details"
+                                                android:text="Clear here to Add more details"
                                                 android:textColor="@color/white"
                                                 android:visibility="visible" />
 
@@ -517,7 +545,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="27 oct"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -578,7 +605,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="11"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -655,7 +681,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="01"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -756,7 +781,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight=".5"
-                android:background="#E9E9E9"
+                android:background="@color/health_yellow"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -775,7 +800,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="EHR"
-                        android:textColor="@color/health_app_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -792,7 +817,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_5dp"
                         android:text="Time to take medicine"
-                        android:textColor="@color/health_app_text" />
+                        android:textColor="@color/health_red_drawer" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -824,7 +849,7 @@
                             android:gravity="center_horizontal"
                             android:text="Prescriptions"
                             android:textAllCaps="true"
-                            android:textColor="#036F79"
+                            android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 
 
@@ -860,7 +885,7 @@
                             android:gravity="center_horizontal"
                             android:text="LAB test report"
                             android:textAllCaps="true"
-                            android:textColor="#036F79"
+                            android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 
 

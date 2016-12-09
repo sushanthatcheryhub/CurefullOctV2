@@ -30,7 +30,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_5dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/profile_new" />
+                android:src="@drawable/profile_avatar" />
 
             <customsTextViews.CustomTextViewOpenSanRegular
                 android:id="@+id/txt_doctor_name_edu"

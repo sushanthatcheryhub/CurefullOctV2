@@ -17,14 +17,15 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -96,7 +97,6 @@ public class FragmentLogin extends Fragment implements
         sign_out_button_facebook = (TextView) rootView.findViewById(R.id.sign_out_button_facebook);
         btn_create_new = (TextView) rootView.findViewById(R.id.btn_create_new);
         btn_click_forgot = (TextView) rootView.findViewById(R.id.btn_click_forgot);
-
         login_button = (TextView) rootView.findViewById(R.id.btn_login);
         sign_out_button_facebook.setOnClickListener(this);
         login_button.setOnClickListener(this);
@@ -117,6 +117,7 @@ public class FragmentLogin extends Fragment implements
                                 Log.e("LoginActivity", ":-" + response.toString());
                                 ArrayList<EduationDetails> eduationDetailses = new ArrayList<EduationDetails>();
                                 EduationDetails eduationDetails = null;
+                                String birthday = "";
                                 try {
                                     AppPreference.getInstance().setFacebookUserName(object.getString("name"));
                                     JSONObject friendsJsonObject = object.getJSONObject("picture");
@@ -126,14 +127,22 @@ public class FragmentLogin extends Fragment implements
                                     for (int i = 0; i < friendsArray.length(); i++) {
                                         JSONObject jsonObject = friendsArray.getJSONObject(i);
                                         JSONObject friends = jsonObject.getJSONObject("school");
-                                        Log.e("name", ":- " + friends.getString("name"));
-                                        Log.e("type", ":- " + jsonObject.getString("type"));
+//                                        Log.e("name", ":- " + friends.getString("name"));
+//                                        Log.e("type", ":- " + jsonObject.getString("type"));
+//                                        Log.e("birthday", ":- " + object.getString("birthday"));
+                                        birthday = object.getString("birthday");
+                                        String[] dateParts = birthday.split("/");
+                                        String months = dateParts[0];
+                                        String days = dateParts[1];
+                                        String years = dateParts[2];
+                                        birthday = years + "-" + months + "-" + days;
                                         eduationDetails = new EduationDetails();
                                         eduationDetails.setInstituteName(friends.getString("name"));
                                         eduationDetails.setInstituteType(jsonObject.getString("type"));
                                         eduationDetailses.add(eduationDetails);
+//                                        Log.e("birthday split", ":- " + birthday);
                                     }
-                                    jsonFacebookLogin(object.getString("id"), object.getString("name"), object.getString("email"), object.getString("birthday"), object.getString("gender"), object.getString("relationship_status"), friendsJsonObject1.getString("url"), "Android", eduationDetailses);
+                                    jsonFacebookLogin(object.getString("id"), object.getString("name"), object.getString("email"), birthday, object.getString("gender"), object.getString("relationship_status"), friendsJsonObject1.getString("url"), "Android", eduationDetailses);
 
 
                                 } catch (JSONException e) {
@@ -186,9 +195,9 @@ public class FragmentLogin extends Fragment implements
         sign_out_button_facebook.setText(sb);
 
 
-        String you = "You agree to";
-        String termCondtiions = " Term and Conditions ";
-        String submit = "of Curefull. After clicking submit";
+        String you = "You agree to ";
+        String termCondtiions = "Term and Conditions";
+        String submit = " of Curefull. After clicking submit";
 
         String meassgeNew = you + termCondtiions + submit;
 
@@ -244,21 +253,35 @@ public class FragmentLogin extends Fragment implements
             }
         });
 
-
+        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    login_button.setEnabled(false);
+                    submitForm();
+                }
+                return false;
+            }
+        });
         return rootView;
     }
 
     private boolean validateEmail() {
         String email = edtInputEmail.getText().toString().trim();
 
-        if (email.isEmpty() || !isValidEmail(email)) {
-            edtInputEmail.setError("Email Id cannot be left blank.");
+        if (email.isEmpty()) {
+            edtInputEmail.setError("Email Id / Mobile number cannot be left blank.");
             requestFocus(edtInputEmail);
             return false;
         } else {
             edtInputEmail.setError(null);
         }
         return true;
+    }
+
+
+    private static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean validatePassword() {
@@ -271,10 +294,6 @@ public class FragmentLogin extends Fragment implements
         }
 
         return true;
-    }
-
-    private static boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void requestFocus(View view) {
@@ -365,15 +384,34 @@ public class FragmentLogin extends Fragment implements
 
     }
 
+    private boolean validateMobileNo() {
+        String email = edtInputEmail.getText().toString().trim();
+
+        if (email.isEmpty() || email.length() != 10) {
+            if (email.length() < 10 && email.length() > 1) {
+                edtInputEmail.setError("Mobile Number cannot be less than 10 numbers.");
+            } else {
+                edtInputEmail.setError("Mobile Number cannot be left blank.");
+            }
+            requestFocus(edtInputEmail);
+            return false;
+
+        } else {
+            edtInputEmail.setError(null);
+        }
+        return true;
+    }
 
     public void jsonLoginCheck() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toLogin(edtInputEmail.getText().toString().trim(), edtInputPassword.getText().toString().trim());
+        Log.e("data", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.LOGIN, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        login_button.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
@@ -384,11 +422,20 @@ public class FragmentLogin extends Fragment implements
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
+                                if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
+                                    AppPreference.getInstance().setIsLoginFirst(false);
+                                } else {
+                                    AppPreference.getInstance().setIsLoginFirst(true);
+                                }
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
+                                AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+                                AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
+                                AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
+                                AppPreference.getInstance().setProfileImage(userInfo.getProfileImageUrl());
                                 CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
                                 AppPreference.getInstance().setRt(userInfo.getR_t());
@@ -397,7 +444,8 @@ public class FragmentLogin extends Fragment implements
                                         .replace(new FragmentHomeScreenAll(), false);
                             }
                         } else {
-                            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Invalid Details", Toast.LENGTH_SHORT).show();
+                            login_button.setEnabled(true);
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Details");
                         }
 
 
@@ -406,6 +454,7 @@ public class FragmentLogin extends Fragment implements
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                login_button.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                 VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
@@ -455,12 +504,16 @@ public class FragmentLogin extends Fragment implements
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
-                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
+                                AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+                                AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
+                                Log.e("mobile number", ":- " + userInfo.getMobile_number());
+                                AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
+                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
                                 AppPreference.getInstance().setRt(userInfo.getR_t());
                                 CureFull.getInstanse().getFlowInstanse().clearBackStack();

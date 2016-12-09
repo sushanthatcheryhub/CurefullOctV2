@@ -6,23 +6,43 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://192.168.1.101:8080";
+        String HOST_IP = "http://192.168.1.118:8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String LOGIN = URL + "login/endUser";
+        String FORGOT_NEW = URL + "forgotPassword/endUser/updatePassword";
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String HEALTH_NOTE_ADD = URL + "healthNote/addhealthNote";
-        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=DemoTrans&password=DemoTrans&senderid=ADMGTR&channel=trans&DCS=0&flashsms=0&number=";
+        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
         String OTP_LAST = "&route=2";
         String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes";
         String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
-        String SET_GOALS=URL+"endUser/healthapp/setgoal";
-        String SET_GOALS_DEATILS=URL+"endUser/healthapp/setHealthappProfileDetails";
-        String GET_SET_GOALS_DEATILS=URL+"endUser/healthapp/getgoal";
-        String SAVE_HELTHAPP_DETALS=URL+"endUser/healthapp/savehealthappDailyDetails";
+        String SET_GOALS = URL + "endUser/healthapp/setgoal";
+        String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetails";
+        String GET_SET_GOALS_DEATILS = URL + "endUser/healthapp/getgoal";
+        String SAVE_HELTHAPP_DETALS = URL + "endUser/healthapp/savehealthappDailyDetails";
+        String UPLOAD_PRESCRIPTION = URL + "endUser/ehr/uploadPrescription";
+        String GET_PRESCRIPTION_LIST = URL + "endUser/ehr/getListOfPrescription";
+        String DOCTOR_LIST_PRESCRIPTION = URL + "endUser/ehr/getDoctorListOfPrescription";
+        String DISEASE_LIST_PRESCRIPTION = URL + "endUser/ehr/getDiseaseListOfPrescription";
+        String DELETE_PRESCRIPTION = URL + "endUser/ehr/deletePrescriptionById?prescriptionId=";
+        String DELETE_SUB_PRESCRIPTION = URL + "endUser/ehr/deletePrescriptionImagePartById?prescriptionId=";
+        String UPLOAD_LAB_TEST_REPORT = URL + "endUser/ehr/uploadLabReport";
+        String GET_LAB_TEST_REPORT_list = URL + "endUser/ehr/getListOfLabReport";
+        String Delete_Report = URL + "endUser/ehr/deleteLabReportById?reportId=";
+        String DELETE_SUB_LAB_REPORT = URL + "endUser/ehr/deleteLabReportImagePartById?reportId=";
+        String DOCTOR_LAB_TEST_REPORT = URL + "endUser/ehr/getDoctorListOfReport";
+        String TEST_LAB_TEST_REPORT = URL + "endUser/ehr/getTestNameListOfReport";
+        String SELECT_GLASS = URL + "endUser/healthapp/setGlassSizeForWaterIntake?glassSize=";
+        String CfUuhidList = URL + "uuhid/getCfuuhidListOfEndUser";
+        String CfUuhidUpload = URL + "uuhid/getCfuuhidFromNameAndMobileNumber";
+        String GET_GRAPH = URL + "endUser/healthapp/gethealthappDetailsList";
+        String CHECK_MOBILE_VALID = URL + "forgotPassword/endUser/getUserBasedOnMobileNumber?mobileNumber=";
+        String SELECTED_USER_LIST = URL + "uuhid/updateSelectedCfUuhid?cfuhid=";
+        String DELETE_SELECTE_USER = URL + "uuhid/deleteCfUuhidFromMappingList?cfuhid=";
 
 
         String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
@@ -96,6 +116,23 @@ public class MyConstants {
     public interface JsonUtils {
         String HTTP_CODE = "httpStatusCode";
 
+        String CFUUHIDs = "cfUuhid";
+        String PRESCRIPTION_ID = "prescriptionId";
+        String PRESCRIPTION_DATE = "prescriptionDate";
+        String DOCTOR_NAME = "doctorName";
+        String PRESCRIPTION_RESPONSE_LIST = "prescriptionResponseList";
+        String LAB_REPORT_LIST = "reportImageList";
+        String IMAGE_NUMBER = "imageNumber";
+        String PRESCRIPTION_IMAGE = "prescriptionImage";
+        String REPORT_IMAGE = "reportImage";
+        String DISEASE_NAME = "diseaseName";
+        String COUNT_OF_FILES = "countOfFiles";
+        String UPLOAD_BY = "uploadedBy";
+        String DATE_OF_UPLOAD = "dateOfUpload";
+
+        String REPORT_ID = "reportId";
+        String REPORT_DATE = "reportDate";
+        String TEST_NAME = "testName";
         //Patient List
         String FNAME = "fname";
         String ID = "healthNoteId";
@@ -106,6 +143,7 @@ public class MyConstants {
         String NOTE_DEATILS = "details";
         String A_T = "a_t";
         String R_T = "r_t";
+        String CF_UUHID = "cf_uuhid";
         String HEADERS = "headers";
         String USER_ID = "user_id";
         String USERNAME = "user_name";
@@ -181,7 +219,7 @@ public class MyConstants {
     }
 
     public interface IResponseCode {
-        int RESPONSE_SUCCESS = 200;
+        int RESPONSE_SUCCESS = 100;
         int RESPONSE_ALREADY_THERE = 202;
         int RESPONSE_ERROR = 201;
         int RESPONSE_SESSION = 301;
@@ -208,7 +246,8 @@ public class MyConstants {
         String[] listPopUpBloodGrp = {"0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"};
         String[] listPopUpHeight = {"Ft & In", "Cm"};
         String[] listPopUpWeight = {"Kgs", "Pounds"};
-
+        String[] listUploadBy = {"Self", "CureFull"};
+        String[] listStepsName = {"Steps", "Running", "Cycling"};
     }
 
     public static int getMonthName(String month) {

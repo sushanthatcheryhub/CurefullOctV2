@@ -1,6 +1,8 @@
 package fragment.healthapp;
 
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +64,7 @@ import utils.SwitchDateTimeDialogFragment;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentHealthNote extends Fragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener {
+public class FragmentHealthNote extends Fragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
 
     private View rootView;
@@ -70,7 +74,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private TextView txt_date_time, txt_time, txt_to_time, btn_done, txt_click_here_add;
     private LinearLayout liner_date_t, liner_to_time;
     LinearLayout date_time_picker;
-    private SwitchDateTimeDialogFragment dateTimeFragment;
     private String firstDate = "", firstTime = "", toFirstTime = "";
     private RequestQueue requestQueue;
     List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
@@ -78,6 +81,9 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     WeakHashMap<View, Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
     private Health_Note_ListAdpter adapterRecentNew;
     private RelativeLayout realtive_no_health;
+    private LinearLayout txt_prescription, txt_heath_app, txt_lab_reports;
+    private boolean isFirstTime = false;
+    private boolean isSelectFrom=false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +91,12 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_health_note,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
+        txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
+        txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
+
+
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         realtive_no_health = (RelativeLayout) rootView.findViewById(R.id.realtive_no_health);
@@ -103,55 +115,10 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         btn_done.setOnClickListener(this);
         txt_click_here_add.setOnClickListener(this);
 
-        dateTimeFragment = (SwitchDateTimeDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(TAG_DATETIME_FRAGMENT);
-        if (dateTimeFragment == null) {
-            dateTimeFragment = SwitchDateTimeDialogFragment.newInstance(
-                    getString(R.string.label_datetime_dialog),
-                    getString(R.string.positive_button_datetime_picker),
-                    getString(R.string.negative_button_datetime_picker)
-            );
-        }
-        // Assign values we want
-
-        String time = getTodayTime();
-        if (!time.equalsIgnoreCase("")) {
-            String[] dateParts1 = time.split(":");
-            String hrs = dateParts1[0];
-            String mins = dateParts1[1];
-            dateTimeFragment.setHour(Integer.parseInt(hrs));
-            dateTimeFragment.setMinute(Integer.parseInt(mins));
-        } else {
-            dateTimeFragment.setHour(12);
-            dateTimeFragment.setMinute(12);
-        }
-
-        // Set listener for get Date
-        dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
-            @Override
-            public void onPositiveButtonClick(Date date) {
-                Log.e("date ", ":- " + date.toString());
-                String dateTime = date.toString();
-                String[] dateParts = dateTime.split(" ");
-                String days = dateParts[0];
-                String month = dateParts[1];
-                String dates = dateParts[2];
-                String time = dateParts[3];
-                String year = dateParts[5];
-                String times = time.toString();
-                txt_date_time.setText("" + dates + " " + month);
-                String[] dateParts1 = times.split(":");
-                String hrs = dateParts1[0];
-                String mins = dateParts1[1];
-                firstDate = "" + year + "-" + MyConstants.getMonthName(month) + "-" + dates;
-                firstTime = hrs + ":" + mins;
-                txt_time.setText("" + updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
-            }
-
-            @Override
-            public void onNegativeButtonClick(Date date) {
-                txt_date_time.setText("");
-            }
-        });
+        liner_date_t.setOnClickListener(this);
+        txt_lab_reports.setOnClickListener(this);
+        txt_heath_app.setOnClickListener(this);
+        txt_prescription.setOnClickListener(this);
 
 
         mListView = (ExpandableStickyListHeadersListView) rootView.findViewById(R.id.list);
@@ -197,19 +164,58 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-
+            case R.id.liner_date_t:
+                isFirstTime = true;
+                final Calendar c1 = Calendar.getInstance();
+                // Current Hour
+                int hour1 = c1.get(Calendar.HOUR_OF_DAY);
+                // Current Minute
+                int minute1 = c1.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
+                timePickerDialog1.show();
+                break;
+            case R.id.txt_prescription:
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentPrescriptionCheck(), true);
+                break;
+            case R.id.txt_heath_app:
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentHealthAppNew(), true);
+                break;
+            case R.id.txt_lab_reports:
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentLabTestReport(), true);
+                break;
             case R.id.txt_date_time:
-                dateTimeFragment.show(getActivity().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
+                final Calendar c2 = Calendar.getInstance();
+                final int year = c2.get(Calendar.YEAR);
+                final int month = c2.get(Calendar.MONTH);
+                final int day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentHealthNote.this, year, month, day);
+                newDateDialog.getDatePicker().setCalendarViewShown(false);
+//                c.add(Calendar.DATE, 1);
+                Date newDate = c2.getTime();
+                newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
+                newDateDialog.show();
+
                 break;
             case R.id.txt_to_time:
 
-                final Calendar c = Calendar.getInstance();
-                // Current Hour
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                // Current Minute
-                int minute = c.get(Calendar.MINUTE);
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, false);
-                timePickerDialog.show();
+                if(isSelectFrom){
+                    isFirstTime = false;
+                    final Calendar c = Calendar.getInstance();
+                    // Current Hour
+                    int hour = c.get(Calendar.HOUR_OF_DAY);
+                    // Current Minute
+                    int minute = c.get(Calendar.MINUTE);
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, false);
+                    timePickerDialog.show();
+                }else{
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" +"Please select first from time.");
+
+                }
+
                 break;
             case R.id.btn_done:
                 if (!validateSubject()) {
@@ -274,14 +280,20 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
         // Append in a StringBuilder
         String aTime = new StringBuilder().append(selctHour).append(" ").append(timeSet).toString();
-
         return aTime;
     }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
-        toFirstTime = "" + hourOfDay + ":" + mintues;
-        txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+        if (isFirstTime) {
+            isSelectFrom=true;
+            firstTime = hourOfDay + ":" + mintues;
+            txt_time.setText("" + updateTime(hourOfDay, mintues));
+        } else {
+            toFirstTime = "" + hourOfDay + ":" + mintues;
+            txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+        }
+
     }
 
 
@@ -326,7 +338,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                             e.printStackTrace();
                         }
                         Log.e("responseStatus :- ", String.valueOf(responseStatus));
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             getAllHealthList();
                             txt_time.setText("");
                             txt_to_time.setText("");
@@ -386,6 +398,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
                 return headers;
             }
 
@@ -412,7 +425,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
                             showAdpter();
                         } else {
@@ -437,6 +450,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
                 return headers;
             }
         };
@@ -478,6 +492,30 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             realtive_no_health.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.GONE);
         }
+    }
+
+    public String formatMonth(String month) throws ParseException {
+
+        try {
+            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
+            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
+            return monthDisplay.format(monthParse.parse(month));
+        } catch (java.text.ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        int mnt = (monthOfYear + 1);
+        try {
+            txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + formatMonth(String.valueOf(mnt)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

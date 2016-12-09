@@ -12,10 +12,14 @@ import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -26,8 +30,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -43,10 +51,12 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
     private View rootView;
     private TextView btn_signup;
-    private EditText edtInput_name, edtInputEmail, edt_phone;
+    private AutoCompleteTextView edtInputEmail;
+    private EditText edtInput_name, edt_phone;
     private RequestQueue requestQueue;
     private boolean showPwd = false;
     private TextInputLayout input_layout_name, inputLayoutEmail;
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,17 +70,33 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         inputLayoutEmail = (TextInputLayout) rootView.findViewById(R.id.input_layout_email);
         edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
         edtInput_name = (EditText) rootView.findViewById(R.id.input_name);
-        edtInputEmail = (EditText) rootView.findViewById(R.id.input_email);
-
+        edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
         btn_signup = (TextView) rootView.findViewById(R.id.btn_signup);
         btn_signup.setOnClickListener(this);
         Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
         c.moveToFirst();
         TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
         edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-        edt_phone.setText("" + tMgr.getLine1Number().replace("+91",""));
-        edtInputEmail.setText("" + getAllAccount());
+        if (tMgr.getLine1Number() != null) {
+            edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+        }
+
+        addAdapterToViews();
+//        edtInputEmail.setText("" + getAllAccount());
         c.close();
+
+
+
+        edtInputEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btn_signup.setEnabled(false);
+                    submitForm();
+                }
+                return false;
+            }
+        });
         return rootView;
     }
 
@@ -157,11 +183,11 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private boolean validateName() {
         String email = edtInput_name.getText().toString().trim();
         if (email.isEmpty()) {
-            input_layout_name.setError("Name cannot be left blank.");
+            edtInput_name.setError("Name cannot be left blank.");
             requestFocus(edtInput_name);
             return false;
         } else {
-            input_layout_name.setErrorEnabled(false);
+            edtInput_name.setError(null);
         }
         return true;
     }
@@ -170,16 +196,14 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private boolean validateEmail() {
         String email = edtInputEmail.getText().toString().trim();
         if (email.isEmpty() || !isValidEmail(email)) {
-            inputLayoutEmail.setError("Email Id cannot be left blank.");
+            edtInputEmail.setError("Email Id cannot be left blank.");
             requestFocus(edtInputEmail);
             return false;
         } else {
-            inputLayoutEmail.setErrorEnabled(false);
+            edtInputEmail.setError(null);
         }
         return true;
     }
-
-
 
 
     private boolean validateMobileNo() {
@@ -241,10 +265,11 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "CureFull" + n + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "OTP_IS" + n  + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        btn_signup.setEnabled(true);
                         Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
@@ -259,6 +284,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        btn_signup.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
                         error.printStackTrace();
@@ -337,6 +363,20 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 //        };
 //        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
 //    }
+
+
+
+    private void addAdapterToViews() {
+
+        Account[] accounts = AccountManager.get(CureFull.getInstanse().getActivityIsntanse()).getAccounts();
+        Set<String> emailSet = new HashSet<String>();
+        for (Account account : accounts) {
+            if (EMAIL_PATTERN.matcher(account.name).matches()) {
+                emailSet.add(account.name);
+            }
+        }
+        edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+    }
 
     private String getAllAccount() {
         AccountManager am = AccountManager.get(getActivity());

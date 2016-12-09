@@ -51,6 +51,7 @@
                 android:layout_height="@dimen/_30dp"
                 android:layout_gravity="bottom"
                 android:gravity="center_vertical"
+                android:visibility="gone"
                 android:background="#CC2C34"
                 android:clickable="true"
                 android:orientation="vertical">

@@ -1,14 +1,10 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,9 +15,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/liner_bottom"
+            android:layout_above="@+id/liner_mid"
             android:layout_centerInParent="true"
-            android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
 
             <ImageView
@@ -30,6 +25,29 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/upload_icon" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/liner_mid"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80dp"
+            android:layout_above="@+id/liner_bottom"
+            android:background="#c1c1c1"
+            android:elevation="@dimen/_15dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/_10dp"
+            android:visibility="gone">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/grid_list_symptom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="true"
+                android:paddingBottom="@dimen/_5dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="horizontal" />
         </LinearLayout>
 
         <LinearLayout
@@ -44,18 +62,20 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/btn_retry"
                     style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/_5dp"
                     android:text="Retry"
                     android:textColor="@color/health_yellow"
                     android:textStyle="bold" />
@@ -71,20 +91,21 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/btn_add_more_image"
                     style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/_5dp"
                     android:text="Add more image"
                     android:textColor="@color/health_yellow"
                     android:textStyle="bold" />
-
             </LinearLayout>
 
             <View
@@ -101,11 +122,13 @@
                 android:orientation="horizontal">
 
                 <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/btn_done"
                     style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/_5dp"
                     android:text="Done"
                     android:textColor="@color/health_yellow"
                     android:textStyle="bold" />
@@ -117,4 +140,4 @@
 
     </RelativeLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

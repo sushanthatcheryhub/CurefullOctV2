@@ -11,16 +11,21 @@ import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -43,9 +48,11 @@ import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import interfaces.SmsListener;
 import item.property.SignUpInfo;
 import utils.AppPreference;
 import utils.CheckNetworkState;
+import utils.IncomingSms;
 import utils.MyConstants;
 
 
@@ -57,11 +64,12 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
     private View rootView;
     private TextView btn_done, btn_click_resend_otp;
-    private EditText edt_otp_password, edtInputPassword;
+    private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private RequestQueue requestQueue;
     private int OTP;
     private String health_name, health_email, health_mobile, health_password;
-    private TextInputLayout input_layout_otp, inputLayoutPassword;
+    private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
+    private boolean showPwd = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,12 +80,14 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         inputLayoutPassword = (TextInputLayout) rootView.findViewById(R.id.input_layout_password);
+        input_layout_confirm_password = (TextInputLayout) rootView.findViewById(R.id.input_layout_confirm_password);
         edt_otp_password = (EditText) rootView.findViewById(R.id.edt_otp_password);
+        edt_confirm_password = (EditText) rootView.findViewById(R.id.edt_confirm_password);
         btn_click_resend_otp = (TextView) rootView.findViewById(R.id.btn_click_resend_otp);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);
         btn_done.setOnClickListener(this);
         btn_click_resend_otp.setOnClickListener(this);
-        edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
+        edtInputPassword = (EditText) rootView.findViewById(R.id.edt_password);
         Bundle bundle = getArguments();
         if (bundle != null) {
             health_name = bundle.getString("NAME");
@@ -85,7 +95,93 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             health_mobile = bundle.getString("MOBILE");
             OTP = bundle.getInt("otp");
         }
+
+        Log.e("OTP", ":- " + OTP);
+//        btn_click_resend_otp.setText("" + OTP);
         btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+
+        edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (edtInputPassword.getRight() - edtInputPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (edtInputPassword.getText().toString().length() > 0) {
+                            if (!showPwd) {
+                                showPwd = true;
+                                edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+                                edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                            } else {
+                                showPwd = false;
+                                edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+
+                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                            }
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+        IncomingSms.bindListener(new SmsListener() {
+            @Override
+            public void messageReceived(String messageText) {
+                edt_otp_password.setText(messageText.replace("OTP_IS", ""));
+            }
+        });
+        edt_confirm_password.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (edt_confirm_password.getRight() - edt_confirm_password.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (edt_confirm_password.getText().toString().length() > 0) {
+                            if (!showPwd) {
+                                showPwd = true;
+                                edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT);
+                                edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                            } else {
+                                showPwd = false;
+                                edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+
+                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                            }
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        edt_confirm_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btn_done.setEnabled(false);
+                    submitForm();
+                }
+                return false;
+            }
+        });
 
         return rootView;
     }
@@ -105,11 +201,28 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
     private boolean validatePassword() {
         if (edtInputPassword.getText().toString().trim().isEmpty()) {
-            inputLayoutPassword.setError("Please Enter Password");
+            edtInputPassword.setError("Please Enter Password");
             requestFocus(edtInputPassword);
             return false;
         } else {
-            inputLayoutPassword.setErrorEnabled(false);
+            edtInputPassword.setError(null);
+        }
+
+        return true;
+    }
+
+
+    private boolean validatePasswordConfirm() {
+        if (edt_confirm_password.getText().toString().trim().isEmpty()) {
+            edt_confirm_password.setError("Please Enter Confirm Password");
+            requestFocus(edt_confirm_password);
+            return false;
+        } else if (!edt_confirm_password.getText().toString().trim().equalsIgnoreCase(edtInputPassword.getText().toString().trim())) {
+            edt_confirm_password.setError("Password Not Match");
+            requestFocus(edt_confirm_password);
+            return false;
+        } else {
+            edt_confirm_password.setError(null);
         }
 
         return true;
@@ -143,6 +256,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         if (!validatePassword()) {
             return;
         }
+        if (!validatePasswordConfirm()) {
+            return;
+        }
         if (OTP == Integer.parseInt(edt_otp_password.getText().toString().trim())) {
             if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
@@ -161,7 +277,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
     private void sendOTPService() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "otp" + OTP + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "OTP_IS" + OTP + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -185,11 +301,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     public void jsonLoginCheck() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
-        JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edt_otp_password.getText().toString().trim(), health_mobile);
+        JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile);
+        Log.e("data", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btn_done.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
@@ -200,16 +318,20 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
 
                             SignUpInfo userInfo = ParseJsonData.getInstance().getSignUpData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
-                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
+                                AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+                                AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
+                                AppPreference.getInstance().setMobileNumber(userInfo.getMobileNumber());
+                                AppPreference.getInstance().setIsLoginFirst(true);
+                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
                                 AppPreference.getInstance().setRt(userInfo.getR_t());
-                                Log.e("name", " " + userInfo.getA_t());
+//                                Log.e("name", " " + userInfo.getA_t());
                                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                 CureFull.getInstanse().getFlowInstanse()
                                         .replace(new FragmentHomeScreenAll(), false);
@@ -230,6 +352,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                 VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
@@ -256,6 +379,10 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
 
         };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 

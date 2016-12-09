@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/drawer_home"
+            android:title="Home" />
+
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/drawer_profile"
             android:title="Profile" />
+
+        <item
+            android:id="@+id/nav_uhid"
+            android:icon="@drawable/drawer_uhid"
+            android:title="UHID" />
 
         <item
             android:id="@+id/nav_reminder"
@@ -30,6 +41,11 @@
             android:id="@+id/nav_policy"
             android:icon="@drawable/drawer_termspolicy"
             android:title="Terms Policy" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/drawer_logout"
+            android:title="Logout" />
     </group>
 
 </menu>

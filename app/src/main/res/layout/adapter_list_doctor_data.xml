@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <customsTextViews.CustomTextViewOpenSanRegular xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/txt_view_data"
-    style="@style/textView_dark_grey_normal_small"
+    style="@style/textView_dark_grey_normal_micro"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/_20dp"
     android:background="@drawable/login_gradient"
     android:gravity="left"
-    android:maxLines="1"
+    android:singleLine="true"
     android:padding="@dimen/_5dp"
     android:textColor="@color/white" />

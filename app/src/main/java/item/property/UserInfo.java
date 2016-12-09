@@ -14,8 +14,12 @@ public class UserInfo {
     private String fname;
     private String user_name;
     private String user_id;
+    private String mobile_number;
     private String a_t;
     private String r_t;
+    private String cf_uuhid;
+    private String profileImageUrl;
+
     public UserInfo() {
 
     }
@@ -29,12 +33,13 @@ public class UserInfo {
             JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
             setUser_id(jsonResponse1.getString(MyConstants.PrefrenceKeys.EMAIL));
             setUser_name(jsonResponse1.getString(MyConstants.PrefrenceKeys.NAME));
-
+            setMobile_number(jsonResponse1.getString(MyConstants.PrefrenceKeys.MOBILE_NO));
+            setProfileImageUrl(jsonResponse1.getString("profileImageUrl"));
             JSONObject jsonResponse = jsonObject.getJSONObject(MyConstants.JsonUtils.HEADERS);
 //            setFname(jsonResponse.getString(MyConstants.JsonUtils.FNAME));
             setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
             setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
-
+            setCf_uuhid(jsonResponse.getString(MyConstants.JsonUtils.CF_UUHID));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,6 +65,13 @@ public class UserInfo {
         }
     }
 
+    public String getCf_uuhid() {
+        return cf_uuhid;
+    }
+
+    public void setCf_uuhid(String cf_uuhid) {
+        this.cf_uuhid = cf_uuhid;
+    }
 
     public String getFname() {
         return fname;
@@ -101,5 +113,19 @@ public class UserInfo {
         this.r_t = r_t;
     }
 
+    public String getMobile_number() {
+        return mobile_number;
+    }
 
+    public void setMobile_number(String mobile_number) {
+        this.mobile_number = mobile_number;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
 }

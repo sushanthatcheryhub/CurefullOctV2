@@ -56,7 +56,7 @@
 
 
                 <RadioGroup
-                    android:id="@+id/radioCalender"
+                    android:id="@+id/radioGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -64,7 +64,7 @@
                     android:orientation="horizontal">
 
                     <customsTextViews.CustomRadioButtonOpenSanRegular
-                        android:id="@+id/radioEmail"
+                        android:id="@+id/radioMale"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                         android:textColor="@color/white" />
 
                     <customsTextViews.CustomRadioButtonOpenSanRegular
-                        android:id="@+id/radioMobile"
+                        android:id="@+id/radioFemale"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -121,16 +121,19 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <customsTextViews.CustomEditTextViewMontserratHairLine
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/edt_years"
                     style="@style/textView_dark_grey_normal_small"
-                    android:layout_width="@dimen/_40dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_20dp"
-                    android:hint="Years"
+                    android:hint="Date of Birth"
+                    android:padding="@dimen/_5dp"
                     android:inputType="number"
+                    android:maxLength="2"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white"
-                    android:theme="@style/TextLabel" />
+                     />
 
 
             </LinearLayout>
@@ -186,6 +189,7 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Feet"
                             android:inputType="number"
+                            android:nextFocusRight="@+id/edt_inchs"
                             android:maxLength="2"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
@@ -200,7 +204,8 @@
                             android:layout_marginLeft="@dimen/_10dp"
                             android:hint="Inchs"
                             android:inputType="number"
-                            android:maxLength="2"
+                            android:nextFocusDown="@+id/edt_kgs"
+                            android:maxLength="1"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -216,6 +221,7 @@
                             android:maxLength="3"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
+                            android:theme="@style/TextLabel"
                             android:visibility="gone" />
                     </LinearLayout>
 
@@ -306,6 +312,7 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Kg"
                             android:inputType="number"
+                            android:nextFocusRight="@+id/edt_grams"
                             android:maxLength="3"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
@@ -320,6 +327,7 @@
                             android:layout_marginLeft="@dimen/_10dp"
                             android:hint="Grams"
                             android:inputType="number"
+                            android:nextFocusDown="@+id/water_100"
                             android:maxLength="3"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
@@ -333,9 +341,11 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Pounds"
                             android:inputType="number"
+                            android:nextFocusDown="@+id/water_100"
                             android:maxLength="3"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
+                            android:theme="@style/TextLabel"
                             android:visibility="gone" />
                     </LinearLayout>
 
@@ -406,10 +416,11 @@
                             android:textColor="@color/white" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/txt_BMI"
                             style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="31.6 (obesity)"
+                            android:text="----"
                             android:textColor="@color/health_yellow" />
                     </LinearLayout>
 
@@ -437,10 +448,11 @@
                             android:textColor="@color/white" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/txt_BMR"
                             style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1717 Calories/day"
+                            android:text="----"
                             android:textColor="@color/health_yellow" />
                     </LinearLayout>
 
@@ -469,9 +481,11 @@
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             style="@style/textView_dark_grey_normal_micro"
+
+                            android:id="@+id/txt_ideal_weight"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="69.7 Kg"
+                            android:text="----"
                             android:textColor="@color/health_yellow" />
                     </LinearLayout>
 
@@ -547,16 +561,18 @@
                                 android:textColor="@color/white" />
 
 
-                            <customsTextViews.CustomTextViewOpenSanRegular
+                            <customsTextViews.CustomEditTextViewMontserratHairLine
+                                android:id="@+id/edt_steps"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/txt_name"
-                                android:layout_centerInParent="true"
                                 android:gravity="left"
-                                android:text="7585"
+                                android:text="10000"
+                                android:enabled="false"
+                                android:focusable="false"
                                 android:textColor="@color/health_yellow"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:theme="@style/TextLabelYellow" />
 
 
                         </LinearLayout>
@@ -611,16 +627,18 @@
                                 android:textColor="@color/white" />
 
 
-                            <customsTextViews.CustomTextViewOpenSanRegular
+                            <customsTextViews.CustomEditTextViewMontserratHairLine
+                                android:id="@+id/edt_calories"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/txt_name"
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
-                                android:text="420 kcal"
+                                android:text="2000"
                                 android:textColor="@color/health_yellow"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:theme="@style/TextLabelYellow" />
 
 
                         </LinearLayout>
@@ -677,17 +695,18 @@
                                 android:textColor="@color/white" />
 
 
-                            <customsTextViews.CustomTextViewOpenSanRegular
+                            <customsTextViews.CustomEditTextViewMontserratHairLine
+                                android:id="@+id/edt_water"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/txt_name"
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
-                                android:text="3 ltr"
+                                android:text="6"
                                 android:textColor="@color/health_yellow"
-                                android:textStyle="bold" />
-
+                                android:textStyle="bold"
+                                android:theme="@style/TextLabelYellow" />
 
                         </LinearLayout>
 
@@ -716,7 +735,7 @@
                             android:layout_gravity="bottom"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:background="@drawable/login_patient_button_selector"
-                            android:elevation="@dimen/_10dp"
+                            android:elevation="@dimen/_5dp"
                             android:gravity="center_vertical"
                             android:paddingBottom="@dimen/_2dp"
                             android:paddingLeft="@dimen/_10dp"
@@ -766,6 +785,7 @@
 
 
                 <LinearLayout
+                    android:id="@+id/liner_100ml"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -773,6 +793,7 @@
                     android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/img_100ml"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -794,10 +815,12 @@
 
                         <customsTextViews.CustomEditTextViewMontserratHairLine
                             style="@style/textView_dark_grey_normal_small"
+                          android:id="@+id/water_100"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
                             android:hint="100"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -812,6 +835,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/liner_200ml"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -820,6 +844,7 @@
                     android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/img_200ml"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -846,6 +871,7 @@
                             android:layout_height="wrap_content"
                             android:hint="200"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -860,6 +886,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/liner_300ml"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -868,6 +895,7 @@
                     android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/img_300ml"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -894,6 +922,7 @@
                             android:layout_height="wrap_content"
                             android:hint="300"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -908,6 +937,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/liner_500ml"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -916,6 +946,7 @@
                     android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/img_500ml"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -942,6 +973,7 @@
                             android:layout_height="wrap_content"
                             android:hint="500"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -971,7 +1003,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/login_patient_button_selector"
-                    android:elevation="@dimen/_10dp"
+                    android:elevation="@dimen/_5dp"
                     android:gravity="center_horizontal"
                     android:paddingBottom="@dimen/_2dp"
                     android:paddingLeft="@dimen/_10dp"

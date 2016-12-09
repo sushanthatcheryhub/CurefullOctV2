@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 
 
@@ -138,6 +139,7 @@ public class FlowOrganizer {
      */
     public void replace(Fragment toFragment, Bundle bundle, boolean isAllowBack) {
         hideKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (toFragment == null)
             return;
 
@@ -167,6 +169,7 @@ public class FlowOrganizer {
     public void replaceWithTopBottomAnimation(Fragment toFragment, Bundle bundle,
                                               boolean isAllowBack) {
         hideVirtualKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (toFragment == null)
             return;
 
@@ -352,6 +355,7 @@ public class FlowOrganizer {
      */
     public void add(Fragment toFragment, Bundle bundle, boolean isAllowBack) {
         hideKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (toFragment == null)
             return;
         if (toFragment.getClass().getSimpleName()
@@ -396,6 +400,7 @@ public class FlowOrganizer {
     public void addWithBottomTopAnimation(Fragment toFragment, Bundle bundle,
                                           boolean isAllowBack) {
         hideVirtualKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (toFragment == null)
             return;
 
@@ -438,6 +443,7 @@ public class FlowOrganizer {
     public void addWithCardFlip(Fragment toFragment, Bundle bundle,
                                 boolean isAllowBack) {
         hideVirtualKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (toFragment == null)
             return;
 

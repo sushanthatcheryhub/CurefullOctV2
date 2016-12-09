@@ -23,6 +23,9 @@ import java.util.List;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentProfile;
+import fragment.healthapp.FragmentSettingPage;
+import fragment.healthapp.FragmentTermCondition;
+import fragment.healthapp.FragmentUHID;
 import utils.AppPreference;
 
 public class BaseMainActivity extends AppCompatActivity
@@ -37,25 +40,35 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.nav_profile) {
-            if (!item.isChecked()) {
-                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentProfile(), false);
-            }
-        } else if (id == R.id.nav_reminder) {
-
+        if (id == R.id.nav_home) {
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentLandingPage(), false);
+        } else if (id == R.id.nav_profile) {
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentProfile(), false);
+        } else if (id == R.id.nav_uhid) {
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentUHID(), false);
+        } else if (id == R.id.nav_logout) {
+            AppPreference.getInstance().clearAllData();
+            AppPreference.getInstance().setIsLogin(false);
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentLogin(), false);
+        } else if (id == R.id.nav_policy) {
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentTermCondition(), false);
+        } else if (id == R.id.nav_setting) {
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentSettingPage(), false);
+        } else if (id == R.id.nav_share) {
         }
-//
-//        } else if (id == R.id.nav_ehr) {
-//
-//        } else if (id == R.id.nav_setting) {
-//
-//        } else if (id == R.id.nav_help) {
-//        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -1,0 +1,186 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/login_gradient"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/login_liner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/top_view"
+            android:layout_marginLeft="@dimen/_30dp"
+            android:layout_marginRight="@dimen/_30dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/health_yellow"
+                android:theme="@style/TextLabelYellow">
+
+                <customsTextViews.CustomEditTextViewMontserratHairLine
+                    android:id="@+id/input_name"
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/user_yellow_large"
+                    android:drawablePadding="@dimen/_5dp"
+                    android:hint="Name"
+                    android:inputType="textCapSentences"
+                    android:paddingBottom="@dimen/_12dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20dp"
+                android:textColorHint="@color/health_yellow"
+                android:theme="@style/TextLabelYellow">
+
+                <customsTextViews.CustomEditTextViewMontserratHairLine
+                    android:id="@+id/edt_phone"
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/password_yellow_large"
+                    android:drawablePadding="@dimen/_5dp"
+                    android:hint="Register mobile number"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:paddingBottom="@dimen/_12dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10dp"
+                android:orientation="vertical">
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/btn_add"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/white_patient_button_selector"
+                    android:gravity="center"
+                    android:padding="@dimen/_10dp"
+                    android:text="Add"
+                    android:textColor="@color/health_login_text" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/button_shadow" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/login_liner"
+            android:layout_marginTop="@dimen/_15dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"></android.support.v7.widget.RecyclerView>
+
+            <!--<ListView-->
+            <!--android:id="@+id/list_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"></ListView>-->
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_5dp"
+                android:gravity="center_vertical">
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/txt_health_text"
+                    style="@style/textView_dark_grey_normal_micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/_30dp"
+                    android:layout_marginRight="@dimen/_5dp"
+                    android:elevation="@dimen/_10dp"
+                    android:padding="@dimen/_2dp"
+                    android:text="List of UHID"
+                    android:textColor="@color/health_yellow" />
+
+
+                <LinearLayout
+                    android:id="@+id/liner_add_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/_10dp"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:singleLine="true"
+                        android:text="Add new UHID"
+                        android:textColor="@color/health_yellow" />
+
+
+                    <ImageView
+                        android:id="@+id/img_upload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/add_uhid" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

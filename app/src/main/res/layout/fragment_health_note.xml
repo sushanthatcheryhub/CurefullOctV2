@@ -228,7 +228,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="27 oct"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -289,7 +288,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="11"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -366,7 +364,6 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
-                                                    android:hint="01"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -497,7 +494,7 @@
                 android:drawSelectorOnTop="true"
                 android:fastScrollEnabled="true"
                 android:overScrollMode="never"
-                android:padding="16dp"
+                android:padding="10dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:visibility="gone" />
 
@@ -515,6 +512,7 @@
             android:padding="@dimen/_10dp">
 
             <LinearLayout
+                android:id="@+id/txt_lab_reports"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -546,6 +544,7 @@
                 android:background="@color/health_yellow" />
 
             <LinearLayout
+                android:id="@+id/txt_heath_app"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -577,6 +576,7 @@
                 android:background="@color/health_yellow" />
 
             <LinearLayout
+                android:id="@+id/txt_prescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

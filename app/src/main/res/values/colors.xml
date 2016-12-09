@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#C64236</color>
     <color name="colorPrimaryDark">#C64236</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#046F78</color>
     <color name="app_medium_grey">#646663</color>
     <color name="app_dark_grey">#666666</color>
 
@@ -21,7 +21,7 @@
 
     <color name="hint_color">#808080</color>
     <drawable name="transarent_game">#00000000</drawable>
-
+    <drawable name="transarent_gray">#989898</drawable>
     <color name="StatusBar">#0c1a2b</color>
     <color name="lsit_unselected">#726868</color>
     <color name="lsit_selected">#0B0101</color>
@@ -62,11 +62,7 @@
     <color name="drawer_text_color">#616263</color>
 
     <color name="tab_text_color">#444444</color>
-
-
-    <drawable name="actiontransparent">#00000000</drawable>
-
-
+    <color name="transprent_new">#00000000</color>
     <color name="blackpercentage">#BF000000</color>
     <color name="black_low_percentage">#4D000000</color>
     <color name="black_normal_percentage">#CD000000</color>
@@ -126,7 +122,7 @@
     <color name="health_app_progress">#159640</color>
     <color name="health_edit_line">#e49374</color>
     <color name="health_hint_color">#b1b1b1</color>
-
+    <color name="health_hint_color_new">#80b1b1b1</color>
     <color name="dateTimeColorAccent">#494949</color>
     <color name="scrim">#99323232</color>
 </resources>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/relative_action_bar"
     android:layout_height="@dimen/_25dp">
 
     <RelativeLayout
-        android:id="@+id/relative_action_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_25dp"
         android:background="@drawable/login_gradient">

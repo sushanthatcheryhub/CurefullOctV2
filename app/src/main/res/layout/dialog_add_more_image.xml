@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_gradient"
-    android:clickable="true">
+    android:clickable="true"
+    android:fillViewport="true"
+    android:nestedScrollingEnabled="true">
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:orientation="vertical">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="@dimen/_20dp"
-            android:layout_marginRight="@dimen/_20dp"
+            android:layout_marginLeft="@dimen/_10dp"
+            android:layout_marginRight="@dimen/_10dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -47,13 +47,39 @@
                 android:minHeight="@dimen/_200dp"
                 android:orientation="vertical">
 
-                <ListView
-                    android:id="@+id/list_image_view"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_60dp"
-                    android:layout_margin="@dimen/_10dp">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-                </ListView>
+                    <ImageView
+                        android:id="@+id/btn_delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_10dp"
+                        android:src="@drawable/delete_red" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/_5dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/grid_list_symptom"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:nestedScrollingEnabled="true"
+                            android:padding="@dimen/_5dp"
+                            android:scrollbarStyle="outsideOverlay"
+                            android:scrollbars="vertical" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -63,48 +89,61 @@
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/input_layout_doctor_name"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:layout_weight="1"
-                        android:textColorHint="@color/white"
-                        android:theme="@style/TextLabel">
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                        <customsTextViews.CustomEditTextViewMontserratHairLine
+                        <customsTextViews.CustomEditTextViewOpenSanRegular
                             android:id="@+id/input_doctor_name"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawablePadding="@dimen/_7dp"
+                            android:background="@null"
                             android:hint="Doctor Name"
-                            android:inputType="textPersonName"
-                            android:paddingBottom="@dimen/_12dp"
-                            android:textColor="@color/health_hint_color"
-                            android:textColorHint="@color/health_hint_color" />
-                    </android.support.design.widget.TextInputLayout>
+                            android:inputType="textCapSentences"
+                            android:padding="@dimen/_5dp"
+                            android:textColor="@color/health_login_text"
+                            android:textColorHint="@color/health_hint_color"
+                            android:textStyle="bold" />
 
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/input_layout_disease"
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/health_edit_line" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="@dimen/_10dp"
                         android:layout_weight="1"
-                        android:textColorHint="@color/white"
-                        android:theme="@style/TextLabel">
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                        <customsTextViews.CustomEditTextViewMontserratHairLine
+                        <customsTextViews.CustomEditTextViewOpenSanRegular
                             android:id="@+id/input_disease"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawablePadding="@dimen/_7dp"
-                            android:hint="Doctor Name"
-                            android:inputType="textPersonName"
-                            android:paddingBottom="@dimen/_12dp"
-                            android:textColor="@color/health_hint_color"
-                            android:textColorHint="@color/health_hint_color" />
-                    </android.support.design.widget.TextInputLayout>
+                            android:background="@null"
+                            android:hint="Disease Name"
+                            android:inputType="textCapSentences"
+                            android:padding="@dimen/_5dp"
+                            android:textColor="@color/health_login_text"
+                            android:textColorHint="@color/health_hint_color"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/health_edit_line" />
+                    </LinearLayout>
 
 
                 </LinearLayout>
@@ -136,7 +175,8 @@
                                 android:paddingTop="@dimen/_5dp"
                                 android:singleLine="true"
                                 android:text="Prescription Date"
-                                android:textColor="@color/health_login_text" />
+                                android:textColor="@color/health_login_text"
+                                android:textStyle="bold" />
 
 
                         </LinearLayout>
@@ -147,13 +187,14 @@
                             android:orientation="vertical">
 
                             <LinearLayout
+                                android:id="@+id/liner_date_select"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
 
                                 <customsTextViews.CustomTextViewOpenSanRegular
-                                    android:id="@+id/edt_subject"
+                                    android:id="@+id/txt_date"
                                     style="@style/textView_dark_grey_normal_micro"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
@@ -162,7 +203,7 @@
                                     android:layout_weight="9"
                                     android:background="@android:color/transparent"
                                     android:padding="@dimen/_4dp"
-                                    android:text="24/10/2016"
+                                    android:text="Select Date"
                                     android:textColor="@color/health_login_text" />
 
                                 <ImageView
@@ -194,11 +235,11 @@
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="bottom"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:background="@drawable/done_image_click_button_selector"
-                            android:elevation="@dimen/_10dp"
-                            android:gravity="center_vertical"
+                            android:elevation="@dimen/_5dp"
+                            android:gravity="bottom"
                             android:paddingBottom="@dimen/_5dp"
                             android:paddingLeft="@dimen/_35dp"
                             android:paddingRight="@dimen/_35dp"
@@ -213,7 +254,7 @@
         </LinearLayout>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
-</RelativeLayout>
+</ScrollView>

@@ -39,8 +39,10 @@ import java.util.Map;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentHealthApp;
 import fragment.healthapp.FragmentHealthNote;
+import interfaces.IOnOtpDoneDelete;
 import item.property.HealthNoteItems;
 import sticky.header.StickyListHeadersAdapter;
 import utils.AppPreference;
@@ -48,7 +50,7 @@ import utils.CustomTypefaceSpan;
 import utils.MyConstants;
 
 public class Health_Note_ListAdpter extends BaseAdapter implements
-        StickyListHeadersAdapter {
+        StickyListHeadersAdapter, IOnOtpDoneDelete {
     Context applicationContext;
     List<HealthNoteItems> healthNoteItemses;
     private RequestQueue requestQueue;
@@ -125,10 +127,28 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         String[] dateParts1 = times.split(":");
         String hrs = dateParts1[0];
         String mins = dateParts1[1];
-        try {
-            holder.txt_date_time.setText("" + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + days + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
-        } catch (ParseException e) {
-            e.printStackTrace();
+//        try {
+//            holder.txt_date_time.setText("" + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + days + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+
+        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
+            try {
+                holder.txt_date_time.setText("" + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + days + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String times1 = healthNoteItemses.get(position).getNote_to_time();
+            String[] dateParts11 = times1.split(":");
+            String hrs1 = dateParts11[0];
+            String mins1 = dateParts11[1];
+            try {
+                holder.txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + years + "\n" +CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 //        holder.txt_title.setText("" + healthNoteItemses.get(position).getNote_heading());
 //        holder.txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
@@ -164,7 +184,11 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAllHealthList(healthNoteItemses.get(position).getNote_id(), position);
+
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
+                dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
+                dialogDeleteAll.show();
+
             }
         });
         return convertView;
@@ -196,6 +220,14 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         return date.subSequence(0, 11).charAt(10);
     }
 
+    @Override
+    public void optDoneDelete(String messsage, String dialogName, int pos) {
+        if (messsage.equalsIgnoreCase("OK")) {
+            getAllHealthListRemove(healthNoteItemses.get(pos).getNote_id(), pos);
+        }
+
+    }
+
     public static class ViewHolder {
         public TextView txt_date_time;
         public TextView txt_title;
@@ -221,7 +253,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         TextView text;
     }
 
-    private void getAllHealthList(final int id, final int postis) {
+    private void getAllHealthListRemove(final int id, final int postis) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.HEALTH_LIST_DELETE + id,
@@ -239,7 +271,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == 100) {
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             healthNoteItemses.remove(postis);
                             notifyDataSetChanged();
                             fragmentHealthNotes.checkSize();
@@ -262,6 +294,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
                 return headers;
             }
         };

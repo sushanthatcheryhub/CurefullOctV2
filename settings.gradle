@@ -1,1 +1,1 @@
-include ':app', ':supportDifferentScreen', ':library'
+include ':app', ':supportDifferentScreen', ':library', ':MPChartLib'

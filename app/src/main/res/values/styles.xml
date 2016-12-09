@@ -208,6 +208,28 @@
 
     </style>
 
+    <style name="TextLabelNew" parent="Widget.Design.TextInputLayout">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/health_hint_color</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/health_login_text</item>
+        <item name="colorControlNormal">@color/health_login_text</item>
+        <item name="colorControlActivated">@color/health_login_text</item>
+        <item name="colorControlHighlight">@color/health_login_text</item>
+
+    </style>
+
+    <style name="TextLabelYellow" parent="Widget.Design.TextInputLayout">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/health_yellow</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/health_yellow</item>
+        <item name="colorControlNormal">@color/health_yellow</item>
+        <item name="colorControlActivated">@color/health_yellow</item>
+        <item name="colorControlHighlight">@color/health_yellow</item>
+
+    </style>
+
 
     <style name="SeekArc">
         <item name="arcColor">@color/progress_gray_dark</item>

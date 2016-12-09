@@ -22,6 +22,11 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return prefrence;
     }
 
+
+    public void clearAllData() {
+        _prefrence.edit().clear().commit();
+    }
+
     private AppPreference(Context context) {
         _prefrence = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -120,16 +125,62 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return false;
     }
 
-
-    public void setProfileID(int className) {
+    public void setcf_uuhid(String className) {
         if (_prefrence != null)
-            _prefrence.edit().putInt(PROFILE_ID, className).commit();
+            _prefrence.edit().putString("cf_uuhid", className).commit();
     }
 
-    public int getProfileID() {
+    public String getcf_uuhid() {
         if (_prefrence != null)
-            return _prefrence.getInt(PROFILE_ID, 0);
-        return 0;
+            return _prefrence.getString("cf_uuhid", "");
+        return "";
+    }
+
+
+    public void setcf_uuhidNeew(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("cf_uuhidNeew", className).commit();
+    }
+
+    public String getcf_uuhidNeew() {
+        if (_prefrence != null)
+            return _prefrence.getString("cf_uuhidNeew", "");
+        return "";
+    }
+
+    public void setMobileNumber(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("mobileNmuber", className).commit();
+    }
+
+    public String getMobileNumber() {
+        if (_prefrence != null)
+            return _prefrence.getString("mobileNmuber", "");
+        return "";
+    }
+
+
+    public void setProfileImage(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("profileImageUrl", className).commit();
+    }
+
+    public String getProfileImage() {
+        if (_prefrence != null)
+            return _prefrence.getString("profileImageUrl", "");
+        return "";
+    }
+
+
+    public void setGlass(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("glass", className).commit();
+    }
+
+    public String getGlass() {
+        if (_prefrence != null)
+            return _prefrence.getString("glass", "");
+        return "";
     }
 
     public void setUserID(String className) {
@@ -155,17 +206,223 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     }
 
 
-    public void setNearLocation(String className) {
+    public void setFtIN(boolean isMale) {
         if (_prefrence != null)
-            _prefrence.edit().putString("location", className).commit();
+            _prefrence.edit().putBoolean("ftin", isMale).commit();
     }
 
-    public String getNearLocation() {
+    public boolean getFtIN() {
         if (_prefrence != null)
-            return _prefrence.getString("location", "");
+            return _prefrence.getBoolean("ftin", false);
+        return false;
+    }
+
+    public void setCM(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("cm", isMale).commit();
+    }
+
+    public boolean getCM() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("cm", false);
+        return false;
+    }
+
+
+    public void setStepStarts(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("Steps", isMale).commit();
+    }
+
+    public boolean getStepStarts() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("Steps", false);
+        return false;
+    }
+
+
+    public void setKgs(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("kgs", isMale).commit();
+    }
+
+    public boolean getKgs() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("kgs", false);
+        return false;
+    }
+
+    public void setpound(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("pound", isMale).commit();
+    }
+
+    public boolean getPound() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("pound", false);
+        return false;
+    }
+
+    public void setMale(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("Male", isMale).commit();
+    }
+
+    public boolean getMale() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("Male", false);
+        return false;
+    }
+
+
+    public void setFeMale(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("Female", isMale).commit();
+    }
+
+    public boolean getFeMale() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("Female", false);
+        return false;
+    }
+
+    public void setGoalAge(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("Age", className).commit();
+    }
+
+    public String getGoalAge() {
+        if (_prefrence != null)
+            return _prefrence.getString("Age", "0");
         return "";
     }
 
+
+    public void setGoalAgeNew(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("AgeN", className).commit();
+    }
+
+    public String getGoalAgeNew() {
+        if (_prefrence != null)
+            return _prefrence.getString("AgeN", "0");
+        return "";
+    }
+
+
+    public void setGoalHeightFeet(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("HeightFeet", className).commit();
+    }
+
+    public String getGoalHeightFeet() {
+        if (_prefrence != null)
+            return _prefrence.getString("HeightFeet", "0");
+        return "";
+    }
+
+    public void setStepsCount(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("stepsCount", className).commit();
+    }
+
+    public String getStepsCount() {
+        if (_prefrence != null)
+            return _prefrence.getString("stepsCount", "0");
+        return "";
+    }
+
+
+    public void setCaloriesCount(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("CaloriesCount", className).commit();
+    }
+
+    public String getCaloriesCount() {
+        if (_prefrence != null)
+            return _prefrence.getString("CaloriesCount", "0");
+        return "";
+    }
+
+
+    public void setStepsCountTarget(int className) {
+        if (_prefrence != null)
+            _prefrence.edit().putInt("stepsCountTarget", className).commit();
+    }
+
+    public int getStepsCountTarget() {
+        if (_prefrence != null)
+            return _prefrence.getInt("stepsCountTarget", 10000);
+        return 0;
+    }
+
+    public void setWaterInTake(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("waterTake", className).commit();
+    }
+
+    public String getWaterInTake() {
+        if (_prefrence != null)
+            return _prefrence.getString("waterTake", "0");
+        return "";
+    }
+
+    public void setGoalHeightInch(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("HeightInch", className).commit();
+    }
+
+    public String getGoalHeightInch() {
+        if (_prefrence != null)
+            return _prefrence.getString("HeightInch", "0");
+        return "";
+    }
+
+    public void setGoalHeightCm(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("HeightCm", className).commit();
+    }
+
+    public String getGoalHeightCm() {
+        if (_prefrence != null)
+            return _prefrence.getString("HeightCm", "");
+        return "";
+    }
+
+
+    public void setGoalWeightKg(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("WeightKg", className).commit();
+    }
+
+    public String getGoalWeightKg() {
+        if (_prefrence != null)
+            return _prefrence.getString("WeightKg", "0");
+        return "";
+    }
+
+
+    public void setGoalWeightGrams(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("WeightGrams", className).commit();
+    }
+
+    public String getGoalWeightGrams() {
+        if (_prefrence != null)
+            return _prefrence.getString("WeightGrams", "");
+        return "";
+    }
+
+    public void setGoalWeightPound(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("WeightPound", className).commit();
+    }
+
+    public String getGoalWeightPound() {
+        if (_prefrence != null)
+            return _prefrence.getString("WeightPound", "");
+        return "";
+    }
 
     public void setDoctorName(String className) {
         if (_prefrence != null)

@@ -42,23 +42,36 @@
                     android:text="Today"
                     android:textColor="@color/health_login_text" />
 
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    android:id="@+id/btn_set_goal"
-                    style="@style/textView_dark_grey_normal_micro"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="@dimen/_5dp"
-                    android:background="@color/health_login_text"
-                    android:elevation="@dimen/_10dp"
-                    android:gravity="center"
+                    android:background="@drawable/goal_edit_rounded"
+                    android:orientation="horizontal"
                     android:paddingBottom="@dimen/_2dp"
                     android:paddingLeft="@dimen/_5dp"
                     android:paddingRight="@dimen/_5dp"
-                    android:paddingTop="@dimen/_2dp"
-                    android:text="Goals - 7854 steps"
-                    android:textColor="@color/white" />
+                    android:paddingTop="@dimen/_2dp">
 
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        android:id="@+id/btn_set_goal_target"
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="@dimen/_10dp"
+                        android:gravity="center"
+                        android:text="Goals - 10000 steps"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_5dp"
+                        android:src="@drawable/edit" />
+                </LinearLayout>
             </RelativeLayout>
 
 
@@ -74,7 +87,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_15dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
@@ -84,7 +96,7 @@
                         android:layout_height="wrap_content">
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_centerInParent="true"
@@ -126,7 +138,7 @@
                             app:clockwise="true"
                             app:enabled="false"
                             app:max="100"
-                            app:progress="20"
+                            app:progress="0"
                             app:progressColor="@color/health_app_progress"
                             app:progressWidth="@dimen/_6dp"
                             app:rotation="0"
@@ -142,6 +154,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
@@ -191,11 +204,12 @@
                                 android:textStyle="bold" />
 
                             <ticker.TickerView
-                                android:layout_width="match_parent"
+                                android:id="@+id/tickerTotal"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:layout_gravity="center_horizontal"
-                                android:gravity="center_horizontal"
+                                android:layout_gravity="left"
+                                android:gravity="left"
                                 android:textAppearance="@style/TickerTextAppearance"
                                 app:ticker_animationDuration="1000" />
                         </LinearLayout>
@@ -249,12 +263,11 @@
                                 android:textStyle="bold" />
 
                             <ticker.TickerView
-                                android:id="@+id/text_steps_count"
-                                android:layout_width="match_parent"
+                                android:id="@+id/text_calories_count"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:layout_gravity="center_horizontal"
-                                android:gravity="center_horizontal"
+                                android:layout_gravity="left"
+                                android:gravity="left"
                                 android:textAppearance="@style/TickerTextAppearance"
                                 app:ticker_animationDuration="1000" />
                         </LinearLayout>
@@ -285,11 +298,12 @@
                         android:src="@drawable/step_count_red_icon" />
 
                     <customsTextViews.CustomTextViewOpenSanBold
+                        android:id="@+id/txt_steps_counter"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="571"
+                        android:text="0"
                         android:textAllCaps="true"
                         android:textColor="@color/health_login_text"
                         android:textStyle="bold" />
@@ -328,8 +342,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="571"
-
+                        android:text="0"
                         android:textColor="@color/health_login_text"
                         android:textStyle="bold" />
 
@@ -424,7 +437,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:text="2 ltr Drink"
+                            android:text="0"
+                            android:visibility="invisible"
                             android:textColor="@color/health_login_text"
                             android:textStyle="bold" />
 
@@ -435,7 +449,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:text="1 ltr left"
+                            android:text="0 ltr"
                             android:textColor="@color/health_login_text"
                             android:textStyle="bold" />
 
@@ -461,35 +475,97 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_5dp">
 
-                        <customsTextViews.CustomTextViewOpenSanRegular
-                            android:id="@+id/txt_health_text"
-                            style="@style/textView_dark_grey_normal_micro"
+                        <LinearLayout
+                            android:id="@+id/linear_today"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_5dp"
+                            android:orientation="horizontal">
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/btn_daily"
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="@dimen/_5dp"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:background="@drawable/today_edit_rounded"
+                                android:gravity="center"
+                                android:paddingBottom="@dimen/_2dp"
+                                android:paddingLeft="@dimen/_5dp"
+                                android:paddingRight="@dimen/_5dp"
+                                android:paddingTop="@dimen/_2dp"
+                                android:text="Daily"
+                                android:textColor="@color/health_login_text" />
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/btn_weekly"
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="@dimen/_5dp"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:gravity="center"
+                                android:padding="@dimen/_2dp"
+                                android:text="Weekly"
+                                android:textColor="@color/white" />
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/btn_monthy"
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="@dimen/_5dp"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:gravity="center"
+                                android:padding="@dimen/_2dp"
+                                android:text="Monthy"
+                                android:textColor="@color/white" />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/liner_steps"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_15dp"
-                            android:layout_marginRight="@dimen/_5dp"
-                            android:layout_marginTop="@dimen/_5dp"
-                            android:elevation="@dimen/_10dp"
-                            android:gravity="center"
-                            android:padding="@dimen/_2dp"
-                            android:text="Health Note"
-                            android:textColor="@color/white" />
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginRight="@dimen/_5dp"
-                            android:layout_toRightOf="@+id/txt_health_text"
-                            android:src="@drawable/logo" />
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
                             android:layout_alignParentRight="true"
-                            android:layout_gravity="center_vertical"
+                            android:layout_centerVertical="true"
                             android:layout_marginRight="@dimen/_5dp"
-                            android:src="@drawable/logo" />
+                            android:background="@drawable/today_edit_rounded"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_steps_txt"
+                                style="@style/textView_dark_grey_normal_micro_mini"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:elevation="@dimen/_10dp"
+                                android:gravity="center_vertical"
+                                android:paddingBottom="@dimen/_2dp"
+                                android:paddingLeft="@dimen/_5dp"
+                                android:paddingRight="@dimen/_5dp"
+                                android:paddingTop="@dimen/_2dp"
+                                android:text="Steps"
+                                android:textColor="@color/health_login_text"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/img_steps_drop"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:paddingBottom="@dimen/_2dp"
+                                android:paddingLeft="@dimen/_5dp"
+                                android:paddingRight="@dimen/_5dp"
+                                android:paddingTop="@dimen/_2dp"
+                                android:src="@drawable/down_arrow_red" />
+                        </LinearLayout>
 
                     </RelativeLayout>
 
@@ -509,8 +585,13 @@
                                 android:layout_height="match_parent"
                                 android:visibility="visible">
 
+                                <com.github.mikephil.charting.charts.BarChart
+                                    android:id="@+id/chart1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent" />
 
                                 <customsTextViews.CustomTextViewOpenSanRegular
+                                    android:id="@+id/txt_no_data"
                                     style="@style/textView_dark_grey_normal_micro"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -518,8 +599,9 @@
                                     android:elevation="@dimen/_10dp"
                                     android:gravity="center"
                                     android:padding="@dimen/_2dp"
-                                    android:text="No Health Notes Yet !! Please Add Some Notes"
-                                    android:textColor="@color/white" />
+                                    android:text="No Chart Data Available"
+                                    android:textColor="@color/health_yellow"
+                                    android:visibility="gone" />
                                 <!--<ListView-->
                                 <!--android:id="@+id/notes"-->
                                 <!--android:layout_width="match_parent"-->
@@ -688,6 +770,7 @@
                     android:padding="@dimen/_10dp">
 
                     <LinearLayout
+                        android:id="@+id/txt_heath_note"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -719,6 +802,7 @@
                         android:background="@color/health_yellow" />
 
                     <LinearLayout
+                        android:id="@+id/txt_lab_reports"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
@@ -750,6 +834,7 @@
                         android:background="@color/health_yellow" />
 
                     <LinearLayout
+                        android:id="@+id/txt_prescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"

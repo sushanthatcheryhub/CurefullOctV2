@@ -23,12 +23,14 @@
             android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/img_vew"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/grid_list_symptom"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/upload_icon" />
+                android:nestedScrollingEnabled="true"
+                android:paddingBottom="@dimen/_5dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical" />
 
             <!--<ListView-->
             <!--android:id="@+id/list_view"-->
@@ -48,6 +50,7 @@
             android:padding="@dimen/_10dp">
 
             <LinearLayout
+                android:id="@+id/txt_heath_note"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -79,6 +82,7 @@
                 android:background="@color/health_yellow_bottom" />
 
             <LinearLayout
+                android:id="@+id/txt_heath_app"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -110,6 +114,7 @@
                 android:background="@color/health_yellow_bottom" />
 
             <LinearLayout
+                android:id="@+id/txt_lab_reports"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -174,34 +179,106 @@
                     android:layout_toRightOf="@+id/txt_health_text"
                     android:src="@drawable/prescription_small_icon" />
 
+
                 <LinearLayout
-                    android:id="@+id/liner_upload_new"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="@dimen/_10dp"
-                    android:orientation="horizontal">
+                    android:layout_marginRight="@dimen/_5dp"
+                    android:orientation="vertical">
 
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        style="@style/textView_dark_grey_normal_micro"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:gravity="right"
-                        android:singleLine="true"
-                        android:text="Upload new prescription"
-                        android:textColor="@color/health_yellow" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:padding="@dimen/_5dp"
+                            android:src="@drawable/user_yellow_large" />
+
+                        <LinearLayout
+                            android:layout_width="@dimen/_110dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/search_bar_add"
+                            android:orientation="horizontal">
 
 
-                    <ImageView
-                        android:id="@+id/img_upload"
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_sort_user_name"
+                                style="@style/textView_dark_grey_normal_micro_mini"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:gravity="center_vertical"
+                                android:padding="@dimen/_4dp"
+                                android:marqueeRepeatLimit="marquee_forever"
+                                android:ellipsize="marquee"
+                                android:singleLine="true"
+                                android:text="User Name"
+                                android:textColor="#ffffff"
+                                android:textColorHint="#ffffff" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="@dimen/_5dp"
+                                    android:background="@color/health_yellow" />
+
+                                <ImageView
+                                    android:id="@+id/img_user_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:padding="@dimen/_5dp"
+                                    android:src="@drawable/down_arrow_yellow" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/liner_upload_new"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:padding="@dimen/_5dp"
-                        android:src="@drawable/upload_icon" />
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:orientation="horizontal">
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_micro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="right"
+                            android:singleLine="true"
+                            android:text="Upload new prescription"
+                            android:textStyle="bold"
+                            android:textColor="@color/health_yellow" />
+
+
+                        <ImageView
+                            android:id="@+id/img_upload"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:padding="@dimen/_5dp"
+                            android:src="@drawable/upload_icon" />
+                    </LinearLayout>
                 </LinearLayout>
-
             </RelativeLayout>
 
 
@@ -252,14 +329,14 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="@dimen/_100dp"
+                            android:layout_width="@dimen/_110dp"
                             android:layout_height="wrap_content"
                             android:background="@drawable/search_bar_add"
                             android:orientation="horizontal">
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
-                                android:id="@+id/txt_sort_date"
+                                android:id="@+id/txt_sort_doctor_name"
                                 style="@style/textView_dark_grey_normal_micro_mini"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -286,15 +363,17 @@
                                     android:background="@color/health_yellow" />
 
                                 <ImageView
+                                    android:id="@+id/img_doctor_name"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
+                                    android:padding="@dimen/_5dp"
                                     android:src="@drawable/down_arrow_yellow" />
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/_110dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:background="@drawable/search_bar_add"
@@ -302,10 +381,12 @@
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_disease_names"
                                 style="@style/textView_dark_grey_normal_micro_mini"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
                                 android:gravity="center_vertical"
                                 android:padding="@dimen/_4dp"
                                 android:singleLine="true"
@@ -313,19 +394,27 @@
                                 android:textColor="#ffffff"
                                 android:textColorHint="#ffffff" />
 
-
-                            <View
-                                android:layout_width="1dp"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="@dimen/_5dp"
-                                android:background="@color/health_yellow" />
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
 
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:padding="@dimen/_4dp"
-                                android:src="@drawable/down_arrow_yellow" />
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="@dimen/_5dp"
+                                    android:background="@color/health_yellow" />
+
+                                <ImageView
+                                    android:id="@+id/img_disease_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:padding="@dimen/_5dp"
+                                    android:src="@drawable/down_arrow_yellow" />
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
 
@@ -338,13 +427,14 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="@dimen/_100dp"
+                            android:layout_width="@dimen/_110dp"
                             android:layout_height="wrap_content"
                             android:background="@drawable/search_bar_add"
                             android:orientation="horizontal">
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_upload_by"
                                 style="@style/textView_dark_grey_normal_micro_mini"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -370,15 +460,17 @@
                                     android:background="@color/health_yellow" />
 
                                 <ImageView
+                                    android:id="@+id/img_upload_by"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
+                                    android:padding="@dimen/_5dp"
                                     android:src="@drawable/down_arrow_yellow" />
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/_110dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:background="@drawable/search_bar_add"
@@ -386,10 +478,12 @@
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_dates"
                                 style="@style/textView_dark_grey_normal_micro_mini"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
                                 android:gravity="center_vertical"
                                 android:padding="@dimen/_4dp"
                                 android:singleLine="true"
@@ -397,20 +491,26 @@
                                 android:textColor="#ffffff"
                                 android:textColorHint="#ffffff" />
 
-
-                            <View
-                                android:layout_width="1dp"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="@dimen/_5dp"
-                                android:background="@color/health_yellow" />
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
 
-                            <ImageView
-                                android:id="@+id/img_select_date"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:padding="@dimen/_4dp"
-                                android:src="@drawable/down_arrow_yellow" />
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="@dimen/_5dp"
+                                    android:background="@color/health_yellow" />
+
+                                <ImageView
+                                    android:id="@+id/img_date"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:padding="@dimen/_5dp"
+                                    android:src="@drawable/down_arrow_yellow" />
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
 
@@ -448,8 +548,8 @@
                         android:id="@+id/layoutButtons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_10dp"
-                        android:layout_marginTop="@dimen/_5dp"
+                        android:layout_marginRight="@dimen/_15dp"
+                        android:layout_marginTop="@dimen/_30dp"
                         android:orientation="vertical"
                         android:visibility="gone">
 
@@ -468,7 +568,8 @@
                                 android:gravity="right"
                                 android:singleLine="true"
                                 android:text="Upload new prescription"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_yellow"
+                                android:visibility="invisible" />
 
 
                             <ImageView
@@ -542,8 +643,26 @@
                 <RelativeLayout
                     android:id="@+id/realtive_notes"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:visibility="visible">
 
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        android:id="@+id/txt_no_prescr"
+                        style="@style/textView_dark_grey_normal_micro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:elevation="@dimen/_10dp"
+                        android:gravity="center"
+                        android:padding="@dimen/_2dp"
+                        android:text="No Prescriptions Uploaded Yet!"
+                        android:textColor="@color/white"
+                        android:visibility="gone" />
+                    <!--<ListView-->
+                    <!--android:id="@+id/notes"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"></ListView>-->
 
                 </RelativeLayout>
 

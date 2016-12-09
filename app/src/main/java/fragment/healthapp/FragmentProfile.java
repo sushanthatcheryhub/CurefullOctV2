@@ -13,21 +13,26 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.io.File;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import utils.AppPreference;
+import utils.MyConstants;
 
 
 /**
@@ -36,17 +41,20 @@ import curefull.healthapp.R;
 public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 
-    private ImageView img_vew;
+    private ImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
     private RelativeLayout realtive_notes;
     private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
-    private LinearLayout liner_gallery, liner_camera;
+    private LinearLayout liner_gallery, liner_camera, liner_remove, liner_password;
     private float pixelDensity;
     boolean flag = true;
     private Animation alphaAnimation;
     private ImageView img_upload, img_gallery, img_camera, img_upload_animation;
+    private EditText input_name, edt_phone, input_email;
+    private TextView btn_click_change;
+    private boolean isclick = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,20 +62,27 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        btn_click_change = (TextView) rootView.findViewById(R.id.btn_click_change);
+        input_name = (EditText) rootView.findViewById(R.id.input_name);
+        edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
+        input_email = (EditText) rootView.findViewById(R.id.input_email);
         img_upload_animation = (ImageView) rootView.findViewById(R.id.img_upload_animation);
         img_gallery = (ImageView) rootView.findViewById(R.id.img_gallery);
         img_camera = (ImageView) rootView.findViewById(R.id.img_camera);
         img_upload = (ImageView) rootView.findViewById(R.id.img_upload);
-        img_vew = (ImageView) rootView.findViewById(R.id.img_vew);
+        profile_image_view = (ImageView) rootView.findViewById(R.id.profile_image_view);
         pixelDensity = getResources().getDisplayMetrics().density;
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
+        liner_password = (LinearLayout) rootView.findViewById(R.id.liner_password);
         liner_animation_upload = (LinearLayout) rootView.findViewById(R.id.liner_animation_upload);
         liner_upload_new = (LinearLayout) rootView.findViewById(R.id.liner_upload_new);
         liner_gallery = (LinearLayout) rootView.findViewById(R.id.liner_gallery);
         liner_camera = (LinearLayout) rootView.findViewById(R.id.liner_camera);
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
+        liner_remove = (LinearLayout) rootView.findViewById(R.id.liner_remove);
         layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
 //        img_upload_pre = (ImageView) rootView.findViewById(R.id.img_upload_pre);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -77,16 +92,40 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         liner_upload_new.setOnClickListener(this);
         liner_camera.setOnClickListener(this);
         liner_gallery.setOnClickListener(this);
+        liner_remove.setOnClickListener(this);
+        btn_click_change.setOnClickListener(this);
         alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+        input_name.setText("" + AppPreference.getInstance().getUserName());
+        edt_phone.setText("" + AppPreference.getInstance().getMobileNumber());
+        input_email.setText("" + AppPreference.getInstance().getUserID());
+
+        if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
+            try {
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
+            } catch (Exception e) {
+            }
+        }
+
         return rootView;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.btn_click_change:
+                if (isclick) {
+                    isclick = false;
+                    liner_password.setVisibility(View.GONE);
+                } else {
+                    isclick = true;
+                    liner_password.setVisibility(View.VISIBLE);
+                }
+
+
+                break;
             case R.id.liner_animation_upload:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
-                img_vew.post(new Runnable() {
+                profile_image_view.post(new Runnable() {
                     @Override
                     public void run() {
                         launchTwitter(rootView);
@@ -95,7 +134,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 break;
             case R.id.liner_upload_new:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
-                img_vew.post(new Runnable() {
+                profile_image_view.post(new Runnable() {
                     @Override
                     public void run() {
                         launchTwitter(rootView);
@@ -114,6 +153,18 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+
+                break;
+
+            case R.id.liner_remove:
+                profile_image_view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitter(rootView);
+                    }
+                });
+                profile_image_view.setImageBitmap(null);
+                profile_image_view.setBackground(getResources().getDrawable(R.drawable.transarent_gray));
                 break;
 //            case R.id.img_upload_pre:
 //                showDialogOK("Choose picture from Camera or Gallery !",
@@ -151,8 +202,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
             //Get our saved file into a bitmap object:
             File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-            Bitmap bitmap = decodeSampledBitmapFromFile(file.getAbsolutePath(), 1000, 700);
-            img_vew.setImageBitmap(bitmap);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            profile_image_view.setImageBitmap(bitmap);
+            profile_image_view.post(new Runnable() {
+                @Override
+                public void run() {
+                    launchTwitter(rootView);
+                }
+            });
         } else {
             if (requestCode == SELECT_PHOTO) {
                 // Let's read picked image data - its URI
@@ -162,57 +221,22 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
                 cursor.moveToFirst();
                 String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-                img_vew.setImageBitmap(bitmap);
-
-                // Do something with the bitmap
-
-
-                // At the end remember to close the cursor or you will end with the RuntimeException!
+                profile_image_view.setImageBitmap(bitmap);
+                profile_image_view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitter(rootView);
+                    }
+                });
                 cursor.close();
             }
         }
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) { // BEST QUALITY MATCH
 
-        //First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-
-        // Calculate inSampleSize, Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        int inSampleSize = 1;
-
-        if (height > reqHeight) {
-            inSampleSize = Math.round((float) height / (float) reqHeight);
-        }
-        int expectedWidth = width / inSampleSize;
-
-        if (expectedWidth > reqWidth) {
-            //if(Math.round((float)width / (float)reqWidth) > inSampleSize) // If bigger SampSize..
-            inSampleSize = Math.round((float) width / (float) reqWidth);
-        }
-
-        options.inSampleSize = inSampleSize;
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-
-        return BitmapFactory.decodeFile(path, options);
-    }
-
-    private void showDialogOK(String message,
-                              DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(CureFull.getInstanse().getActivityIsntanse()).setMessage(message).setCancelable(false)
-                .setPositiveButton("Camera", okListener).setNegativeButton("Gallery", okListener).show();
-    }
 
 
     public void launchTwitter(View view) {

@@ -16,6 +16,8 @@ public class SignUpInfo {
     private String user_id;
     private String a_t;
     private String r_t;
+    private String cf_uuhid;
+    private String mobileNumber;
 
     public SignUpInfo() {
 
@@ -29,12 +31,13 @@ public class SignUpInfo {
             JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
             setUser_id(jsonResponse1.getString(MyConstants.PrefrenceKeys.EMAIL));
             setUser_name(jsonResponse1.getString(MyConstants.PrefrenceKeys.NAME));
+            setMobileNumber(jsonResponse1.getString("mobileNumber"));
 
             JSONObject jsonResponse = jsonObject.getJSONObject(MyConstants.JsonUtils.HEADERS);
 //            setFname(jsonResponse.getString(MyConstants.JsonUtils.FNAME));
             setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
             setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
-
+            setCf_uuhid(jsonResponse.getString(MyConstants.JsonUtils.CF_UUHID));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,6 +64,22 @@ public class SignUpInfo {
         }
     }
 
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getCf_uuhid() {
+        return cf_uuhid;
+    }
+
+    public void setCf_uuhid(String cf_uuhid) {
+        this.cf_uuhid = cf_uuhid;
+    }
 
     public String getFname() {
         return fname;

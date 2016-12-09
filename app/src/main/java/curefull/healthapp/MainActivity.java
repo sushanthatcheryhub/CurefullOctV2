@@ -13,6 +13,7 @@ import android.content.pm.Signature;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -48,6 +49,12 @@ import utils.AppPreference;
 import utils.NotificationUtils;
 
 public class MainActivity extends BaseMainActivity {
+
+    static {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
     //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
@@ -107,7 +114,7 @@ public class MainActivity extends BaseMainActivity {
             } else {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentHomeScreenAll(), false);
+                        .replace(new FragmentLogin(), false);
             }
         }
 
@@ -126,6 +133,7 @@ public class MainActivity extends BaseMainActivity {
         liner_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AppPreference.getInstance().clearAllData();
                 AppPreference.getInstance().setIsLogin(false);
                 CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();

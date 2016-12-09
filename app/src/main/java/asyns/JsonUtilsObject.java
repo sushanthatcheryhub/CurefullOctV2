@@ -1,17 +1,25 @@
 package asyns;
 
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import item.property.EduationDetails;
+import item.property.LabReportImageList;
+import item.property.PrescriptionImageList;
 import utils.MyConstants;
+
+import static android.R.attr.bitmap;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -24,6 +32,36 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         try {
             jsonParent.put(USER_NAME, userName);
             jsonParent.put(PASSWORD, password);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toForgotPassword(String mobileNumber, String password) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("mobileNumber", mobileNumber);
+            jsonParent.put(PASSWORD, password);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject toUHIDADD(String name, String mobileNumber) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("name", name);
+            jsonParent.put("mobileNumber", mobileNumber);
+
 
         } catch (Exception e) {
 
@@ -57,7 +95,7 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
             jsonParent.put("details", details);
             jsonParent.put("date", date);
             jsonParent.put("fromTime", fromTime);
-            jsonParent.put("toTime", "");
+            jsonParent.put("toTime", toTime);
 
 
         } catch (Exception e) {
@@ -164,11 +202,68 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject toForgotPassword(String resendPasswordId, String resendPasswordType) {
+    public static JSONObject prescriptionUpload(String date, String doctorName, String disease, List<PrescriptionImageList> prescriptionImageList) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put(RESEND_ID, resendPasswordId);
-            jsonParent.put(RESEND_TYPE, resendPasswordType);
+            jsonParent.put("date", date);
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("disease", disease);
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < prescriptionImageList.size(); i++) {
+                    JSONObject list1 = new JSONObject();
+                    list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+                    Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
+//                    list1.put("prescriptionImage", changeTOBase64(prescriptionImageList.get(i).getPrescriptionImage()));
+                    obj1.put(list1);
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            jsonParent.put("prescriptionImageList", obj1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject getGraphDeatils(String date, String frequency, String type, String offset) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("date", date);
+            jsonParent.put("frequency", frequency);
+            jsonParent.put("type", type);
+            jsonParent.put("offset", offset);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject LabReportUpload(String date, String doctorName, String testName, List<PrescriptionImageList> prescriptionImageList) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("date", date);
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("testName", testName);
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < prescriptionImageList.size(); i++) {
+                    JSONObject list1 = new JSONObject();
+                    list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+//                    list1.put("reportImage", changeTOBase64(prescriptionImageList.get(i).getPrescriptionImage()));
+                    obj1.put(list1);
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            jsonParent.put("reportImageList", obj1);
 
         } catch (Exception e) {
 
@@ -467,5 +562,14 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
 
         return jsonParent;
     }
+
+    public static String changeTOBase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return encoded;
+    }
+
 
 }

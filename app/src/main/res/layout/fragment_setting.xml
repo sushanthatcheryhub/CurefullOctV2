@@ -1,0 +1,415 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/login_gradient"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_15dp"
+                android:layout_marginTop="@dimen/_10dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/prescription_small_icon" />
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/txt_health_text"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/_5dp"
+                    android:elevation="@dimen/_10dp"
+                    android:padding="@dimen/_2dp"
+                    android:text="Setting"
+                    android:textColor="@color/health_yellow" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/liner_click"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10dp"
+                android:background="@color/health_yellow"
+                android:orientation="horizontal"
+                android:padding="@dimen/_5dp">
+
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ticker1"
+                    android:layout_marginLeft="@dimen/_25dp"
+                    android:gravity="center_horizontal"
+                    android:text="Notification"
+                    android:textColor="@color/health_red_drawer" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/customTextViewOpenSanRegular"
+                            style="@style/textView_dark_grey_normal_small_one"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Steps count"
+                            android:textColor="@color/health_yellow" />
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/txt_steps_counter"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Walking Steps are very important to your health. Curefull reminds you about your daily steps count. "
+                            android:textColor="@color/dateTimeColorAccent" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".5"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ToggleButton
+                            android:id="@+id/chkStateStep"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff=""
+                            android:textOn="" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/customTextView_waterIntake"
+                            style="@style/textView_dark_grey_normal_small_one"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Water Intake"
+                            android:textColor="@color/health_yellow" />
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_water_inatke"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Press the button if you want to stop steps count notification."
+                            android:textColor="@color/dateTimeColorAccent" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".5"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ToggleButton
+                            android:id="@+id/chkStateWater"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff=""
+                            android:textOn="" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/customTextView_Med_rem"
+                            style="@style/textView_dark_grey_normal_small_one"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Medicine reminder"
+                            android:textColor="@color/health_yellow" />
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_med_rem"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Press the button if you want to stop steps count "
+                            android:textColor="@color/dateTimeColorAccent" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".5"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ToggleButton
+                            android:id="@+id/chkStateMedcineRem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff=""
+                            android:textOn="" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/customTextViewdoctor"
+                            style="@style/textView_dark_grey_normal_small_one"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Doctor visit Reminder"
+                            android:textColor="@color/health_yellow" />
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_doctor_visit"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Press the button if you want to stop steps count "
+                            android:textColor="@color/dateTimeColorAccent" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".5"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ToggleButton
+                            android:id="@+id/chkStateDoctor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff=""
+                            android:textOn="" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_25dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/customTextViewLastTest"
+                            style="@style/textView_dark_grey_normal_small_one"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Last test reminder"
+                            android:textColor="@color/health_yellow" />
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_last_test"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Press the button if you want to stop steps count "
+                            android:textColor="@color/dateTimeColorAccent" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".5"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ToggleButton
+                            android:id="@+id/chkStateLstTest"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff=""
+                            android:textOn="" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

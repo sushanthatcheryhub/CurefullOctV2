@@ -1,0 +1,64 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/login_gradient"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_10dp"
+                android:gravity="center_vertical">
+
+
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/txt_health_text"
+                    style="@style/textView_dark_grey_normal_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5dp"
+                    android:elevation="@dimen/_10dp"
+                    android:gravity="center"
+                    android:padding="@dimen/_2dp"
+                    android:text="Curefull Terms and Conditions"
+                    android:textColor="@color/health_yellow" />
+
+
+            </LinearLayout>
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                style="@style/textView_dark_grey_normal_medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticker1"
+                android:layout_margin="@dimen/_10dp"
+                android:gravity="center_horizontal"
+                android:text="Notification"
+                android:textColor="@color/health_yellow" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

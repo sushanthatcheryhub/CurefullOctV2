@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Health App</string>
+    <string name="app_name">CureFull</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -88,4 +88,11 @@
     <!-- Image description -->
     <string name="img_datetime">Image datetime</string>
     <string name="txt_height">Ft &amp; In</string>
+
+    <string name="local_service_label">Local Service</string>
+
+    <string name="remote_service_started">Step Counter has been started</string>
+    <string name="remote_service_connected">Step Counter has been connected</string>
+    <string name="remote_service_disconnected">Step Counter has been disconnected</string>
+    <string name="remote_service_stopped">Step Counter has been stopped</string>
 </resources>
