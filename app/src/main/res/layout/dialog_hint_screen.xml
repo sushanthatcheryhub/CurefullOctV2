@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC000000"
+    android:clickable="true">
+
+    <LinearLayout
+        android:id="@+id/liner_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/_10dp"
+        android:layout_marginTop="@dimen/_170dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/liner_user"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/_5dp"
+            android:src="@drawable/curved_arrow_up_right" />
+
+        <ImageView
+            android:id="@+id/img_qutions_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_2dp"
+            android:src="@drawable/how_to" />
+    </LinearLayout>
+
+    <customsTextViews.CustomTextViewOpenSanRegular
+        android:id="@+id/txt_health_text"
+        style="@style/textView_dark_grey_normal_micro_mini"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/liner_user"
+        android:layout_marginRight="@dimen/_5dp"
+        android:elevation="@dimen/_10dp"
+        android:gravity="center"
+        android:padding="@dimen/_2dp"
+        android:text="Click here to know how this feature works."
+        android:textColor="@color/health_yellow" />
+
+    <LinearLayout
+        android:id="@+id/liner_user_red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/liner_user"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/_40dp"
+        android:layout_marginTop="@dimen/_195dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/liner_user"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/_5dp"
+            android:src="@drawable/curved_arrow_up_right" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_2dp"
+            android:src="@drawable/red_yellow_question_mark" />
+    </LinearLayout>
+
+    <customsTextViews.CustomTextViewOpenSanRegular
+        android:id="@+id/txt_health_text_red"
+        style="@style/textView_dark_grey_normal_micro_mini"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/liner_user_red"
+        android:layout_marginRight="@dimen/_5dp"
+        android:elevation="@dimen/_10dp"
+        android:gravity="center"
+        android:padding="@dimen/_2dp"
+        android:text="Click here to know how this feature works."
+        android:textColor="@color/health_yellow" />
+
+</RelativeLayout>

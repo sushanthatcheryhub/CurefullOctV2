@@ -1,7 +1,13 @@
 package adpter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +23,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentHealthNote;
 import item.property.HealthNoteItems;
+import utils.CustomTypefaceSpan;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -49,7 +56,6 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
     public void onBindViewHolder(ItemViewHolder holder, final int position) {
         TextView txt_date_time = holder.txt_date_time;
         TextView txt_title = holder.txt_title;
-        TextView txt_deatils = holder.txt_deatils;
         LinearLayout linearLayout = holder.liner_bottom;
 
         String dateTime = healthNoteItemses.get(position).getNote_date();
@@ -64,7 +70,8 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
 
         if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
             try {
-                txt_date_time.setText("" + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + days + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                Log.e("time", "" + hrs + ":- " + mins);
+                txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -74,18 +81,40 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
             String hrs1 = dateParts11[0];
             String mins1 = dateParts11[1];
 
-            Log.e("hi","hi"+times1);
+            Log.e("hi", "hi" + times1);
             try {
-                txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + years + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+                txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
-        txt_title.setText("" + healthNoteItemses.get(position).getNote_heading());
-        txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
-        txt_deatils.setSelected(true);
+        String name = healthNoteItemses.get(position).getNote_heading();
+        String comma = " : ";
+        String gameName = healthNoteItemses.get(position).getDeatils();
 
+        String meassgeTxt = name + comma + gameName;
+
+        Spannable sb = new SpannableString(meassgeTxt);
+        Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                meassgeTxt.indexOf(comma) + comma.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
+                meassgeTxt.indexOf(gameName) + gameName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        txt_title.setText(sb);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +128,6 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
 
         public TextView txt_date_time;
         public TextView txt_title;
-        public TextView txt_deatils;
         public LinearLayout liner_bottom;
 
         ItemViewHolder(View view) {
@@ -109,8 +137,6 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
                     .findViewById(R.id.txt_date_time);
             this.txt_title = (TextView) itemView
                     .findViewById(R.id.txt_title);
-            this.txt_deatils = (TextView) itemView
-                    .findViewById(R.id.txt_deatils);
         }
     }
 

@@ -42,10 +42,40 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     }
 
 
+    public static JSONObject toUHID(String name, String mobile) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("name", name);
+            jsonParent.put("mobileNumber", mobile);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
     public static JSONObject toForgotPassword(String mobileNumber, String password) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("mobileNumber", mobileNumber);
+            jsonParent.put(PASSWORD, password);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toForgotPasswordEmail(String mobileNumber, String password) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("userId", mobileNumber);
             jsonParent.put(PASSWORD, password);
 
         } catch (Exception e) {
@@ -71,16 +101,16 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject toSignUp(String userName, String email, String password, String mobileNo) {
+    public static JSONObject toSignUp(String userName, String email, String password, String mobileNo, String uhid) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put(NAME, userName);
             jsonParent.put(EMAIL, email);
             jsonParent.put(PASSWORD, password);
             jsonParent.put(MOBILE_NO, mobileNo);
+            jsonParent.put("cfUuhid", uhid);
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 

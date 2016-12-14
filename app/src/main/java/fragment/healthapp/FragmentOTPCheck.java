@@ -42,7 +42,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -67,7 +69,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private RequestQueue requestQueue;
     private int OTP;
-    private String health_name, health_email, health_mobile, health_password;
+    private String health_name, health_email, health_mobile, health_password, realUHID;
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false;
 
@@ -94,10 +96,11 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             health_email = bundle.getString("EMAIL");
             health_mobile = bundle.getString("MOBILE");
             OTP = bundle.getInt("otp");
+            realUHID = bundle.getString("UHID");
         }
 
         Log.e("OTP", ":- " + OTP);
-//        btn_click_resend_otp.setText("" + OTP);
+        btn_click_resend_otp.setText("" + OTP);
         btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
 
@@ -117,11 +120,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                 showPwd = true;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setTextSize(16f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setTextSize(16f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
@@ -156,11 +161,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                 showPwd = true;
                                 edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT);
                                 edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                edt_confirm_password.setTextSize(16f);
                                 edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                edt_confirm_password.setTextSize(16f);
                                 edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
@@ -301,7 +308,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     public void jsonLoginCheck() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
-        JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile);
+        JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile, realUHID);
         Log.e("data", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
                 new Response.Listener<JSONObject>() {
@@ -323,6 +330,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             SignUpInfo userInfo = ParseJsonData.getInstance().getSignUpData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
+                                List<String> stringList = new ArrayList<>();
+                                stringList.add(userInfo.getUser_id());
+
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());

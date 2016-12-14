@@ -16,7 +16,6 @@
             android:id="@+id/image_item"
             android:layout_width="@dimen/_80dp"
             android:layout_height="@dimen/_100dp"
-            android:scaleType="fitXY"
             android:src="@drawable/ic_add_white_18dp" />
 
     </RelativeLayout>

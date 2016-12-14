@@ -35,12 +35,14 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
     private RequestQueue requestQueue;
     private boolean isDelete;
     private IOnCheckCheckbox iOnCheckCheckbox;
+    private DialogFullViewClickImage dialogFullViewClickImages;
 
     public AddImageDoneAdpter(Context applicationContexts,
-                              List<PrescriptionImageList> patientList, boolean isDeletes) {
+                              List<PrescriptionImageList> patientList, boolean isDeletes, DialogFullViewClickImage dialogFullViewClickImage) {
         this.prescriptionImageLists = patientList;
         this.applicationContext = applicationContexts;
         this.isDelete = isDeletes;
+        this.dialogFullViewClickImages = dialogFullViewClickImage;
     }
 
     @Override
@@ -82,10 +84,11 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
-                    DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext,bitmap);
+                    DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext, bitmap);
                     dialogFullViewImage.show();
                 } else if (prescriptionImageLists.get(position).getImageNumber() == 000) {
                     Log.e("ok", "ok");
+                    dialogFullViewClickImages.isCheck();
                 }
 
             }

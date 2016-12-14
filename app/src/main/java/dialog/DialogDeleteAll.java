@@ -17,6 +17,7 @@ public class DialogDeleteAll extends Dialog implements View.OnClickListener {
     private TextView txt_message;
     private String dialogName;
     private int pos;
+
     public DialogDeleteAll(Context _activiyt, String message, String dialogName, int position) {
         super(_activiyt, R.style.MyTheme);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -30,7 +31,7 @@ public class DialogDeleteAll extends Dialog implements View.OnClickListener {
         this.dialogName = dialogName;
         findViewById(R.id.btn_done).setOnClickListener(this);
         findViewById(R.id.btn_no).setOnClickListener(this);
-        this.pos=position;
+        this.pos = position;
     }
 
 
@@ -39,14 +40,14 @@ public class DialogDeleteAll extends Dialog implements View.OnClickListener {
 
         if (v.getId() == R.id.btn_done) {
             if (iOnOtpDoneDelete != null) {
-                iOnOtpDoneDelete.optDoneDelete("OK", dialogName,pos);
+                iOnOtpDoneDelete.optDoneDelete("OK", dialogName, pos);
                 dismiss();
 
             }
         }
         if (v.getId() == R.id.btn_no) {
             if (iOnOtpDoneDelete != null) {
-                iOnOtpDoneDelete.optDoneDelete("NO", dialogName,pos);
+                iOnOtpDoneDelete.optDoneDelete("NO", dialogName, pos);
                 dismiss();
             }
         }

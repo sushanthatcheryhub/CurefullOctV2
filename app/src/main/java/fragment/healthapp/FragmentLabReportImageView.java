@@ -83,7 +83,7 @@ public class FragmentLabReportImageView extends Fragment {
 //                uploadPrescriptionAdpter.notifyDataSetChanged();
             }
         }
-
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 

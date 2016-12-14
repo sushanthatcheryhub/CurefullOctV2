@@ -1,6 +1,8 @@
 package fragment.healthapp;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -40,9 +42,10 @@ public class FragmentLabReportImageFullView extends Fragment {
 
     private View rootView;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
-    private ImageView image_item, img_delete;
-    private String doctoreName, prescriptionId, iPrescriptionId;
+    private ImageView image_item, img_delete, img_share;
+    private String doctoreName, prescriptionId, iPrescriptionId,date;
     private RequestQueue requestQueue;
+    private String images;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +57,7 @@ public class FragmentLabReportImageFullView extends Fragment {
         txt_doctor_name = (TextView) rootView.findViewById(R.id.txt_doctor_name);
         txt_diease_name = (TextView) rootView.findViewById(R.id.txt_diease_name);
         txt_date = (TextView) rootView.findViewById(R.id.txt_date);
+        img_share = (ImageView) rootView.findViewById(R.id.img_share);
         image_item = (ImageView) rootView.findViewById(R.id.image_item);
         img_delete = (ImageView) rootView.findViewById(R.id.img_delete);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -61,15 +65,16 @@ public class FragmentLabReportImageFullView extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
+            date=bundle.getString("date");
             txt_date.setText("" + bundle.getString("date"));
             doctoreName = bundle.getString("doctorName");
             txt_doctor_name.setText("" + doctoreName);
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
-
+            images = bundle.getString("imageList");
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + bundle.getString("imageList"), image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + images, image_item);
             } catch (Exception e) {
 
             }
@@ -82,7 +87,13 @@ public class FragmentLabReportImageFullView extends Fragment {
                 getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
             }
         });
-
+        img_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareClick(images);
+            }
+        });
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -140,12 +151,24 @@ public class FragmentLabReportImageFullView extends Fragment {
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    public void shareClick(String prescriptionImage) {
+        String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionImage;
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        Uri imageUri = Uri.parse(url);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " +date);
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:-"+ doctoreName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        sharingIntent.setType("image/*");
+        CureFull.getInstanse().getActivityIsntanse().startActivity(sharingIntent);
     }
 
 }

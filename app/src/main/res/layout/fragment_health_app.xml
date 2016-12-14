@@ -43,6 +43,7 @@
                     android:textColor="@color/health_login_text" />
 
                 <LinearLayout
+                    android:id="@+id/liner_btn_goal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -108,7 +109,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
-                                android:textAppearance="@style/TickerTextAppearance2"
+                                android:textAppearance="@style/TickerTextAppearance3"
                                 app:ticker_animationDuration="100" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -203,15 +204,18 @@
                                 android:textColor="#036F79"
                                 android:textStyle="bold" />
 
-                            <ticker.TickerView
+                            <customsTextViews.CustomTextViewOpenSanRegular
                                 android:id="@+id/tickerTotal"
+                                style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
                                 android:layout_gravity="left"
                                 android:gravity="left"
-                                android:textAppearance="@style/TickerTextAppearance"
-                                app:ticker_animationDuration="1000" />
+                                android:text="0"
+                                android:textAllCaps="true"
+                                android:textColor="@color/health_app_text" />
+
                         </LinearLayout>
                     </LinearLayout>
 
@@ -262,14 +266,19 @@
                                 android:textColor="#036F79"
                                 android:textStyle="bold" />
 
-                            <ticker.TickerView
+                            <customsTextViews.CustomTextViewOpenSanRegular
                                 android:id="@+id/text_calories_count"
+                                style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
                                 android:layout_gravity="left"
                                 android:gravity="left"
-                                android:textAppearance="@style/TickerTextAppearance"
-                                app:ticker_animationDuration="1000" />
+                                android:text="0"
+                                android:textAllCaps="true"
+                                android:textColor="@color/health_app_text" />
+
+
                         </LinearLayout>
                     </LinearLayout>
 
@@ -438,13 +447,13 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="0"
-                            android:visibility="invisible"
                             android:textColor="@color/health_login_text"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="invisible" />
 
 
                         <customsTextViews.CustomTextViewOpenSanRegular
-                            android:id="@+id/customTextViewOpenSanBold2"
+                            android:id="@+id/txt_water_intake"
                             style="@style/textView_dark_grey_normal_micro_mini"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

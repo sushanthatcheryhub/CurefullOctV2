@@ -9,5 +9,5 @@ import item.property.PrescriptionImageList;
  */
 public interface IOnDoneMoreImage {
 
-    public void optDoneMoreImage(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImageListss);
+    public void optDoneMoreImage(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImageListss,String message);
 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="bottom"
     android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -22,13 +23,14 @@
             android:gravity="bottom">
 
 
-            <ImageView
+            <utils.CircularImageView
                 android:id="@+id/placeholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_100dp"
+                android:layout_height="@dimen/_100dp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_5dp"
+                app:civ_border_color="@color/health_yellow"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/profile_avatar" />
 

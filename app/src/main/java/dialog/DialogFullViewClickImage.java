@@ -39,7 +39,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
     private GridLayoutManager lLayout;
     private AddImageDoneAdpter addImageAdpter;
     private IOnDoneMoreImage iOnDoneMoreImage;
-    private TextView btn_done, txt_date, txt_health_text;
+    private TextView btn_done, txt_date, txt_health_text, txt_pre_date;
     private EditText input_doctor_name, input_disease;
     private String date = "";
     private LinearLayout liner_date_select;
@@ -58,6 +58,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        txt_pre_date = (TextView) findViewById(R.id.txt_pre_date);
         txt_health_text = (TextView) findViewById(R.id.txt_health_text);
         btn_delete = (ImageView) findViewById(R.id.btn_delete);
         btn_done = (TextView) findViewById(R.id.btn_done);
@@ -77,16 +78,16 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
             recyclerViewAddImage.setLayoutManager(lLayout);
             recyclerViewAddImage.setHasFixedSize(true);
             addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                    prescriptionImageListss, isdelete);
+                    prescriptionImageListss, isdelete,DialogFullViewClickImage.this);
             addImageAdpter.setiOnCheckCheckbox(this);
             recyclerViewAddImage.setAdapter(addImageAdpter);
             addImageAdpter.notifyDataSetChanged();
         }
 
         if (type.equalsIgnoreCase("lab")) {
+            txt_pre_date.setText("Report Date");
             input_disease.setHint("Test Name");
             txt_health_text.setText("You added " + (prescriptionImageListss.size() - 1) + " file in this Lab test please add detail for better experince");
-
         } else {
             input_disease.setHint("Disease Name");
             txt_health_text.setText("You added " + (prescriptionImageListss.size() - 1) + " file in this prescription please add detail for better experince");
@@ -106,7 +107,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_done:
-
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 if (btn_done.getText().toString().equalsIgnoreCase("Done")) {
 
                     if (!validateDoctorName()) {
@@ -120,7 +121,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                     }
 
                     if (iOnDoneMoreImage != null) {
-                        iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss);
+                        iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss,"no");
                         dismiss();
                     }
                 } else {
@@ -132,7 +133,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                     }
                     isdelete = false;
                     addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                            prescriptionImageListss, isdelete);
+                            prescriptionImageListss, isdelete, DialogFullViewClickImage.this);
                     recyclerViewAddImage.setAdapter(addImageAdpter);
                     addImageAdpter.notifyDataSetChanged();
                     txt_health_text.setText("You added " + prescriptionImageListss.size() + " file in this prescription please add detail for better experince");
@@ -157,20 +158,20 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
 
             case R.id.btn_delete:
                 if (isclick) {
-                    isclick=false;
+                    isclick = false;
                     btn_delete.setImageResource(R.drawable.delete_red);
                     isdelete = false;
                     addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                            prescriptionImageListss, isdelete);
+                            prescriptionImageListss, isdelete, DialogFullViewClickImage.this);
                     recyclerViewAddImage.setAdapter(addImageAdpter);
                     addImageAdpter.notifyDataSetChanged();
                     btn_done.setText("Done");
                 } else {
-                    isclick=true;
+                    isclick = true;
                     btn_delete.setImageResource(R.drawable.cancel_red);
                     isdelete = true;
                     addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                            prescriptionImageListss, isdelete);
+                            prescriptionImageListss, isdelete, DialogFullViewClickImage.this);
                     recyclerViewAddImage.setAdapter(addImageAdpter);
                     addImageAdpter.notifyDataSetChanged();
                     btn_done.setText("Delete");
@@ -245,4 +246,12 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
             btn_done.setText("Done");
         }
     }
+
+    public void isCheck(){
+        if (iOnDoneMoreImage != null) {
+            iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss,"yes");
+            dismiss();
+        }
+    }
+
 }

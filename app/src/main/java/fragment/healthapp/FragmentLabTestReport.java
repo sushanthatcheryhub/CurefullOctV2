@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 
 import adpter.UploadLabTestReportAdpter;
-import adpter.UploadPrescriptionAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
@@ -60,13 +59,10 @@ import dialog.DialogFullViewClickImage;
 import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
-import item.property.LabReportImageList;
-import item.property.LabReportImageListView;
 import item.property.LabReportListView;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionImageList;
-import item.property.LabReportListView;
 import item.property.UHIDItems;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -89,7 +85,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     private float pixelDensity;
     boolean flag = true;
     private Animation alphaAnimation;
-    private ImageView img_upload, img_gallery, img_camera, img_upload_animation;
+    private ImageView img_upload, img_gallery, img_camera, img_upload_animation, btn_reset;
     private RecyclerView labReportItemView;
     private GridLayoutManager lLayout;
     private UploadLabTestReportAdpter uploadLabTestReportAdpter;
@@ -111,6 +107,10 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     private List<UHIDItems> uhidItemses;
     private TextView txt_sort_user_name;
     private int imageName = 0;
+    private String fileName = "";
+    private LinearLayout liner_layout_recyler;
+    private String newMessage = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,6 +118,8 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         rootView = inflater.inflate(R.layout.fragment_health_lab_report,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        btn_reset = (ImageView) rootView.findViewById(R.id.btn_reset);
+        liner_layout_recyler = (LinearLayout) rootView.findViewById(R.id.liner_layout_recyler);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
         txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
         txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
@@ -156,7 +158,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         txt_heath_note.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
         txt_prescription.setOnClickListener(this);
-
+        btn_reset.setOnClickListener(this);
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         getAllHealthUserList();
@@ -226,6 +228,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         });
 
         txt_sort_user_name.setSelected(true);
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -238,7 +241,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 txt_Doctor_name.setText("" + getDoctorNameAsStringList(labReportListViews).get(position));
                 txt_tst_name.setText("Test Name");
                 txt_dates.setText("Date");
-                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDoctor(getDoctorNameAsStringList(labReportListViews).get(position)));
                 labReportItemView.setAdapter(uploadLabTestReportAdpter);
                 uploadLabTestReportAdpter.notifyDataSetChanged();
@@ -255,7 +258,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 txt_Doctor_name.setText("Doctor Name");
                 txt_dates.setText("Date");
                 txt_tst_name.setText("" + getDiseaseListAsStringList(labReportListViews).get(position));
-                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDisease(getDiseaseListAsStringList(labReportListViews).get(position)));
                 labReportItemView.setAdapter(uploadLabTestReportAdpter);
                 uploadLabTestReportAdpter.notifyDataSetChanged();
@@ -273,7 +276,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 txt_Doctor_name.setText("Doctor Name");
                 txt_tst_name.setText("Test Name");
                 txt_dates.setText("" + getDateAsStringList(labReportListViews).get(position));
-                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDate(getDateAsStringList(labReportListViews).get(position)));
                 labReportItemView.setAdapter(uploadLabTestReportAdpter);
                 uploadLabTestReportAdpter.notifyDataSetChanged();
@@ -301,6 +304,12 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.btn_reset:
+                txt_Doctor_name.setText("Doctor Name");
+                txt_tst_name.setText("Test Name");
+                txt_dates.setText("Date");
+                getLabReportList();
+                break;
             case R.id.txt_heath_note:
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentHealthNote(), true);
@@ -396,25 +405,37 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null) {
-            if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
-                //Get our saved file into a bitmap object:
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-                prescriptionImageList.setImageNumber(value + 1);
-                value = value + 1;
-                imageName = imageName + 1;
-                Log.e("parent", " " + Environment.getExternalStorageDirectory());
-                prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
-                prescriptionImageList.setChecked(false);
-                prescriptionImageLists.add(prescriptionImageList);
+        if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
+            //Get our saved file into a bitmap object:
+            fileName = Environment.getExternalStorageDirectory() + File.separator;
+            File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+            prescriptionImageList.setImageNumber(value + 1);
+            value = value + 1;
+            imageName = imageName + 1;
+            Log.e("parent", " " + Environment.getExternalStorageDirectory());
+            prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
+            prescriptionImageList.setChecked(false);
+            prescriptionImageLists.add(prescriptionImageList);
+            if (newMessage.equalsIgnoreCase("yes")) {
+                PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                prescriptionImageList1.setImageNumber(000);
+                prescriptionImageList1.setPrescriptionImage(null);
+                prescriptionImageList1.setChecked(false);
+                prescriptionImageLists.add(prescriptionImageList1);
+                DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                dialogFullViewClickImage.show();
+            } else {
                 DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
                 dialogUploadNewPrescription.setiOnAddMoreImage(this);
                 dialogUploadNewPrescription.show();
-            } else {
+            }
+        } else {
+            if (data != null) {
                 if (requestCode == SELECT_PHOTO) {
                     // Let's read picked image data - its URI
                     Uri pickedImage = data.getData();
@@ -432,15 +453,27 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                     labReportImageList.setPrescriptionImage(imagePath);
                     labReportImageList.setChecked(false);
                     prescriptionImageLists.add(labReportImageList);
-                    DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
-                    dialogUploadNewPrescription.setiOnAddMoreImage(this);
-                    dialogUploadNewPrescription.show();
+                    if (newMessage.equalsIgnoreCase("yes")) {
+                        PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                        prescriptionImageList1.setImageNumber(000);
+                        prescriptionImageList1.setPrescriptionImage(null);
+                        prescriptionImageList1.setChecked(false);
+                        prescriptionImageLists.add(prescriptionImageList1);
+                        DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                        dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                        dialogFullViewClickImage.show();
+                    } else {
+                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
+                        dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                        dialogUploadNewPrescription.show();
+                    }
 //                img_vew.setImageBitmap(bitmap);
                     // Do something with the bitmap
                     // At the end remember to close the cursor or you will end with the RuntimeException!
                     cursor.close();
                 }
             }
+
         }
 
     }
@@ -582,12 +615,14 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
             dialogFullViewClickImage.show();
         } else if (messsage.equalsIgnoreCase("retry")) {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
             } else {
+                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
@@ -608,14 +643,30 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void optDoneMoreImage(final String doctorName, final String dieaseName, final String prescriptionDate, final List<PrescriptionImageList> prescriptionImageListss) {
-        liner_upload_new.post(new Runnable() {
-            @Override
-            public void run() {
-                sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
-//                jsonUploadPrescription(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
+    public void optDoneMoreImage(final String doctorName, final String dieaseName, final String prescriptionDate, final List<PrescriptionImageList> prescriptionImageListss, String mesaage) {
+
+        if (mesaage.equalsIgnoreCase("yes")) {
+            prescriptionImageListss.remove(prescriptionImageListss.size() - 1);
+            newMessage = mesaage;
+            if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+            } else {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
-        });
+        } else {
+            liner_upload_new.post(new Runnable() {
+                @Override
+                public void run() {
+                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
+                }
+            });
+        }
+
 
     }
 
@@ -628,12 +679,14 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
             for (int i = 0; i < prescriptionImage.size(); i++) {
                 if (prescriptionImage.get(i).getImageNumber() != 000) {
                     if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace("/storage/emulated/0/", "");
+                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
                         removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
                         Log.e("check", "" + removeSyptoms);
                     } else {
-                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace("/storage/emulated/0/DCIM/Camera/", "");
-                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
+                        int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
+                        String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
+                        Log.e("fileName", " " + hello);
+                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
                         Log.e("check", "" + removeSyptoms);
                     }
 
@@ -746,13 +799,17 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             labReportListViews = ParseJsonData.getInstance().getLabTestReportList(response);
-                            if (labReportListViews.size() > 0 && labReportListViews != null) {
+                            Log.e("labReportListViews", ":- " + labReportListViews.size());
+                            if (labReportListViews.size() > 0) {
                                 txt_no_prescr.setVisibility(View.GONE);
-                                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                                labReportItemView.setVisibility(View.VISIBLE);
+                                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
                                         labReportListViews);
                                 labReportItemView.setAdapter(uploadLabTestReportAdpter);
                                 uploadLabTestReportAdpter.notifyDataSetChanged();
                             } else {
+
+                                labReportItemView.setVisibility(View.GONE);
                                 txt_no_prescr.setVisibility(View.VISIBLE);
                             }
 
@@ -988,6 +1045,11 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    public void checkList() {
+        getLabReportList();
     }
 
 }

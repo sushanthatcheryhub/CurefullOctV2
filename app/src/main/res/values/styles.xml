@@ -246,6 +246,12 @@
     </style>
 
     <style name="TickerTextAppearance2">
+        <item name="android:textColor">@color/health_red_drawer</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TickerTextAppearance3">
         <item name="android:textColor">@color/health_app_progress</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>

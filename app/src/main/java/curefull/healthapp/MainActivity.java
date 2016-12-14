@@ -7,13 +7,21 @@ import android.animation.PropertyValuesHolder;
 import android.app.RemoteInput;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -30,11 +38,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -46,6 +59,8 @@ import fragment.healthapp.FragmentHomeScreenAll;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import utils.AppPreference;
+import utils.CircularImageView;
+import utils.MyConstants;
 import utils.NotificationUtils;
 
 public class MainActivity extends BaseMainActivity {
@@ -55,12 +70,13 @@ public class MainActivity extends BaseMainActivity {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
+
     //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     private int location_Permission, phone_Permission,
-            storageRead_Permission, storageWrite_Permission, read_contact, camera;
+            storageRead_Permission, storageWrite_Permission, read_contact, camera, sms;
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private GoogleApiClient mClient = null;
@@ -69,15 +85,23 @@ public class MainActivity extends BaseMainActivity {
     private ProgressBar progress_bar;
     private boolean mToolBarNavigationListenerIsRegistered = false;
     private TextView txt_doctor_name_edu;
-    private ImageView img_drawer;
+    private ImageView img_drawer, img_share;
+    private CircularImageView circularImageView;
     private LinearLayout liner_logout;
+    private NavigationView navigationView;
+    SharedPreferences preferences;
+    private File myPath;
+    String encodedImage;
+    private View view1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
         setContentView(R.layout.activity_main);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         liner_logout = (LinearLayout) findViewById(R.id.liner_logout);
+        img_share = (ImageView) findViewById(R.id.img_share);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -89,12 +113,13 @@ public class MainActivity extends BaseMainActivity {
                 this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         View header = navigationView.getHeaderView(0);
+        circularImageView = (CircularImageView) header.findViewById(R.id.placeholder);
         txt_doctor_name_edu = (TextView) header.findViewById(R.id.txt_doctor_name_edu);
-
+        preferences.edit().putBoolean("isDestroy", false).commit();
         getKeyHash();
         showActionBarToggle(false);
         disableDrawer();
@@ -130,6 +155,7 @@ public class MainActivity extends BaseMainActivity {
             }
         });
 
+
         liner_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +165,14 @@ public class MainActivity extends BaseMainActivity {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
+            }
+        });
+
+        img_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takeScreenShot(view1);
+                shareClick();
             }
         });
 
@@ -154,6 +188,33 @@ public class MainActivity extends BaseMainActivity {
 //                    .replace(new FragmentLogin(), false);
 //        }
 
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String action = intent.getAction();
+            Uri data = intent.getData();
+
+            Log.e("action", "" + action);
+            if (data != null) {
+
+                Log.e("data", "" + data.toString());
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.exit(0);
+        finish();
+        preferences.edit().putBoolean("isDestroy", true).commit();
+        Log.e("onDestroy", "onDestroy");
+    }
+
+    public void selectedNav(int i) {
+        navigationView.getMenu().getItem(i).setChecked(true);
     }
 
     @Override
@@ -175,8 +236,13 @@ public class MainActivity extends BaseMainActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setActionDrawerHeading(String name, String edu) {
+    public void setActionDrawerHeading(String name, String id) {
         txt_doctor_name_edu.setText("" + name);
+    }
+
+    public void setActionDrawerProfilePic(String name) {
+        CureFull.getInstanse().getSmallImageLoader().clearCache();
+        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/end-user/profileImage/" + name, circularImageView);
     }
 
 
@@ -328,6 +394,8 @@ public class MainActivity extends BaseMainActivity {
                 Manifest.permission.READ_CONTACTS);
         camera = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
                 Manifest.permission.CAMERA);
+        sms = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
+                Manifest.permission.READ_SMS);
         List<String> listPermissionsNeeded = new ArrayList<String>();
 
         if (location_Permission != PackageManager.PERMISSION_GRANTED) {
@@ -352,6 +420,10 @@ public class MainActivity extends BaseMainActivity {
         if (camera != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded
                     .add(Manifest.permission.CAMERA);
+        }
+        if (sms != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded
+                    .add(Manifest.permission.READ_SMS);
         }
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(CureFull.getInstanse().getActivityIsntanse(), listPermissionsNeeded
@@ -423,6 +495,8 @@ public class MainActivity extends BaseMainActivity {
                         PackageManager.PERMISSION_GRANTED);
                 perms.put(android.Manifest.permission.CAMERA,
                         PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.READ_SMS,
+                        PackageManager.PERMISSION_GRANTED);
                 // Fill with actual results from user
                 if (grantResults.length > 0) {
                     for (int i = 0; i < permissions.length; i++)
@@ -432,7 +506,7 @@ public class MainActivity extends BaseMainActivity {
                             && perms.get(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && perms.get(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            && perms.get(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
                     } else {
                         if (ActivityCompat.shouldShowRequestPermissionRationale(
                                 CureFull.getInstanse().getActivityIsntanse(), android.Manifest.permission.CAMERA)
@@ -454,7 +528,10 @@ public class MainActivity extends BaseMainActivity {
                                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
                                 .shouldShowRequestPermissionRationale(
                                         CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.CAMERA)) {
+                                        android.Manifest.permission.CAMERA) || ActivityCompat
+                                .shouldShowRequestPermissionRationale(
+                                        CureFull.getInstanse().getActivityIsntanse(),
+                                        android.Manifest.permission.READ_SMS)) {
                             showDialogOK("Permission Required For This App",
                                     new DialogInterface.OnClickListener() {
                                         @Override
@@ -493,4 +570,61 @@ public class MainActivity extends BaseMainActivity {
     }
 
 
+    private void takeScreenShot(View view) {
+
+        int totalHeight = view.getHeight();
+        int totalWidth = view.getWidth();
+
+        Bitmap b = getBitmapFromView(view, totalHeight, totalWidth);
+
+        myPath = new File(Environment.getExternalStorageDirectory(), "report.png");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            encodedImage = encodeToBase64(b, Bitmap.CompressFormat.JPEG, 100);
+            fos.flush();
+            fos.close();
+            MediaStore.Images.Media.insertImage(getContentResolver(), b, "Screen", "screen");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null)
+            bgDrawable.draw(canvas);
+        else
+            canvas.drawColor(Color.WHITE);
+        view.draw(canvas);
+        return returnedBitmap;
+    }
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        image.compress(compressFormat, quality, byteArrayOS);
+        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
+    }
+
+
+    public void clickImage(final View view12) {
+        view1 = view12;
+    }
+
+    public void shareClick() {
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        Uri screenshotUri = Uri.fromFile(myPath);
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName());
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+        startActivity(Intent.createChooser(sharingIntent, "Share image using"));
+    }
 }

@@ -27,15 +27,15 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewOpenSanBold
+                <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_date_time"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:text="Oct 17-4pm"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
+                    android:text="17 Oct 2016-4pm"
+                    android:textColor="@color/health_yellow"
+                   />
 
             </LinearLayout>
 

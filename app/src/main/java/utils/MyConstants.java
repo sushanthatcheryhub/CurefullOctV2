@@ -6,12 +6,14 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://192.168.1.118:8080";
+//        String HOST_IP = "http://192.168.1.109:8080";
+        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String LOGIN = URL + "login/endUser";
         String FORGOT_NEW = URL + "forgotPassword/endUser/updatePassword";
+        String FORGOT_SEND = URL + "forgotPassword/endUser/resetPassword";
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String HEALTH_NOTE_ADD = URL + "healthNote/addhealthNote";
@@ -41,10 +43,13 @@ public class MyConstants {
         String CfUuhidUpload = URL + "uuhid/getCfuuhidFromNameAndMobileNumber";
         String GET_GRAPH = URL + "endUser/healthapp/gethealthappDetailsList";
         String CHECK_MOBILE_VALID = URL + "forgotPassword/endUser/getUserBasedOnMobileNumber?mobileNumber=";
+        String CHECK_EMAIL_VALID = URL + "forgotPassword/endUser/sendPasswordResetLink?emailId=";
         String SELECTED_USER_LIST = URL + "uuhid/updateSelectedCfUuhid?cfuhid=";
         String DELETE_SELECTE_USER = URL + "uuhid/deleteCfUuhidFromMappingList?cfuhid=";
-
-
+        String UPDATE_PROFILE = URL + "endUser/profile/updateProfileImage";
+        String GET_HEALTH_DAILY_APP = URL + "endUser/healthapp/gethealthappDetails?date=";
+        String UHID_SIGN_UP = URL + "uuhid/getCfuuhidListForSignup";
+        String LOGOUT = URL + "logout/user";
         String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_INVESTIGATION_BY_DOCTOR = URL + "prescription/getDoctorDiagonsisListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
         String ADD_ALLERGY_BY_DOCTOR = URL + "prescription/getDoctorAllergyTerm?doctorId=" + AppPreference.getInstance().getDoctorId();

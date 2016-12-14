@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC000000"
+    android:clickable="true">
+
+
+    <LinearLayout
+        android:id="@+id/liner_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/_30dp"
+        android:layout_marginTop="@dimen/_40dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/liner_user"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/_10dp"
+            android:padding="@dimen/_5dp"
+            android:src="@drawable/curved_arrow_up_right" />
+
+        <LinearLayout
+            android:layout_width="@dimen/_110dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_bar_add"
+            android:orientation="horizontal">
+
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_sort_user_name"
+                style="@style/textView_dark_grey_normal_micro_mini"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2"
+                android:ellipsize="marquee"
+                android:gravity="center_vertical"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:padding="@dimen/_4dp"
+                android:singleLine="true"
+                android:text="User Name"
+                android:textColor="#ffffff"
+                android:textColorHint="#ffffff" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_5dp"
+                    android:background="@color/health_yellow" />
+
+                <ImageView
+                    android:id="@+id/img_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="@dimen/_5dp"
+                    android:src="@drawable/down_arrow_yellow" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/liner_share"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/liner_lower"
+        android:layout_marginTop="@dimen/_140dp"
+        android:visibility="visible"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_99dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_10dp"
+                android:padding="@dimen/_5dp"
+                android:src="@drawable/curved_arrow_up_right" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/share" />
+
+        </LinearLayout>
+
+        <customsTextViews.CustomTextViewOpenSanRegular
+            android:id="@+id/txt_health_text"
+            style="@style/textView_dark_grey_normal_micro_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_60dp"
+            android:elevation="@dimen/_10dp"
+            android:gravity="center"
+            android:padding="@dimen/_2dp"
+            android:text="You can share your prescription to other."
+            android:textColor="@color/health_yellow" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/liner_upload_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/liner_user"
+        android:layout_marginRight="@dimen/_10dp"
+        android:orientation="horizontal">
+
+        <customsTextViews.CustomTextViewOpenSanRegular
+            style="@style/textView_dark_grey_normal_micro_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_qutions_one"
+            android:layout_marginRight="@dimen/_50dp"
+            android:elevation="@dimen/_10dp"
+            android:gravity="center"
+            android:text="If you have multiple UHID than select from here."
+            android:textColor="@color/health_yellow" />
+
+
+        <ImageView
+            android:id="@+id/img_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/_7dp"
+            android:padding="@dimen/_5dp"
+            android:src="@drawable/upload_icon" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/liner_lower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/_20dp"
+        android:gravity="center_vertical"
+        android:layout_below="@+id/liner_upload_new"
+        android:orientation="horizontal">
+
+        <customsTextViews.CustomTextViewOpenSanRegular
+            style="@style/textView_dark_grey_normal_micro_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_5dp"
+            android:gravity="center"
+            android:padding="@dimen/_2dp"
+            android:text="You can upload prescription by clicking on this button"
+            android:textColor="@color/health_yellow" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="@dimen/_5dp"
+            android:src="@drawable/curved_arrow_up_right1" />
+    </LinearLayout>
+
+
+</RelativeLayout>

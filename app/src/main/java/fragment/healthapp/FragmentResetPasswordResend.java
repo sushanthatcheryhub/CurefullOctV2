@@ -80,8 +80,10 @@ public class FragmentResetPasswordResend extends Fragment {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle bundle=new Bundle();
+                bundle.putString("email","no");
                 CureFull.getInstanse().getFlowInstanse()
-                        .addWithBottomTopAnimation(new FragmentResetNewPassword(), null, true);
+                        .addWithBottomTopAnimation(new FragmentResetNewPassword(), bundle, true);
             }
         });
 

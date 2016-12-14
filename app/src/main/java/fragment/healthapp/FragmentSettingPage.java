@@ -29,6 +29,7 @@ public class FragmentSettingPage extends Fragment {
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 

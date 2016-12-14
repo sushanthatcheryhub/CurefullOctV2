@@ -63,6 +63,7 @@
                         android:src="@drawable/delete_red" />
 
                     <LinearLayout
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -168,6 +169,7 @@
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_micro"
+                                android:id="@+id/txt_pre_date"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"

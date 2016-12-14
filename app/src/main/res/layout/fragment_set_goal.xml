@@ -107,7 +107,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:gravity="left"
-                        android:text="Age"
+                        android:text="DOB"
                         android:textColor="@color/white" />
 
                     <customsTextViews.CustomTextViewOpenSanRegular
@@ -127,13 +127,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_20dp"
-                    android:hint="Date of Birth"
+                    android:hint="DD-MM-YYYY"
                     android:padding="@dimen/_5dp"
-                    android:inputType="number"
-                    android:maxLength="2"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                     />
+                    android:textColorHint="@color/white" />
 
 
             </LinearLayout>
@@ -189,8 +186,8 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Feet"
                             android:inputType="number"
-                            android:nextFocusRight="@+id/edt_inchs"
                             android:maxLength="2"
+                            android:nextFocusRight="@+id/edt_inchs"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -204,8 +201,8 @@
                             android:layout_marginLeft="@dimen/_10dp"
                             android:hint="Inchs"
                             android:inputType="number"
+                            android:maxLength="2"
                             android:nextFocusDown="@+id/edt_kgs"
-                            android:maxLength="1"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -312,8 +309,8 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Kg"
                             android:inputType="number"
-                            android:nextFocusRight="@+id/edt_grams"
                             android:maxLength="3"
+                            android:nextFocusRight="@+id/edt_grams"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -327,8 +324,8 @@
                             android:layout_marginLeft="@dimen/_10dp"
                             android:hint="Grams"
                             android:inputType="number"
-                            android:nextFocusDown="@+id/water_100"
                             android:maxLength="3"
+                            android:nextFocusDown="@+id/water_100"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel" />
@@ -341,8 +338,8 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="Pounds"
                             android:inputType="number"
-                            android:nextFocusDown="@+id/water_100"
                             android:maxLength="3"
+                            android:nextFocusDown="@+id/water_100"
                             android:textColor="@color/white"
                             android:textColorHint="@color/white"
                             android:theme="@style/TextLabel"
@@ -480,9 +477,9 @@
                             android:textColor="@color/white" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
-                            style="@style/textView_dark_grey_normal_micro"
-
                             android:id="@+id/txt_ideal_weight"
+
+                            style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="----"
@@ -566,10 +563,11 @@
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="left"
-                                android:text="10000"
                                 android:enabled="false"
                                 android:focusable="false"
+                                android:gravity="left"
+                                android:inputType="number"
+                                android:text="10000"
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
                                 android:theme="@style/TextLabelYellow" />
@@ -635,6 +633,7 @@
                                 android:layout_below="@+id/txt_name"
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
+                                android:inputType="number"
                                 android:text="2000"
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
@@ -703,6 +702,7 @@
                                 android:layout_below="@+id/txt_name"
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
+                                android:inputType="number"
                                 android:text="6"
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
@@ -814,8 +814,8 @@
                         android:orientation="horizontal">
 
                         <customsTextViews.CustomEditTextViewMontserratHairLine
+                            android:id="@+id/water_100"
                             style="@style/textView_dark_grey_normal_small"
-                          android:id="@+id/water_100"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
                             android:hint="100"

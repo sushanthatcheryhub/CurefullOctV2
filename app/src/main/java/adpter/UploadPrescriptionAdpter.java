@@ -2,6 +2,7 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,8 +25,10 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +37,10 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLandingPage;
+import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
+import item.property.PrescriptionImageListView;
 import item.property.PrescriptionListView;
 import item.property.PrescriptionUploadItems;
 import utils.AppPreference;
@@ -50,11 +55,13 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
     Context applicationContext;
     List<PrescriptionListView> prescriptionListViews;
     private RequestQueue requestQueue;
+    private FragmentPrescriptionCheck prescriptionCheck;
 
-    public UploadPrescriptionAdpter(Context applicationContexts,
+    public UploadPrescriptionAdpter(FragmentPrescriptionCheck fragmentPrescriptionCheck, Context applicationContexts,
                                     List<PrescriptionListView> prescriptionListViews) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
+        this.prescriptionCheck = fragmentPrescriptionCheck;
     }
 
     @Override
@@ -98,8 +105,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
-                Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
             } catch (Exception e) {
 
             }
@@ -118,11 +124,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-                sendIntent.setType("text/plain");
-                applicationContext.startActivity(sendIntent);
+                shareClick(prescriptionListViews.get(position).getPrescriptionImageListViews());
             }
         });
 
@@ -135,11 +137,19 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                 bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
                 bundle.putString("dieaseName", prescriptionListViews.get(position).getDiseaseName());
                 bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
+                bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
                 bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews());
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentPrescriptionImageView(), bundle, true);
             }
         });
+
+
+        Log.e("size after delete", ":- " + prescriptionListViews.size());
+
+        if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() == 0) {
+            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
+        }
 
     }
 
@@ -186,7 +196,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor List, URL 1.", response);
+                        Log.e("Doctor Delete, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -199,6 +209,10 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews.remove(pos);
                             notifyDataSetChanged();
+                            Log.e("size after delete", ":- " + prescriptionListViews.size());
+                            if (prescriptionListViews.size() == 0) {
+                                prescriptionCheck.checkList();
+                            }
                         } else {
                         }
                     }
@@ -219,7 +233,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
@@ -238,5 +252,25 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void shareClick(ArrayList<PrescriptionImageListView> prescriptionImageListViews) {
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        ArrayList<Uri> files = new ArrayList<Uri>();
+        ArrayList<String> filesName = new ArrayList<String>();
+        for (int i = 0; i < prescriptionImageListViews.size(); i++) {
+            filesName.add(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionImageListViews.get(i).getPrescriptionImage());
+        }
+
+        Log.e("name ", "fileNames " + filesName.get(0).toString());
+        for (String path : filesName/* List of the files you want to send */) {
+            Uri uri = Uri.parse(path);
+            files.add(uri);
+        }
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName()+ " Report");
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
+        sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        sharingIntent.setType("image/*");
+        applicationContext.startActivity(sharingIntent);
     }
 }

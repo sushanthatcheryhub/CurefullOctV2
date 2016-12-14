@@ -125,6 +125,19 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return false;
     }
 
+
+    public void setIsFirstTimeScreen1(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("screen1", isLogin).commit();
+        }
+    }
+
+    public boolean isFirstTimeScreen1() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("screen1", false);
+        return false;
+    }
+
     public void setcf_uuhid(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString("cf_uuhid", className).commit();
@@ -145,6 +158,18 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     public String getcf_uuhidNeew() {
         if (_prefrence != null)
             return _prefrence.getString("cf_uuhidNeew", "");
+        return "";
+    }
+
+
+    public void setcf_uuhidSignUp(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("cf_uuhidSingUp", className).commit();
+    }
+
+    public String getcf_uuhidSignUp() {
+        if (_prefrence != null)
+            return _prefrence.getString("cf_uuhidSingUp", "");
         return "";
     }
 
@@ -367,6 +392,18 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return "";
     }
 
+
+    public void setWaterInTakeTarget(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("waterTakeTarget", className).commit();
+    }
+
+    public String getWaterInTakeTarget() {
+        if (_prefrence != null)
+            return _prefrence.getString("waterTakeTarget", "0");
+        return "";
+    }
+
     public void setGoalHeightInch(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString("HeightInch", className).commit();
@@ -546,6 +583,29 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         if (_prefrence != null)
             return _prefrence.getString("DoctorId", "");
         return "";
+    }
+
+
+    public void set_ip(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("ip", className).commit();
+    }
+
+    public String get_ip() {
+        if (_prefrence != null)
+            return _prefrence.getString("ip", "");
+        return "";
+    }
+
+    public void setPrescriptionSize(int password) {
+        if (_prefrence != null)
+            _prefrence.edit().putInt("presciption", password).commit();
+    }
+
+    public int getPrescriptionSize() {
+        if (_prefrence != null)
+            return _prefrence.getInt("presciption", 0);
+        return 0;
     }
 
 }

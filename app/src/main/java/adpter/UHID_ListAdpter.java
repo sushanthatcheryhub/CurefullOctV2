@@ -32,6 +32,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentHealthNote;
+import fragment.healthapp.FragmentUHID;
 import interfaces.IOnOtpDoneDelete;
 import item.property.HealthNoteItems;
 import item.property.UHIDItems;
@@ -47,11 +48,13 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
     Context applicationContext;
     List<UHIDItems> healthNoteItemses;
     private RequestQueue requestQueue;
+    private FragmentUHID fragmentUHIDs;
 
-    public UHID_ListAdpter(Context applicationContexts,
+    public UHID_ListAdpter(FragmentUHID fragmentUHID, Context applicationContexts,
                            List<UHIDItems> healthNoteItemses) {
         this.healthNoteItemses = healthNoteItemses;
         this.applicationContext = applicationContexts;
+        this.fragmentUHIDs = fragmentUHID;
     }
 
     @Override
@@ -80,11 +83,21 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 //            image_item.setVisibility(View.VISIBLE);
 //        }
 
+        Log.e("uhid check", " " + healthNoteItemses.get(position).isDefaults());
+
         if (healthNoteItemses.get(position).isDefaults()) {
             image_item.setVisibility(View.GONE);
-        }else{
-            image_item.setVisibility(View.VISIBLE);
+        } else {
+            if (healthNoteItemses.get(position).isSelected()) {
+                Log.e("isSelected", "true");
+                image_item.setVisibility(View.GONE);
+            } else {
+                Log.e("isSelected", "false");
+                image_item.setVisibility(View.VISIBLE);
+            }
+
         }
+
         txt_name.setSelected(true);
         if (AppPreference.getInstance().getcf_uuhidNeew().equalsIgnoreCase(healthNoteItemses.get(position).getCfUuhid())) {
             checkBox.setChecked(true);
@@ -111,12 +124,12 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
                 Log.e("check", ":- right");
                 if (checkBox.isChecked()) {
                     Log.e("check", ":- isChecked");
-                    healthNoteItemses.get(position).setDefaults(true);
+//                    healthNoteItemses.get(position).setSelected(true);
                     AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
                     getSelectedUserList(healthNoteItemses.get(position).getCfUuhid());
                 } else {
                     Log.e("check", ":- not");
-                    healthNoteItemses.get(position).setDefaults(false);
+//                    healthNoteItemses.get(position).setSelected(false);
                 }
                 notifyDataSetChanged();
             }
@@ -169,6 +182,7 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            fragmentUHIDs.getcheck();
                         } else {
 
                         }

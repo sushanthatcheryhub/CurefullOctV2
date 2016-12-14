@@ -1,6 +1,8 @@
 package fragment.healthapp;
 
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -24,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -52,6 +56,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -78,8 +86,10 @@ public class FragmentLogin extends Fragment implements
     CallbackManager callbackManager;
     TextView login_button, btn_create_new, btn_click_forgot, sign_out_button_facebook, txt_term_conditions;
     private boolean showPwd = false;
-    private EditText edtInputEmail, edtInputPassword;
+    private AutoCompleteTextView edtInputEmail;
+    private EditText edtInputPassword;
     private RequestQueue requestQueue;
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,7 +102,7 @@ public class FragmentLogin extends Fragment implements
         CureFull.getInstanse().getActivityIsntanse().showLogo(true);
         CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(false);
         txt_term_conditions = (TextView) rootView.findViewById(R.id.txt_term_conditions);
-        edtInputEmail = (EditText) rootView.findViewById(R.id.input_email);
+        edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
         edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
         sign_out_button_facebook = (TextView) rootView.findViewById(R.id.sign_out_button_facebook);
         btn_create_new = (TextView) rootView.findViewById(R.id.btn_create_new);
@@ -235,12 +245,14 @@ public class FragmentLogin extends Fragment implements
                             if (!showPwd) {
                                 showPwd = true;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+                                edtInputPassword.setTextSize(16f);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                edtInputPassword.setTextSize(16f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
@@ -263,6 +275,20 @@ public class FragmentLogin extends Fragment implements
                 return false;
             }
         });
+
+
+        edtInputEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edtInputPassword.requestFocus();
+                }
+                return false;
+            }
+        });
+
+        addAdapterToViews();
+
         return rootView;
     }
 
@@ -270,11 +296,8 @@ public class FragmentLogin extends Fragment implements
         String email = edtInputEmail.getText().toString().trim();
 
         if (email.isEmpty()) {
-            edtInputEmail.setError("Email Id / Mobile number cannot be left blank.");
-            requestFocus(edtInputEmail);
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id / Mobile number cannot be left blank.");
             return false;
-        } else {
-            edtInputEmail.setError(null);
         }
         return true;
     }
@@ -286,11 +309,8 @@ public class FragmentLogin extends Fragment implements
 
     private boolean validatePassword() {
         if (edtInputPassword.getText().toString().trim().isEmpty()) {
-            edtInputPassword.setError("Please Enter Password");
-            requestFocus(edtInputPassword);
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Enter Password");
             return false;
-        } else {
-            edtInputPassword.setError(null);
         }
 
         return true;
@@ -431,11 +451,14 @@ public class FragmentLogin extends Fragment implements
                                     AppPreference.getInstance().setIsLoginFirst(true);
                                 }
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
+
+
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
                                 AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
                                 AppPreference.getInstance().setProfileImage(userInfo.getProfileImageUrl());
+                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(userInfo.getProfileImageUrl());
                                 CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
                                 AppPreference.getInstance().setRt(userInfo.getR_t());
@@ -562,5 +585,17 @@ public class FragmentLogin extends Fragment implements
 
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    private void addAdapterToViews() {
+
+        Account[] accounts = AccountManager.get(CureFull.getInstanse().getActivityIsntanse()).getAccounts();
+        Set<String> emailSet = new HashSet<String>();
+        for (Account account : accounts) {
+            if (EMAIL_PATTERN.matcher(account.name).matches()) {
+                emailSet.add(account.name);
+            }
+        }
+        edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
     }
 }

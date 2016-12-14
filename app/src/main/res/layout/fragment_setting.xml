@@ -36,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/prescription_small_icon" />
+                    android:src="@drawable/settings" />
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_health_text"
@@ -90,7 +90,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_25dp"
                         android:layout_weight="1.5"
@@ -127,14 +127,11 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <ToggleButton
+                        <CheckBox
                             android:id="@+id/chkStateStep"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textOff=""
-                            android:textOn="" />
-
-
+                            android:button="@drawable/toggle_selector" />
                     </LinearLayout>
 
 
@@ -155,7 +152,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_25dp"
                         android:layout_weight="1.5"
@@ -192,10 +189,12 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <ToggleButton
+                        <CheckBox
                             android:id="@+id/chkStateWater"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:button="@drawable/toggle_selector"
+
                             android:textOff=""
                             android:textOn="" />
 
@@ -220,7 +219,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_25dp"
                         android:layout_weight="1.5"
@@ -257,10 +256,12 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <ToggleButton
+                        <CheckBox
                             android:id="@+id/chkStateMedcineRem"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:button="@drawable/toggle_selector"
+
                             android:textOff=""
                             android:textOn="" />
 
@@ -285,7 +286,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_25dp"
                         android:layout_weight="1.5"
@@ -322,10 +323,12 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <ToggleButton
+                        <CheckBox
                             android:id="@+id/chkStateDoctor"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:button="@drawable/toggle_selector"
+
                             android:textOff=""
                             android:textOn="" />
 
@@ -350,7 +353,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="@dimen/_25dp"
                         android:layout_weight="1.5"
@@ -387,10 +390,11 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <ToggleButton
+                        <CheckBox
                             android:id="@+id/chkStateLstTest"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:button="@drawable/toggle_selector"
                             android:textOff=""
                             android:textOn="" />
 

@@ -84,11 +84,11 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
 
     private View rootView;
-    private TextView btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_no_data, txt_steps_txt;
+    private TextView txt_water_intake, btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_no_data, txt_steps_txt, tickerTotal, text_calories_count;
     Messenger mService = null;
     boolean mIsBound;
     boolean isToStop = false;
-    private TickerView ticker1, tickerTotal, text_calories_count;
+    private TickerView ticker1;
     private SeekArc seekArcComplete;
     private static final char[] NUMBER_LIST = TickerUtils.getDefaultNumberList();
     protected BarChart mChart;
@@ -98,7 +98,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     private String date, frequency, type, offset;
     private List<GraphView> graphViewsList;
     private TextView btn_set_goal_target;
-    private LinearLayout liner_steps;
+    private LinearLayout liner_steps, liner_btn_goal;
 
     @Override
     public boolean onBackPressed() {
@@ -124,6 +124,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         rootView = inflater.inflate(R.layout.fragment_health_app,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        txt_water_intake = (TextView) rootView.findViewById(R.id.txt_water_intake);
+        liner_btn_goal = (LinearLayout) rootView.findViewById(R.id.liner_btn_goal);
         liner_steps = (LinearLayout) rootView.findViewById(R.id.liner_steps);
         btn_set_goal_target = (TextView) rootView.findViewById(R.id.btn_set_goal_target);
         txt_steps_txt = (TextView) rootView.findViewById(R.id.txt_steps_txt);
@@ -134,27 +136,28 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         ticker1 = (TickerView) rootView.findViewById(R.id.ticker1);
-        tickerTotal = (TickerView) rootView.findViewById(R.id.tickerTotal);
-        text_calories_count = (TickerView) rootView.findViewById(R.id.text_calories_count);
+        tickerTotal = (TextView) rootView.findViewById(R.id.tickerTotal);
+        text_calories_count = (TextView) rootView.findViewById(R.id.text_calories_count);
         txt_steps_counter = (TextView) rootView.findViewById(R.id.txt_steps_counter);
         btn_daily = (TextView) rootView.findViewById(R.id.btn_daily);
         btn_weekly = (TextView) rootView.findViewById(R.id.btn_weekly);
         btn_monthy = (TextView) rootView.findViewById(R.id.btn_monthy);
         seekArcComplete = (SeekArc) rootView.findViewById(R.id.seekArcComplete);
         ticker1.setCharacterList(NUMBER_LIST);
-        tickerTotal.setCharacterList(NUMBER_LIST);
-        text_calories_count.setCharacterList(NUMBER_LIST);
+//        tickerTotal.setCharacterList(NUMBER_LIST);
+//        text_calories_count.setCharacterList(NUMBER_LIST);
         btn_daily.setOnClickListener(this);
         btn_weekly.setOnClickListener(this);
         btn_monthy.setOnClickListener(this);
-        btn_set_goal_target.setOnClickListener(this);
+        liner_btn_goal.setOnClickListener(this);
 //        if (AppPreference.getInstance().getStepStarts()) {
         Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
         CureFull.getInstanse().getActivityIsntanse().startService(intent);
         doBindService();
 //        }
 
-        btn_set_goal_target.setText("" + AppPreference.getInstance().getStepsCountTarget());
+        btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
+        txt_water_intake.setText(""+AppPreference.getInstance().getWaterInTakeTarget() + " Ltr");
         //Chart
         mChart = (BarChart) rootView.findViewById(R.id.chart1);
         mChart.setOnChartValueSelectedListener(this);
@@ -242,7 +245,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                         R.layout.adapter_list_doctor_data, MyConstants.IArrayData.listStepsName));
                 listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_steps_txt));
 //                listPopupWindow.setWidth(190);
-                listPopupWindow.setWidth((int)getResources().getDimension(R.dimen._110dp));
+                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._110dp));
 //                listPopupWindow.setHeight(400);
                 listPopupWindow.setModal(true);
                 listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
@@ -251,6 +254,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         });
 
         setData(10, 9);
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -305,7 +309,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                         .replace(new FragmentHealthNote(), true);
                 break;
 
-            case R.id.btn_set_goal_target:
+            case R.id.liner_btn_goal:
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentEditGoal(), true);
                 break;
@@ -364,10 +368,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
 
     public void doBindService() {
-
         CureFull.getInstanse().getActivityIsntanse().bindService(new Intent(CureFull.getInstanse().getActivityIsntanse(),
                 MessengerService.class), mConnection, Context.BIND_AUTO_CREATE);
-
         mIsBound = true;
         txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
     }

@@ -1,5 +1,4 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,13 +7,13 @@
     android:focusableInTouchMode="true">
 
     <LinearLayout
+        android:id="@+id/liner_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
 
         <LinearLayout
-            android:id="@+id/liner_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -23,20 +22,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1.1"
+                android:layout_weight="1.3"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewOpenSanBold
+                <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_date_time"
-                    style="@style/textView_dark_grey_normal_micro"
+                    style="@style/textView_dark_grey_normal_micro_mini"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="Oct 17-4pm"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
+                    android:layout_height="match_parent"
+                    android:gravity="left"
+                    android:text="17 Oct 2016-4pm"
+                    android:textColor="@color/health_yellow"
+                    />
 
             </LinearLayout>
 
@@ -45,44 +44,47 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="3"
+                android:layout_weight="2.8"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewOpenSanBold
+                <customsTextViews.CustomTextViewMontserratHairLine
                     android:id="@+id/txt_title"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:gravity="left"
-                    android:text="Health App"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text=" : "
-                    android:textColor="@color/yellow"
-                    android:textStyle="bold" />
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    android:id="@+id/txt_deatils"
-                    style="@style/textView_dark_grey_normal_micro_mini"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_3dp"
-                    android:gravity="center_horizontal"
                     android:marqueeRepeatLimit="marquee_forever"
                     android:ellipsize="marquee"
                     android:singleLine="true"
+                    android:gravity="left"
                     android:text="Health App"
                     android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    />
+
+                <!--<customsTextViews.CustomTextViewOpenSanBold-->
+                <!--style="@style/textView_dark_grey_normal_micro"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:text=" : "-->
+                <!--android:textColor="@color/yellow"-->
+                <!--android:textStyle="bold" />-->
+
+                <!--<customsTextViews.CustomTextViewOpenSanBold-->
+                <!--android:id="@+id/txt_deatils"-->
+                <!--style="@style/textView_dark_grey_normal_micro_mini"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="@dimen/_3dp"-->
+                <!--android:ellipsize="marquee"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:marqueeRepeatLimit="marquee_forever"-->
+                <!--android:singleLine="true"-->
+                <!--android:text="Health App"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textStyle="bold" />-->
 
             </LinearLayout>
 

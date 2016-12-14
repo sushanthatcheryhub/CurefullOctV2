@@ -65,6 +65,7 @@ public class FragmentUHID extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_uhid,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(2);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         btn_add = (TextView) rootView.findViewById(R.id.btn_add);
@@ -99,8 +100,12 @@ public class FragmentUHID extends Fragment {
                 jsonUploadUHID(input_name.getText().toString().trim(), edt_phone.getText().toString().trim());
             }
         });
-
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
+    }
+
+    public void getcheck(){
+        getAllUserList();
     }
 
 
@@ -145,7 +150,7 @@ public class FragmentUHID extends Fragment {
     public void showAdpter() {
         if (uhidItemses != null && uhidItemses.size() > 0) {
             recyclerView_notes.setVisibility(View.VISIBLE);
-            uhid_listAdpter = new UHID_ListAdpter(CureFull.getInstanse().getActivityIsntanse(), uhidItemses);
+            uhid_listAdpter = new UHID_ListAdpter(FragmentUHID.this,CureFull.getInstanse().getActivityIsntanse(), uhidItemses);
             recyclerView_notes.setAdapter(uhid_listAdpter);
             uhid_listAdpter.notifyDataSetChanged();
         }

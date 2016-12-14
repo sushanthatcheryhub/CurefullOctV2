@@ -27,12 +27,21 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import item.property.PrescriptionImageList;
 import utils.AppPreference;
+import utils.CircularImageView;
 import utils.MyConstants;
+import utils.RequestBuilderOkHttp;
 
 
 /**
@@ -41,7 +50,7 @@ import utils.MyConstants;
 public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 
-    private ImageView profile_image_view;
+    private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
@@ -62,6 +71,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(1);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
@@ -73,7 +83,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         img_gallery = (ImageView) rootView.findViewById(R.id.img_gallery);
         img_camera = (ImageView) rootView.findViewById(R.id.img_camera);
         img_upload = (ImageView) rootView.findViewById(R.id.img_upload);
-        profile_image_view = (ImageView) rootView.findViewById(R.id.profile_image_view);
+        profile_image_view = (CircularImageView) rootView.findViewById(R.id.profile_image_view);
         pixelDensity = getResources().getDisplayMetrics().density;
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         liner_password = (LinearLayout) rootView.findViewById(R.id.liner_password);
@@ -101,11 +111,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
         if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
+                CureFull.getInstanse().getSmallImageLoader().clearCache();
+                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/end-user/profileImage/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
             } catch (Exception e) {
             }
         }
-
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -199,44 +210,48 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
             //Get our saved file into a bitmap object:
             File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-            profile_image_view.setImageBitmap(bitmap);
-            profile_image_view.post(new Runnable() {
-                @Override
-                public void run() {
-                    launchTwitter(rootView);
-                }
-            });
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+//            profile_image_view.setImageBitmap(bitmap);
+//            profile_image_view.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    launchTwitter(rootView);
+//                }
+//            });
+            sentSaveTestingServer(file.getAbsolutePath());
         } else {
-            if (requestCode == SELECT_PHOTO) {
-                // Let's read picked image data - its URI
-                Uri pickedImage = data.getData();
-                // Let's read picked image path using content resolver
-                String[] filePath = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
-                cursor.moveToFirst();
-                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-                profile_image_view.setImageBitmap(bitmap);
-                profile_image_view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitter(rootView);
-                    }
-                });
-                cursor.close();
+            if(data!=null){
+                if (requestCode == SELECT_PHOTO) {
+                    // Let's read picked image data - its URI
+                    Uri pickedImage = data.getData();
+                    // Let's read picked image path using content resolver
+                    String[] filePath = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
+                    cursor.moveToFirst();
+                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+//                profile_image_view.setImageBitmap(bitmap);
+//                profile_image_view.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        launchTwitter(rootView);
+//                    }
+//                });
+                    cursor.close();
+                    sentSaveTestingServer(imagePath);
+                }
             }
+
         }
     }
-
-
 
 
     public void launchTwitter(View view) {
@@ -323,5 +338,51 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
             anim.start();
             flag = true;
         }
+    }
+
+
+    private void sentSaveTestingServer(String fileName) {
+        String response = "";
+        RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
+        try {
+            response = builderOkHttp.postProfile(MyConstants.WebUrls.UPDATE_PROFILE, null, getFileParam(fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.e("response :- ", "" + response);
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        profile_image_view.post(new Runnable() {
+            @Override
+            public void run() {
+                launchTwitter(rootView);
+            }
+        });
+
+        if (!response.equalsIgnoreCase("null")) {
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
+                    AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
+                    try {
+                        CureFull.getInstanse().getFullImageLoader().clearCache();
+                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + jsonObject.getString("payload"), profile_image_view);
+                        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
+                    } catch (Exception e) {
+
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+    public static HashMap<String, File> getFileParam(String image) {
+        HashMap<String, File> param = new HashMap<>();
+        param.put("profileImage", new File(image));
+        return param;
     }
 }

@@ -24,7 +24,6 @@ import item.property.PrescriptionUploadItems;
  */
 public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemViewHolder> {
 
-
     Context applicationContext;
     List<PrescriptionImageList> prescriptionImageLists;
     private RequestQueue requestQueue;
@@ -54,7 +53,7 @@ public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemView
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
-        image_item.setImageBitmap(bitmap);
+        image_item.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
 
 
 //        txt_view_symptoms.setText("" + symptomsGrids.get(position).getSymptomsName());

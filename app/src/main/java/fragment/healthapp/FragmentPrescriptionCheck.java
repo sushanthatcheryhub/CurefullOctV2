@@ -102,6 +102,9 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
     private String path;
     private int imageName = 0;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1, attectPosittion;
+    private String fileName = "";
+    private ImageView btn_reset;
+    private String newMessage = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,6 +113,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         rootView = inflater.inflate(R.layout.fragment_health_presciption,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        btn_reset = (ImageView) rootView.findViewById(R.id.btn_reset);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
         txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
         txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
@@ -142,6 +146,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         txt_heath_note.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
         txt_lab_reports.setOnClickListener(this);
+        btn_reset.setOnClickListener(this);
 
         alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
         prescriptionItemView = (RecyclerView) rootView.findViewById(R.id.grid_list_symptom);
@@ -237,7 +242,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         });
 
         txt_sort_user_name.setSelected(true);
-
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -251,7 +256,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 txt_upload_by.setText("Uploaded By");
                 txt_dates.setText("Date");
                 txt_sort_doctor_name.setText("" + getDoctorNameAsStringList(prescriptionListViews).get(position));
-                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDoctor(getDoctorNameAsStringList(prescriptionListViews).get(position)));
                 prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                 uploadPrescriptionAdpter.notifyDataSetChanged();
@@ -269,7 +274,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 txt_upload_by.setText("Uploaded By");
                 txt_dates.setText("Date");
                 txt_disease_names.setText("" + getDiseaseListAsStringList(prescriptionListViews).get(position));
-                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDisease(getDiseaseListAsStringList(prescriptionListViews).get(position)));
                 prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                 uploadPrescriptionAdpter.notifyDataSetChanged();
@@ -288,7 +293,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 txt_dates.setText("Date");
                 txt_upload_by.setText("" + "Self");
                 if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                             getFilterListUploadBy("Self"));
                     prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                     uploadPrescriptionAdpter.notifyDataSetChanged();
@@ -300,7 +305,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 txt_dates.setText("Date");
                 txt_upload_by.setText("" + "CureFull");
                 if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                             getFilterListUploadBy("CureFull"));
                     prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                     uploadPrescriptionAdpter.notifyDataSetChanged();
@@ -320,7 +325,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 txt_disease_names.setText("Disease Name");
                 txt_upload_by.setText("Uploaded By");
                 txt_dates.setText("" + getDateAsStringList(prescriptionListViews).get(position));
-                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                         getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)));
                 prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                 uploadPrescriptionAdpter.notifyDataSetChanged();
@@ -350,6 +355,14 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
+            case R.id.btn_reset:
+                txt_sort_doctor_name.setText("Doctor Name");
+                txt_disease_names.setText("Disease Name");
+                txt_upload_by.setText("Uploaded By");
+                txt_dates.setText("Date");
+                getPrescriptionList();
+                break;
 
             case R.id.txt_heath_note:
                 CureFull.getInstanse().getFlowInstanseAll()
@@ -464,6 +477,8 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         Log.e("requestCode", ":- " + requestCode);
         if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
             //Get our saved file into a bitmap object:
+            fileName = Environment.getExternalStorageDirectory() + File.separator;
+            Log.e("fileName", " " + fileName);
             File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -476,37 +491,66 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
             prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
             prescriptionImageList.setChecked(false);
             prescriptionImageLists.add(prescriptionImageList);
-            DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
-            dialogUploadNewPrescription.setiOnAddMoreImage(this);
-            dialogUploadNewPrescription.show();
-//            img_vew.setImageBitmap(bitmap);
-        } else {
-            if (requestCode == SELECT_PHOTO) {
-                // Let's read picked image data - its URI
-                Uri pickedImage = data.getData();
-                // Let's read picked image path using content resolver
-                String[] filePath = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
-                cursor.moveToFirst();
-                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-                prescriptionImageList.setImageNumber(value + 1);
-                value = value + 1;
-                Log.e("parent", " " + Environment.getExternalStorageDirectory());
-                prescriptionImageList.setPrescriptionImage(imagePath);
-                prescriptionImageList.setChecked(false);
-                prescriptionImageLists.add(prescriptionImageList);
+            if (newMessage.equalsIgnoreCase("yes")) {
+                PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                prescriptionImageList1.setImageNumber(000);
+                prescriptionImageList1.setPrescriptionImage(null);
+                prescriptionImageList1.setChecked(false);
+                prescriptionImageLists.add(prescriptionImageList1);
+                DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
+                dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                dialogFullViewClickImage.show();
+            } else {
                 DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
                 dialogUploadNewPrescription.setiOnAddMoreImage(this);
                 dialogUploadNewPrescription.show();
-//                img_vew.setImageBitmap(bitmap);
-                // Do something with the bitmap
-                // At the end remember to close the cursor or you will end with the RuntimeException!
-                cursor.close();
             }
+
+//            img_vew.setImageBitmap(bitmap);
+        } else {
+            if (data != null) {
+                if (requestCode == SELECT_PHOTO) {
+                    // Let's read picked image data - its URI
+                    Uri pickedImage = data.getData();
+
+                    // Let's read picked image path using content resolver
+                    String[] filePath = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
+                    cursor.moveToFirst();
+                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                    PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+                    prescriptionImageList.setImageNumber(value + 1);
+                    value = value + 1;
+
+                    prescriptionImageList.setPrescriptionImage(imagePath);
+                    prescriptionImageList.setChecked(false);
+                    prescriptionImageLists.add(prescriptionImageList);
+
+                    if (newMessage.equalsIgnoreCase("yes")) {
+                        PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                        prescriptionImageList1.setImageNumber(000);
+                        prescriptionImageList1.setPrescriptionImage(null);
+                        prescriptionImageList1.setChecked(false);
+                        prescriptionImageLists.add(prescriptionImageList1);
+                        DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
+                        dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                        dialogFullViewClickImage.show();
+                    } else {
+                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), bitmap, selectUploadPrescription, prescriptionImageLists);
+                        dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                        dialogUploadNewPrescription.show();
+                    }
+
+//                img_vew.setImageBitmap(bitmap);
+                    // Do something with the bitmap
+                    // At the end remember to close the cursor or you will end with the RuntimeException!
+                    cursor.close();
+                }
+            }
+
         }
 
     }
@@ -648,13 +692,14 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
             dialogFullViewClickImage.show();
         } else if (messsage.equalsIgnoreCase("retry")) {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-
+                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
             } else {
+                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
@@ -674,14 +719,30 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
     }
 
     @Override
-    public void optDoneMoreImage(final String doctorName, final String dieaseName, final String prescriptionDate, final List<PrescriptionImageList> prescriptionImageListss) {
-        CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
-        liner_upload_new.post(new Runnable() {
-            @Override
-            public void run() {
-                sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
+    public void optDoneMoreImage(final String doctorName, final String dieaseName, final String prescriptionDate, final List<PrescriptionImageList> prescriptionImageListss, String mesaage) {
+
+        if (mesaage.equalsIgnoreCase("yes")) {
+            prescriptionImageListss.remove(prescriptionImageListss.size() - 1);
+            newMessage = mesaage;
+            if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+            } else {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
-        });
+        } else {
+            liner_upload_new.post(new Runnable() {
+                @Override
+                public void run() {
+                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
+                }
+            });
+        }
+
 
     }
 
@@ -695,12 +756,14 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                 if (prescriptionImage.get(i).getImageNumber() != 000) {
 
                     if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace("/storage/emulated/0/", "");
+                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
                         removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
                         Log.e("check", "" + removeSyptoms);
                     } else {
-                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace("/storage/emulated/0/DCIM/Camera/", "");
-                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
+                        int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
+                        String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
+                        Log.e("fileName", " " + hello);
+                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
                         Log.e("check", "" + removeSyptoms);
                     }
 
@@ -755,15 +818,19 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews = ParseJsonData.getInstance().getPrescriptionList(response);
                             if (prescriptionListViews.size() > 0 && prescriptionListViews != null) {
+                                AppPreference.getInstance().setPrescriptionSize(1);
                                 txt_no_prescr.setVisibility(View.GONE);
-                                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                                prescriptionItemView.setVisibility(View.VISIBLE);
+                                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
                                         prescriptionListViews);
                                 prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 uploadPrescriptionAdpter.notifyDataSetChanged();
                             } else {
+                                AppPreference.getInstance().setPrescriptionSize(0);
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 txt_no_prescr.setVisibility(View.VISIBLE);
+                                prescriptionItemView.setVisibility(View.GONE);
                             }
                         } else {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
@@ -816,12 +883,24 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
 
     private List<String> getDoctorNameAsStringList(List<PrescriptionListView> result) {
         List<String> list = new ArrayList<>();
-
         if (result != null)
-            for (PrescriptionListView logy : result)
-                list.add(logy.getDoctorName());
+            for (PrescriptionListView logy : result) {
+                if (list != null && list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        if (logy.getDoctorName().equalsIgnoreCase(list.get(i))) {
+                        } else {
+                            list.add(logy.getDoctorName());
+                        }
+                    }
+                } else {
+                    list.add(logy.getDoctorName());
+                }
+
+            }
+
         return list;
     }
+
 
     private List<String> getDateAsStringList(List<PrescriptionListView> result) {
         List<String> list = new ArrayList<>();
@@ -861,6 +940,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         }
         return searched;
     }
+
 
     public ArrayList<PrescriptionListView> getFilterListDisease(String charSequence) {
         ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
@@ -1035,6 +1115,10 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    public void checkList() {
+        getPrescriptionList();
     }
 
 }

@@ -33,10 +33,9 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLabReportImageView;
-import fragment.healthapp.FragmentPrescriptionImageView;
+import fragment.healthapp.FragmentLabTestReport;
 import interfaces.IOnOtpDoneDelete;
 import item.property.LabReportListView;
-import item.property.PrescriptionListView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -49,11 +48,13 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     Context applicationContext;
     List<LabReportListView> labReportListViews;
     private RequestQueue requestQueue;
+    private FragmentLabTestReport fragmentLabTestReports;
 
-    public UploadLabTestReportAdpter(Context applicationContexts,
+    public UploadLabTestReportAdpter(FragmentLabTestReport fragmentLabTestReport, Context applicationContexts,
                                      List<LabReportListView> labReportListViews) {
         this.labReportListViews = labReportListViews;
         this.applicationContext = applicationContexts;
+        this.fragmentLabTestReports = fragmentLabTestReport;
     }
 
     @Override
@@ -101,8 +102,8 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/reportimage/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
-                Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/reportimage/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage());
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
+                Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -132,11 +133,11 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         relative_card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Bundle bundle = new Bundle();
                 bundle.putString("doctorName", labReportListViews.get(position).getDoctorName());
                 bundle.putString("dieaseName", labReportListViews.get(position).getTestName());
                 bundle.putString("date", labReportListViews.get(position).getReportDate());
+                bundle.putString("id", labReportListViews.get(position).getReportId());
                 bundle.putParcelableArrayList("imageList", labReportListViews.get(position).getLabReportImageListViews());
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentLabReportImageView(), bundle, true);
@@ -199,6 +200,9 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             labReportListViews.remove(pos);
                             notifyDataSetChanged();
+                            if (labReportListViews.size() == 0) {
+                                fragmentLabTestReports.checkList();
+                            }
                         } else {
                         }
                     }
@@ -219,7 +223,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };

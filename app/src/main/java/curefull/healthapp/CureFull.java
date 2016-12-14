@@ -12,6 +12,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import java.io.IOException;
+import java.util.List;
 
 import LazyLoaderLibs.ImageType;
 import LazyLoaderLibs.PhoneSpecificImage;
@@ -41,6 +42,7 @@ public class CureFull extends Application {
     }
 
     private PhoneSpecificImage fullImageLoader;
+    private PhoneSpecificImage smallImageLoader;
 
     public void setEditext(boolean editext) {
         isEditext = editext;
@@ -108,9 +110,18 @@ public class CureFull extends Application {
     public PhoneSpecificImage getFullImageLoader() {
         if (fullImageLoader == null) {
             fullImageLoader = new PhoneSpecificImage(_activity,
-                    ImageType.THUMB_IMAGE);
+                    ImageType.FULL_SCREEN_IMAGE);
         }
         return fullImageLoader;
+    }
+
+
+    public PhoneSpecificImage getSmallImageLoader() {
+        if (smallImageLoader == null) {
+            smallImageLoader = new PhoneSpecificImage(_activity,
+                    ImageType.THUMB_IMAGE);
+        }
+        return smallImageLoader;
     }
 
 
@@ -175,4 +186,5 @@ public class CureFull extends Application {
                     "OpenSans-Semibold.ttf");
         return opensansTypefaceSemiBold;
     }
+
 }

@@ -81,7 +81,7 @@
                     android:textColorHint="@color/white"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomAutoComplteViewMontserratHairLine
                         android:id="@+id/input_email"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -89,9 +89,10 @@
                         android:drawableLeft="@drawable/user_icon"
                         android:drawablePadding="@dimen/_7dp"
                         android:nextFocusDown="@+id/input_password"
+                        android:imeOptions="actionNext"
                         android:nextFocusForward="@+id/input_password"
                         android:hint="Mobile number/Email-id"
-                        android:inputType="textAutoComplete"
+                        android:inputType="textEmailAddress"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white" />
@@ -193,13 +194,14 @@
                             android:background="@drawable/white_patient_button_selector"
                             android:gravity="center"
                             android:padding="@dimen/_10dp"
+                            android:visibility="gone"
                             android:text="Log in via Facebook"
                             android:textColor="@color/health_login_text"
                             android:textStyle="bold" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             android:id="@+id/btn_create_new"
-                            style="@style/textView_dark_grey_normal_micro"
+                            style="@style/textView_dark_grey_normal_medium"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="right"

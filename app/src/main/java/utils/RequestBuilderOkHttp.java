@@ -107,7 +107,7 @@ public class RequestBuilderOkHttp {
                 .addHeader("r_t", AppPreference.getInstance().getRt())
                 .addHeader("user_name", AppPreference.getInstance().getUserName())
                 .addHeader("email_id", AppPreference.getInstance().getUserID())
-                .addHeader("cf_uuhid", AppPreference.getInstance().getcf_uuhid())
+                .addHeader("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew())
                 .addHeader("healthRecordDate", prescriptionDate)
                 .addHeader("doctorName", doctorName)
                 .addHeader("disease", dieaseName)
@@ -162,11 +162,60 @@ public class RequestBuilderOkHttp {
                 .addHeader("r_t", AppPreference.getInstance().getRt())
                 .addHeader("user_name", AppPreference.getInstance().getUserName())
                 .addHeader("email_id", AppPreference.getInstance().getUserID())
-                .addHeader("cf_uuhid", AppPreference.getInstance().getcf_uuhid())
+                .addHeader("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew())
                 .addHeader("healthRecordDate", prescriptionDate)
                 .addHeader("doctorName", doctorName)
                 .addHeader("testName", dieaseName)
                 .addHeader("imageOrder", removeSyptoms)
+                .post(body)
+                .build();
+
+        Log.e("request", " " + request.body().toString());
+
+        try
+
+        {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful())
+                throw new IOException("Unexpected code" + response.toString());
+            return response.body().string();
+        } catch (
+                Exception e
+                )
+
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public String postProfile(String url, HashMap<String, String> params, HashMap<String, File> fileParams) throws Exception {
+        MultipartBody.Builder buildernew = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+        if (params != null && params.size() > 0) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                buildernew.addFormDataPart(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (fileParams != null && fileParams.size() > 0) {
+            for (Map.Entry<String, File> entry : fileParams.entrySet()) {
+                if (entry.getValue() != null && entry.getValue().exists()) {
+                    buildernew.addFormDataPart(entry.getKey(), entry.getValue().getName(), RequestBody.create(MEDIA_TYPE_PNG, entry.getValue()));
+                }
+            }
+        }
+
+        RequestBody body = buildernew.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("a_t", AppPreference.getInstance().getAt())
+                .addHeader("r_t", AppPreference.getInstance().getRt())
+                .addHeader("user_name", AppPreference.getInstance().getUserName())
+                .addHeader("email_id", AppPreference.getInstance().getUserID())
+                .addHeader("cf_uuhid", AppPreference.getInstance().getcf_uuhid())
                 .post(body)
                 .build();
 

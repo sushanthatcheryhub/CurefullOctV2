@@ -19,6 +19,7 @@ import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionListView;
 import item.property.SignUpInfo;
 import item.property.UHIDItems;
+import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
 import utils.MyConstants;
 
@@ -120,6 +121,34 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                     }
                 } else {
                     detailListing = new ArrayList<UHIDItems>();
+                }
+
+            } catch (Exception e) {
+
+            }
+        }
+        return detailListing;
+    }
+
+
+    public ArrayList<UHIDItemsCheck> getUHIDCheck(String response) {
+        UHIDItemsCheck details = null;
+        ArrayList<UHIDItemsCheck> detailListing = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null")) {
+                    JSONArray jsonPayload = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
+                    detailListing = new ArrayList<UHIDItemsCheck>();
+                    for (int i = 0; i < jsonPayload.length(); i++) {
+                        JSONObject jsonObject = jsonPayload.getJSONObject(i);
+                        details = new UHIDItemsCheck(jsonObject);
+                        detailListing.add(details);
+                    }
+                } else {
+                    detailListing = new ArrayList<UHIDItemsCheck>();
                 }
 
             } catch (Exception e) {

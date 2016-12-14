@@ -2,6 +2,7 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -82,8 +83,8 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         CardView card_view = holder.card_view;
 
         try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + prescriptionListViews.get(position).getReportImage(), image_item);
-            Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/uhid/prescriptionimages/" + prescriptionListViews.get(position).getReportImage());
+            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionListViews.get(position).getReportImage(), image_item);
+            Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionListViews.get(position).getReportImage());
         } catch (Exception e) {
 
         }
@@ -92,8 +93,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Lab Report ?", "Lab Report", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(LabReportImageViewAdpter.this);
                 dialogDeleteAll.show();
             }
@@ -101,11 +101,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-                sendIntent.setType("text/plain");
-                applicationContext.startActivity(sendIntent);
+                shareClick(prescriptionListViews.get(position).getReportImage(), doctorName);
             }
         });
 
@@ -175,6 +171,9 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews.remove(pos);
                             notifyDataSetChanged();
+                            if (prescriptionListViews.size() == 0) {
+                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                            }
                         } else {
                         }
                     }
@@ -195,7 +194,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                 headers.put("r_t", AppPreference.getInstance().getRt());
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
@@ -214,5 +213,16 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void shareClick(String reportImage, String doctorName) {
+        String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + reportImage;
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        Uri imageUri = Uri.parse(url);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + doctorName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        sharingIntent.setType("image/*");
+        applicationContext.startActivity(sharingIntent);
     }
 }

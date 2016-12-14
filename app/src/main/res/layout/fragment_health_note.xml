@@ -55,6 +55,7 @@
                         android:src="@drawable/notebook" />
 
                     <ImageView
+                        android:id="@+id/img_question_note"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -155,6 +156,7 @@
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
                                                     android:hint="Subject"
+                                                    android:maxLength="35"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"

@@ -1,6 +1,5 @@
 package item.property;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,6 +14,7 @@ public class PrescriptionImageListView implements Parcelable {
 
     private String imageNumber;
     private String prescriptionImage;
+
     private String iPrescriptionId;
 
     public PrescriptionImageListView() {

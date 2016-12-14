@@ -87,6 +87,9 @@ import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogHintScreenaLanding;
+import dialog.DialogHintScreenaLandingQution;
+import dialog.DialogHintScreenaPrescriptions;
 import item.property.HealthNoteItems;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
@@ -94,7 +97,6 @@ import ticker.TickerView;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.SeekArc;
-import utils.SwitchDateTimeDialogFragment;
 import utils.Utils;
 
 
@@ -148,6 +150,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     private int waterLevel = 0;
     private boolean isFirstTime = false;
     private boolean isSelectFrom = false;
+    private int newFirstTime = 0;
+    private int secondTime = 0;
+
+    private ImageView imgg_question_white, imgg_question_red;
 
     @Override
     public boolean onBackPressed() {
@@ -165,14 +171,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     } else {
                         gender = "FEMALE";
                     }
-                    if(!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")){
+                    if (!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")) {
                         jsonUploadGenderDetails(String.valueOf(convertFeetandInchesToCentimeter(String.valueOf(AppPreference.getInstance().getGoalHeightFeet()), String.valueOf(AppPreference.getInstance().getGoalHeightInch()))), String.valueOf(AppPreference.getInstance().getGoalWeightKg()), AppPreference.getInstance().getGoalAge(), gender);
 
                     }
                 }
             }
         }
-
 
 
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
@@ -185,13 +190,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
+        CureFull.getInstanse().getActivityIsntanse().showLogo(false);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
+        imgg_question_white = (ImageView) rootView.findViewById(R.id.imgg_question_white);
+        imgg_question_red = (ImageView) rootView.findViewById(R.id.imgg_question_red);
         txt_calories = (TextView) rootView.findViewById(R.id.txt_calories);
         img_minus_icon = (ImageView) rootView.findViewById(R.id.img_minus_icon);
         img_plus_icon = (ImageView) rootView.findViewById(R.id.img_plus_icon);
         txt_water_level = (TextView) rootView.findViewById(R.id.txt_water_level);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
-        CureFull.getInstanse().getActivityIsntanse().showLogo(false);
+
         img_pre = (ImageView) rootView.findViewById(R.id.img_pre);
         recyclerView_notes = (RecyclerView) rootView.findViewById(R.id.recyclerView_notes);
         txt_no_list_health_note = (TextView) rootView.findViewById(R.id.txt_no_list_health_note);
@@ -237,18 +246,19 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         txt_click_here_add.setOnClickListener(this);
         img_plus_icon.setOnClickListener(this);
         img_minus_icon.setOnClickListener(this);
-
+        imgg_question_white.setOnClickListener(this);
+        imgg_question_red.setOnClickListener(this);
+        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
 //        if (AppPreference.getInstance().getStepStarts()) {
         Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
         CureFull.getInstanse().getActivityIsntanse().startService(intent);
-        doBindService();
+
 //        }
         alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
         txt_health_note = (TextView) rootView.findViewById(R.id.txt_health_note);
         rotate_forward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_backward);
         // Construct SwitchDateTimePicker
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView_notes.setLayoutManager(mLayoutManager);
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
@@ -256,8 +266,23 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         preferences.edit().putBoolean("destroy", false).commit();
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
         txt_water_level.setText("" + AppPreference.getInstance().getWaterInTake() + " Ltr");
+        getDailyHealth();
         jsonUploadTarget();
+        doBindService();
 
+        if (AppPreference.getInstance().isFirstTimeScreen1()) {
+
+        } else {
+            AppPreference.getInstance().setIsFirstTimeScreen1(true);
+            DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
+            dialogHintScreenaLandingQution.setCanceledOnTouchOutside(true);
+            dialogHintScreenaLandingQution.show();
+        }
+
+
+        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -270,16 +295,19 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             recyclerView_notes.setAdapter(health_note_listAdpter);
             health_note_listAdpter.notifyDataSetChanged();
         } else {
-            txt_no_list_health_note.setVisibility(View.VISIBLE);
+            Log.e("no one", ":- no");
+            isFabOpen = false;
+            flag = true;
+//            txt_no_list_health_note.setVisibility(View.VISIBLE);
             recyclerView_notes.setVisibility(View.GONE);
-            animateFAB();
+
             txt_no_list_health_note.post(new Runnable() {
                 @Override
                 public void run() {
                     launchTwitter(rootView);
                 }
             });
-
+            animateFAB();
         }
 
     }
@@ -294,7 +322,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         int y = realtive_notes.getBottom();
         x -= ((28 * pixelDensity) + (16 * pixelDensity));
         int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
-
+        Log.e("flag ", ": " + flag);
         if (flag) {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
@@ -379,7 +407,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
     public void animateFAB() {
-
+        Log.d("isFabOpen", ":- " + isFabOpen);
         if (isFabOpen) {
             img_fab.startAnimation(rotate_backward);
             isFabOpen = false;
@@ -401,6 +429,24 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     public void onClick(View view) {
         switch (view.getId()) {
 
+            case R.id.imgg_question_white:
+
+                DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(CureFull.getInstanse().getActivityIsntanse());
+                dialogHintScreenaLanding.show();
+
+
+                break;
+
+            case R.id.imgg_question_red:
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_pre);
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentPrescriptionCheck(), true);
+                DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
+                dialogHintScreenaPrescriptions.show();
+
+
+                break;
+
 
             case R.id.liner_date_t:
                 isFirstTime = true;
@@ -412,6 +458,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
                 timePickerDialog1.show();
                 break;
+
             case R.id.realtive_click:
                 if (AppPreference.getInstance().isLoginFirst()) {
                     CureFull.getInstanse().getFlowInstanseAll()
@@ -445,16 +492,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 break;
             case R.id.linear_prescription_click:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_pre);
-//                BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
-//                TransitionDrawable td = new TransitionDrawable(new Drawable[]{new ColorDrawable(0xDEDEDE), bd});
-//                image1.setImageDrawable(td);
-//                td.startTransition(1000);
-//
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentPrescriptionCheck(), true);
-//                CureFull.getInstanse().getFlowInstanseAll()
-//                        .replace(new FragmentHealthNote(), true);
-
                 break;
             case R.id.img_fab:
                 if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
@@ -538,7 +577,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 MessengerService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
         txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
-        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount());
+        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
     }
 
     final Messenger mMessenger = new Messenger(new IncomingHandler());
@@ -548,7 +587,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                                        IBinder service) {
             mService = new Messenger(service);
             txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
-            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount());
+            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
             try {
                 Message msg = Message.obtain(null,
                         MessengerService.MSG_REGISTER_CLIENT);
@@ -571,7 +610,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
             txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
-            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount());
+            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
 //            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), R.string.remote_service_disconnected,
 //                    Toast.LENGTH_SHORT).show();
         }
@@ -613,6 +652,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         int mnt = (monthOfYear + 1);
         try {
             txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + formatMonth(String.valueOf(mnt)));
+            firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -628,18 +668,20 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     Log.e("", "steps received in activity:" + msg.what);
                     Log.e("", "steps arg in activity:" + msg.arg1);
 //                    txt_steps_counter.setText("Step Count : " + msg.arg1);
-                    txt_steps_counter.setText("" + msg.arg1);
+
+                    txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
                     AppPreference.getInstance().setStepsCount("" + msg.arg1);
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
                     Log.e("percentage", ":- " + percentage);
-                    int b = (int) Math.round(percentage);
+                    int b = (int) percentage;
                     Log.e("b", ":- " + b);
                     seekArcComplete.setProgress(b);
 //                    setProgressUpdateAnimation(b);
                     ticker1.setText(b + "%");
 
-                    String wirght;
-                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0")) {
+                    String wirght = "";
+                    Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
+                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("nul")) {
                         wirght = "0";
                     } else {
                         wirght = AppPreference.getInstance().getGoalWeightKg();
@@ -698,7 +740,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         String date = "";
         if (firstDate.equalsIgnoreCase("")) {
             date = getTodayDate();
+            String[] dateFormat = date.split("-");
+            int mYear = Integer.parseInt(dateFormat[0]);
+            int mMonth = Integer.parseInt(dateFormat[1]);
+            int mDay = Integer.parseInt(dateFormat[2]);
+            date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         } else {
+            Log.e("firstDate", ":- " + firstDate);
             date = firstDate;
         }
         String time = "";
@@ -941,12 +989,22 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
 
         if (isFirstTime) {
+            newFirstTime = hourOfDay;
             isSelectFrom = true;
-            firstTime = hourOfDay + ":" + mintues;
+            firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
             txt_time.setText("" + updateTime(hourOfDay, mintues));
+            txt_to_time.setText("");
+            toFirstTime = "";
         } else {
-            toFirstTime = "" + hourOfDay + ":" + mintues;
-            txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+            secondTime = hourOfDay;
+            Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
+            if (secondTime > newFirstTime) {
+                toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+            }
+
         }
 
     }
@@ -1009,6 +1067,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         String timeReal = dateParts[1];
 
         JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, date, timeReal);
+        Log.e("jsonUploadTarget", ": " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
                 new Response.Listener<JSONObject>() {
@@ -1158,4 +1217,59 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         }
         return "";
     }
+
+
+    private void getDailyHealth() {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("getDailyHealth, URL 1.", response);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                JSONObject json1 = new JSONObject(json.getString("payload"));
+                                String steps = json1.getString("steps");
+                                preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+                                AppPreference.getInstance().setStepsCount("" + steps);
+                            } else {
+
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
 }

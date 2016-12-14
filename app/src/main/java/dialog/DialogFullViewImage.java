@@ -47,7 +47,6 @@ public class DialogFullViewImage extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (ImageView) findViewById(R.id.img_full_view);
-        Log.e("bitmap",":- "+bitmap);
         img_full_view.setImageBitmap(bitmap);
     }
 

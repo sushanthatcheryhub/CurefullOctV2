@@ -53,7 +53,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="@dimen/_3dp"
+                android:layout_marginRight="@dimen/_5dp"
+                android:padding="@dimen/_3dp"
                 android:src="@drawable/delete_icon"
                 android:visibility="visible" />
 

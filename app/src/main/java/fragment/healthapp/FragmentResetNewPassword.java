@@ -2,8 +2,11 @@ package fragment.healthapp;
 
 
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +49,11 @@ public class FragmentResetNewPassword extends Fragment {
 
 
     private View rootView;
-    private EditText input_mobile_number, input_confirm_password;
+    private TextInputLayout input_layout_mobile, input_layout_email;
+    private EditText input_mobile_number, input_confirm_password, input_email;
     private RequestQueue requestQueue;
     private TextView btn_reset_password;
+    private String emailCheck = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,21 +64,42 @@ public class FragmentResetNewPassword extends Fragment {
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         CureFull.getInstanse().getActivityIsntanse().showLogo(true);
+        input_layout_mobile = (TextInputLayout) rootView.findViewById(R.id.input_layout_mobile);
+        input_layout_email = (TextInputLayout) rootView.findViewById(R.id.input_layout_email);
+        input_email = (EditText) rootView.findViewById(R.id.input_email);
         input_confirm_password = (EditText) rootView.findViewById(R.id.input_confirm_password);
         input_mobile_number = (EditText) rootView.findViewById(R.id.input_mobile_number);
         btn_reset_password = (TextView) rootView.findViewById(R.id.btn_reset_password);
 
-
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            emailCheck = bundle.getString("email");
+        }
         btn_reset_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!validateMobileNo()) {
-                    return;
+
+                if (emailCheck.equalsIgnoreCase("yes")) {
+                    if (isValidEmail(input_email.getText().toString().trim())) {
+                        if (!validatePassword()) {
+                            return;
+                        }
+                        jsonForgotCheck(input_email.getText().toString().trim());
+
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Address not valid");
+                    }
+                } else {
+                    if (!validateMobileNo()) {
+                        return;
+                    }
+                    if (!validatePassword()) {
+                        return;
+                    }
+                    jsonForgotCheck(input_confirm_password.getText().toString().trim());
                 }
-                if (!validatePassword()) {
-                    return;
-                }
-                jsonForgotCheck();
+
+
             }
         });
 
@@ -81,31 +107,33 @@ public class FragmentResetNewPassword extends Fragment {
         return rootView;
     }
 
+    private boolean isValidEmail(CharSequence email) {
+        if (!TextUtils.isEmpty(email)) {
+            return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
+        return false;
+    }
+
+
     private boolean validateMobileNo() {
         String email = input_mobile_number.getText().toString().trim();
 
         if (email.isEmpty() || email.length() != 10) {
             if (email.length() < 10 && email.length() > 1) {
-                input_mobile_number.setError("Mobile Number cannot be less than 10 numbers.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be less than 10 numbers.");
             } else {
-                input_mobile_number.setError("Mobile Number cannot be left blank.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be left blank.");
             }
-            requestFocus(input_mobile_number);
             return false;
 
-        } else {
-            input_mobile_number.setError(null);
         }
         return true;
     }
 
     private boolean validatePassword() {
         if (input_confirm_password.getText().toString().trim().isEmpty()) {
-            input_confirm_password.setError("Please Enter Password");
-            requestFocus(input_confirm_password);
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Enter Password");
             return false;
-        } else {
-            input_confirm_password.setError(null);
         }
 
         return true;
@@ -117,11 +145,16 @@ public class FragmentResetNewPassword extends Fragment {
         }
     }
 
-    public void jsonForgotCheck() {
+    public void jsonForgotCheck(String userId) {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.toForgotPassword(input_mobile_number.getText().toString().trim(), input_confirm_password.getText().toString().trim());
+        JSONObject data = null;
+        if (emailCheck.equalsIgnoreCase("yes")) {
+            data = JsonUtilsObject.toForgotPasswordEmail(userId, input_confirm_password.getText().toString().trim());
+        } else {
+            data = JsonUtilsObject.toForgotPassword(userId, input_confirm_password.getText().toString().trim());
+        }
         Log.e("data", ":- " + data.toString());
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_NEW, data,
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_SEND, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

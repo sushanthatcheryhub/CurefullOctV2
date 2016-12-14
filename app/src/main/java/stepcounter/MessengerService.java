@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,6 +16,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
      * Keeps track of all current registered clients.
      */
     ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+    SharedPreferences preferences;
     /**
      * Holds last value set by a client.
      */
@@ -72,34 +75,39 @@ public class MessengerService extends Service implements StepListener, SensorEve
         public void handleMessage(Message msg) {
             Log.e("", "steps received in service:" + msg.what);
             Log.e("", "steps arg in service: " + msg.arg1);
-            switch (msg.what) {
-                case MSG_REGISTER_CLIENT:
-                    msg.arg1 = numSteps;
-                    mClients.add(msg.replyTo);
-                    break;
-                case MSG_UNREGISTER_CLIENT:
-                    msg.arg1 = numSteps;
-                    mClients.remove(msg.replyTo);
-                    break;
-                case STOP_FOREGROUND:
-                    stopForeground(true);
-                    stopSelf();
-                    break;
-                case MSG_SET_VALUE:
-                    // mValue = msg.arg1;
+            if (preferences.getBoolean("isDestroy", false)) {
+                Log.e("check", "check:" + "isdes");
+            } else {
+                switch (msg.what) {
+                    case MSG_REGISTER_CLIENT:
+                        msg.arg1 = numSteps;
+                        mClients.add(msg.replyTo);
+                        break;
+                    case MSG_UNREGISTER_CLIENT:
+                        msg.arg1 = numSteps;
+                        mClients.remove(msg.replyTo);
+                        break;
+                    case STOP_FOREGROUND:
+                        stopForeground(true);
+                        stopSelf();
+                        break;
+                    case MSG_SET_VALUE:
+                        // mValue = msg.arg1;
 
-                    for (int i = mClients.size() - 1; i >= 0; i--) {
-                        try {
-                            mClients.get(i).send(Message.obtain(null,
-                                    MSG_SET_VALUE, numSteps, 0));
-                        } catch (RemoteException e) {
-                            mClients.remove(i);
+                        for (int i = mClients.size() - 1; i >= 0; i--) {
+                            try {
+                                mClients.get(i).send(Message.obtain(null,
+                                        MSG_SET_VALUE, numSteps, 0));
+                            } catch (RemoteException e) {
+                                mClients.remove(i);
+                            }
                         }
-                    }
-                    break;
-                default:
-                    super.handleMessage(msg);
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                }
             }
+
         }
     }
 
@@ -110,6 +118,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     @Override
     public void onCreate() {
+
         initSensor();
     }
 
@@ -133,8 +142,14 @@ public class MessengerService extends Service implements StepListener, SensorEve
     private Notification getNotification() {
         CharSequence text = getText(R.string.remote_service_started);
         // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, FragmentLandingPage.class), 0);
+        PendingIntent contentIntent;
+        if (preferences.getBoolean("isDestroy", false)) {
+            contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, null), 0);
+        } else {
+            contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, FragmentLandingPage.class), 0);
+        }
 
 
         NotificationCompat.Builder mBuilder =
@@ -168,11 +183,14 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     private void initSensor() {
         // Get an instance of the SensorManager
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        numSteps = preferences.getInt("stepsIn", 0);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         simpleStepDetector = new SimpleStepDetector();
         simpleStepDetector.registerListener(this);
         sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+
     }
 
     @Override
@@ -183,11 +201,17 @@ public class MessengerService extends Service implements StepListener, SensorEve
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIF_ID, notification);
 
-        Message message = new Message();
-        message.what = MSG_SET_VALUE;
-        message.arg1 = numSteps;
+
         try {
-            mMessenger.send(message);
+            if (preferences.getBoolean("isDestroy", false)) {
+                Log.e("check", "check:" + "isdes");
+            } else {
+                Message message = new Message();
+                message.what = MSG_SET_VALUE;
+                message.arg1 = numSteps;
+                mMessenger.send(message);
+            }
+
         } catch (RemoteException e) {
             Log.e("", "steps error:" + e.getMessage());
             e.printStackTrace();

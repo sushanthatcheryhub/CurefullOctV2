@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,6 +55,7 @@ import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogHintScreenaNote;
 import item.property.HealthNoteItems;
 import sticky.header.ExpandableStickyListHeadersListView;
 import utils.AppPreference;
@@ -83,7 +85,10 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private RelativeLayout realtive_no_health;
     private LinearLayout txt_prescription, txt_heath_app, txt_lab_reports;
     private boolean isFirstTime = false;
-    private boolean isSelectFrom=false;
+    private boolean isSelectFrom = false;
+    private int newFirstTime = 0;
+    private int secondTime = 0;
+    private ImageView img_question_note;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,6 +97,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         rootView = inflater.inflate(R.layout.fragment_health_note,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        img_question_note = (ImageView) rootView.findViewById(R.id.img_question_note);
         txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
         txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
         txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
@@ -114,7 +120,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         txt_to_time.setOnClickListener(this);
         btn_done.setOnClickListener(this);
         txt_click_here_add.setOnClickListener(this);
-
+        img_question_note.setOnClickListener(this);
         liner_date_t.setOnClickListener(this);
         txt_lab_reports.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
@@ -126,7 +132,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         mListView.setAnimExecutor(new AnimationExecutor());
 
         getAllHealthList();
-
+        CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
 
@@ -164,6 +170,11 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
+            case R.id.img_question_note:
+                DialogHintScreenaNote dialogHintScreenaNote = new DialogHintScreenaNote(CureFull.getInstanse().getActivityIsntanse());
+                dialogHintScreenaNote.show();
+                break;
             case R.id.liner_date_t:
                 isFirstTime = true;
                 final Calendar c1 = Calendar.getInstance();
@@ -202,7 +213,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 break;
             case R.id.txt_to_time:
 
-                if(isSelectFrom){
+                if (isSelectFrom) {
                     isFirstTime = false;
                     final Calendar c = Calendar.getInstance();
                     // Current Hour
@@ -211,8 +222,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     int minute = c.get(Calendar.MINUTE);
                     TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, false);
                     timePickerDialog.show();
-                }else{
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" +"Please select first from time.");
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select first from time.");
 
                 }
 
@@ -244,7 +255,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         String formattedDate = null;
         try {
             SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "HH:mm", Locale.getDefault());
+                    "HH:mm:ss", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
             Log.e("", "formattedDate" + formattedDate);
@@ -285,13 +296,24 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
+
         if (isFirstTime) {
-            isSelectFrom=true;
-            firstTime = hourOfDay + ":" + mintues;
+            newFirstTime = hourOfDay;
+            isSelectFrom = true;
+            firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
             txt_time.setText("" + updateTime(hourOfDay, mintues));
+            txt_to_time.setText("");
+            toFirstTime = "";
         } else {
-            toFirstTime = "" + hourOfDay + ":" + mintues;
-            txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+            secondTime = hourOfDay;
+            Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
+            if (secondTime > newFirstTime) {
+                toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+            }
+
         }
 
     }
@@ -306,11 +328,17 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         String date = "";
         if (firstDate.equalsIgnoreCase("")) {
             date = getTodayDate();
+            String[] dateFormat = date.split("-");
+            int mYear = Integer.parseInt(dateFormat[0]);
+            int mMonth = Integer.parseInt(dateFormat[1]);
+            int mDay = Integer.parseInt(dateFormat[2]);
+            date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         } else {
             date = firstDate;
         }
         String time = "";
         if (firstTime.equalsIgnoreCase("")) {
+            Log.e("getTodayTime", ":- " + getTodayTime());
             time = getTodayTime();
         } else {
             time = firstTime;
@@ -339,6 +367,9 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                         }
                         Log.e("responseStatus :- ", String.valueOf(responseStatus));
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            firstTime = "";
+                            toFirstTime = "";
+                            firstDate = "";
                             getAllHealthList();
                             txt_time.setText("");
                             txt_to_time.setText("");
@@ -512,6 +543,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         int mnt = (monthOfYear + 1);
         try {
             txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + formatMonth(String.valueOf(mnt)));
+            firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -64,11 +64,11 @@ public class FragmentResetPassword extends Fragment {
 //                }
 
                 if (isValidEmail(input_mobile_number.getText().toString().trim())) {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Address Check");
+                    checkEmailId();
+
                 } else if (isValidPhoneNumber(input_mobile_number.getText().toString().trim())) {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     checkMoileNumber();
-
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Enter");
                 }
@@ -82,7 +82,52 @@ public class FragmentResetPassword extends Fragment {
     }
 
 
+    private void checkEmailId() {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CHECK_EMAIL_VALID + input_mobile_number.getText().toString().trim(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("getSymptomsList, URL 1.", response);
 
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
+                                if (jsonObject.getBoolean("payload")) {
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email sent please your email id.");
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("email", "yes");
+                                    CureFull.getInstanse().getFlowInstanse()
+                                            .addWithBottomTopAnimation(new FragmentResetNewPassword(), bundle, true);
+                                } else {
+                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id does not exist");
+                                }
+                            } else {
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id does not exist");
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
 
 
     private void checkMoileNumber() {
@@ -95,14 +140,14 @@ public class FragmentResetPassword extends Fragment {
 
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            if(jsonObject.getString("responseStatus").equalsIgnoreCase("100")){
+                            if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
                                 if (jsonObject.getBoolean("payload")) {
                                     sendOTPService();
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile number does not exist");
                                 }
-                            }else{
+                            } else {
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile number does not exist");
                             }

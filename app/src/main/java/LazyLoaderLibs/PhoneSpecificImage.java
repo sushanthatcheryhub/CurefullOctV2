@@ -89,8 +89,6 @@ public class PhoneSpecificImage {
             return;
         if (url.length() < 10 || imageView == null)
             return;
-
-        Log.e("fff","ff");
         imageViews.put(imageView, url);
         Bitmap bitmap = memoryCache.get(url);
         if (bitmap != null) {

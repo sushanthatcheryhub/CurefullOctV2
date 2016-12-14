@@ -24,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
+                android:scaleType="fitXY"
                 android:src="@drawable/upload_icon" />
 
 
