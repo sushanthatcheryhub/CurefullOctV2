@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import curefull.healthapp.R;
@@ -22,7 +23,7 @@ public class DialogHintScreenaLanding extends Dialog {
     private View v = null;
     Context context;
     private TextView txt_health_text;
-
+    private RelativeLayout realtive_hint;
     public DialogHintScreenaLanding(Context _activiyt) {
         super(_activiyt, R.style.MyTheme);
 
@@ -58,7 +59,14 @@ public class DialogHintScreenaLanding extends Dialog {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb1.setSpan(new RelativeSizeSpan(1.4f), 0, 17, 0);
         txt_health_text.setText(sb1);
+        realtive_hint=(RelativeLayout)findViewById(R.id.realtive_hint);
 
+        realtive_hint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
     }
 
 

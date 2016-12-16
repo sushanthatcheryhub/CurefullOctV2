@@ -245,14 +245,14 @@ public class FragmentLogin extends Fragment implements
                             if (!showPwd) {
                                 showPwd = true;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-                                edtInputPassword.setTextSize(16f);
+                                edtInputPassword.setTextSize(14f);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                edtInputPassword.setTextSize(16f);
+                                edtInputPassword.setTextSize(14f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
@@ -596,6 +596,7 @@ public class FragmentLogin extends Fragment implements
                 emailSet.add(account.name);
             }
         }
+        Log.e("size",":- "+emailSet.size());
         edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
     }
 }

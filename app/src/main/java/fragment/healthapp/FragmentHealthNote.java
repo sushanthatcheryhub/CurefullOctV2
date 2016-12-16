@@ -131,8 +131,51 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         //custom expand/collapse animation
         mListView.setAnimExecutor(new AnimationExecutor());
 
+
+        Bundle value = getArguments();
+        if (value != null) {
+            edt_subject.setText("" + value.getString("subject"));
+            edt_deatils.setText("" + value.getString("details"));
+            String date = "" + value.getString("Date");
+            String time = "" + value.getString("firstTime");
+            if (!date.equalsIgnoreCase("") || !time.equalsIgnoreCase("")) {
+                Log.e("date", " " + date + " time:- " + time);
+                txt_click_here_add.setVisibility(View.GONE);
+                date_time_picker.setVisibility(View.VISIBLE);
+                liner_date_t.setVisibility(View.VISIBLE);
+                liner_to_time.setVisibility(View.VISIBLE);
+                firstDate = date;
+
+                String[] dateParts11 = firstDate.split("-");
+                String yr = dateParts11[0];
+                String mnt = dateParts11[1];
+                String day = dateParts11[2];
+                try {
+                    txt_date_time.setText("" + (Integer.parseInt(day) < 10 ? "0" + day : day) + " " + formatMonth(mnt));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                firstTime = time;
+                String[] dateParts112 = time.split(":");
+                String hrs = dateParts112[0];
+                String mins = dateParts112[1];
+                txt_time.setText("" + updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                toFirstTime = value.getString("toFirstTime");
+                String[] dateParts113 = toFirstTime.split(":");
+                String hrs1 = dateParts113[0];
+                String mins1 = dateParts113[1];
+                txt_to_time.setText("" + updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+            }
+
+
+        }
+
         getAllHealthList();
+
+
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+
+
         return rootView;
     }
 
@@ -198,12 +241,23 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                         .replace(new FragmentLabTestReport(), true);
                 break;
             case R.id.txt_date_time:
+                final int year, day;
+                int month1;
                 final Calendar c2 = Calendar.getInstance();
-                final int year = c2.get(Calendar.YEAR);
-                final int month = c2.get(Calendar.MONTH);
-                final int day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                if (firstDate.equalsIgnoreCase("")) {
+                    year = c2.get(Calendar.YEAR);
+                    month1 = c2.get(Calendar.MONTH);
+                    day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                } else {
+                    Log.e("ye wala ", " ye wlal");
+                    String[] dateFormat = firstDate.split("-");
+                    year = Integer.parseInt(dateFormat[0]);
+                    month1 = Integer.parseInt(dateFormat[1]);
+                    day = Integer.parseInt(dateFormat[2]);
+                    month1 = (month1 - 1);
+                }
 
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentHealthNote.this, year, month, day);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentHealthNote.this, year, month1, day);
                 newDateDialog.getDatePicker().setCalendarViewShown(false);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c2.getTime();

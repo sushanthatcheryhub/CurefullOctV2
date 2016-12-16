@@ -80,7 +80,7 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentUHID(), true);
-        } else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             jsonLogout();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             AppPreference.getInstance().clearAllData();

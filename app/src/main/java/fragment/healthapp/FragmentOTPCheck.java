@@ -102,7 +102,15 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         Log.e("OTP", ":- " + OTP);
         btn_click_resend_otp.setText("" + OTP);
         btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
+        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edt_confirm_password.requestFocus();
+                }
+                return false;
+            }
+        });
 
         edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -120,13 +128,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                 showPwd = true;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                edtInputPassword.setTextSize(16f);
+                                edtInputPassword.setTextSize(14f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                edtInputPassword.setTextSize(16f);
+                                edtInputPassword.setTextSize(14f);
                                 edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here
@@ -161,13 +169,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                 showPwd = true;
                                 edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT);
                                 edt_confirm_password.setSelection(edt_confirm_password.getText().length());
-                                edt_confirm_password.setTextSize(16f);
+                                edt_confirm_password.setTextSize(14f);
                                 edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
                             } else {
                                 showPwd = false;
                                 edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                 edt_confirm_password.setSelection(edt_confirm_password.getText().length());
-                                edt_confirm_password.setTextSize(16f);
+                                edt_confirm_password.setTextSize(14f);
                                 edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
                                 //confirmPassImage.setImageResource(R.drawable.username);//change Image here

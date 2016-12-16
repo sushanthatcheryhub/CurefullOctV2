@@ -124,7 +124,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     private OnDataPointListener mListener;
     // [END mListener_variable_reference]
     private RelativeLayout realtive_click;
-    private LinearLayout linear_health_app, liner_date_t, liner_to_time;
+    private LinearLayout linear_health_app, liner_date_t, liner_to_time, linear_health_note;
     private ActivityRecognition arclient;
     private RelativeLayout realtive_notes;
     private TickerView ticker1, text_steps_count;
@@ -193,6 +193,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
+
+        linear_health_note = (LinearLayout) rootView.findViewById(R.id.linear_health_note);
         imgg_question_white = (ImageView) rootView.findViewById(R.id.imgg_question_white);
         imgg_question_red = (ImageView) rootView.findViewById(R.id.imgg_question_red);
         txt_calories = (TextView) rootView.findViewById(R.id.txt_calories);
@@ -282,7 +284,28 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
         txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+        ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
+        seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+
+
+        linear_health_note.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Bundle bundle = new Bundle();
+                bundle.putString("subject", edt_subject.getText().toString().trim());
+                bundle.putString("details", edt_deatils.getText().toString().trim());
+                bundle.putString("Date", firstDate);
+                bundle.putString("firstTime", firstTime);
+                bundle.putString("toFirstTime", toFirstTime);
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentHealthNote(), bundle, true);
+            }
+        });
+        if (waterLevel == 0) {
+            img_minus_icon.setVisibility(View.INVISIBLE);
+        }
         return rootView;
     }
 
@@ -430,11 +453,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         switch (view.getId()) {
 
             case R.id.imgg_question_white:
-
                 DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaLanding.show();
-
-
                 break;
 
             case R.id.imgg_question_red:
@@ -443,8 +463,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                         .replace(new FragmentPrescriptionCheck(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaPrescriptions.show();
-
-
                 break;
 
 
@@ -507,12 +525,23 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 }
                 break;
             case R.id.txt_date_time:
+                final int year, day;
+                int month1;
                 final Calendar c2 = Calendar.getInstance();
-                final int year = c2.get(Calendar.YEAR);
-                final int month = c2.get(Calendar.MONTH);
-                final int day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                if (firstDate.equalsIgnoreCase("")) {
+                    year = c2.get(Calendar.YEAR);
+                    month1 = c2.get(Calendar.MONTH);
+                    day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                } else {
+                    Log.e("ye wala ", " ye wlal");
+                    String[] dateFormat = firstDate.split("-");
+                    year = Integer.parseInt(dateFormat[0]);
+                    month1 = Integer.parseInt(dateFormat[1]);
+                    day = Integer.parseInt(dateFormat[2]);
+                    month1 = (month1 - 1);
+                }
 
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentLandingPage.this, year, month, day);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentLandingPage.this, year, month1, day);
                 newDateDialog.getDatePicker().setCalendarViewShown(false);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c2.getTime();
@@ -555,7 +584,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 liner_to_time.setVisibility(View.VISIBLE);
                 break;
             case R.id.img_plus_icon:
+
                 waterLevel++;
+                if (waterLevel > 0) {
+                    img_minus_icon.setVisibility(View.VISIBLE);
+                }
                 txt_water_level.setText(waterLevel + "Ltr");
                 AppPreference.getInstance().setWaterInTake("" + waterLevel);
                 break;
@@ -563,6 +596,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 --waterLevel;
                 txt_water_level.setText(waterLevel + "Ltr");
                 AppPreference.getInstance().setWaterInTake("" + waterLevel);
+                if (waterLevel == 0) {
+                    img_minus_icon.setVisibility(View.INVISIBLE);
+                }
+
                 break;
 
         }
@@ -677,6 +714,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     Log.e("b", ":- " + b);
                     seekArcComplete.setProgress(b);
 //                    setProgressUpdateAnimation(b);
+                    AppPreference.getInstance().setPercentage(b);
                     ticker1.setText(b + "%");
 
                     String wirght = "";
@@ -1190,6 +1228,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
 
     public static double convertFeetandInchesToCentimeter(String feet, String inches) {
+        Log.e("feet:- ", ":- " + feet + " inches :-" + inches);
         double heightInFeet = 0;
         double heightInInches = 0;
         try {
@@ -1202,7 +1241,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         } catch (NumberFormatException nfe) {
 
         }
-        return (heightInFeet * 30.48) + (heightInInches * 2.54);
+        return (heightInFeet * 30.48) + Math.round(heightInInches * 2.54);
     }
 
     public String formatMonth(String month) throws ParseException {

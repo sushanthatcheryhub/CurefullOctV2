@@ -311,6 +311,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/linear_health_note"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -827,6 +828,7 @@
                         android:id="@+id/imgg_question_red"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/_5dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/red_yellow_question_mark" />
                 </LinearLayout>

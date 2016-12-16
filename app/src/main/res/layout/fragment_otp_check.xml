@@ -46,10 +46,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5dp"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/edt_otp_password"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -72,10 +72,10 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="@dimen/_10dp"
                     android:gravity="center_vertical"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/edt_password"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -101,10 +101,10 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="@dimen/_10dp"
                     android:gravity="center_vertical"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/edt_confirm_password"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"

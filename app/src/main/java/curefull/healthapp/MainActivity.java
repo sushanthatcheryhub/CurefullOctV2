@@ -242,7 +242,7 @@ public class MainActivity extends BaseMainActivity {
 
     public void setActionDrawerProfilePic(String name) {
         CureFull.getInstanse().getSmallImageLoader().clearCache();
-        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/end-user/profileImage/" + name, circularImageView);
+        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + name, circularImageView);
     }
 
 
@@ -621,7 +621,7 @@ public class MainActivity extends BaseMainActivity {
     public void shareClick() {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri screenshotUri = Uri.fromFile(myPath);
-        sharingIntent.setType("image/png");
+        sharingIntent.setType("image/*");
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName());
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
         sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);

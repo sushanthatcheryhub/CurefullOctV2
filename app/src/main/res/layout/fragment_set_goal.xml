@@ -561,13 +561,14 @@
                             <customsTextViews.CustomEditTextViewMontserratHairLine
                                 android:id="@+id/edt_steps"
                                 style="@style/textView_dark_grey_normal_micro"
-                                android:layout_width="match_parent"
+                                android:layout_width="@dimen/_40dp"
                                 android:layout_height="wrap_content"
                                 android:enabled="false"
                                 android:focusable="false"
                                 android:gravity="left"
                                 android:inputType="number"
-                                android:text="10000"
+                                android:maxLength="5"
+                                android:text=""
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
                                 android:theme="@style/TextLabelYellow" />
@@ -634,7 +635,7 @@
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
                                 android:inputType="number"
-                                android:text="2000"
+                                android:text=""
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
                                 android:theme="@style/TextLabelYellow" />
@@ -697,13 +698,14 @@
                             <customsTextViews.CustomEditTextViewMontserratHairLine
                                 android:id="@+id/edt_water"
                                 style="@style/textView_dark_grey_normal_micro"
-                                android:layout_width="match_parent"
+                                android:layout_width="@dimen/_40dp"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/txt_name"
                                 android:layout_centerInParent="true"
                                 android:gravity="left"
                                 android:inputType="number"
-                                android:text="6"
+                                android:maxLength="3"
+                                android:text=""
                                 android:textColor="@color/health_yellow"
                                 android:textStyle="bold"
                                 android:theme="@style/TextLabelYellow" />

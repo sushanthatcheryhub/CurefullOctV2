@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import curefull.healthapp.R;
@@ -23,7 +24,7 @@ public class DialogHintScreenaPrescriptions extends Dialog {
     private View v = null;
     Context context;
     private LinearLayout liner_share;
-
+    private RelativeLayout realtive_hint;
     public DialogHintScreenaPrescriptions(Context _activiyt) {
         super(_activiyt, R.style.MyTheme);
 
@@ -43,7 +44,14 @@ public class DialogHintScreenaPrescriptions extends Dialog {
         } else {
             liner_share.setVisibility(View.VISIBLE);
         }
+        realtive_hint=(RelativeLayout)findViewById(R.id.realtive_hint);
 
+        realtive_hint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
 
     }
 

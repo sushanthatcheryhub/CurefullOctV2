@@ -221,21 +221,24 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         edt_years.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int year, month, day;
+                final int year, day;
+                int month1;
                 final Calendar c1 = Calendar.getInstance();
-                Log.e("Age ",":- "+AppPreference.getInstance().getGoalAge());
+                Log.e("Age ", ":- " + AppPreference.getInstance().getGoalAge());
                 if (AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
                     year = c1.get(Calendar.YEAR);
-                    month = c1.get(Calendar.MONTH);
+                    month1 = c1.get(Calendar.MONTH);
                     day = c1.get(Calendar.DAY_OF_MONTH) + 1;
                 } else {
+                    Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = AppPreference.getInstance().getGoalAge().split("-");
                     year = Integer.parseInt(dateFormat[0]);
-                    month = Integer.parseInt(dateFormat[1]);
+                    month1 = Integer.parseInt(dateFormat[1]);
                     day = Integer.parseInt(dateFormat[2]);
+                    month1 = (month1 - 1);
                 }
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentEditGoal.this, year, month, day);
-                newDateDialog.getDatePicker().setCalendarViewShown(true);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_HOLO_LIGHT, FragmentEditGoal.this, year, month1, day);
+                newDateDialog.getDatePicker().setSpinnersShown(true);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c1.getTime();
                 newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
@@ -401,51 +404,59 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
-                AppPreference.getInstance().setGoalHeightInch("" + s.toString());
+                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length() + " " + s.toString());
+
                 if (s.length() > 0) {
-                    bmiCalculator();
-                    if (isFemale) {
-                        getBmrForFeMale();
-                        if (heightfeet > 4) {
-                            if (!validateHeightFeetBMI()) {
-                                return;
-                            }
-                            if (heightfeet == 5) {
-                                txt_ideal_weight.setText("" + Utils.getIdealWeightWomen(heightInch) + " kg");
+                    if (Integer.parseInt(s.toString()) < 11) {
+                        AppPreference.getInstance().setGoalHeightInch("" + s.toString());
+                        Log.e("less", ":- " + " " + s.toString());
+                        bmiCalculator();
+                        if (isFemale) {
+                            getBmrForFeMale();
+                            if (heightfeet > 4) {
+                                if (!validateHeightFeetBMI()) {
+                                    return;
+                                }
+                                if (heightfeet == 5) {
+                                    txt_ideal_weight.setText("" + Utils.getIdealWeightWomen(heightInch) + " kg");
+                                } else {
+                                    int checkheight = ((heightfeet * 12) - 60) + heightInch;
+                                    txt_ideal_weight.setText("" + Utils.getIdealWeightWomen(checkheight) + " kg");
+                                }
+
                             } else {
-                                int checkheight = ((heightfeet * 12) - 60) + heightInch;
-                                txt_ideal_weight.setText("" + Utils.getIdealWeightWomen(checkheight) + " kg");
+                                if (!validateHeightFeetBMI()) {
+                                    return;
+                                }
+                                txt_ideal_weight.setText("" + "45 kg");
                             }
-
-                        } else {
-                            if (!validateHeightFeetBMI()) {
-                                return;
-                            }
-                            txt_ideal_weight.setText("" + "45 kg");
                         }
-                    }
-                    if (isMale) {
-                        getBmrForMale();
-                        if (heightfeet > 4) {
-                            if (!validateHeightFeetBMI()) {
-                                return;
-                            }
-                            if (heightfeet == 5) {
-                                txt_ideal_weight.setText("" + Utils.getIdealWeightMen(heightInch) + " kg");
+                        if (isMale) {
+                            getBmrForMale();
+                            if (heightfeet > 4) {
+                                if (!validateHeightFeetBMI()) {
+                                    return;
+                                }
+                                if (heightfeet == 5) {
+                                    txt_ideal_weight.setText("" + Utils.getIdealWeightMen(heightInch) + " kg");
+                                } else {
+                                    int checkheight = ((heightfeet * 12) - 60) + heightInch;
+                                    txt_ideal_weight.setText("" + Utils.getIdealWeightMen(checkheight) + " kg");
+                                }
+
                             } else {
-                                int checkheight = ((heightfeet * 12) - 60) + heightInch;
-                                txt_ideal_weight.setText("" + Utils.getIdealWeightMen(checkheight) + " kg");
+                                if (!validateHeightFeetBMI()) {
+                                    return;
+                                }
+                                txt_ideal_weight.setText("" + "50 kg");
                             }
 
-                        } else {
-                            if (!validateHeightFeetBMI()) {
-                                return;
-                            }
-                            txt_ideal_weight.setText("" + "50 kg");
                         }
-
+                    } else {
+                        edt_inchs.setText("11");
+                        Log.e("greater", ":- " + s.toString());
                     }
+
                 }
             }
 
@@ -1114,7 +1125,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 AppPreference.getInstance().setGoalAge(userInfo.getDateOfBirth());
                             }
 
-                            Log.e("getHeight", ": -" + userInfo.getHeight());
+                            Log.e("getHeight cm", ": -" + userInfo.getHeight());
                             if (!"null".equals(userInfo.getHeight())) {
                                 c2f(Integer.parseInt(userInfo.getHeight()));
                                 AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);

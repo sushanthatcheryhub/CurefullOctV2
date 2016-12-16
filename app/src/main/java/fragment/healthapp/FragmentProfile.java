@@ -2,17 +2,14 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
-import android.content.DialogInterface;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,13 +28,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import item.property.PrescriptionImageList;
+import dialog.DialogProfileFullView;
 import utils.AppPreference;
 import utils.CircularImageView;
 import utils.MyConstants;
@@ -48,12 +44,11 @@ import utils.RequestBuilderOkHttp;
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
 public class FragmentProfile extends Fragment implements View.OnClickListener {
-
-
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
+    public static final int PICK_FROM_CROP = 203;
     private RelativeLayout realtive_notes;
     private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
     private LinearLayout liner_gallery, liner_camera, liner_remove, liner_password;
@@ -64,6 +59,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private EditText input_name, edt_phone, input_email;
     private TextView btn_click_change;
     private boolean isclick = false;
+    private static Bitmap bitmap_image;
+    private AlertDialog dialog;
+    private String imge = "";
+    private File dir;
+    private File file;
+    private String fileName = "my_image.jpg";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,10 +113,20 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
             try {
                 CureFull.getInstanse().getSmallImageLoader().clearCache();
-                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/end-user/profileImage/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
+                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
             } catch (Exception e) {
             }
         }
+
+        profile_image_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogProfileFullView dialogProfileFullView=new DialogProfileFullView(CureFull.getInstanse().getActivityIsntanse(),AppPreference.getInstance().getProfileImage());
+                dialogProfileFullView.show();
+
+            }
+        });
+
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
@@ -131,8 +142,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     isclick = true;
                     liner_password.setVisibility(View.VISIBLE);
                 }
-
-
                 break;
             case R.id.liner_animation_upload:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
@@ -153,6 +162,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 });
                 break;
             case R.id.liner_camera:
+//                loadingDialogNot();
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
@@ -164,7 +174,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-
                 break;
 
             case R.id.liner_remove:
@@ -213,44 +222,88 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
             //Get our saved file into a bitmap object:
-            File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-//            profile_image_view.setImageBitmap(bitmap);
-//            profile_image_view.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    launchTwitter(rootView);
-//                }
-//            });
-            sentSaveTestingServer(file.getAbsolutePath());
-        } else {
-            if(data!=null){
+            File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+            Uri pickedImage = Uri.fromFile(file1);
+            // Let's read picked image path using content resolver
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+            cropIntent.setDataAndType(pickedImage, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            cropIntent.putExtra("outputX", 300);
+            cropIntent.putExtra("outputY", 300);
+            cropIntent.putExtra("scale", true);
+
+            // retrieve data on return
+            cropIntent.putExtra("return-data", false);
+            File f = createNewFile();
+
+            Uri mCropImagedUri = Uri.fromFile(f);
+            cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, PICK_FROM_CROP);
+
+//            sentSaveTestingServer(file.getAbsolutePath());
+        } else if (requestCode == SELECT_PHOTO) {
+            if (data != null) {
                 if (requestCode == SELECT_PHOTO) {
                     // Let's read picked image data - its URI
                     Uri pickedImage = data.getData();
                     // Let's read picked image path using content resolver
-                    String[] filePath = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
-                    cursor.moveToFirst();
-                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-//                profile_image_view.setImageBitmap(bitmap);
-//                profile_image_view.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        launchTwitter(rootView);
-//                    }
-//                });
-                    cursor.close();
-                    sentSaveTestingServer(imagePath);
+                    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                    // indicate image type and Uri
+                    cropIntent.setDataAndType(pickedImage, "image/*");
+                    // set crop properties
+                    cropIntent.putExtra("crop", "true");
+                    // indicate aspect of desired crop
+                    cropIntent.putExtra("aspectX", 1);
+                    cropIntent.putExtra("aspectY", 1);
+                    cropIntent.putExtra("outputX", 300);
+                    cropIntent.putExtra("outputY", 300);
+                    cropIntent.putExtra("scale", true);
+
+                    // retrieve data on return
+                    cropIntent.putExtra("return-data", false);
+                    File f = createNewFile();
+
+                    Uri mCropImagedUri = Uri.fromFile(f);
+                    cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+                    // start the activity - we handle returning in onActivityResult
+                    startActivityForResult(cropIntent, PICK_FROM_CROP);
+
                 }
             }
 
+        } else if (requestCode == PICK_FROM_CROP) {
+//            Uri selectedImageUri= data.getData();
+//            String[] filePath = {MediaStore.Images.Media.DATA};
+//            Cursor cursor = getActivity().getContentResolver().query(selectedImageUri, filePath, null, null, null);
+//            cursor.moveToFirst();
+//            String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+//            cursor.close();
+            if (file.exists())
+                sentSaveTestingServer(file.getPath());
         }
+    }
+
+    public File createNewFile() {
+        dir = new File(Environment.getExternalStorageDirectory(), "App Pics");
+        if (!dir.exists())
+            dir.mkdir();
+        if (file == null)
+            file = new File(dir, fileName);
+        if (file.exists()) {
+            file.delete();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 
 
@@ -385,4 +438,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         param.put("profileImage", new File(image));
         return param;
     }
+
+
 }

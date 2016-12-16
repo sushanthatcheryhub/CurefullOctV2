@@ -608,6 +608,19 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
         return 0;
     }
 
+
+    public void setPercentage(int className) {
+        if (_prefrence != null)
+            _prefrence.edit().putInt("percentage", className).commit();
+    }
+
+    public int getPercentage() {
+        if (_prefrence != null)
+            return _prefrence.getInt("percentage", 0);
+        return 0;
+    }
+
+
 }
 
 

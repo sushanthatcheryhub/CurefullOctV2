@@ -311,7 +311,7 @@
                                     android:gravity="right"
                                     android:singleLine="true"
                                     android:text="Browse"
-                                    android:textColor="@color/health_login_text" />
+                                    android:textColor="@color/health_yellow" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -337,7 +337,7 @@
                                     android:gravity="right"
                                     android:singleLine="true"
                                     android:text="Take a picture"
-                                    android:textColor="@color/health_login_text" />
+                                    android:textColor="@color/health_yellow" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -362,7 +362,7 @@
                                     android:gravity="right"
                                     android:singleLine="true"
                                     android:text="Remove"
-                                    android:textColor="@color/health_login_text" />
+                                    android:textColor="@color/health_yellow" />
                             </LinearLayout>
                         </LinearLayout>
 

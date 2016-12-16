@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -178,7 +179,7 @@ public class FragmentPrescriptionImageFullView extends Fragment {
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:-" + doctoreName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
         sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         sharingIntent.setType("image/*");
-        CureFull.getInstanse().getActivityIsntanse().startActivity(sharingIntent);
+        startActivity(Intent.createChooser(sharingIntent, "Share image using"));
     }
 
 }

@@ -265,12 +265,14 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         Log.e("name ", "fileNames " + filesName.get(0).toString());
         for (String path : filesName/* List of the files you want to send */) {
             Uri uri = Uri.parse(path);
+            Log.e("uri ", "uri " + uri.toString().length());
             files.add(uri);
         }
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName()+ " Report");
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
+        Log.e("name ", "fileNames " + files.size());
+        sharingIntent.setType("/*images");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
         sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-        sharingIntent.setType("image/*");
-        applicationContext.startActivity(sharingIntent);
+        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Sending multiple attachment"));
     }
 }

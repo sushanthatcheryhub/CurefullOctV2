@@ -61,7 +61,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:elevation="@dimen/_10dp"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center_vertical"
                         android:text="Goals - 10000 steps"
                         android:textColor="@color/white"
                         android:textStyle="bold" />
@@ -204,7 +205,7 @@
                                 android:textColor="#036F79"
                                 android:textStyle="bold" />
 
-                            <customsTextViews.CustomTextViewOpenSanRegular
+                            <customsTextViews.CustomTextViewOpenSanBold
                                 android:id="@+id/tickerTotal"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"

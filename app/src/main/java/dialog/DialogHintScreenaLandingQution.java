@@ -6,14 +6,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import fragment.healthapp.FragmentPrescriptionCheck;
 
 
 public class DialogHintScreenaLandingQution extends Dialog {
 
     private View v = null;
     Context context;
+    private RelativeLayout realtive_hint;
+    private LinearLayout liner_user, liner_user_red;
 
     public DialogHintScreenaLandingQution(Context _activiyt) {
         super(_activiyt, R.style.MyTheme);
@@ -28,6 +34,38 @@ public class DialogHintScreenaLandingQution extends Dialog {
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 //        getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        liner_user = (LinearLayout) findViewById(R.id.liner_user);
+        liner_user_red = (LinearLayout) findViewById(R.id.liner_user_red);
+        realtive_hint = (RelativeLayout) findViewById(R.id.realtive_hint);
+
+        realtive_hint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
+
+
+        liner_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(context);
+                dialogHintScreenaLanding.show();
+                dismiss();
+            }
+        });
+
+        liner_user_red.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CureFull.getInstanse().getFlowInstanseAll()
+                        .replace(new FragmentPrescriptionCheck(), true);
+                DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(context);
+                dialogHintScreenaPrescriptions.show();
+                dismiss();
+            }
+        });
+
     }
 
 

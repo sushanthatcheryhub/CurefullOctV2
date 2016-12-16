@@ -103,17 +103,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     @Override
     public boolean onBackPressed() {
 
-        Log.e("aaya", ":-");
-
-        String gender = "";
-        if (AppPreference.getInstance().getMale()) {
-            gender = "MALE";
-        } else {
-            gender = "FEMALE";
-        }
-
-        jsonUploadGenderDetails(String.valueOf(convertFeetandInchesToCentimeter(String.valueOf(AppPreference.getInstance().getGoalHeightFeet()), String.valueOf(AppPreference.getInstance().getGoalHeightInch()))), String.valueOf(AppPreference.getInstance().getGoalWeightKg()), AppPreference.getInstance().getGoalAge(), gender);
-
         return super.onBackPressed();
     }
 
@@ -157,7 +146,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 //        }
 
         btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
-        txt_water_intake.setText(""+AppPreference.getInstance().getWaterInTakeTarget() + " Ltr");
+        txt_water_intake.setText(""+AppPreference.getInstance().getWaterInTakeTarget()+" Ltr");
         //Chart
         mChart = (BarChart) rootView.findViewById(R.id.chart1);
         mChart.setOnChartValueSelectedListener(this);
@@ -168,16 +157,15 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(60);
+        mChart.setMaxVisibleValueCount(100);
 
         // scaling can now only be done on x- and y-axis separately
         mChart.setPinchZoom(false);
-
+        mChart.setDoubleTapToZoomEnabled(false);
         mChart.setDrawGridBackground(false);
         // mChart.setDrawYLabels(false);
 
         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mChart);
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 //        xAxis.setTypeface(mTfLight);
@@ -254,6 +242,11 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         });
 
         setData(10, 9);
+        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+        tickerTotal.setText("" + AppPreference.getInstance().getStepsCount());
+        text_calories_count.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+        ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
+        seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
@@ -515,11 +508,12 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                     AppPreference.getInstance().setStepsCount("" + msg.arg1);
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
                     Log.e("percentage", ":- " + percentage);
-                    int b = (int) Math.round(percentage);
+                    int b = (int) percentage;
                     Log.e("b", ":- " + b);
                     seekArcComplete.setProgress(b);
 ////                    setProgressUpdateAnimation(b);
                     ticker1.setText(b + "%");
+                    AppPreference.getInstance().setPercentage(b);
                     tickerTotal.setText("" + msg.arg1);
 
                     String wirght;

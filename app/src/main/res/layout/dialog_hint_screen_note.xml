@@ -2,14 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/realtive_hint"
     android:background="#CC000000"
     android:clickable="true">
 
+
+    <customsTextViews.CustomTextViewOpenSanRegular
+        android:id="@+id/txt_health_text"
+        style="@style/textView_dark_grey_normal_micro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_30dp"
+        android:layout_marginRight="@dimen/_30dp"
+        android:layout_marginTop="@dimen/_20dp"
+        android:elevation="@dimen/_10dp"
+        android:gravity="left"
+        android:padding="@dimen/_2dp"
+        android:text="About Health Note Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+        android:textColor="@color/health_yellow" />
 
     <LinearLayout
         android:id="@+id/linearView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_health_text"
         android:orientation="vertical">
 
         <LinearLayout
@@ -17,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_10dp"
-            android:layout_marginTop="@dimen/_65dp"
+            android:layout_marginTop="@dimen/_20dp"
             android:orientation="vertical">
 
             <customsTextViews.CustomTextViewOpenSanRegular
