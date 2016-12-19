@@ -7,11 +7,10 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 /**
  * Created by philipp on 02/06/16.
  */
-public class DayAxisValueFormatter implements IAxisValueFormatter
-{
+public class DayAxisValueFormatter implements IAxisValueFormatter {
 
     protected String[] mMonths = new String[]{
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
 
     private BarLineChartBase<?> chart;
@@ -22,24 +21,17 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
 
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
-
         int days = (int) value;
-
         int year = determineYear(days);
-
         int month = determineMonth(days);
         String monthName = mMonths[month % mMonths.length];
         String yearName = String.valueOf(year);
 
         if (chart.getVisibleXRange() > 30 * 6) {
-
             return monthName + " " + yearName;
         } else {
-
             int dayOfMonth = determineDayOfMonth(days, month + 12 * (year - 2016));
-
             String appendix = "th";
-
             switch (dayOfMonth) {
                 case 1:
                     appendix = "st";
@@ -69,17 +61,14 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
     }
 
     private int getDaysForMonth(int month, int year) {
-
         // month is 0-based
 
         if (month == 1) {
             int x400 = month % 400;
-            if (x400 < 0)
-            {
+            if (x400 < 0) {
                 x400 = -x400;
             }
             boolean is29 = (month % 4) == 0 && x400 != 100 && x400 != 200 && x400 != 300;
-
             return is29 ? 29 : 28;
         }
 
@@ -90,13 +79,10 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
     }
 
     private int determineMonth(int dayOfYear) {
-
         int month = -1;
         int days = 0;
-
         while (days < dayOfYear) {
             month = month + 1;
-
             if (month >= 12)
                 month = 0;
 
@@ -123,7 +109,6 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
     }
 
     private int determineYear(int days) {
-
         if (days <= 366)
             return 2016;
         else if (days <= 730)

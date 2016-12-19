@@ -1,6 +1,5 @@
 package fragment.healthapp;
 
-
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -38,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -64,10 +62,8 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.location.ActivityRecognition;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -172,7 +168,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                         gender = "FEMALE";
                     }
                     if (!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")) {
-                        jsonUploadGenderDetails(String.valueOf(convertFeetandInchesToCentimeter(String.valueOf(AppPreference.getInstance().getGoalHeightFeet()), String.valueOf(AppPreference.getInstance().getGoalHeightInch()))), String.valueOf(AppPreference.getInstance().getGoalWeightKg()), AppPreference.getInstance().getGoalAge(), gender);
+                        jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(AppPreference.getInstance().getGoalHeightFeet()), String.valueOf(AppPreference.getInstance().getGoalHeightInch()))), String.valueOf(AppPreference.getInstance().getGoalWeightKg()), AppPreference.getInstance().getGoalAge(), gender);
 
                     }
                 }
@@ -275,6 +271,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
 
         } else {
+            Log.e("hello",":- "+" hello");
             AppPreference.getInstance().setIsFirstTimeScreen1(true);
             DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
             dialogHintScreenaLandingQution.setCanceledOnTouchOutside(true);
@@ -688,7 +685,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
         try {
-            txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + formatMonth(String.valueOf(mnt)));
+            txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + Utils.formatMonth(String.valueOf(mnt)));
             firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -777,7 +774,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         String date = "";
         if (firstDate.equalsIgnoreCase("")) {
-            date = getTodayDate();
+            date = Utils.getTodayDate();
             String[] dateFormat = date.split("-");
             int mYear = Integer.parseInt(dateFormat[0]);
             int mMonth = Integer.parseInt(dateFormat[1]);
@@ -789,7 +786,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         }
         String time = "";
         if (firstTime.equalsIgnoreCase("")) {
-            time = getTodayTime();
+            time = Utils.getTodayTime();
         } else {
             time = firstTime;
         }
@@ -964,64 +961,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
-    private String updateTime(int hours, int mins) {
 
 
-        int selctHour = hours;
-
-        String timeSet = "";
-        if (selctHour > 12) {
-            selctHour -= 12;
-            timeSet = "pm";
-        } else if (selctHour == 0) {
-            selctHour += 12;
-            timeSet = "am";
-        } else if (selctHour == 12) {
-            timeSet = "pm";
-        } else {
-            timeSet = "am";
-        }
-
-        String minutes = "";
-        if (mins < 10)
-            minutes = "0" + mins;
-        else
-            minutes = String.valueOf(mins);
-
-        // Append in a StringBuilder
-        String aTime = new StringBuilder().append(selctHour).append(" ").append(timeSet).toString();
-
-        return aTime;
-    }
-
-    public static String getTodayTime() {
-        String formattedDate = null;
-        try {
-            SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "HH:mm", Locale.getDefault());
-            java.util.Date today = Calendar.getInstance().getTime();
-            formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
 
 
-    public static String getTodayDate() {
-        String formattedDate = null;
-        try {
-            SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "yyyy-MM-dd", Locale.getDefault());
-            java.util.Date today = Calendar.getInstance().getTime();
-            formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
@@ -1030,7 +973,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             newFirstTime = hourOfDay;
             isSelectFrom = true;
             firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-            txt_time.setText("" + updateTime(hourOfDay, mintues));
+            txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
             txt_to_time.setText("");
             toFirstTime = "";
         } else {
@@ -1038,7 +981,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
             if (secondTime > newFirstTime) {
                 toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-                txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+                txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
             } else {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
             }
@@ -1227,35 +1170,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
 
-    public static double convertFeetandInchesToCentimeter(String feet, String inches) {
-        Log.e("feet:- ", ":- " + feet + " inches :-" + inches);
-        double heightInFeet = 0;
-        double heightInInches = 0;
-        try {
-            if (feet != null && feet.trim().length() != 0) {
-                heightInFeet = Double.parseDouble(feet);
-            }
-            if (inches != null && inches.trim().length() != 0) {
-                heightInInches = Double.parseDouble(inches);
-            }
-        } catch (NumberFormatException nfe) {
 
-        }
-        return (heightInFeet * 30.48) + Math.round(heightInInches * 2.54);
-    }
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (java.text.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
 
     private void getDailyHealth() {

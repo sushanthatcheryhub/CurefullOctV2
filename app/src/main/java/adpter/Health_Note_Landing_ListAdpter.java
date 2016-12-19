@@ -24,6 +24,7 @@ import curefull.healthapp.R;
 import fragment.healthapp.FragmentHealthNote;
 import item.property.HealthNoteItems;
 import utils.CustomTypefaceSpan;
+import utils.Utils;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -71,7 +72,7 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
         if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
             try {
                 Log.e("time", "" + hrs + ":- " + mins);
-                txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -83,7 +84,7 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
 
             Log.e("hi", "hi" + times1);
             try {
-                txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+                txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

@@ -6,8 +6,8 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://192.168.1.113:8080";
-        //        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
+        String HOST_IP = "http://hatcheryhub.com";
+        //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
@@ -28,16 +28,12 @@ public class MyConstants {
         String SAVE_HELTHAPP_DETALS = URL + "endUser/healthapp/savehealthappDailyDetails";
         String UPLOAD_PRESCRIPTION = URL + "endUser/ehr/uploadPrescription";
         String GET_PRESCRIPTION_LIST = URL + "endUser/ehr/getListOfPrescription";
-        String DOCTOR_LIST_PRESCRIPTION = URL + "endUser/ehr/getDoctorListOfPrescription";
-        String DISEASE_LIST_PRESCRIPTION = URL + "endUser/ehr/getDiseaseListOfPrescription";
         String DELETE_PRESCRIPTION = URL + "endUser/ehr/deletePrescriptionById?prescriptionId=";
         String DELETE_SUB_PRESCRIPTION = URL + "endUser/ehr/deletePrescriptionImagePartById?prescriptionId=";
         String UPLOAD_LAB_TEST_REPORT = URL + "endUser/ehr/uploadLabReport";
         String GET_LAB_TEST_REPORT_list = URL + "endUser/ehr/getListOfLabReport";
         String Delete_Report = URL + "endUser/ehr/deleteLabReportById?reportId=";
         String DELETE_SUB_LAB_REPORT = URL + "endUser/ehr/deleteLabReportImagePartById?reportId=";
-        String DOCTOR_LAB_TEST_REPORT = URL + "endUser/ehr/getDoctorListOfReport";
-        String TEST_LAB_TEST_REPORT = URL + "endUser/ehr/getTestNameListOfReport";
         String SELECT_GLASS = URL + "endUser/healthapp/setGlassSizeForWaterIntake?glassSize=";
         String CfUuhidList = URL + "uuhid/getCfuuhidListOfEndUser";
         String CfUuhidUpload = URL + "uuhid/getCfuuhidFromNameAndMobileNumber";
@@ -50,35 +46,6 @@ public class MyConstants {
         String GET_HEALTH_DAILY_APP = URL + "endUser/healthapp/gethealthappDetails?date=";
         String UHID_SIGN_UP = URL + "uuhid/getCfuuhidListForSignup";
         String LOGOUT = URL + "logout/user";
-        String ADD_SIGNS_BY_DOCTOR = URL + "prescription/getDoctorSignListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
-        String ADD_INVESTIGATION_BY_DOCTOR = URL + "prescription/getDoctorDiagonsisListTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
-        String ADD_ALLERGY_BY_DOCTOR = URL + "prescription/getDoctorAllergyTerm?doctorId=" + AppPreference.getInstance().getDoctorId();
-        String ADD_ALL_AUTOCOMPLETE_TEXTVIEW = URL + "prescription/getPrescriptionTearm";
-        String ADD_ALL_PATIENT_DASHBORAD = URL + "doctorInfoService/getPatientUnderDoctorOfOneClinic";
-        String ADD_NEW_SYMPTOMS = URL + "prescription/addNewSymptomsTerm";
-        String ADD_NEW_SIGNS = URL + "prescription/addNewSignTerm";
-        String ADD_NEW_DIAGONIS = URL + "prescription/addNewDiagonsisTerm";
-        String REMOVE_NEW_SYMSPTOMS = URL + "prescription/removeDoctorSymptomsTerm";
-        String REMOVE_NEW_SIGN = URL + "prescription/removeDoctorSignTerm";
-        String REMOVE_NEW_DIAGNOSIS = URL + "prescription/removeDoctorDiagnosisTerm";
-        String ADD_MEDICINE_NAME = URL + "medicineService/getMedinceBySearch?medicineName=";
-        String GET_MEDICINE_TYPE = URL + "medicineService/getMedinceTypeList";
-        //patientDoctorId
-        String PATIENT_DETAILS_BY_DOCTOR = URL + "patientInfoService/getPatientPhysicalMeasurmentDetailsForPrescription?doctorPatientId=";
-        String FORGOT_PASSWORD = URL + "forgotPassword/resend";
-        String PENDING_PYHISCAL_DATA = URL + "patientInfoService/createAndUpdatePendingPhysicalData";
-        String SAVE_PATIENT_DATA = URL + "prescription/savePatientPrescriptionAndDoctorSearchKeyword";
-        String PRESCRIPTION_HISTORY = URL + "prescription/getPrescriptionHistoryThumbnail?patientDoctorId=";
-        String DOCTOR_COMMON_DETAILS = URL + "doctorInfoService/getDoctorCommonDetails";
-        String RECENT_PATIENT_IMAGE = URL + "prescription/getRecentPrescriptionImage?patientDoctorId=";
-        String E_PRESCRIPTION_FOLLOW_UP = URL + "prescription/getEPrescriptionDetails?ePrescriptionId=";
-        String DOCTOR_BY_HOSPITAL_NAME = URL + "refer/getDoctorDetailsByHealthcareName?healthcareName=";
-        String DOCTOR_BY_DOCTOR_NAME = URL + "doctorInfoService/searchDoctorName?doctorName=";
-        String DOCTOR_BY_Specilization_NAME = URL + "doctorInfoService/searchSpecilization?specilization=";
-        String REFER_TO_OTHER_DOCTOR = URL + "refer/referPatient";
-        String PRESCRIPTION_HISTORY_FULL_IMAGE = URL + "prescription/getPrescriptionImage";
-        String PRESCRIPTION_HISTORY_BY_DATE = URL + "prescription/getPrescriptionThumbnailByDate";
-        String FILE_UPLOAD = URL + "refer/uploadPrescription";
 
     }
 
@@ -253,6 +220,12 @@ public class MyConstants {
         String[] listPopUpWeight = {"Kgs", "Pounds"};
         String[] listUploadBy = {"Self", "CureFull"};
         String[] listStepsName = {"Steps", "Running", "Cycling"};
+
+        String[] listDaily = {"011", "111", "222", "332", "344", "345", "634", "7343", "3438", "3439", "1340", "3411", "3412", "1343", "1344", "1345", "3416", "3417", "1348", "1349", "2340", "2341", "2234", "3423", "3424", "3425", "2643", "2734", "2834", "29343", "3340"};
+        String[] listWeekly = {"340", "341", "342", "343", "434", "534", "634", "347"};
+        String[] listMonths = {"100", "200", "300", "400", "500", "600", "700", "800", "900", "545", "123", "000"};
+
+        int[] YEAR_2016 = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     }
 
     public static int getMonthName(String month) {

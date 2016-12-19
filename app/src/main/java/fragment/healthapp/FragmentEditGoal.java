@@ -828,7 +828,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         String feet = String.valueOf(heightfeet);
         String inches = String.valueOf(heightInch);
-        int bmr = (int) ((10 * weightkg) + (6.25 * convertFeetandInchesToCentimeter(feet, inches)) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5));
+        int bmr = (int) ((10 * weightkg) + (6.25 * Utils.convertFeetandInchesToCentimeter(feet, inches)) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5));
         Log.e("BMR", ":- " + bmr);
         txt_BMR.setText("" + bmr + " Calories/day");
     }
@@ -864,26 +864,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         String inches = String.valueOf(heightInch);
 
 
-        Log.e("total:- ", "weight :- " + weightkg + " :- feeet" + convertFeetandInchesToCentimeter(feet, inches) + " year" + AppPreference.getInstance().getGoalAgeNew());
-        int bmr = (int) ((10 * weightkg) + (6.25 * convertFeetandInchesToCentimeter(feet, inches)) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew())) - 161);
+        Log.e("total:- ", "weight :- " + weightkg + " :- feeet" + Utils.convertFeetandInchesToCentimeter(feet, inches) + " year" + AppPreference.getInstance().getGoalAgeNew());
+        int bmr = (int) ((10 * weightkg) + (6.25 * Utils.convertFeetandInchesToCentimeter(feet, inches)) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew())) - 161);
         Log.e("BMR", ":- " + bmr);
         txt_BMR.setText("" + bmr + " Calories/day");
-    }
-
-    public static double convertFeetandInchesToCentimeter(String feet, String inches) {
-        double heightInFeet = 0;
-        double heightInInches = 0;
-        try {
-            if (feet != null && feet.trim().length() != 0) {
-                heightInFeet = Double.parseDouble(feet);
-            }
-            if (inches != null && inches.trim().length() != 0) {
-                heightInInches = Double.parseDouble(inches);
-            }
-        } catch (NumberFormatException nfe) {
-
-        }
-        return (heightInFeet * 30.48) + (heightInInches * 2.54);
     }
 
 
@@ -1121,7 +1105,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 int mMonth = Integer.parseInt(dateFormat[1]);
                                 int mDay = Integer.parseInt(dateFormat[2]);
                                 edt_years.setText("" + (mDay < 10 ? "0" + mDay : mDay) + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + mYear);
-                                AppPreference.getInstance().setGoalAgeNew("" + getAge(mYear, mMonth, mDay));
+                                AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(mYear, mMonth, mDay));
                                 AppPreference.getInstance().setGoalAge(userInfo.getDateOfBirth());
                             }
 
@@ -1304,25 +1288,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         AppPreference.getInstance().setGoalAge("" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + year);
-        AppPreference.getInstance().setGoalAgeNew("" + getAge(year, mnt, dayOfMonth));
+        AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(year, mnt, dayOfMonth));
     }
 
-    private String getAge(int year, int month, int day) {
-        Calendar dob = Calendar.getInstance();
-        Calendar today = Calendar.getInstance();
-        dob.set(year, month, day);
-        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
-            age--;
-        }
-
-        Integer ageInt = new Integer(age);
-        String ageS = ageInt.toString();
-        if (ageS.equalsIgnoreCase("-1"))
-            ageS = "0";
-
-        return ageS;
-    }
 
 }

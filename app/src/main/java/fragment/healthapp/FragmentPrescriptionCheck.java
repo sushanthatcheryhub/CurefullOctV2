@@ -46,8 +46,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import adpter.UploadPrescriptionAdpter;
 import asyns.ParseJsonData;
@@ -243,6 +245,7 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
 
         txt_sort_user_name.setSelected(true);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+        Log.e("a_t", AppPreference.getInstance().getAt()+" r_t "+AppPreference.getInstance().getRt());
         return rootView;
     }
 
@@ -882,23 +885,17 @@ public class FragmentPrescriptionCheck extends Fragment implements View.OnClickL
     }
 
     private List<String> getDoctorNameAsStringList(List<PrescriptionListView> result) {
-        List<String> list = new ArrayList<>();
-        if (result != null)
-            for (PrescriptionListView logy : result) {
-                if (list != null && list.size() > 0) {
-                    for (int i = 0; i < list.size(); i++) {
-                        if (logy.getDoctorName().equalsIgnoreCase(list.get(i))) {
-                        } else {
-                            list.add(logy.getDoctorName());
-                        }
-                    }
-                } else {
-                    list.add(logy.getDoctorName());
+        Set<String> hsDoctorList=new HashSet<>();
+//        List<String> list = new ArrayList<>();
+        if (result != null){
+
+            for (PrescriptionListView logy : result){
+//                if(!hsDoctorList.contains(logy.getDoctorName())){
+                    hsDoctorList.add(logy.getDoctorName());
+//                    list.add(logy.getDoctorName());
                 }
-
             }
-
-        return list;
+        return new ArrayList<String>(hsDoctorList);
     }
 
 

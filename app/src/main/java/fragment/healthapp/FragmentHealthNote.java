@@ -61,6 +61,7 @@ import sticky.header.ExpandableStickyListHeadersListView;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.SwitchDateTimeDialogFragment;
+import utils.Utils;
 
 
 /**
@@ -151,7 +152,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 String mnt = dateParts11[1];
                 String day = dateParts11[2];
                 try {
-                    txt_date_time.setText("" + (Integer.parseInt(day) < 10 ? "0" + day : day) + " " + formatMonth(mnt));
+                    txt_date_time.setText("" + (Integer.parseInt(day) < 10 ? "0" + day : day) + " " + Utils.formatMonth(mnt));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -159,12 +160,12 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 String[] dateParts112 = time.split(":");
                 String hrs = dateParts112[0];
                 String mins = dateParts112[1];
-                txt_time.setText("" + updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                txt_time.setText("" +  Utils.updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
                 toFirstTime = value.getString("toFirstTime");
                 String[] dateParts113 = toFirstTime.split(":");
                 String hrs1 = dateParts113[0];
                 String mins1 = dateParts113[1];
-                txt_to_time.setText("" + updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+                txt_to_time.setText("" +  Utils.updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             }
 
 
@@ -305,48 +306,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         }
     }
 
-    public static String getTodayTime() {
-        String formattedDate = null;
-        try {
-            SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "HH:mm:ss", Locale.getDefault());
-            java.util.Date today = Calendar.getInstance().getTime();
-            formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
 
-    private String updateTime(int hours, int mins) {
-
-
-        int selctHour = hours;
-
-        String timeSet = "";
-        if (selctHour > 12) {
-            selctHour -= 12;
-            timeSet = "pm";
-        } else if (selctHour == 0) {
-            selctHour += 12;
-            timeSet = "am";
-        } else if (selctHour == 12) {
-            timeSet = "pm";
-        } else {
-            timeSet = "am";
-        }
-
-        String minutes = "";
-        if (mins < 10)
-            minutes = "0" + mins;
-        else
-            minutes = String.valueOf(mins);
-
-        // Append in a StringBuilder
-        String aTime = new StringBuilder().append(selctHour).append(" ").append(timeSet).toString();
-        return aTime;
-    }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
@@ -355,7 +315,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             newFirstTime = hourOfDay;
             isSelectFrom = true;
             firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-            txt_time.setText("" + updateTime(hourOfDay, mintues));
+            txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
             txt_to_time.setText("");
             toFirstTime = "";
         } else {
@@ -363,7 +323,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
             if (secondTime > newFirstTime) {
                 toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-                txt_to_time.setText("" + updateTime(hourOfDay, mintues));
+                txt_to_time.setText("" +  Utils.updateTime(hourOfDay, mintues));
             } else {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
             }
@@ -392,8 +352,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         }
         String time = "";
         if (firstTime.equalsIgnoreCase("")) {
-            Log.e("getTodayTime", ":- " + getTodayTime());
-            time = getTodayTime();
+            Log.e("getTodayTime", ":- " +  Utils.getTodayTime());
+            time =  Utils.getTodayTime();
         } else {
             time = firstTime;
         }
@@ -579,24 +539,13 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         }
     }
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (java.text.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
         try {
-            txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + formatMonth(String.valueOf(mnt)));
+            txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + Utils.formatMonth(String.valueOf(mnt)));
             firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();

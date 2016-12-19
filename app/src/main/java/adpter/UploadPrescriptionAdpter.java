@@ -45,6 +45,7 @@ import item.property.PrescriptionListView;
 import item.property.PrescriptionUploadItems;
 import utils.AppPreference;
 import utils.MyConstants;
+import utils.Utils;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -94,7 +95,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
             int mMonth = Integer.parseInt(dateFormat[1]);
             int mDay = Integer.parseInt(dateFormat[2]);
             try {
-                String completeDate = mDay + " " + formatMonth(String.valueOf(mMonth)) + "," + mYear;
+                String completeDate = mDay + " " + Utils.formatMonth(String.valueOf(mMonth)) + "," + mYear;
                 txt_date.setText("" + completeDate);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -241,18 +242,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
-    public String formatMonth(String month) throws ParseException {
-
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (java.text.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     public void shareClick(ArrayList<PrescriptionImageListView> prescriptionImageListViews) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);

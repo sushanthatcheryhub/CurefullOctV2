@@ -108,7 +108,13 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
             jsonParent.put(EMAIL, email);
             jsonParent.put(PASSWORD, password);
             jsonParent.put(MOBILE_NO, mobileNo);
-            jsonParent.put("cfUuhid", uhid);
+            Log.e("cf",""+uhid);
+            if("null".equalsIgnoreCase(uhid)){
+                jsonParent.put("cfUuhid", "");
+            }else{
+                jsonParent.put("cfUuhid", uhid);
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

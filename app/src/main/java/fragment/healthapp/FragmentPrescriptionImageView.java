@@ -68,6 +68,7 @@ import utils.AppPreference;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
 import utils.SpacesItemDecoration;
+import utils.Utils;
 
 
 /**
@@ -112,7 +113,7 @@ public class FragmentPrescriptionImageView extends Fragment {
                 int mMonth = Integer.parseInt(dateFormat[1]);
                 int mDay = Integer.parseInt(dateFormat[2]);
                 try {
-                    completeDate = mDay + " " + formatMonth(String.valueOf(mMonth)) + "," + mYear;
+                    completeDate = mDay + " " + Utils.formatMonth(String.valueOf(mMonth)) + "," + mYear;
                     txt_date.setText("" + completeDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -135,16 +136,5 @@ public class FragmentPrescriptionImageView extends Fragment {
     }
 
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (java.text.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 }

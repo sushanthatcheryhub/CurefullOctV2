@@ -98,18 +98,7 @@ public class FragmentLabReportImageFullView extends Fragment {
     }
 
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     private void getPrescriptionDelete(String id, String realId, String name) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);

@@ -83,12 +83,12 @@ public class BaseMainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             jsonLogout();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            AppPreference.getInstance().clearAllData();
-            AppPreference.getInstance().setIsLogin(false);
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLogin(), false);
+            AppPreference.getInstance().clearAllData();
+            AppPreference.getInstance().setIsLogin(false);
         } else if (id == R.id.nav_policy) {
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
@@ -210,18 +210,7 @@ public class BaseMainActivity extends AppCompatActivity
     }
 
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (java.text.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     public String updateTime(int hours, int mins) {
 

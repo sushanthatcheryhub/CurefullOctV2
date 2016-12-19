@@ -1,19 +1,18 @@
 package fragment.healthapp;
 
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,19 +32,6 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,14 +45,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import adpter.HorizontalAdapter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import graph.DayAxisValueFormatter;
-import graph.MyAxisValueFormatter;
-import graph.XYMarkerView;
+import curefull.healthapp.models.Month;
 import item.property.GraphView;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
@@ -75,16 +60,17 @@ import utils.AppPreference;
 import utils.MyConstants;
 import utils.SeekArc;
 import utils.Utils;
+import widgets.HorizontalRecyclerView;
 
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentHealthAppNew extends BaseBackHandlerFragment implements View.OnClickListener, OnChartValueSelectedListener {
+public class FragmentHealthAppNew extends BaseBackHandlerFragment implements View.OnClickListener {
 
 
     private View rootView;
-    private TextView txt_water_intake, btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_no_data, txt_steps_txt, tickerTotal, text_calories_count;
+    private TextView txt_water_intake, btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_steps_txt, tickerTotal, text_calories_count;
     Messenger mService = null;
     boolean mIsBound;
     boolean isToStop = false;
@@ -99,6 +85,10 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     private List<GraphView> graphViewsList;
     private TextView btn_set_goal_target;
     private LinearLayout liner_steps, liner_btn_goal;
+    HorizontalRecyclerView horizontal_recycler_view;
+    HorizontalAdapter horizontalAdapter;
+
+    ArrayList<Month> data;
 
     @Override
     public boolean onBackPressed() {
@@ -118,7 +108,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         liner_steps = (LinearLayout) rootView.findViewById(R.id.liner_steps);
         btn_set_goal_target = (TextView) rootView.findViewById(R.id.btn_set_goal_target);
         txt_steps_txt = (TextView) rootView.findViewById(R.id.txt_steps_txt);
-        txt_no_data = (TextView) rootView.findViewById(R.id.txt_no_data);
+//        txt_no_data = (TextView) rootView.findViewById(R.id.txt_no_data);
         txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
         txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
@@ -143,74 +133,12 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
         CureFull.getInstanse().getActivityIsntanse().startService(intent);
         doBindService();
+
+
 //        }
 
         btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
-        txt_water_intake.setText(""+AppPreference.getInstance().getWaterInTakeTarget()+" Ltr");
-        //Chart
-        mChart = (BarChart) rootView.findViewById(R.id.chart1);
-        mChart.setOnChartValueSelectedListener(this);
-        mChart.setDrawBarShadow(false);
-        mChart.setDrawValueAboveBar(true);
-
-        mChart.getDescription().setEnabled(false);
-
-        // if more than 60 entries are displayed in the chart, no values will be
-        // drawn
-        mChart.setMaxVisibleValueCount(100);
-
-        // scaling can now only be done on x- and y-axis separately
-        mChart.setPinchZoom(false);
-        mChart.setDoubleTapToZoomEnabled(false);
-        mChart.setDrawGridBackground(false);
-        // mChart.setDrawYLabels(false);
-
-        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mChart);
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-//        xAxis.setTypeface(mTfLight);
-        xAxis.setDrawGridLines(false);
-        xAxis.setAxisLineColor(R.color.health_yellow);
-
-//        xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(7);
-        xAxis.setValueFormatter(xAxisFormatter);
-
-        IAxisValueFormatter custom = new MyAxisValueFormatter();
-
-        YAxis leftAxis = mChart.getAxisLeft();
-//        leftAxis.setTypeface(mTfLight);
-        leftAxis.setLabelCount(8, false);
-        leftAxis.setValueFormatter(custom);
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setSpaceTop(15f);
-        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
-//        YAxis rightAxis = mChart.getAxisRight();
-//        rightAxis.setDrawGridLines(false);
-////        rightAxis.setTypeface(mTfLight);
-//        rightAxis.setLabelCount(8, false);
-//        rightAxis.setValueFormatter(custom);
-//        rightAxis.setSpaceTop(15f);
-//        rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
-//        Legend l = mChart.getLegend();
-//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-//        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-//        l.setDrawInside(false);
-//        l.setForm(Legend.LegendForm.SQUARE);
-//        l.setFormSize(9f);
-//        l.setTextSize(11f);
-//        l.setXEntrySpace(4f);
-        // l.setExtra(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
-        // "def", "ghj", "ikl", "mno" });
-        // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
-        // "def", "ghj", "ikl", "mno" });
-
-//        XYMarkerView mv = new XYMarkerView(getActivity(), xAxisFormatter);
-//        mv.setChartView(mChart); // For bounds control
-//        mChart.setMarker(mv); // Set the marker to the chart
+        txt_water_intake.setText("" + AppPreference.getInstance().getWaterInTakeTarget() + " Ltr");
 
 
         date = getTodayDate();
@@ -241,14 +169,42 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
             }
         });
 
-        setData(10, 9);
+
         txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         tickerTotal.setText("" + AppPreference.getInstance().getStepsCount());
         text_calories_count.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
         ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
         seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+
+
+        horizontal_recycler_view = (HorizontalRecyclerView) rootView.findViewById(R.id.horizontal_recycler_view);
+        data = createSampleYear();
+
+        horizontalAdapter = new HorizontalAdapter(data, CureFull.getInstanse().getActivityIsntanse());
+
+//        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+//        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
+        horizontal_recycler_view.setAdapter(horizontalAdapter);
+        horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // data.addAll(createSampleYear());
+                //horizontalAdapter.notifyDataSetChanged();
+            }
+        });
+
+
         return rootView;
+    }
+
+
+    private ArrayList<Month> createSampleYear() {
+        ArrayList<Month> months = new ArrayList<>();
+        for (int day : MyConstants.IArrayData.YEAR_2016) {
+            months.add(new Month(day));
+        }
+        return months;
     }
 
     public static String getTodayDate() {
@@ -272,22 +228,22 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
             if (position == 0) {
                 txt_steps_txt.setText("Steps");
                 mChart.setVisibility(View.VISIBLE);
-                txt_no_data.setVisibility(View.GONE);
+//                txt_no_data.setVisibility(View.GONE);
                 date = getTodayDate();
                 type = "steps";
                 offset = "10";
-                setData(10, 9);
+//                setData(10, 9);
                 mChart.animateXY(3000, 3000);
 //                jsonGetGraphDeatils(date, frequency, type, offset);
 
             } else if (position == 1) {
                 mChart.setVisibility(View.GONE);
                 txt_steps_txt.setText("Running");
-                txt_no_data.setVisibility(View.VISIBLE);
+//                txt_no_data.setVisibility(View.VISIBLE);
             } else {
                 mChart.setVisibility(View.GONE);
                 txt_steps_txt.setText("Cycling");
-                txt_no_data.setVisibility(View.VISIBLE);
+//                txt_no_data.setVisibility(View.VISIBLE);
             }
         }
     };
@@ -325,7 +281,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 frequency = "daily";
                 offset = "10";
 //                jsonGetGraphDeatils(date, frequency, type, offset);
-                setData(10, 12);
+//                setData(10, 12);
                 mChart.animateXY(3000, 3000);
                 break;
             case R.id.btn_weekly:
@@ -339,8 +295,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 frequency = "weekly";
                 offset = "10";
 //                jsonGetGraphDeatils(date, frequency, type, offset);
-                setData(10, 19);
-                mChart.animateXY(3000, 3000);
+//                setData(10, 19);
+//                mChart.animateXY(3000, 3000);
                 break;
             case R.id.btn_monthy:
                 btn_daily.setTextColor(Color.parseColor("#ffffff"));
@@ -353,8 +309,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 frequency = "monthly";
                 offset = "10";
 //                jsonGetGraphDeatils(date, frequency, type, offset);
-                setData(10, 29);
-                mChart.animateXY(3000, 3000);
+//                setData(10, 29);
+//                mChart.animateXY(3000, 3000);
                 break;
         }
     }
@@ -434,67 +390,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         }
     }
 
-    private void setData(int count, float range) {
-
-        float start = 1f;
-
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-
-        for (int i = (int) start; i < start + count + 1; i++) {
-            float mult = (range + 1);
-            float val = (float) (Math.random() * mult);
-            yVals1.add(new BarEntry(i, val));
-        }
-
-        BarDataSet set1;
-
-        if (mChart.getData() != null &&
-                mChart.getData().getDataSetCount() > 0) {
-            set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
-            set1.setValues(yVals1);
-            mChart.getData().notifyDataChanged();
-            mChart.notifyDataSetChanged();
-        } else {
-            set1 = new BarDataSet(yVals1, "");
-            set1.setColors(ColorTemplate.MATERIAL_COLORS);
-
-            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-            dataSets.add(set1);
-
-            BarData data = new BarData(dataSets);
-            data.setValueTextSize(10f);
-//            data.setValueTypeface(mTfLight);
-            data.setBarWidth(0.9f);
-            mChart.animateXY(3000, 3000);
-            mChart.setData(data);
-        }
-    }
-
-    protected RectF mOnValueSelectedRectF = new RectF();
-
-    @SuppressLint("NewApi")
-    @Override
-    public void onValueSelected(Entry e, Highlight h) {
-
-        if (e == null)
-            return;
-
-        RectF bounds = mOnValueSelectedRectF;
-        mChart.getBarBounds((BarEntry) e, bounds);
-        MPPointF position = mChart.getPosition(e, YAxis.AxisDependency.LEFT);
-
-        Log.i("bounds", bounds.toString());
-        Log.i("position", position.toString());
-        Log.i("x-index",
-                "low: " + mChart.getLowestVisibleX() + ", high: "
-                        + mChart.getHighestVisibleX());
-
-        MPPointF.recycleInstance(position);
-    }
-
-    @Override
-    public void onNothingSelected() {
-    }
 
     class IncomingHandler extends Handler {
         @Override
@@ -649,20 +544,5 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
-    public static double convertFeetandInchesToCentimeter(String feet, String inches) {
-        double heightInFeet = 0;
-        double heightInInches = 0;
-        try {
-            if (feet != null && feet.trim().length() != 0) {
-                heightInFeet = Double.parseDouble(feet);
-            }
-            if (inches != null && inches.trim().length() != 0) {
-                heightInInches = Double.parseDouble(inches);
-            }
-        } catch (NumberFormatException nfe) {
-
-        }
-        return (heightInFeet * 30.48) + (heightInInches * 2.54);
-    }
 
 }

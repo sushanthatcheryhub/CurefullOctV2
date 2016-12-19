@@ -69,7 +69,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private RequestQueue requestQueue;
     private int OTP;
-    private String health_name, health_email, health_mobile, health_password, realUHID;
+    private String health_name, health_email, health_mobile, health_password, realUHID="";
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false;
 
@@ -317,7 +317,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile, realUHID);
-        Log.e("data", ":- " + data.toString());
+        Log.e("data sign", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
                 new Response.Listener<JSONObject>() {
                     @Override

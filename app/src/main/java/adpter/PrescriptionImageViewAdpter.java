@@ -204,18 +204,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
-    public String formatMonth(String month) throws ParseException {
 
-        try {
-            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
-            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMM");
-            return monthDisplay.format(monthParse.parse(month));
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     public void shareClick(String prescriptionImage) {
         String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionImage;

@@ -48,6 +48,7 @@ import sticky.header.StickyListHeadersAdapter;
 import utils.AppPreference;
 import utils.CustomTypefaceSpan;
 import utils.MyConstants;
+import utils.Utils;
 
 public class Health_Note_ListAdpter extends BaseAdapter implements
         StickyListHeadersAdapter, IOnOtpDoneDelete {
@@ -135,7 +136,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
         if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
             try {
-                holder.txt_date_time.setText("" +days+" "+ CureFull.getInstanse().getActivityIsntanse().formatMonth(months)  + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                holder.txt_date_time.setText("" +days+" "+ Utils.formatMonth(months)  + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -145,7 +146,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
             String hrs1 = dateParts11[0];
             String mins1 = dateParts11[1];
             try {
-                holder.txt_date_time.setText("" + days + " " + CureFull.getInstanse().getActivityIsntanse().formatMonth(months)  + "\n" +CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+                holder.txt_date_time.setText("" + days + " " + Utils.formatMonth(months)  + "\n" +CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

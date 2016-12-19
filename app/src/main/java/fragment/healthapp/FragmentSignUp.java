@@ -292,6 +292,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                         bundle.putString("EMAIL", edtInputEmail.getText().toString().trim());
                         bundle.putString("MOBILE", edt_phone.getText().toString().trim());
                         bundle.putInt("otp", n);
+                        bundle.putString("UHID", "");
                         CureFull.getInstanse().getFlowInstanse()
                                 .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
                     }
