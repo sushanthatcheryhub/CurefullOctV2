@@ -442,24 +442,25 @@
                         android:gravity="center_vertical"
                         android:orientation="vertical">
 
-                        <customsTextViews.CustomTextViewOpenSanBold
-                            style="@style/textView_dark_grey_normal_micro_mini"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:text="0"
-                            android:textColor="@color/health_login_text"
-                            android:textStyle="bold"
-                            android:visibility="invisible" />
-
 
                         <customsTextViews.CustomTextViewOpenSanRegular
-                            android:id="@+id/txt_water_intake"
+                            android:id="@+id/txt_water_intake_done"
                             style="@style/textView_dark_grey_normal_micro_mini"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:text="0 ltr"
+                            android:text="0 ml"
+                            android:textColor="@color/health_login_text"
+                            android:textStyle="bold" />
+
+
+                        <customsTextViews.CustomTextViewOpenSanBold
+                            android:id="@+id/txt_water_intake_left"
+                            style="@style/textView_dark_grey_normal_micro_mini"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="0 ml"
                             android:textColor="@color/health_login_text"
                             android:textStyle="bold" />
 

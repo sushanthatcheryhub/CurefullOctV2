@@ -207,8 +207,9 @@ public class FlowOrganizer {
                 toFragment.getClass().getName()).commit();
         _last_fragment_name = toFragment.getClass().getName();
     }
+
     public void replaceWithZoomAnimation(Fragment toFragment, Bundle bundle,
-                                              boolean isAllowBack) {
+                                         boolean isAllowBack) {
         hideVirtualKeyboard();
         if (toFragment == null)
             return;
@@ -248,7 +249,7 @@ public class FlowOrganizer {
 
 
     public void replaceWithleftrightAnimation(Fragment toFragment, Bundle bundle,
-                                         boolean isAllowBack) {
+                                              boolean isAllowBack) {
         hideVirtualKeyboard();
         if (toFragment == null)
             return;
@@ -522,8 +523,6 @@ public class FlowOrganizer {
                 toFragment.getClass().getName()).commit();
         _last_fragment_name = toFragment.getClass().getName();
     }
-
-
 
 
     private boolean isToAdd(Fragment toFragment) {

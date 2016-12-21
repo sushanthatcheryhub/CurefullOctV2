@@ -19,6 +19,7 @@ public class GoalInfo {
     private String targetCaloriesToBurn;
     private String targetWaterInTake;
     private String glassSize;
+    private String glassNumber;
 
     public GoalInfo() {
 
@@ -39,6 +40,7 @@ public class GoalInfo {
             setTargetCaloriesToBurn(jsonResponse1.getString("targetCaloriesToBurn"));
             setTargetWaterInTake(jsonResponse1.getString("targetWaterInTake"));
             setGlassSize(jsonResponse1.getString("glassSize"));
+            setGlassNumber(jsonResponse1.getString("glassNumber"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,5 +110,13 @@ public class GoalInfo {
 
     public void setGlassSize(String glassSize) {
         this.glassSize = glassSize;
+    }
+
+    public String getGlassNumber() {
+        return glassNumber;
+    }
+
+    public void setGlassNumber(String glassNumber) {
+        this.glassNumber = glassNumber;
     }
 }

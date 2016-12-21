@@ -83,8 +83,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         CardView card_view = holder.card_view;
 
         try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionListViews.get(position).getReportImage(), image_item);
-            Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionListViews.get(position).getReportImage());
+            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH+ prescriptionListViews.get(position).getReportImage(), image_item);
         } catch (Exception e) {
 
         }

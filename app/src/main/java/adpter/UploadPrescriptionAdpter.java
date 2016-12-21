@@ -106,7 +106,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
             } catch (Exception e) {
 
             }

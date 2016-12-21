@@ -70,7 +70,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
 
     private View rootView;
-    private TextView txt_water_intake, btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_steps_txt, tickerTotal, text_calories_count;
+    private TextView txt_water_intake_left, txt_water_intake_done, btn_daily, btn_weekly, btn_monthy, txt_steps_counter, txt_steps_txt, tickerTotal, text_calories_count;
     Messenger mService = null;
     boolean mIsBound;
     boolean isToStop = false;
@@ -103,7 +103,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         rootView = inflater.inflate(R.layout.fragment_health_app,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        txt_water_intake = (TextView) rootView.findViewById(R.id.txt_water_intake);
+        txt_water_intake_left = (TextView) rootView.findViewById(R.id.txt_water_intake_left);
+        txt_water_intake_done = (TextView) rootView.findViewById(R.id.txt_water_intake_done);
         liner_btn_goal = (LinearLayout) rootView.findViewById(R.id.liner_btn_goal);
         liner_steps = (LinearLayout) rootView.findViewById(R.id.liner_steps);
         btn_set_goal_target = (TextView) rootView.findViewById(R.id.btn_set_goal_target);
@@ -138,8 +139,8 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 //        }
 
         btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
-        txt_water_intake.setText("" + AppPreference.getInstance().getWaterInTakeTarget() + " Ltr");
-
+        txt_water_intake_done.setText("" + AppPreference.getInstance().getWaterInTake() + " ml Drinked");
+        txt_water_intake_left.setText("" + AppPreference.getInstance().getWaterInTakeLeft() + " ml Left");
 
         date = getTodayDate();
         frequency = "daily";
@@ -185,7 +186,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
 //        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
 //        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
-        horizontal_recycler_view.setAdapter(horizontalAdapter);
+//        horizontal_recycler_view.setAdapter(horizontalAdapter);
         horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {

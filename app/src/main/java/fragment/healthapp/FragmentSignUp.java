@@ -5,6 +5,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -58,6 +59,7 @@ import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
 import utils.AppPreference;
 import utils.CheckNetworkState;
+import utils.HandlePermission;
 import utils.MyConstants;
 
 
@@ -92,17 +94,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
         btn_signup = (TextView) rootView.findViewById(R.id.btn_signup);
         btn_signup.setOnClickListener(this);
-        Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-        c.moveToFirst();
-        TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-        if (tMgr.getLine1Number() != null) {
-            edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
-        }
-
-        addAdapterToViews();
-//        edtInputEmail.setText("" + getAllAccount());
-        c.close();
 
 
         edtInputEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -116,8 +107,19 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
             }
         });
 
-        DialogIP dialogIP = new DialogIP(CureFull.getInstanse().getActivityIsntanse());
-        dialogIP.show();
+        if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
+            Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+            c.moveToFirst();
+            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+            edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+            if (tMgr.getLine1Number() != null) {
+                edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+            }
+            addAdapterToViews();
+//        edtInputEmail.setText("" + getAllAccount());
+            c.close();
+        }
+
         return rootView;
     }
 
@@ -411,6 +413,29 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.e("signup", "signup");
+        switch (requestCode) {
+            case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                    c.moveToFirst();
+                    TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                    edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+                    if (tMgr.getLine1Number() != null) {
+                        edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+                    }
+                    addAdapterToViews();
+//        edtInputEmail.setText("" + getAllAccount());
+                    c.close();
+                } else {
+                    //code for deny
+                }
+                break;
+        }
     }
 
 

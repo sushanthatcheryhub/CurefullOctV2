@@ -820,7 +820,7 @@
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
-                            android:hint="100"
+                            android:hint="--"
                             android:inputType="number"
                             android:maxLength="4"
                             android:textColor="@color/white"
@@ -868,10 +868,11 @@
                         android:orientation="horizontal">
 
                         <customsTextViews.CustomEditTextViewMontserratHairLine
+                            android:id="@+id/water_200"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
-                            android:hint="200"
+                            android:hint="--"
                             android:inputType="number"
                             android:maxLength="4"
                             android:textColor="@color/white"
@@ -919,10 +920,11 @@
                         android:orientation="horizontal">
 
                         <customsTextViews.CustomEditTextViewMontserratHairLine
+                            android:id="@+id/water_300"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
-                            android:hint="300"
+                            android:hint="--"
                             android:inputType="number"
                             android:maxLength="4"
                             android:textColor="@color/white"
@@ -970,10 +972,11 @@
                         android:orientation="horizontal">
 
                         <customsTextViews.CustomEditTextViewMontserratHairLine
+                            android:id="@+id/water_500"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="@dimen/_30dp"
                             android:layout_height="wrap_content"
-                            android:hint="500"
+                            android:hint="--"
                             android:inputType="number"
                             android:maxLength="4"
                             android:textColor="@color/white"

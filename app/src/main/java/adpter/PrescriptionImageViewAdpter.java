@@ -85,7 +85,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         CardView card_view = holder.card_view;
 
         try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionListViews.get(position).getPrescriptionImage(), image_item);
+            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImage(), image_item);
         } catch (Exception e) {
 
         }

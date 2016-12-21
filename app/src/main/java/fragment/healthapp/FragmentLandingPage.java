@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -62,8 +63,10 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.location.ActivityRecognition;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -263,7 +266,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
-        txt_water_level.setText("" + AppPreference.getInstance().getWaterInTake() + " Ltr");
+        txt_water_level.setText("" + AppPreference.getInstance().getWaterInTake() + " ml");
         getDailyHealth();
         jsonUploadTarget();
         doBindService();
@@ -271,7 +274,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
 
         } else {
-            Log.e("hello",":- "+" hello");
+            Log.e("hello", ":- " + " hello");
             AppPreference.getInstance().setIsFirstTimeScreen1(true);
             DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
             dialogHintScreenaLandingQution.setCanceledOnTouchOutside(true);
@@ -582,16 +585,16 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 break;
             case R.id.img_plus_icon:
 
-                waterLevel++;
+                waterLevel += Integer.parseInt(AppPreference.getInstance().getGlass());
                 if (waterLevel > 0) {
                     img_minus_icon.setVisibility(View.VISIBLE);
                 }
-                txt_water_level.setText(waterLevel + "Ltr");
+                txt_water_level.setText(waterLevel + "ml");
                 AppPreference.getInstance().setWaterInTake("" + waterLevel);
                 break;
             case R.id.img_minus_icon:
-                --waterLevel;
-                txt_water_level.setText(waterLevel + "Ltr");
+                waterLevel -= Integer.parseInt(AppPreference.getInstance().getGlass());
+                txt_water_level.setText(waterLevel + "ml");
                 AppPreference.getInstance().setWaterInTake("" + waterLevel);
                 if (waterLevel == 0) {
                     img_minus_icon.setVisibility(View.INVISIBLE);
@@ -962,10 +965,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
 
-
-
-
-
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
 
@@ -1170,11 +1169,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
 
-
-
-
-
-
     private void getDailyHealth() {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
@@ -1192,6 +1186,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 JSONObject json1 = new JSONObject(json.getString("payload"));
                                 String steps = json1.getString("steps");
+                                String waterIntakeDone = json1.getString("waterIntakeDone");
+                                AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
+                                String waterIntakeLeft = json1.getString("waterIntakeLeft");
+                                AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft);
                                 preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
                                 AppPreference.getInstance().setStepsCount("" + steps);
                             } else {

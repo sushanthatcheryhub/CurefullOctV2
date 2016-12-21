@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -55,13 +56,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fragment.healthapp.FragmentEditGoal;
 import fragment.healthapp.FragmentHomeScreenAll;
+import fragment.healthapp.FragmentLabTestReport;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
+import fragment.healthapp.FragmentPrescriptionCheck;
+import fragment.healthapp.FragmentProfile;
+import fragment.healthapp.FragmentSignUp;
 import utils.AppPreference;
 import utils.CircularImageView;
+import utils.HandlePermission;
 import utils.MyConstants;
 import utils.NotificationUtils;
+import utils.Utils;
 
 public class MainActivity extends BaseMainActivity {
 
@@ -74,11 +82,6 @@ public class MainActivity extends BaseMainActivity {
     //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
-    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
-    private int location_Permission, phone_Permission,
-            storageRead_Permission, storageWrite_Permission, read_contact, camera, sms;
-    private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private GoogleApiClient mClient = null;
     private RelativeLayout relative_logo, relative_action_bar;
     private ActionBarDrawerToggle toggle;
@@ -123,8 +126,6 @@ public class MainActivity extends BaseMainActivity {
         getKeyHash();
         showActionBarToggle(false);
         disableDrawer();
-        if (checkAndRequestPermissions()) {
-        }
         changeTitle("cureFull");
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
@@ -242,7 +243,7 @@ public class MainActivity extends BaseMainActivity {
 
     public void setActionDrawerProfilePic(String name) {
         CureFull.getInstanse().getSmallImageLoader().clearCache();
-        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + name, circularImageView);
+        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + name, circularImageView);
     }
 
 
@@ -381,182 +382,58 @@ public class MainActivity extends BaseMainActivity {
     }
 
 
-    private boolean checkAndRequestPermissions() {
-        location_Permission = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
-        phone_Permission = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                android.Manifest.permission.READ_PHONE_STATE);
-        storageRead_Permission = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        storageWrite_Permission = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        read_contact = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                Manifest.permission.READ_CONTACTS);
-        camera = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                Manifest.permission.CAMERA);
-        sms = ContextCompat.checkSelfPermission(CureFull.getInstanse().getActivityIsntanse(),
-                Manifest.permission.READ_SMS);
-        List<String> listPermissionsNeeded = new ArrayList<String>();
-
-        if (location_Permission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (phone_Permission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(android.Manifest.permission.READ_PHONE_STATE);
-        }
-        if (storageRead_Permission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded
-                    .add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
-        if (storageWrite_Permission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded
-                    .add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-
-        if (read_contact != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded
-                    .add(android.Manifest.permission.READ_CONTACTS);
-        }
-        if (camera != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded
-                    .add(Manifest.permission.CAMERA);
-        }
-        if (sms != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded
-                    .add(Manifest.permission.READ_SMS);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(CureFull.getInstanse().getActivityIsntanse(), listPermissionsNeeded
-                            .toArray(new String[listPermissionsNeeded.size()]),
-                    REQUEST_ID_MULTIPLE_PERMISSIONS);
-            // checksume = 1;
-            return false;
-        }
-        // checksume = 2;
-        return true;
-    }
-
-    private void showDialogOK(String message,
-                              DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(CureFull.getInstanse().getActivityIsntanse()).setMessage(message).setCancelable(false)
-                .setPositiveButton("OK", okListener).show();
-    }
-
-    public void startFitService() {
-        Intent intent = new Intent(this, FitGoogleService.class);
-        startService(intent);
-    }
-
-
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-            Log.e(TAG, "Displaying permission rationale to provide additional context.");
-        } else {
-            Log.e(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
-    }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+
+
         switch (requestCode) {
-            case REQUEST_ID_MULTIPLE_PERMISSIONS: {
-                Map<String, Integer> perms = new HashMap<String, Integer>();
-                // Initialize the map with both permissions
-                perms.put(Manifest.permission.READ_CONTACTS,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.READ_PHONE_STATE,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.CAMERA,
-                        PackageManager.PERMISSION_GRANTED);
-                perms.put(android.Manifest.permission.READ_SMS,
-                        PackageManager.PERMISSION_GRANTED);
-                // Fill with actual results from user
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < permissions.length; i++)
-                        perms.put(permissions[i], grantResults[i]);
-                    // Check for both permissions
-                    if (perms.get(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
-                            && perms.get(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                            && perms.get(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
-                            && perms.get(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                            && perms.get(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && perms.get(android.Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
-                    } else {
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                                CureFull.getInstanse().getActivityIsntanse(), android.Manifest.permission.CAMERA)
-                                || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.ACCESS_FINE_LOCATION)
-                                || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.READ_PHONE_STATE)
-                                || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                                || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.CAMERA) || ActivityCompat
-                                .shouldShowRequestPermissionRationale(
-                                        CureFull.getInstanse().getActivityIsntanse(),
-                                        android.Manifest.permission.READ_SMS)) {
-                            showDialogOK("Permission Required For This App",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog,
-                                                            int which) {
-                                            switch (which) {
-                                                case DialogInterface.BUTTON_POSITIVE:
-
-                                                    CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
-
-                                                        @Override
-                                                        public void run() {
-                                                            checkAndRequestPermissions();
-                                                        }
-                                                    });
-
-                                                    break;
-
-                                            }
-                                        }
-                                    });
+            case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
+                    if (list != null) {
+                        for (Fragment f : list) {
+                            if (f != null && f instanceof FragmentSignUp) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            }
                         }
                     }
+
                 }
-            }
+                break;
+
+
+            case HandlePermission.MY_PERMISSIONS_REQUEST_READ_CONTACT:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
+                    if (list != null) {
+                        for (Fragment f : list) {
+                            if (f != null && f instanceof FragmentLogin) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            }
+                        }
+                    }
+
+                }
+                break;
+
+            case HandlePermission.MY_PERMISSIONS_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
+                    if (list != null) {
+                        for (Fragment f : list) {
+                            if (f != null && f instanceof FragmentPrescriptionCheck) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            } else if (f != null && f instanceof FragmentLabTestReport) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            } else if (f != null && f instanceof FragmentProfile) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            }
+                        }
+                    }
+
+                }
+                break;
 
         }
 

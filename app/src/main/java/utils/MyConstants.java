@@ -11,6 +11,9 @@ public class MyConstants {
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
+        String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
+        String REPORT_IMAGE_PATH = "http://hatcheryhub.com/images/labReport/";
+        String PROFILE_IMAGE_PATH = "http://hatcheryhub.com/images/profileImage/";
         String LOGIN = URL + "login/endUser";
         String FORGOT_NEW = URL + "forgotPassword/endUser/updatePassword";
         String FORGOT_SEND = URL + "forgotPassword/endUser/resetPassword";

@@ -80,7 +80,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     double fweight, mweight;
     private LinearLayout liner_100ml, liner_200ml, liner_300ml, liner_500ml;
     private RequestQueue requestQueue;
-    int glassInTake = 0;
+    private int glassInTake = 0, glassNumber = 0;
+    private EditText water_100, water_200, water_300, water_500;
 
     @Override
     public boolean onBackPressed() {
@@ -109,6 +110,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        water_100 = (EditText) rootView.findViewById(R.id.water_100);
+        water_200 = (EditText) rootView.findViewById(R.id.water_200);
+        water_300 = (EditText) rootView.findViewById(R.id.water_300);
+        water_500 = (EditText) rootView.findViewById(R.id.water_500);
         edt_water = (EditText) rootView.findViewById(R.id.edt_water);
         edt_steps = (EditText) rootView.findViewById(R.id.edt_steps);
         edt_calories = (EditText) rootView.findViewById(R.id.edt_calories);
@@ -937,9 +942,20 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     }
 
 
-    public void jsonGlassTarget(int targetWaterInTake) {
+    public void jsonGlassTarget(int targetWaterInTake, int glassNumber) {
+
+        if (glassNumber == 1) {
+            glassInTake = Integer.parseInt(water_100.getText().toString().trim());
+        } else if (glassNumber == 2) {
+            glassInTake = Integer.parseInt(water_200.getText().toString().trim());
+        } else if (glassNumber == 3) {
+            glassInTake = Integer.parseInt(water_300.getText().toString().trim());
+        } else if (glassNumber == 4) {
+            glassInTake = Integer.parseInt(water_500.getText().toString().trim());
+        }
+
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SELECT_GLASS + targetWaterInTake, null,
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SELECT_GLASS + targetWaterInTake + "&glassNumber=" + glassNumber, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -995,28 +1011,28 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         switch (view.getId()) {
             case R.id.liner_100ml:
-                glassInTake = 100;
+                glassNumber = 1;
                 img_100ml.setVisibility(View.VISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
                 img_500ml.setVisibility(View.INVISIBLE);
                 img_300ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_200ml:
-                glassInTake = 200;
+                glassNumber = 2;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.VISIBLE);
                 img_500ml.setVisibility(View.INVISIBLE);
                 img_300ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_300ml:
-                glassInTake = 300;
+                glassNumber = 3;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
                 img_300ml.setVisibility(View.VISIBLE);
                 img_500ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_500ml:
-                glassInTake = 500;
+                glassNumber = 4;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
                 img_300ml.setVisibility(View.INVISIBLE);
@@ -1030,11 +1046,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 } else {
                     gender = "FEMALE";
                 }
-                jsonGlassTarget(glassInTake);
-                AppPreference.getInstance().setGlass("" + glassInTake);
-                AppPreference.getInstance().setIsLoginFirst(false);
-                AppPreference.getInstance().setStepStarts(true);
-                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                if (glassNumber != 0) {
+                    jsonGlassTarget(glassInTake, glassNumber);
+                    AppPreference.getInstance().setGlass("" + glassInTake);
+                    AppPreference.getInstance().setIsLoginFirst(false);
+                    AppPreference.getInstance().setStepStarts(true);
+                    CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select glass for water Intake");
+                }
+
                 break;
 
             case R.id.btn_edit_goal:
@@ -1216,35 +1237,43 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                             }
 
 //
-                            if (userInfo.getGlassSize().equalsIgnoreCase("100")) {
-                                glassInTake = 100;
-                                AppPreference.getInstance().setGlass("" + glassInTake);
-                                img_100ml.setVisibility(View.VISIBLE);
-                                img_200ml.setVisibility(View.INVISIBLE);
-                                img_500ml.setVisibility(View.INVISIBLE);
-                                img_300ml.setVisibility(View.INVISIBLE);
-                            } else if (userInfo.getGlassSize().equalsIgnoreCase("200")) {
-                                glassInTake = 200;
-                                AppPreference.getInstance().setGlass("" + glassInTake);
-                                img_100ml.setVisibility(View.INVISIBLE);
-                                img_200ml.setVisibility(View.VISIBLE);
-                                img_500ml.setVisibility(View.INVISIBLE);
-                                img_300ml.setVisibility(View.INVISIBLE);
-                            } else if (userInfo.getGlassSize().equalsIgnoreCase("300")) {
-                                glassInTake = 300;
-                                AppPreference.getInstance().setGlass("" + glassInTake);
-                                img_100ml.setVisibility(View.INVISIBLE);
-                                img_200ml.setVisibility(View.INVISIBLE);
-                                img_300ml.setVisibility(View.VISIBLE);
-                                img_500ml.setVisibility(View.INVISIBLE);
-                            } else if (userInfo.getGlassSize().equalsIgnoreCase("500")) {
-                                glassInTake = 500;
-                                AppPreference.getInstance().setGlass("" + glassInTake);
-                                img_100ml.setVisibility(View.INVISIBLE);
-                                img_200ml.setVisibility(View.INVISIBLE);
-                                img_300ml.setVisibility(View.INVISIBLE);
-                                img_500ml.setVisibility(View.VISIBLE);
+                            if("null".equals(userInfo.getGlassNumber())){
+                                if (userInfo.getGlassNumber().equalsIgnoreCase("1")) {
+                                    glassInTake = Integer.parseInt(userInfo.getGlassSize());
+                                    water_100.setText("" + userInfo.getGlassSize());
+                                    AppPreference.getInstance().setGlass("" + glassInTake);
+                                    img_100ml.setVisibility(View.VISIBLE);
+                                    img_200ml.setVisibility(View.INVISIBLE);
+                                    img_500ml.setVisibility(View.INVISIBLE);
+                                    img_300ml.setVisibility(View.INVISIBLE);
+                                } else if (userInfo.getGlassNumber().equalsIgnoreCase("2")) {
+                                    water_200.setText("" + userInfo.getGlassSize());
+                                    glassInTake = Integer.parseInt(userInfo.getGlassSize());
+                                    AppPreference.getInstance().setGlass("" + glassInTake);
+                                    img_100ml.setVisibility(View.INVISIBLE);
+                                    img_200ml.setVisibility(View.VISIBLE);
+                                    img_500ml.setVisibility(View.INVISIBLE);
+                                    img_300ml.setVisibility(View.INVISIBLE);
+                                } else if (userInfo.getGlassNumber().equalsIgnoreCase("3")) {
+                                    water_300.setText("" + userInfo.getGlassSize());
+                                    glassInTake = Integer.parseInt(userInfo.getGlassSize());
+                                    AppPreference.getInstance().setGlass("" + glassInTake);
+                                    img_100ml.setVisibility(View.INVISIBLE);
+                                    img_200ml.setVisibility(View.INVISIBLE);
+                                    img_300ml.setVisibility(View.VISIBLE);
+                                    img_500ml.setVisibility(View.INVISIBLE);
+                                } else if (userInfo.getGlassNumber().equalsIgnoreCase("4")) {
+                                    water_500.setText("" + userInfo.getGlassSize());
+                                    glassInTake = Integer.parseInt(userInfo.getGlassSize());
+                                    AppPreference.getInstance().setGlass("" + glassInTake);
+                                    img_100ml.setVisibility(View.INVISIBLE);
+                                    img_200ml.setVisibility(View.INVISIBLE);
+                                    img_300ml.setVisibility(View.INVISIBLE);
+                                    img_500ml.setVisibility(View.VISIBLE);
+                                }
+
                             }
+
 
                         } else {
 

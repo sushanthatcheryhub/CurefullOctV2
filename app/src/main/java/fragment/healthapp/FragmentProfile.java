@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,13 +30,16 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
+import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.CircularImageView;
+import utils.HandlePermission;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
 
@@ -113,7 +117,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
             try {
                 CureFull.getInstanse().getSmallImageLoader().clearCache();
-                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + AppPreference.getInstance().getProfileImage(), profile_image_view);
+                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + AppPreference.getInstance().getProfileImage(), profile_image_view);
             } catch (Exception e) {
             }
         }
@@ -121,7 +125,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         profile_image_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogProfileFullView dialogProfileFullView=new DialogProfileFullView(CureFull.getInstanse().getActivityIsntanse(),AppPreference.getInstance().getProfileImage());
+                DialogProfileFullView dialogProfileFullView = new DialogProfileFullView(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getProfileImage());
                 dialogProfileFullView.show();
 
             }
@@ -162,12 +166,14 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 });
                 break;
             case R.id.liner_camera:
-//                loadingDialogNot();
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                }
+
                 break;
             case R.id.liner_gallery:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
@@ -418,7 +424,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
                     try {
                         CureFull.getInstanse().getFullImageLoader().clearCache();
-                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + jsonObject.getString("payload"), profile_image_view);
+                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + jsonObject.getString("payload"), profile_image_view);
                         CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
                     } catch (Exception e) {
 
@@ -437,6 +443,21 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         HashMap<String, File> param = new HashMap<>();
         param.put("profileImage", new File(image));
         return param;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case HandlePermission.MY_PERMISSIONS_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                }
+                break;
+        }
     }
 
 

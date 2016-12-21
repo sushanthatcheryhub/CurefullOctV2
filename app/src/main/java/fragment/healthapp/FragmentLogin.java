@@ -4,11 +4,16 @@ package fragment.healthapp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -71,6 +76,7 @@ import sticky.header.UnderlineTextView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CustomTypefaceSpan;
+import utils.HandlePermission;
 import utils.MyConstants;
 
 /**
@@ -286,9 +292,9 @@ public class FragmentLogin extends Fragment implements
                 return false;
             }
         });
-
-        addAdapterToViews();
-
+        if (HandlePermission.checkPermissionReadContact(CureFull.getInstanse().getActivityIsntanse())) {
+            addAdapterToViews();
+        }
         return rootView;
     }
 
@@ -383,6 +389,7 @@ public class FragmentLogin extends Fragment implements
 //                break;
         }
     }
+
 
     private void submitForm() {
 
@@ -596,7 +603,20 @@ public class FragmentLogin extends Fragment implements
                 emailSet.add(account.name);
             }
         }
-        Log.e("size",":- "+emailSet.size());
+        Log.e("size", ":- " + emailSet.size());
         edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case HandlePermission.MY_PERMISSIONS_REQUEST_READ_CONTACT:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    addAdapterToViews();
+                }
+                break;
+        }
+    }
+
 }

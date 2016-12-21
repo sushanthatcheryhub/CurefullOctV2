@@ -31,7 +31,7 @@ public class CureFull extends Application {
     private static CureFull _application;
     private RequestQueue requestQueue;
     public final String TAG = CureFull.class.getName();
-    //    private DatabaseHelper _db_configuration;
+    private DatabaseHelper _db_configuration;
     private Typeface opensansTypefaceRegular;
     private Typeface opensansTypefaceLine;
     private Typeface opensansTypefaceBold;
@@ -57,19 +57,14 @@ public class CureFull extends Application {
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+        _db_configuration = new DatabaseHelper.Builder(getApplicationContext())
+                .setName("ims_offline.sqlite").build();
+        try {
+            _db_configuration.createDataBase();
+        } catch (IOException e) {
+        }
     }
-//    @Override
-//    public void onCreate() {
-//        super.onCreate();
-//        _application = this;
-//        requestQueue = Volley.newRequestQueue(getApplicationContext());
-//        _db_configuration = new DatabaseHelper.Builder(getApplicationContext())
-//                .setName("EPrescriptionMobileApp.sqlite").build();
-//        try {
-//            _db_configuration.createDataBase();
-//        } catch (IOException e) {
-//        }
-//    }
+
 
     @Override
     public void onLowMemory() {
@@ -146,17 +141,17 @@ public class CureFull extends Application {
         requestQueue.cancelAll(TAG);
     }
 
-//    public DatabaseHelper getDatabaseHelperInstance(Context context) {
-//        if (_db_configuration == null)
-//            _db_configuration = new DatabaseHelper.Builder(context).setName(
-//                    "EPrescriptionMobileApp.sqlite").build();
-//        try {
-//            _db_configuration.createDataBase();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return _db_configuration;
-//    }
+    public DatabaseHelper getDatabaseHelperInstance(Context context) {
+        if (_db_configuration == null)
+            _db_configuration = new DatabaseHelper.Builder(context).setName(
+                    "ims_offline.sqlite").build();
+        try {
+            _db_configuration.createDataBase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return _db_configuration;
+    }
 
 
     public Typeface getOpenSansRegular(Context context) {

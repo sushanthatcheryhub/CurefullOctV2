@@ -204,7 +204,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public String getGlass() {
         if (_prefrence != null)
-            return _prefrence.getString("glass", "");
+            return _prefrence.getString("glass", "0");
         return "";
     }
 
@@ -389,6 +389,18 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     public String getWaterInTake() {
         if (_prefrence != null)
             return _prefrence.getString("waterTake", "0");
+        return "";
+    }
+
+
+    public void setWaterInTakeLeft(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("waterTakeLeft", className).commit();
+    }
+
+    public String getWaterInTakeLeft() {
+        if (_prefrence != null)
+            return _prefrence.getString("waterTakeLeft", "0");
         return "";
     }
 

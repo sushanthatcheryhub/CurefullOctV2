@@ -82,7 +82,7 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + images, image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + images, image_item);
             } catch (Exception e) {
 
             }

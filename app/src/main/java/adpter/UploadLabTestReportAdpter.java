@@ -103,8 +103,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
-                Log.e("url", ":- " + MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage());
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
             } catch (Exception e) {
                 e.printStackTrace();
             }

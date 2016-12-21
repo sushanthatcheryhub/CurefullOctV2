@@ -43,7 +43,7 @@ public class FragmentLabReportImageFullView extends Fragment {
     private View rootView;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView image_item, img_delete, img_share;
-    private String doctoreName, prescriptionId, iPrescriptionId,date;
+    private String doctoreName, prescriptionId, iPrescriptionId, date;
     private RequestQueue requestQueue;
     private String images;
 
@@ -65,7 +65,7 @@ public class FragmentLabReportImageFullView extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            date=bundle.getString("date");
+            date = bundle.getString("date");
             txt_date.setText("" + bundle.getString("date"));
             doctoreName = bundle.getString("doctorName");
             txt_doctor_name.setText("" + doctoreName);
@@ -74,7 +74,7 @@ public class FragmentLabReportImageFullView extends Fragment {
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + images, image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH + images, image_item);
             } catch (Exception e) {
 
             }
@@ -96,8 +96,6 @@ public class FragmentLabReportImageFullView extends Fragment {
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
-
-
 
 
     private void getPrescriptionDelete(String id, String realId, String name) {
@@ -153,8 +151,8 @@ public class FragmentLabReportImageFullView extends Fragment {
         String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " +date);
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:-"+ doctoreName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:-" + doctoreName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
         sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         sharingIntent.setType("image/*");
         CureFull.getInstanse().getActivityIsntanse().startActivity(sharingIntent);
