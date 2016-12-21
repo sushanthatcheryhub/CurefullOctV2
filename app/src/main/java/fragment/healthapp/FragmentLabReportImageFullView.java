@@ -148,7 +148,7 @@ public class FragmentLabReportImageFullView extends Fragment {
 
 
     public void shareClick(String prescriptionImage) {
-        String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + prescriptionImage;
+        String url = MyConstants.WebUrls.REPORT_IMAGE_PATH + prescriptionImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);

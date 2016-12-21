@@ -204,7 +204,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
 
 
     public void shareClick(String reportImage, String doctorName) {
-        String url = MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/labReport/" + reportImage;
+        String url = MyConstants.WebUrls.REPORT_IMAGE_PATH+ reportImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");

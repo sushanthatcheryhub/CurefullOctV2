@@ -248,7 +248,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         ArrayList<Uri> files = new ArrayList<Uri>();
         ArrayList<String> filesName = new ArrayList<String>();
         for (int i = 0; i < prescriptionImageListViews.size(); i++) {
-            filesName.add(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/prescription/" + prescriptionImageListViews.get(i).getPrescriptionImage());
+            filesName.add(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionImageListViews.get(i).getPrescriptionImage());
         }
 
         Log.e("name ", "fileNames " + filesName.get(0).toString());
