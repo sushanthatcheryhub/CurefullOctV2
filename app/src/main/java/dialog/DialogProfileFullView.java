@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import image.zoom.GestureImageView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -18,7 +19,7 @@ public class DialogProfileFullView extends Dialog {
 
     private View v = null;
     Context context;
-    private ImageView img_full_view;
+    private GestureImageView img_full_view;
 
     public DialogProfileFullView(Context _activiyt, String bitmap) {
         super(_activiyt, R.style.MyTheme);
@@ -31,8 +32,8 @@ public class DialogProfileFullView extends Dialog {
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        img_full_view = (ImageView) findViewById(R.id.img_full_view);
-        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.HOST_IP + "/CurefullWeb-0.0.1/resources/images/profileImage/" + bitmap, img_full_view);
+        img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
+        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + bitmap, img_full_view);
 
 
     }

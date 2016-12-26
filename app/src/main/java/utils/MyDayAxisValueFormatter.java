@@ -28,14 +28,15 @@ public class MyDayAxisValueFormatter implements IAxisValueFormatter {
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         int days = (int) value;
-       // int year = determineYear(days);
-       // int month = determineMonth(days);
+        // int year = determineYear(days);
+        // int month = determineMonth(days);
         String monthName = mMonths[month % mMonths.length];
         String yearName = String.valueOf(year);
 
        /* if (chart.getVisibleXRange() > 30 * 6) {
             return monthName + " " + yearName;
-        } else*/ {
+        } else*/
+        {
             int dayOfMonth = days;/*determineDayOfMonth(days, month + 12 * (year - 2016));*/
             String appendix = "th";
             switch (dayOfMonth) {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -157,13 +158,15 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 });
                 break;
             case R.id.liner_upload_new:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
-                profile_image_view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitter(rootView);
-                    }
-                });
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                }
                 break;
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
@@ -327,74 +330,84 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
+            if (Build.VERSION.SDK_INT > 19) {
+                FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                        revealView.getLayoutParams();
+                parameters.height = realtive_notes.getHeight();
+                revealView.setLayoutParams(parameters);
 
-            FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                    revealView.getLayoutParams();
-            parameters.height = realtive_notes.getHeight();
-            revealView.setLayoutParams(parameters);
+                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
+                anim.setDuration(700);
 
-            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-            anim.setDuration(700);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
 
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        layoutButtons.setVisibility(View.VISIBLE);
+                        layoutButtons.startAnimation(alphaAnimation);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    layoutButtons.setVisibility(View.VISIBLE);
-                    layoutButtons.startAnimation(alphaAnimation);
-                }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
 
-                @Override
-                public void onAnimationCancel(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
 
-                @Override
-                public void onAnimationRepeat(Animator animator) {
+                    }
+                });
 
-                }
-            });
+                revealView.setVisibility(View.VISIBLE);
+                anim.start();
 
-            revealView.setVisibility(View.VISIBLE);
-            anim.start();
+            } else {
+                revealView.setVisibility(View.VISIBLE);
+                layoutButtons.setVisibility(View.VISIBLE);
+            }
 
             flag = false;
         } else {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
+            if (Build.VERSION.SDK_INT > 19) {
+                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
+                anim.setDuration(400);
 
-            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
-            anim.setDuration(400);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
 
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        revealView.setVisibility(View.GONE);
+                        layoutButtons.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    revealView.setVisibility(View.GONE);
-                    layoutButtons.setVisibility(View.GONE);
-                }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
 
-                @Override
-                public void onAnimationCancel(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
 
-                @Override
-                public void onAnimationRepeat(Animator animator) {
+                    }
+                });
 
-                }
-            });
+                anim.start();
+            } else {
+                revealView.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.GONE);
+            }
 
-            anim.start();
             flag = true;
         }
     }
@@ -455,6 +468,17 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                     startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                }
+                break;
+            case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
                 }
                 break;
         }

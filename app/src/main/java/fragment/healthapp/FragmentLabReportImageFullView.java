@@ -30,6 +30,7 @@ import java.util.Map;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import image.zoom.GestureImageView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -42,7 +43,8 @@ public class FragmentLabReportImageFullView extends Fragment {
 
     private View rootView;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
-    private ImageView image_item, img_delete, img_share;
+    private ImageView img_delete, img_share;
+    private GestureImageView image_item;
     private String doctoreName, prescriptionId, iPrescriptionId, date;
     private RequestQueue requestQueue;
     private String images;
@@ -58,7 +60,7 @@ public class FragmentLabReportImageFullView extends Fragment {
         txt_diease_name = (TextView) rootView.findViewById(R.id.txt_diease_name);
         txt_date = (TextView) rootView.findViewById(R.id.txt_date);
         img_share = (ImageView) rootView.findViewById(R.id.img_share);
-        image_item = (ImageView) rootView.findViewById(R.id.image_item);
+        image_item = (GestureImageView) rootView.findViewById(R.id.image_item);
         img_delete = (ImageView) rootView.findViewById(R.id.img_delete);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);

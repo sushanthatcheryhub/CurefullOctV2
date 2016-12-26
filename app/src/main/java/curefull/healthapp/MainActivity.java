@@ -127,8 +127,8 @@ public class MainActivity extends BaseMainActivity {
         showActionBarToggle(false);
         disableDrawer();
         changeTitle("cureFull");
-//        Intent serviceIntent = new Intent(this, LocationService.class);
-//        startService(serviceIntent);
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
             Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
@@ -172,6 +172,7 @@ public class MainActivity extends BaseMainActivity {
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                iconAnim(img_share);
                 takeScreenShot(view1);
                 shareClick();
             }
@@ -435,6 +436,24 @@ public class MainActivity extends BaseMainActivity {
                 }
                 break;
 
+            case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
+                    if (list != null) {
+                        for (Fragment f : list) {
+                            if (f != null && f instanceof FragmentPrescriptionCheck) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            } else if (f != null && f instanceof FragmentLabTestReport) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            } else if (f != null && f instanceof FragmentProfile) {
+                                f.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                            }
+                        }
+                    }
+
+                }
+                break;
+
         }
 
     }
@@ -500,7 +519,7 @@ public class MainActivity extends BaseMainActivity {
         Uri screenshotUri = Uri.fromFile(myPath);
         sharingIntent.setType("image/*");
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName());
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
         sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
         startActivity(Intent.createChooser(sharingIntent, "Share image using"));
     }

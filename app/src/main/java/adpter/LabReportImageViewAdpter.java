@@ -77,9 +77,9 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, final int position) {
-        ImageView img_delete = holder.img_delete;
+        final ImageView img_delete = holder.img_delete;
         ImageView image_item = holder.image_item;
-        ImageView img_share = holder.img_share;
+        final ImageView img_share = holder.img_share;
         CardView card_view = holder.card_view;
 
         try {
@@ -92,6 +92,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Lab Report ?", "Lab Report", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(LabReportImageViewAdpter.this);
                 dialogDeleteAll.show();
@@ -100,6 +101,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                 shareClick(prescriptionListViews.get(position).getReportImage(), doctorName);
             }
         });

@@ -40,6 +40,7 @@ public class MyBarChart extends BarChart {
         if (isInEditMode())
             return;
         // setOnChartValueSelectedListener(this);
+
         setDrawBarShadow(false);
         setDrawValueAboveBar(true);
         getDescription().setEnabled(false);
@@ -50,6 +51,7 @@ public class MyBarChart extends BarChart {
         //setBorderColor(Color.BLACK);
 
 
+
         IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year);
 
         XAxis xAxis = getXAxis();
@@ -57,7 +59,8 @@ public class MyBarChart extends BarChart {
 //        xAxis.setTypeface(mTfLight);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularityEnabled(true);
-        xAxis.setLabelCount(9);
+        xAxis.setGranularity(0f);
+        xAxis.setLabelCount(16);
         xAxis.setValueFormatter(xAxisFormatter);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
@@ -69,10 +72,6 @@ public class MyBarChart extends BarChart {
         leftAxis.setEnabled(false);
         leftAxis.setValueFormatter(custom);
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setSpaceTop(15f);
-        //  leftAxis.setSpaceMax(1);
-        leftAxis.setAxisMinimum(0f);
-
         // This two will remove the background Grid
 
         getAxisLeft().setDrawGridLines(false);
@@ -82,6 +81,10 @@ public class MyBarChart extends BarChart {
         // if you can't touch then obviously the zoom is disabled.
 
         setTouchEnabled(true);
+        setDrawMarkers(false);
+        setPinchZoom(false);
+        setDoubleTapToZoomEnabled(false);
+        setScaleEnabled(false);
 
         YAxis rightAxis = getAxisRight();
         rightAxis.setDrawGridLines(false);
@@ -92,15 +95,14 @@ public class MyBarChart extends BarChart {
         rightAxis.setSpaceTop(15f);
         rightAxis.setAxisMinimum(0f);
 
+
         Legend l = getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
-        l.setForm(Legend.LegendForm.SQUARE);
-        l.setFormSize(9f);
+        l.setForm(Legend.LegendForm.NONE);
         l.setTextSize(11f);
-        l.setXEntrySpace(4f);
 
         XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
         mv.setChartView(this);

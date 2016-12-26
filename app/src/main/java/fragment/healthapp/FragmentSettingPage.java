@@ -27,8 +27,8 @@ public class FragmentSettingPage extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_setting,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
-        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }

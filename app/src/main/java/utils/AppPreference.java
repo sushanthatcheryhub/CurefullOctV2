@@ -633,6 +633,19 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     }
 
 
+
+    public void setDelete(boolean isMale) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("delete", isMale).commit();
+    }
+
+    public boolean getDelete() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("delete", false);
+        return false;
+    }
+
+
 }
 
 

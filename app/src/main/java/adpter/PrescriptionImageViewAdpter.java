@@ -2,8 +2,12 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +28,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,9 +86,9 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, final int position) {
-        ImageView img_delete = holder.img_delete;
-        ImageView image_item = holder.image_item;
-        ImageView img_share = holder.img_share;
+        final ImageView img_delete = holder.img_delete;
+        final ImageView image_item = holder.image_item;
+        final ImageView img_share = holder.img_share;
         CardView card_view = holder.card_view;
 
         try {
@@ -94,7 +101,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(PrescriptionImageViewAdpter.this);
                 dialogDeleteAll.show();
@@ -103,7 +110,8 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareClick(prescriptionListViews.get(position).getPrescriptionImage());
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                shareClick(image_item);
             }
         });
 
@@ -205,15 +213,53 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     }
 
 
+    public void shareClick(ImageView prescriptionImage) {
+        Uri bmpUri = getLocalBitmapUri(prescriptionImage);
+        if (bmpUri != null) {
+            // Construct a ShareIntent with link to image
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        } else {
+            // ...sharing failed, handle error
+        }
 
-    public void shareClick(String prescriptionImage) {
-        String url = MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH+ prescriptionImage;
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        Uri imageUri = Uri.parse(url);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + doctorName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-        sharingIntent.setType("image/*");
-        applicationContext.startActivity(sharingIntent);
+
+//        String url = MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH+ prescriptionImage;
+//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//        Uri imageUri = Uri.parse(url);
+//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + doctorName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
+//        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+//        sharingIntent.setType("image/*");
+//        applicationContext.startActivity(sharingIntent);
+    }
+
+    public Uri getLocalBitmapUri(ImageView imageView) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable) {
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
+            file.getParentFile().mkdirs();
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            bmpUri = Uri.fromFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 }

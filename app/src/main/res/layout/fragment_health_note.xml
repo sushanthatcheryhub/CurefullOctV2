@@ -156,6 +156,8 @@
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
                                                     android:hint="Subject"
+                                                    android:nextFocusDown="@id/edt_deatils"
+                                                    android:imeOptions="actionNext"
                                                     android:maxLength="35"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"

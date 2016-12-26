@@ -82,9 +82,9 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         TextView txt_date = holder.txt_date;
         TextView text_doctor_name = holder.text_doctor_name;
         TextView txt_disease_name = holder.txt_disease_name;
-        ImageView img_delete = holder.img_delete;
-        ImageView image_item = holder.image_item;
-        ImageView img_share = holder.img_share;
+        final ImageView img_delete = holder.img_delete;
+        final ImageView image_item = holder.image_item;
+        final ImageView img_share = holder.img_share;
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
@@ -106,6 +106,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
             try {
+                Log.e("path", " " + MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
                 CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
             } catch (Exception e) {
 
@@ -116,7 +117,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpter.this);
                 dialogDeleteAll.show();
@@ -125,6 +126,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                 shareClick(prescriptionListViews.get(position).getPrescriptionImageListViews());
             }
         });
@@ -258,10 +260,12 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
             files.add(uri);
         }
         Log.e("name ", "fileNames " + files.size());
-        sharingIntent.setType("/*images");
+        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
         sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Sending multiple attachment"));
+        sharingIntent.setType("image/*");
+        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Share Image"));
     }
 }

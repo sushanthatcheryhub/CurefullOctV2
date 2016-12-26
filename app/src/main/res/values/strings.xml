@@ -95,4 +95,9 @@
     <string name="remote_service_connected">Step Counter has been connected</string>
     <string name="remote_service_disconnected">Step Counter has been disconnected</string>
     <string name="remote_service_stopped">Step Counter has been stopped</string>
+
+
+
+
+
 </resources>

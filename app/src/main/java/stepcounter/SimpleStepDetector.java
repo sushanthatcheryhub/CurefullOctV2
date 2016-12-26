@@ -21,15 +21,15 @@ package stepcounter;
  */
 public class SimpleStepDetector {
 
-//  private static final int ACCEL_RING_SIZE = 90;
+//  private static final int ACCEL_RING_SIZE = 50;
 //  private static final int VEL_RING_SIZE = 10;
 //  private static final float STEP_THRESHOLD = 4f;
 //  private static final int STEP_DELAY_NS = 250000000;
 
-    private static final int ACCEL_RING_SIZE = 600;
-    private static final int VEL_RING_SIZE = 600;
-    private static final float STEP_THRESHOLD = 20f;
-    private static final int STEP_DELAY_NS = 750000000;
+    private static final int ACCEL_RING_SIZE = 200;
+    private static final int VEL_RING_SIZE = 200;
+    private static final float STEP_THRESHOLD = 15f;
+    private static final int STEP_DELAY_NS = 550000000;
 
     private int accelRingCounter = 0;
     private float[] accelRingX = new float[ACCEL_RING_SIZE];

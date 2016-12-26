@@ -6,7 +6,8 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://hatcheryhub.com";
+//        String HOST_IP = "http://hatcheryhub.com";
+                String HOST_IP = "http://192.168.0.33:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
@@ -40,7 +41,7 @@ public class MyConstants {
         String SELECT_GLASS = URL + "endUser/healthapp/setGlassSizeForWaterIntake?glassSize=";
         String CfUuhidList = URL + "uuhid/getCfuuhidListOfEndUser";
         String CfUuhidUpload = URL + "uuhid/getCfuuhidFromNameAndMobileNumber";
-        String GET_GRAPH = URL + "endUser/healthapp/gethealthappDetailsList";
+        String GET_GRAPH = URL + "endUser/healthapp/gethealthappDetailsForGraphs";
         String CHECK_MOBILE_VALID = URL + "forgotPassword/endUser/getUserBasedOnMobileNumber?mobileNumber=";
         String CHECK_EMAIL_VALID = URL + "forgotPassword/endUser/sendPasswordResetLink?emailId=";
         String SELECTED_USER_LIST = URL + "uuhid/updateSelectedCfUuhid?cfuhid=";
@@ -49,6 +50,11 @@ public class MyConstants {
         String GET_HEALTH_DAILY_APP = URL + "endUser/healthapp/gethealthappDetails?date=";
         String UHID_SIGN_UP = URL + "uuhid/getCfuuhidListForSignup";
         String LOGOUT = URL + "logout/user";
+        String RECOMMENDED_TARGETS_STEPS=URL+"endUser/healthapp/getRecommendedDailyExercise?gender=";
+
+
+
+
 
     }
 
@@ -211,8 +217,9 @@ public class MyConstants {
     }
 
     public interface IDataBaseTableKeys {
-
+        String TABLE_NOTE = "note_master";
     }
+
 
     public interface IArrayData {
         String[] listPopUp = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};

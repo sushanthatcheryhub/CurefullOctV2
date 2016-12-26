@@ -81,15 +81,19 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentUHID(), true);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
-            jsonLogout();
+
+            // ek ye simple method hota hai.
+            //
+            //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
+            FragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLogin(), false);
-            AppPreference.getInstance().clearAllData();
-            AppPreference.getInstance().setIsLogin(false);
+            jsonLogout();
         } else if (id == R.id.nav_policy) {
+
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentTermCondition(), true);
@@ -210,8 +214,6 @@ public class BaseMainActivity extends AppCompatActivity
     }
 
 
-
-
     public String updateTime(int hours, int mins) {
 
 
@@ -260,6 +262,8 @@ public class BaseMainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            AppPreference.getInstance().clearAllData();
+                            AppPreference.getInstance().setIsLogin(false);
                         } else {
                         }
 

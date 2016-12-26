@@ -54,6 +54,7 @@ import java.util.Map;
 import adpter.PrescriptionImageViewAdpter;
 import adpter.UploadPrescriptionAdpter;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
@@ -74,7 +75,7 @@ import utils.Utils;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentPrescriptionImageView extends Fragment {
+public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
 
 
     private View rootView;
@@ -83,6 +84,21 @@ public class FragmentPrescriptionImageView extends Fragment {
     private PrescriptionImageViewAdpter prescriptionImageViewAdpter;
     private List<PrescriptionImageListView> prescriptionImageListViews;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
+
+
+    @Override
+    public boolean onBackPressed() {
+
+        Log.e("hi", "hi");
+        if (AppPreference.getInstance().getDelete()) {
+            Log.e("getDelete", "getDelete");
+            AppPreference.getInstance().setDelete(false);
+            CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+            return true;
+        } else {
+            return true;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,7 +150,6 @@ public class FragmentPrescriptionImageView extends Fragment {
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
-
 
 
 }

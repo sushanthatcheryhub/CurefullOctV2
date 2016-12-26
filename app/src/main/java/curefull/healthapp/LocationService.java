@@ -49,6 +49,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     int counter = 0;
     private GoogleApiClient mClient;
     SharedPreferences preferences;
+    private int numSteps;
 
     @Override
     public void onCreate() {
@@ -193,6 +194,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     public class MyLocationListener implements LocationListener {
 
         public void onLocationChanged(final Location loc) {
+
+            numSteps++;
+            Toast.makeText(LocationService.this, " " + numSteps, Toast.LENGTH_SHORT).show();
             Log.e("***********", "Location changed" + loc.getLatitude() + " " + loc.getLongitude());
 
             String lat = String.valueOf(loc.getLatitude());

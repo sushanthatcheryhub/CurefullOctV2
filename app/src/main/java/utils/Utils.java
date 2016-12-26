@@ -22,7 +22,7 @@ public class Utils {
         return proportion * total;
     }
 
-    public static double getCaloriesBurnt(int pounds, int steps) {
+    public static double getCaloriesBurnt(double pounds, int steps) {
         double cal = (pounds * 0.30 * (0.0005 * steps));
         return cal;
     }

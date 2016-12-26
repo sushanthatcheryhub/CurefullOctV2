@@ -76,15 +76,18 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         TextView text_doctor_name = holder.text_doctor_name;
 
         TextView txt_disease_name = holder.txt_disease_name;
-        ImageView img_delete = holder.img_delete;
+        final ImageView img_delete = holder.img_delete;
         ImageView image_item = holder.image_item;
-        ImageView img_share = holder.img_share;
+        final ImageView img_share = holder.img_share;
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
+
         Log.e("position", position + "");
+
         String date = labReportListViews.get(position).getReportDate();
 
         Log.e("date ", date);
+
         if (!date.equalsIgnoreCase("null")) {
             String[] dateFormat = date.split("-");
             int mYear = Integer.parseInt(dateFormat[0]);
@@ -114,6 +117,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
                 dialogDeleteAll.show();
@@ -122,6 +126,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");

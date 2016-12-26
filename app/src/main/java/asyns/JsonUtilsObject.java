@@ -266,13 +266,13 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject getGraphDeatils(String date, String frequency, String type, String offset) {
+    public static JSONObject getGraphDeatils(String fromDate,String date, String frequency, String type) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("date", date);
+            jsonParent.put("fromDate", fromDate);
+            jsonParent.put("toDate", date);
             jsonParent.put("frequency", frequency);
             jsonParent.put("type", type);
-            jsonParent.put("offset", offset);
 
         } catch (Exception e) {
 

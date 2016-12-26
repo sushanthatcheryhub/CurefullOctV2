@@ -6,12 +6,16 @@
     android:clickable="true">
 
 
-    <ImageView
+
+    <image.zoom.GestureImageView
         android:id="@+id/img_full_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:src="@drawable/delete_red" />
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+
 
 
 </RelativeLayout>

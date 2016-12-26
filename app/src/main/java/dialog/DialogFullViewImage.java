@@ -24,6 +24,7 @@ import java.util.List;
 import adpter.AddImageDoneAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import image.zoom.GestureImageView;
 import interfaces.IOnDoneMoreImage;
 import item.property.PrescriptionImageList;
 import utils.SpacesItemDecoration;
@@ -33,7 +34,7 @@ public class DialogFullViewImage extends Dialog {
 
     private View v = null;
     Context context;
-    private ImageView img_full_view;
+    private GestureImageView img_full_view;
 
     public DialogFullViewImage(Context _activiyt, Bitmap bitmap) {
         super(_activiyt, R.style.MyTheme);
@@ -46,7 +47,7 @@ public class DialogFullViewImage extends Dialog {
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        img_full_view = (ImageView) findViewById(R.id.img_full_view);
+        img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
         img_full_view.setImageBitmap(bitmap);
     }
 

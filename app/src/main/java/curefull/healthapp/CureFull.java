@@ -58,7 +58,7 @@ public class CureFull extends Application {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         _db_configuration = new DatabaseHelper.Builder(getApplicationContext())
-                .setName("ims_offline.sqlite").build();
+                .setName("curefull_offline.sqlite").build();
         try {
             _db_configuration.createDataBase();
         } catch (IOException e) {
@@ -144,7 +144,7 @@ public class CureFull extends Application {
     public DatabaseHelper getDatabaseHelperInstance(Context context) {
         if (_db_configuration == null)
             _db_configuration = new DatabaseHelper.Builder(context).setName(
-                    "ims_offline.sqlite").build();
+                    "curefull_offline.sqlite").build();
         try {
             _db_configuration.createDataBase();
         } catch (IOException e) {

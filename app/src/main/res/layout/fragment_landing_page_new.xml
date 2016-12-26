@@ -21,7 +21,11 @@
         app:fabSize="mini"
         app:layout_anchor="@id/realtive_notes"
         app:layout_anchorGravity="bottom|right|end" />
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:nestedScrollingEnabled="true">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -315,6 +319,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/login_gradient"
                 android:orientation="vertical">
 
@@ -473,7 +478,9 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
+                                                    android:nextFocusDown="@id/edt_deatils"
                                                     android:hint="Subject"
+                                                    android:imeOptions="actionNext"
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:maxLength="35"
@@ -912,4 +919,5 @@
 
         </LinearLayout>
     </LinearLayout>
+    </ScrollView>
 </android.support.design.widget.CoordinatorLayout>

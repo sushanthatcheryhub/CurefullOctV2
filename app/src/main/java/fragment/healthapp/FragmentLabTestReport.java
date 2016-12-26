@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -29,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -57,6 +60,7 @@ import adpter.UploadLabTestReportAdpter;
 import adpter.UploadPrescriptionAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
@@ -79,7 +83,7 @@ import utils.SpacesItemDecoration;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLabTestReport extends Fragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage {
+public class FragmentLabTestReport extends BaseBackHandlerFragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage, PopupWindow.OnDismissListener {
 
 
     private View rootView;
@@ -117,6 +121,30 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     private LinearLayout liner_layout_recyler;
     private String newMessage = "";
     private String clickDoctorName = "", clickDiseaseName = "", clickDates = "";
+    private ImageView img_doctor_name, img_test_name, img_date, img_user_name;
+    private String checkDialog = "";
+    private boolean isUploadClick = false;
+    private String doctorName, dieaseName, prescriptionDate;
+
+    @Override
+    public boolean onBackPressed() {
+
+        if (isUploadClick) {
+            isUploadClick = false;
+            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+            liner_upload_new.post(new Runnable() {
+                @Override
+                public void run() {
+                    launchTwitter(rootView);
+                }
+            });
+            return false;
+        } else {
+            return true;
+        }
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,6 +153,12 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         rootView = inflater.inflate(R.layout.fragment_health_lab_report,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
+        img_doctor_name = (ImageView) rootView.findViewById(R.id.img_doctor_name);
+        img_test_name = (ImageView) rootView.findViewById(R.id.img_test_name);
+        img_date = (ImageView) rootView.findViewById(R.id.img_date);
+        img_user_name = (ImageView) rootView.findViewById(R.id.img_user_name);
+
         btn_reset = (ImageView) rootView.findViewById(R.id.btn_reset);
         liner_layout_recyler = (LinearLayout) rootView.findViewById(R.id.liner_layout_recyler);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
@@ -174,15 +208,21 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         (rootView.findViewById(R.id.img_doctor_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listPopupWindow = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                        R.layout.adapter_list_doctor_data, getDoctorNameAsStringList(labReportListViews)));
-                listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_Doctor_name));
-                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._100dp));
+                if (labReportListViews != null && labReportListViews.size() > 0) {
+                    checkDialog = "img_doctor_name";
+                    rotatePhoneClockwise(img_doctor_name);
+                    listPopupWindow = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                    listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                            R.layout.adapter_list_doctor_data, getDoctorNameAsStringList(labReportListViews)));
+                    listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_Doctor_name));
+                    listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._100dp));
 //                listPopupWindow.setHeight(400);
-                listPopupWindow.setModal(true);
-                listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
-                listPopupWindow.show();
+                    listPopupWindow.setModal(true);
+                    listPopupWindow.setOnDismissListener(FragmentLabTestReport.this);
+                    listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
+                    listPopupWindow.show();
+                }
+
             }
         });
 
@@ -190,15 +230,22 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         (rootView.findViewById(R.id.img_test_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listPopupWindow1 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                listPopupWindow1.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                        R.layout.adapter_list_doctor_data, getDiseaseListAsStringList(labReportListViews)));
-                listPopupWindow1.setAnchorView(rootView.findViewById(R.id.txt_tst_name));
-                listPopupWindow1.setWidth((int) getResources().getDimension(R.dimen._100dp));
+                if (labReportListViews != null && labReportListViews.size() > 0) {
+                    checkDialog = "img_test_name";
+                    rotatePhoneClockwise(img_test_name);
+                    listPopupWindow1 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                    listPopupWindow1.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                            R.layout.adapter_list_doctor_data, getDiseaseListAsStringList(labReportListViews)));
+                    listPopupWindow1.setAnchorView(rootView.findViewById(R.id.txt_tst_name));
+                    listPopupWindow1.setWidth((int) getResources().getDimension(R.dimen._100dp));
 //                listPopupWindow.setHeight(400);
-                listPopupWindow1.setModal(true);
-                listPopupWindow1.setOnItemClickListener(popUpItemClickdisease);
-                listPopupWindow1.show();
+                    listPopupWindow1.setModal(true);
+                    listPopupWindow1.setOnDismissListener(FragmentLabTestReport.this);
+                    listPopupWindow1.setOnItemClickListener(popUpItemClickdisease);
+                    listPopupWindow1.show();
+
+                }
+
             }
         });
 
@@ -206,15 +253,21 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         (rootView.findViewById(R.id.img_date)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listPopupWindow3 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                listPopupWindow3.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                        R.layout.adapter_list_doctor_data, getDateAsStringList(labReportListViews)));
-                listPopupWindow3.setAnchorView(rootView.findViewById(R.id.txt_dates));
-                listPopupWindow3.setWidth((int) getResources().getDimension(R.dimen._100dp));
+                if (labReportListViews != null && labReportListViews.size() > 0) {
+                    checkDialog = "img_date";
+                    rotatePhoneClockwise(img_date);
+                    listPopupWindow3 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                    listPopupWindow3.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                            R.layout.adapter_list_doctor_data, getDateAsStringList(labReportListViews)));
+                    listPopupWindow3.setAnchorView(rootView.findViewById(R.id.txt_dates));
+                    listPopupWindow3.setWidth((int) getResources().getDimension(R.dimen._100dp));
 //                listPopupWindow.setHeight(400);
-                listPopupWindow3.setModal(true);
-                listPopupWindow3.setOnItemClickListener(popUpItemClickDate);
-                listPopupWindow3.show();
+                    listPopupWindow3.setModal(true);
+                    listPopupWindow3.setOnDismissListener(FragmentLabTestReport.this);
+                    listPopupWindow3.setOnItemClickListener(popUpItemClickDate);
+                    listPopupWindow3.show();
+                }
+
             }
         });
 
@@ -222,15 +275,21 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
         (rootView.findViewById(R.id.img_user_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                        R.layout.adapter_list_doctor_data, getUserAsStringList(uhidItemses)));
-                listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_sort_user_name));
-                listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._110dp));
+                if (uhidItemses != null && uhidItemses.size() > 0) {
+                    checkDialog = "img_user_name";
+                    rotatePhoneClockwise(img_user_name);
+                    listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                    listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                            R.layout.adapter_list_doctor_data, getUserAsStringList(uhidItemses)));
+                    listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_sort_user_name));
+                    listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._110dp));
 //                listPopupWindow.setHeight(400);
-                listPopupWindow4.setModal(true);
-                listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
-                listPopupWindow4.show();
+                    listPopupWindow4.setModal(true);
+                    listPopupWindow4.setOnDismissListener(FragmentLabTestReport.this);
+                    listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                    listPopupWindow4.show();
+                }
+
             }
         });
 
@@ -242,9 +301,10 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     AdapterView.OnItemClickListener popUpItemClickDoctor = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            rotatePhoneAntiClockwise(img_doctor_name);
             listPopupWindow.dismiss();
             Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(labReportListViews).get(position));
-            if (labReportListViews.size() > 0) {
+            if (labReportListViews != null && labReportListViews.size() > 0) {
                 txt_Doctor_name.setText("" + getDoctorNameAsStringList(labReportListViews).get(position));
 
 
@@ -269,9 +329,10 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     AdapterView.OnItemClickListener popUpItemClickdisease = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            rotatePhoneAntiClockwise(img_test_name);
             listPopupWindow1.dismiss();
             Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(labReportListViews).get(position));
-            if (labReportListViews.size() > 0) {
+            if (labReportListViews != null && labReportListViews.size() > 0) {
                 txt_tst_name.setText("" + getDiseaseListAsStringList(labReportListViews).get(position));
                 if (getFilterListDisease(getDiseaseListAsStringList(labReportListViews).get(position)).size() > 0) {
                     txt_no_prescr.setVisibility(View.GONE);
@@ -294,9 +355,10 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     AdapterView.OnItemClickListener popUpItemClickDate = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            rotatePhoneAntiClockwise(img_date);
             listPopupWindow3.dismiss();
             Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(labReportListViews).get(position));
-            if (labReportListViews.size() > 0) {
+            if (labReportListViews != null && labReportListViews.size() > 0) {
                 txt_dates.setText("" + getDateAsStringList(labReportListViews).get(position));
                 if (getFilterListDate(getDateAsStringList(labReportListViews).get(position)).size() > 0) {
                     txt_no_prescr.setVisibility(View.GONE);
@@ -318,8 +380,9 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
-            if (uhidItemses != null) {
+            if (uhidItemses != null && uhidItemses.size() > 0) {
                 getSelectedUserList(getUserAsStringListUFHID(uhidItemses).get(position));
                 txt_sort_user_name.setText("" + getUserAsStringList(uhidItemses).get(position));
                 AppPreference.getInstance().setcf_uuhidNeew(getUserAsStringListUFHID(uhidItemses).get(position));
@@ -342,6 +405,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_reset:
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(btn_reset);
                 clickDoctorName = "";
                 clickDiseaseName = "";
                 clickDates = "";
@@ -364,6 +428,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.liner_animation_upload:
+                isUploadClick = false;
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
                 liner_upload_new.post(new Runnable() {
                     @Override
@@ -373,19 +438,23 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 });
                 break;
             case R.id.liner_upload_new:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
-                liner_upload_new.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitter(rootView);
-                    }
-                });
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    isUploadClick = true;
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                }
                 break;
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
                     value = 0;
                     imageName = 0;
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
+                    isUploadClick = false;
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -403,6 +472,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                 break;
             case R.id.liner_gallery:
                 prescriptionImageLists = new ArrayList<>();
+                isUploadClick = false;
                 liner_upload_new.post(new Runnable() {
                     @Override
                     public void run() {
@@ -573,74 +643,84 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
+            if (Build.VERSION.SDK_INT > 19) {
+                FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                        revealView.getLayoutParams();
+                parameters.height = realtive_notes.getHeight();
+                revealView.setLayoutParams(parameters);
 
-            FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                    revealView.getLayoutParams();
-            parameters.height = realtive_notes.getHeight();
-            revealView.setLayoutParams(parameters);
+                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
+                anim.setDuration(700);
 
-            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-            anim.setDuration(700);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
 
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        layoutButtons.setVisibility(View.VISIBLE);
+                        layoutButtons.startAnimation(alphaAnimation);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    layoutButtons.setVisibility(View.VISIBLE);
-                    layoutButtons.startAnimation(alphaAnimation);
-                }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
 
-                @Override
-                public void onAnimationCancel(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
 
-                @Override
-                public void onAnimationRepeat(Animator animator) {
+                    }
+                });
 
-                }
-            });
+                revealView.setVisibility(View.VISIBLE);
+                anim.start();
+            }else{
+                revealView.setVisibility(View.VISIBLE);
+                layoutButtons.setVisibility(View.VISIBLE);
+            }
 
-            revealView.setVisibility(View.VISIBLE);
-            anim.start();
 
             flag = false;
         } else {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
+            if (Build.VERSION.SDK_INT > 19) {
+                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
+                anim.setDuration(400);
 
-            Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
-            anim.setDuration(400);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
 
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        revealView.setVisibility(View.GONE);
+                        layoutButtons.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    revealView.setVisibility(View.GONE);
-                    layoutButtons.setVisibility(View.GONE);
-                }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
 
-                @Override
-                public void onAnimationCancel(Animator animator) {
+                    }
 
-                }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
 
-                @Override
-                public void onAnimationRepeat(Animator animator) {
+                    }
+                });
 
-                }
-            });
+                anim.start();
+            }else{
+                revealView.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.GONE);
+            }
 
-            anim.start();
             flag = true;
         }
     }
@@ -686,7 +766,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void optDoneMoreImage(final String doctorName, final String dieaseName, final String prescriptionDate, final List<PrescriptionImageList> prescriptionImageListss, String mesaage) {
+    public void optDoneMoreImage(final String doctorNames, final String dieaseNames, final String prescriptionDates, final List<PrescriptionImageList> prescriptionImageListss, String mesaage) {
 
         if (mesaage.equalsIgnoreCase("yes")) {
             prescriptionImageListss.remove(prescriptionImageListss.size() - 1);
@@ -705,7 +785,13 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
             liner_upload_new.post(new Runnable() {
                 @Override
                 public void run() {
-                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
+                    isUploadClick = false;
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    doctorName = doctorNames;
+                    dieaseName = dieaseNames;
+                    prescriptionDate = prescriptionDates;
+                    new LongOperation().execute(prescriptionImageListss);
+//                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
                 }
             });
         }
@@ -714,38 +800,38 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
     }
 
 
-    private void sentSaveTestingServer(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImage) {
-        String response = "";
-        RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-        String removeSyptoms = "";
-        try {
-            for (int i = 0; i < prescriptionImage.size(); i++) {
-                if (prescriptionImage.get(i).getImageNumber() != 000) {
-                    if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
-                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
-                        Log.e("check", "" + removeSyptoms);
-                    } else {
-                        int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
-                        String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
-                        Log.e("fileName", " " + hello);
-                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
-                        Log.e("check", "" + removeSyptoms);
-                    }
-
-                }
-            }
-            if (removeSyptoms.endsWith(",")) {
-                removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
-            }
-//            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
-            response = builderOkHttp.postR(MyConstants.WebUrls.UPLOAD_LAB_TEST_REPORT, null, getFileParam(prescriptionImage), doctorName, dieaseName, prescriptionDate, removeSyptoms);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.e("response :- ", "" + response);
-        getLabReportList();
-    }
+//    private void sentSaveTestingServer(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImage) {
+//        String response = "";
+//        RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
+//        String removeSyptoms = "";
+//        try {
+//            for (int i = 0; i < prescriptionImage.size(); i++) {
+//                if (prescriptionImage.get(i).getImageNumber() != 000) {
+//                    if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+//                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
+//                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
+//                        Log.e("check", "" + removeSyptoms);
+//                    } else {
+//                        int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
+//                        String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
+//                        Log.e("fileName", " " + hello);
+//                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
+//                        Log.e("check", "" + removeSyptoms);
+//                    }
+//
+//                }
+//            }
+//            if (removeSyptoms.endsWith(",")) {
+//                removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
+//            }
+////            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
+//            response = builderOkHttp.postR(MyConstants.WebUrls.UPLOAD_LAB_TEST_REPORT, null, getFileParam(prescriptionImage), doctorName, dieaseName, prescriptionDate, removeSyptoms);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        Log.e("response :- ", "" + response);
+//
+//    }
 
 
     public static HashMap<String, List<File>> getFileParam(List<PrescriptionImageList> image) {
@@ -759,6 +845,65 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
             param.put("reportFile", files);
         }
         return param;
+    }
+
+
+    private class LongOperation extends AsyncTask<List<PrescriptionImageList>, Void, String> {
+
+
+        @Override
+        protected String doInBackground(List<PrescriptionImageList>... params) {
+
+            List<PrescriptionImageList> prescriptionImage = params[0];
+            String response = "";
+            RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
+            String removeSyptoms = "";
+            try {
+                for (int i = 0; i < prescriptionImage.size(); i++) {
+                    if (prescriptionImage.get(i).getImageNumber() != 000) {
+
+                        if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+                            String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
+                            removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
+                            Log.e("check", "" + removeSyptoms);
+                        } else {
+                            int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
+                            String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
+                            Log.e("fileName", " " + hello);
+                            removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
+                            Log.e("check", "" + removeSyptoms);
+                        }
+
+
+                    }
+                }
+                if (removeSyptoms.endsWith(",")) {
+                    removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
+                }
+//            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
+                response = builderOkHttp.postR(MyConstants.WebUrls.UPLOAD_LAB_TEST_REPORT, null, getFileParam(prescriptionImage), doctorName, dieaseName, prescriptionDate, removeSyptoms);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.e("response :- ", "" + response);
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            getLabReportList();
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 
 
@@ -1203,6 +1348,7 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                     value = 0;
                     imageName = 0;
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
+                    isUploadClick = true;
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -1217,6 +1363,42 @@ public class FragmentLabTestReport extends Fragment implements View.OnClickListe
                     startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
                 }
                 break;
+            case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    isUploadClick = true;
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                }
+                break;
+        }
+    }
+
+
+    private void rotatePhoneClockwise(ImageView imageView) {
+        Animation rotate = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.semi_anti_rotate_anim);
+        imageView.startAnimation(rotate);
+    }
+
+    private void rotatePhoneAntiClockwise(ImageView imageView) {
+        Animation rotate = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.semi_rotate_anim);
+        imageView.startAnimation(rotate);
+    }
+
+    @Override
+    public void onDismiss() {
+        if (checkDialog.equalsIgnoreCase("img_doctor_name")) {
+            rotatePhoneAntiClockwise(img_doctor_name);
+        } else if (checkDialog.equalsIgnoreCase("img_test_name")) {
+            rotatePhoneAntiClockwise(img_test_name);
+        } else if (checkDialog.equalsIgnoreCase("img_date")) {
+            rotatePhoneAntiClockwise(img_date);
+        } else if (checkDialog.equalsIgnoreCase("img_user_name")) {
+            rotatePhoneAntiClockwise(img_user_name);
         }
     }
 }

@@ -1,5 +1,6 @@
 package asyns;
 
+import android.content.ContentValues;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -8,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import curefull.healthapp.CureFull;
 import item.property.GoalInfo;
 import item.property.GraphView;
 import item.property.HealthNoteItems;
@@ -21,6 +23,7 @@ import item.property.SignUpInfo;
 import item.property.UHIDItems;
 import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -78,7 +81,6 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     public List<HealthNoteItems> getHealthNoteListItem(String response) {
         HealthNoteItems details = null;
         ArrayList<HealthNoteItems> detailListing = null;
-
         if (response != null) {
             try {
                 JSONObject json = new JSONObject(response);
@@ -88,11 +90,17 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                     detailListing = new ArrayList<HealthNoteItems>();
                     for (int i = 0; i < jsonPayload.length(); i++) {
                         JSONObject jsonObject = jsonPayload.getJSONObject(i);
-                        details = new HealthNoteItems(jsonObject);
-                        detailListing.add(details);
+//                        details = new HealthNoteItems(jsonObject);
+//                        detailListing.add(details);
+                        details = new HealthNoteItems();
+                        ContentValues cv = details.getInsertingValue(jsonObject);
+                        int primaryId = details.getPrimaryId();
+                        DbOperations operations = new DbOperations();
+                        operations.insertNoteList(CureFull.getInstanse().getActivityIsntanse(), cv, primaryId);
                     }
+                    return detailListing;
                 } else {
-                    detailListing = new ArrayList<HealthNoteItems>();
+                    return null;
                 }
 
             } catch (Exception e) {

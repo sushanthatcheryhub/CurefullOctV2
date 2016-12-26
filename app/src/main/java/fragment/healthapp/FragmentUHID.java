@@ -97,6 +97,7 @@ public class FragmentUHID extends Fragment {
                 if (!validateMobileNo()) {
                     return;
                 }
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 jsonUploadUHID(input_name.getText().toString().trim(), edt_phone.getText().toString().trim());
             }
         });
@@ -104,7 +105,7 @@ public class FragmentUHID extends Fragment {
         return rootView;
     }
 
-    public void getcheck(){
+    public void getcheck() {
         getAllUserList();
     }
 
@@ -150,7 +151,7 @@ public class FragmentUHID extends Fragment {
     public void showAdpter() {
         if (uhidItemses != null && uhidItemses.size() > 0) {
             recyclerView_notes.setVisibility(View.VISIBLE);
-            uhid_listAdpter = new UHID_ListAdpter(FragmentUHID.this,CureFull.getInstanse().getActivityIsntanse(), uhidItemses);
+            uhid_listAdpter = new UHID_ListAdpter(FragmentUHID.this, CureFull.getInstanse().getActivityIsntanse(), uhidItemses);
             recyclerView_notes.setAdapter(uhid_listAdpter);
             uhid_listAdpter.notifyDataSetChanged();
         }

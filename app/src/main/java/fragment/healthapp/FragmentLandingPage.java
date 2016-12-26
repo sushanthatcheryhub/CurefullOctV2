@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -28,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -90,10 +93,13 @@ import dialog.DialogHintScreenaLanding;
 import dialog.DialogHintScreenaLandingQution;
 import dialog.DialogHintScreenaPrescriptions;
 import item.property.HealthNoteItems;
+import operations.DbOperations;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
 import ticker.TickerView;
 import utils.AppPreference;
+import utils.CheckNetworkState;
+import utils.HandlePermission;
 import utils.MyConstants;
 import utils.SeekArc;
 import utils.Utils;
@@ -106,7 +112,18 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
     private View rootView;
     private RecyclerView recyclerView_notes;
-    private TextView txt_calories, txt_water_level, txt_no_list_health_note, txt_name, txt_health_note, btn_set_goal, txt_date_time, txt_time, txt_to_time, btn_done, txt_click_here_add, txt_steps_counter;
+    private static TextView txt_calories;
+    private TextView txt_water_level;
+    private TextView txt_no_list_health_note;
+    private TextView txt_name;
+    private TextView txt_health_note;
+    private TextView btn_set_goal;
+    private TextView txt_date_time;
+    private TextView txt_time;
+    private TextView txt_to_time;
+    private TextView btn_done;
+    private TextView txt_click_here_add;
+    private static TextView txt_steps_counter;
     private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
     private static final String STATE_TEXTVIEW = "STATE_TEXTVIEW";
     //    private CircularImageView circularImageView;
@@ -126,7 +143,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     private LinearLayout linear_health_app, liner_date_t, liner_to_time, linear_health_note;
     private ActivityRecognition arclient;
     private RelativeLayout realtive_notes;
-    private TickerView ticker1, text_steps_count;
+    private static TickerView ticker1;
+    private static TickerView text_steps_count;
     private FloatingActionButton img_fab;
     ImageButton imageButton;
     LinearLayout revealView, layoutButtons, liner_click, linear_prescription_click, linear_lab_report_click, date_time_picker;
@@ -134,7 +152,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     float pixelDensity;
     boolean flag = true;
     private static final char[] NUMBER_LIST = TickerUtils.getDefaultNumberList();
-    private SeekArc seekArcComplete;
+    private static SeekArc seekArcComplete;
     private Boolean isFabOpen = false;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
     private EditText edt_deatils, edt_subject;
@@ -143,9 +161,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     private String firstDate = "", firstTime = "", toFirstTime = "";
     SharedPreferences preferences;
     private ImageView img_pre, img_minus_icon, img_plus_icon;
-    Messenger mService = null;
-    boolean mIsBound;
-    boolean isToStop = false;
+    static Messenger mService = null;
+    static boolean mIsBound;
+    static boolean isToStop = false;
     private int waterLevel = 0;
     private boolean isFirstTime = false;
     private boolean isSelectFrom = false;
@@ -189,6 +207,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
+
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
@@ -268,7 +287,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
         txt_water_level.setText("" + AppPreference.getInstance().getWaterInTake() + " ml");
         getDailyHealth();
-        jsonUploadTarget();
+//        jsonUploadTarget();
         doBindService();
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
@@ -294,6 +313,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             public void onClick(View view) {
 
                 Bundle bundle = new Bundle();
+                Log.e("yes", "yes");
+                Log.e("subject", "yes" + edt_subject.getText().toString().trim());
                 bundle.putString("subject", edt_subject.getText().toString().trim());
                 bundle.putString("details", edt_deatils.getText().toString().trim());
                 bundle.putString("Date", firstDate);
@@ -306,6 +327,20 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         if (waterLevel == 0) {
             img_minus_icon.setVisibility(View.INVISIBLE);
         }
+        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+
+        }
+
+
+        edt_subject.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edt_deatils.requestFocus();
+                }
+                return false;
+            }
+        });
         return rootView;
     }
 
@@ -351,78 +386,91 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
 
-            FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                    revealView.getLayoutParams();
-            parameters.height = realtive_notes.getHeight();
-            revealView.setLayoutParams(parameters);
-            try {
-                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-                anim.setDuration(700);
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
+            if (Build.VERSION.SDK_INT > 19) {
+                FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                        revealView.getLayoutParams();
+                parameters.height = realtive_notes.getHeight();
+                revealView.setLayoutParams(parameters);
+                try {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        layoutButtons.setVisibility(View.VISIBLE);
-                        layoutButtons.startAnimation(alphaAnimation);
-                    }
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            layoutButtons.setVisibility(View.VISIBLE);
+                            layoutButtons.startAnimation(alphaAnimation);
+                        }
 
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
 
-                    }
-                });
+                        }
+                    });
 
+                    revealView.setVisibility(View.VISIBLE);
+                    anim.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            } else {
+                layoutButtons.setVisibility(View.VISIBLE);
                 revealView.setVisibility(View.VISIBLE);
-                anim.start();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-
-
             flag = false;
+
         } else {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
-            try {
-                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
-                anim.setDuration(400);
 
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
+            if (Build.VERSION.SDK_INT > 19) {
+                try {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
 
-                    }
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
 
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        revealView.setVisibility(View.GONE);
-                        layoutButtons.setVisibility(View.GONE);
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealView.setVisibility(View.GONE);
+                            layoutButtons.setVisibility(View.GONE);
+                        }
 
-                    }
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
 
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
+                        }
 
-                    }
-                });
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
 
-                anim.start();
-            } catch (Exception e) {
-                e.printStackTrace();
+                        }
+                    });
+
+                    anim.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                revealView.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.GONE);
             }
 
             flag = true;
@@ -453,12 +501,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         switch (view.getId()) {
 
             case R.id.imgg_question_white:
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_white);
                 DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaLanding.show();
                 break;
 
             case R.id.imgg_question_red:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_pre);
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_red);
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentPrescriptionCheck(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
@@ -541,7 +590,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     month1 = (month1 - 1);
                 }
 
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, FragmentLandingPage.this, year, month1, day);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_HOLO_LIGHT, FragmentLandingPage.this, year, month1, day);
                 newDateDialog.getDatePicker().setCalendarViewShown(false);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c2.getTime();
@@ -609,7 +658,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     // For Step Counter
 
 
-    public void doBindService() {
+    public static void doBindService() {
         CureFull.getInstanse().getActivityIsntanse().bindService(new Intent(CureFull.getInstanse().getActivityIsntanse(),
                 MessengerService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
@@ -617,9 +666,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
     }
 
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
+    static final Messenger mMessenger = new Messenger(new IncomingHandler());
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private static ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mService = new Messenger(service);
@@ -653,8 +702,20 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         }
     };
 
+    //stopStepService
+    // ye method ko waha se call karlo,
+    public static void stopStepService() {
+        if (!mIsBound) {
+            isToStop = true;
+            doBindService();
+            return;
+        }
+        stop();
 
-    private void stop() {
+    }
+
+    // no
+    private static void stop() {
         Message msg = Message.obtain(null,
                 MessengerService.STOP_FOREGROUND);
         try {
@@ -665,7 +726,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         doUnbindService();
     }
 
-    void doUnbindService() {
+    static void doUnbindService() {
         if (mIsBound) {
             if (mService != null) {
                 try {
@@ -697,7 +758,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
 
-    class IncomingHandler extends Handler {
+    static class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -717,16 +778,15 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     AppPreference.getInstance().setPercentage(b);
                     ticker1.setText(b + "%");
 
-                    String wirght = "";
+                    double wirght = 0;
                     Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
                     if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("nul")) {
-                        wirght = "0";
+                        wirght = 0;
                     } else {
-                        wirght = AppPreference.getInstance().getGoalWeightKg();
+                        wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
                     }
 
-                    int kg = Integer.parseInt(wirght);
-                    double i2 = Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1);
+                    double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), msg.arg1);
                     txt_calories.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
                     AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("##.##").format(i2));
 //                    txt_calories.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1) + " kcal");
@@ -895,73 +955,94 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
 
     private void getAllHealthList() {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getAllHealth, URL 1.", response);
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            Log.e("getAllHealth, URL 1.", response);
 
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
-                            showAdpter();
-                        } else {
+                            int responseStatus = 0;
+                            JSONObject json = null;
                             try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            animateFAB();
-                            txt_no_list_health_note.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    launchTwitter(rootView);
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                Log.e("in", " :-" + " in");
+                                healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
+
+                                if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
+                                    healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                                    Log.e("healthNoteItemses", " after:-" + healthNoteItemses.size());
                                 }
-                            });
+                                showAdpter();
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                                showAdpter();
+                                if (healthNoteItemses.size() == 0) {
+                                    animateFAB();
+                                    txt_no_list_health_note.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            launchTwitter(rootView);
+                                        }
+                                    });
+                                }
+
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                            showAdpter();
+                            if (healthNoteItemses.size() == 0) {
+                                animateFAB();
+                                txt_no_list_health_note.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        launchTwitter(rootView);
+                                    }
+                                });
+                            }
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
                         }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        animateFAB();
-                        txt_no_list_health_note.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitter(rootView);
-                            }
-                        }, 500);
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
                 }
-        ) {
+            };
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+            showAdpter();
+        }
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
 

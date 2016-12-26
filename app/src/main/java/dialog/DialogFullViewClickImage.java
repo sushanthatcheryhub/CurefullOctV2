@@ -148,7 +148,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                 final int month = c1.get(Calendar.MONTH);
                 final int day = c1.get(Calendar.DAY_OF_MONTH) + 1;
 
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_DEVICE_DEFAULT_DARK, this, year, month, day);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_HOLO_LIGHT, this, year, month, day);
                 newDateDialog.getDatePicker().setCalendarViewShown(false);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c1.getTime();
