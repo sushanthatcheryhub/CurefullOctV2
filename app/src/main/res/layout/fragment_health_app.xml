@@ -129,7 +129,7 @@
                         <utils.SeekArc
                             android:id="@+id/seekArcComplete"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_95dp"
+                            android:layout_height="@dimen/_80dp"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
                             android:layout_alignParentTop="true"
@@ -580,15 +580,170 @@
 
                     </RelativeLayout>
 
+
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="@dimen/_150dp">
 
                         <widgets.HorizontalRecyclerView
                             android:id="@+id/horizontal_recycler_view"
                             android:layout_width="wrap_content"
                             android:layout_height="fill_parent" />
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_30dp"
+                        android:orientation="vertical">
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:gravity="left"
+                            android:text="Average of the daily"
+                            android:textColor="@color/white" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_20dp"
+                            android:orientation="horizontal">
+
+
+                            <LinearLayout
+                                android:layout_width="@dimen/_100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:gravity="left"
+                                    android:text="Walking Steps"
+                                    android:textColor="@color/health_yellow" />
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_15dp"
+                                    android:gravity="right"
+                                    android:text="-"
+                                    android:textColor="@color/health_yellow" />
+                            </LinearLayout>
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_graph_steps"
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20dp"
+                                android:hint="0"
+                                android:textColorHint="@color/health_yellow"
+                                android:textColor="@color/health_yellow"
+                                />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_20dp"
+                            android:layout_marginTop="@dimen/_5dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/_100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:gravity="left"
+                                    android:text="Calories Burnt"
+                                    android:textColor="@color/health_yellow" />
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:layout_marginLeft="@dimen/_25dp"
+                                    android:gravity="right"
+                                    android:text="-"
+                                    android:textColor="@color/health_yellow" />
+                            </LinearLayout>
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20dp"
+                                android:hint="0"
+                                android:textColor="@color/health_yellow"
+                                android:textColorHint="@color/health_yellow" />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_20dp"
+                            android:layout_marginTop="@dimen/_5dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/_100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="left"
+                                    android:gravity="left"
+                                    android:text="Water in Take"
+                                    android:textColor="@color/health_yellow" />
+
+                                <customsTextViews.CustomTextViewOpenSanRegular
+                                    style="@style/textView_dark_grey_normal_micro"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:layout_marginLeft="@dimen/_25dp"
+                                    android:gravity="right"
+                                    android:text="-"
+                                    android:textColor="@color/health_yellow" />
+                            </LinearLayout>
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20dp"
+                                android:hint="0 ltr"
+                                android:textColor="@color/health_yellow"
+                                android:textColorHint="@color/health_yellow" />
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 

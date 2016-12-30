@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -15,7 +14,7 @@ import curefull.healthapp.R;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentSettingPage extends Fragment {
+public class FragmentReminder extends Fragment {
 
 
     private View rootView;
@@ -25,9 +24,9 @@ public class FragmentSettingPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_setting,
+        rootView = inflater.inflate(R.layout.fragemnt_reminder_med,
                 container, false);
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(3);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);

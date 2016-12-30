@@ -45,6 +45,7 @@ import asyns.JsonUtilsObject;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentProfile;
+import fragment.healthapp.FragmentReminder;
 import fragment.healthapp.FragmentResetNewPassword;
 import fragment.healthapp.FragmentSettingPage;
 import fragment.healthapp.FragmentTermCondition;
@@ -101,7 +102,10 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentSettingPage(), true);
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_reminder) {
+            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().getFlowInstanseAll()
+                    .replace(new FragmentReminder(), true);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

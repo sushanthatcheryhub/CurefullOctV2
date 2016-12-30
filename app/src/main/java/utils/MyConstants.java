@@ -7,7 +7,7 @@ public class MyConstants {
 
     public interface WebUrls {
 //        String HOST_IP = "http://hatcheryhub.com";
-                String HOST_IP = "http://192.168.0.33:8080";
+                        String HOST_IP = "http://192.168.0.57:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
@@ -50,10 +50,7 @@ public class MyConstants {
         String GET_HEALTH_DAILY_APP = URL + "endUser/healthapp/gethealthappDetails?date=";
         String UHID_SIGN_UP = URL + "uuhid/getCfuuhidListForSignup";
         String LOGOUT = URL + "logout/user";
-        String RECOMMENDED_TARGETS_STEPS=URL+"endUser/healthapp/getRecommendedDailyExercise?gender=";
-
-
-
+        String RECOMMENDED_TARGETS_STEPS = URL + "endUser/healthapp/getRecommendedDailyExercise?gender=";
 
 
     }

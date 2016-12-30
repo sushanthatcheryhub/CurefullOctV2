@@ -211,7 +211,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
-
         linear_health_note = (LinearLayout) rootView.findViewById(R.id.linear_health_note);
         imgg_question_white = (ImageView) rootView.findViewById(R.id.imgg_question_white);
         imgg_question_red = (ImageView) rootView.findViewById(R.id.imgg_question_red);

@@ -53,8 +53,11 @@ public class BarChart extends BarLineChartBase<BarData> implements BarDataProvid
     @Override
     protected void init() {
         super.init();
+
         mRenderer = new BarChartRenderer(this, mAnimator, mViewPortHandler);
+
         setHighlighter(new BarHighlighter(this));
+
         getXAxis().setSpaceMin(0.5f);
         getXAxis().setSpaceMax(0.5f);
     }

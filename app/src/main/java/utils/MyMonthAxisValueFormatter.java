@@ -1,7 +1,5 @@
 package utils;
 
-import android.util.Log;
-
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
@@ -10,7 +8,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
  * Created by Sushant Hatcheryhub on 18-12-2016.
  */
 
-public class MyDayAxisValueFormatter implements IAxisValueFormatter {
+public class MyMonthAxisValueFormatter implements IAxisValueFormatter {
 
     private int month = 0;
     int year = 2016;
@@ -21,7 +19,7 @@ public class MyDayAxisValueFormatter implements IAxisValueFormatter {
 
     private BarLineChartBase<?> chart;
 
-    public MyDayAxisValueFormatter(BarLineChartBase<?> chart, int month, int year) {
+    public MyMonthAxisValueFormatter(BarLineChartBase<?> chart, int month, int year) {
         this.chart = chart;
         this.month = month;
         this.year = year;

@@ -78,4 +78,27 @@
         <attr name="android:textColor" tools:ignore="ResourceName" />
         <attr name="android:textSize" tools:ignore="ResourceName" />
     </declare-styleable>
+
+
+    <declare-styleable name="ToggleButtonOptions">
+        <attr name="buttonWidth" format="dimension"/>
+        <attr name="buttonHeight" format="dimension"/>
+        <attr name="checkedTextColor" format="color"/>
+        <attr name="uncheckedTextColor" format="color"/>
+        <attr name="android:textSize"/>
+        <attr name="spacing" format="dimension"/>
+        <attr name="buttonBackground" format="integer" />
+        <attr name="checkedBackground" format="integer" />
+        <attr name="animationType" format="string" />
+        <attr name="animationDuration" format="integer" />
+        <attr name="android:saveEnabled" />
+
+        <attr name="textButton1" format="string" />
+        <attr name="textButton2" format="string" />
+        <attr name="textButtons" format="reference"/>
+    </declare-styleable>
+
+
+
+
 </resources>

@@ -211,42 +211,47 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
                 Location locationB = new Location("point B");
                 locationB.setLatitude(loc.getLatitude());
                 locationB.setLongitude(loc.getLongitude());
-                float distance = locationA.distanceTo(locationB);
+                float distance = locationB.distanceTo(locationA);
 
-                if (Math.round(distance) == 20) {
-                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                        Geocoder gcd = new Geocoder(LocationService.this, Locale.getDefault());
-                        try {
-                            List<Address> addresses = gcd.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
-                            if (addresses.size() > 0) {
-                                preferences.edit().putString("Latitude", lat).commit();
-                                preferences.edit().putString("Longitude", log).commit();
-                                Log.e("location ", ":- " + addresses.get(0).getLocality());
-                                getWeather("" + addresses.get(0).getLocality());
-//                    AppPreference.getInstance().setNearLocation("" + addresses.get(0).getLocality());
-//                    CureFull.getInstanse().getActivityIsntanse().buildFitnessClient();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                Log.e("distance", "" + Math.round(distance));
+                preferences.edit().putString("Latitude", lat).commit();
+                preferences.edit().putString("Longitude", log).commit();
+                Log.e("distance", " " +distance);
+//                if (Math.round(distance) == 20) {
+//                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+//                        Geocoder gcd = new Geocoder(LocationService.this, Locale.getDefault());
+//                        try {
+//                            List<Address> addresses = gcd.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+//                            if (addresses.size() > 0) {
+//                                preferences.edit().putString("Latitude", lat).commit();
+//                                preferences.edit().putString("Longitude", log).commit();
+//                                Log.e("location ", ":- " + addresses.get(0).getLocality());
+//                                getWeather("" + addresses.get(0).getLocality());
+////                    AppPreference.getInstance().setNearLocation("" + addresses.get(0).getLocality());
+////                    CureFull.getInstanse().getActivityIsntanse().buildFitnessClient();
+//                            }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+
             } else {
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    Geocoder gcd = new Geocoder(LocationService.this, Locale.getDefault());
-                    try {
-                        List<Address> addresses = gcd.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
-                        if (addresses.size() > 0) {
-                            preferences.edit().putString("Latitude", lat).commit();
-                            preferences.edit().putString("Longitude", log).commit();
-                            Log.e("location ", ":- " + addresses.get(0).getLocality());
-                            getWeather("" + addresses.get(0).getLocality());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+
+                preferences.edit().putString("Latitude", lat).commit();
+                preferences.edit().putString("Longitude", log).commit();
+//                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+//                    Geocoder gcd = new Geocoder(LocationService.this, Locale.getDefault());
+//                    try {
+//                        List<Address> addresses = gcd.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+//                        if (addresses.size() > 0) {
+//
+//                            Log.e("location ", ":- " + addresses.get(0).getLocality());
+//                            getWeather("" + addresses.get(0).getLocality());
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
 
 

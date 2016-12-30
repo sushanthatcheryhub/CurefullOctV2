@@ -1,7 +1,6 @@
 package asyns;
 
 import android.content.ContentValues;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +10,8 @@ import java.util.List;
 
 import curefull.healthapp.CureFull;
 import item.property.GoalInfo;
-import item.property.GraphView;
+import item.property.GraphViewDetails;
+import item.property.GraphYearMonthDeatils;
 import item.property.HealthNoteItems;
 import item.property.LabDoctorName;
 import item.property.LabReportListView;
@@ -223,19 +223,19 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     }
 
 
-    public List<GraphView> getGraphViewList(String response) {
-        GraphView details = null;
-        ArrayList<GraphView> detailListing = null;
+    public List<GraphYearMonthDeatils> getGraphViewList(String response) {
+        GraphYearMonthDeatils details = null;
+        ArrayList<GraphYearMonthDeatils> detailListing = null;
 
         if (response != null) {
             try {
                 JSONObject json = new JSONObject(response);
                 setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
                 JSONArray jord = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
-                detailListing = new ArrayList<GraphView>();
+                detailListing = new ArrayList<GraphYearMonthDeatils>();
                 for (int i = 0; i < jord.length(); i++) {
                     JSONObject jsonObject = jord.getJSONObject(i);
-                    details = new GraphView(jsonObject);
+                    details = new GraphYearMonthDeatils(jsonObject);
                     detailListing.add(details);
                 }
             } catch (Exception e) {

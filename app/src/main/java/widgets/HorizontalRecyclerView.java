@@ -18,7 +18,7 @@ public class HorizontalRecyclerView extends RecyclerView {
     int firstVisibleItem, visibleItemCount, totalItemCount;
     private int startingPageIndex = 0;
     private int currentPage = 0;
-
+    private LinearLayoutManager layoutManager;
     /**
      * @param context
      */
@@ -50,7 +50,7 @@ public class HorizontalRecyclerView extends RecyclerView {
      *
      */
     private void initView() {
-        LinearLayoutManager layoutManager
+         layoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         setLayoutManager(layoutManager);
         addOnScrollListener(new OnScrollListener() {
@@ -121,6 +121,10 @@ public class HorizontalRecyclerView extends RecyclerView {
      */
     public void setOnLoadMoreListener(IOnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
+    }
+
+    public void scrollIn(){
+       getLayoutManager().scrollToPosition(layoutManager.findLastVisibleItemPosition() - 1);
     }
 }
 

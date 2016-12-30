@@ -51,14 +51,13 @@ public class MyBarChart extends BarChart {
         //setBorderColor(Color.BLACK);
 
 
-
         IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year);
 
         XAxis xAxis = getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 //        xAxis.setTypeface(mTfLight);
         xAxis.setDrawGridLines(false);
-        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularityEnabled(false);
         xAxis.setGranularity(0f);
         xAxis.setLabelCount(16);
         xAxis.setValueFormatter(xAxisFormatter);
@@ -88,11 +87,12 @@ public class MyBarChart extends BarChart {
 
         YAxis rightAxis = getAxisRight();
         rightAxis.setDrawGridLines(false);
+
 //        rightAxis.setTypeface(mTfLight);
         rightAxis.setDrawLabels(false);
         rightAxis.setValueFormatter(custom);
         rightAxis.setEnabled(false);
-        rightAxis.setSpaceTop(15f);
+//        rightAxis.setSpaceTop(15f);
         rightAxis.setAxisMinimum(0f);
 
 

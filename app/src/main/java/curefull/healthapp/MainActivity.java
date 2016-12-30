@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.RemoteInput;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -127,8 +128,11 @@ public class MainActivity extends BaseMainActivity {
         showActionBarToggle(false);
         disableDrawer();
         changeTitle("cureFull");
-        Intent serviceIntent = new Intent(this, LocationService.class);
-        startService(serviceIntent);
+
+
+
+//        Intent serviceIntent = new Intent(this, LocationService.class);
+//        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
             Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();

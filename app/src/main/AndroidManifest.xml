@@ -86,6 +86,7 @@
 
         <service
             android:name=".LocationService"
+            android:process=":my_process"
             android:exported="false"></service>
 
         <meta-data

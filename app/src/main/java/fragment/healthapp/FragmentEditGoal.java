@@ -999,13 +999,14 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
 
         }
-
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SELECT_GLASS + targetWaterInTake + "&glassNumber=" + glassNumber, null,
-                new Response.Listener<JSONObject>() {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECT_GLASS + targetWaterInTake + "&glassNumber=" + glassNumber,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e("GlassTarget, URL 3.", response.toString());
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1015,29 +1016,20 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-//                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
-//                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-//                            }
                         } else {
-                            try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+
                         }
-
-
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
@@ -1049,8 +1041,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 return headers;
             }
         };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -1138,7 +1132,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getSymptomsList, URL 1.", response);
+                        Log.e("getAllDetails, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1281,7 +1275,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 }
 //
                             }
-
 //
                             if ("null".equals(userInfo.getGlassNumber())) {
                                 if (userInfo.getGlassNumber().equalsIgnoreCase("1")) {

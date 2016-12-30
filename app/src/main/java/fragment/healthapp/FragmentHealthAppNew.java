@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.mikephil.charting.charts.BarChart;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,13 +44,15 @@ import java.util.Locale;
 import java.util.Map;
 
 import adpter.HorizontalAdapter;
+import adpter.HorizontalAdapterNew;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import curefull.healthapp.models.Month;
-import item.property.GraphView;
+import item.property.GraphViewDetails;
+import item.property.GraphYearMonthDeatils;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
 import ticker.TickerView;
@@ -81,17 +81,17 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     private ListPopupWindow listPopupWindow;
     private RequestQueue requestQueue;
     private String fromdate, date, frequency, type;
-    private List<GraphView> graphViewsList;
+    private List<GraphYearMonthDeatils> graphViewsList;
     private TextView btn_set_goal_target;
     private LinearLayout liner_steps, liner_btn_goal;
     HorizontalRecyclerView horizontal_recycler_view;
     HorizontalAdapter horizontalAdapter;
-
+    HorizontalAdapterNew horizontalAdapterNew;
     ArrayList<Month> data;
+    private TextView txt_graph_steps;
 
     @Override
     public boolean onBackPressed() {
-
         return super.onBackPressed();
     }
 
@@ -102,6 +102,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         rootView = inflater.inflate(R.layout.fragment_health_app,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        txt_graph_steps = (TextView) rootView.findViewById(R.id.txt_graph_steps);
         txt_water_intake_left = (TextView) rootView.findViewById(R.id.txt_water_intake_left);
         txt_water_intake_done = (TextView) rootView.findViewById(R.id.txt_water_intake_done);
         liner_btn_goal = (LinearLayout) rootView.findViewById(R.id.liner_btn_goal);
@@ -141,12 +142,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         txt_water_intake_done.setText("" + AppPreference.getInstance().getWaterInTake() + " ml Drinked");
         txt_water_intake_left.setText("" + AppPreference.getInstance().getWaterInTakeLeft() + " ml Left");
 
-        date = getTodayDate();
-        frequency = "monthly";
-        type = "steps";
-        fromdate = "";
-        jsonGetGraphDeatils(fromdate, date, frequency, type);
-
 
         txt_lab_reports.setOnClickListener(this);
         txt_heath_note.setOnClickListener(this);
@@ -177,22 +172,30 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
-
         horizontal_recycler_view = (HorizontalRecyclerView) rootView.findViewById(R.id.horizontal_recycler_view);
         data = createSampleYear();
 
-        horizontalAdapter = new HorizontalAdapter(data, CureFull.getInstanse().getActivityIsntanse());
+//        horizontalAdapter = new HorizontalAdapter(data, CureFull.getInstanse().getActivityIsntanse());
+//
+////        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+////        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
+//        horizontal_recycler_view.setAdapter(horizontalAdapter);
+//        horizontal_recycler_view.smoothScrollToPosition(data.size() - 1);
+//        horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
+//            @Override
+//            public void onLoadMore(int page, int totalItemsCount) {
+//                // data.addAll(createSampleYear());
+//                //horizontalAdapter.notifyDataSetChanged();
+//            }
+//        });
 
-//        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
-//        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
-        horizontal_recycler_view.setAdapter(horizontalAdapter);
-        horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                // data.addAll(createSampleYear());
-                //horizontalAdapter.notifyDataSetChanged();
-            }
-        });
+        date = getTodayDate();
+        frequency = "daily";
+        type = "steps";
+        fromdate = "";
+        jsonGetGraphDeatils(fromdate, date, frequency, type);
+
+
         return rootView;
     }
 
@@ -272,8 +275,9 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 date = getTodayDate();
                 frequency = "daily";
-//                jsonGetGraphDeatils(date, frequency, type, offset);
-//                setData(10, 12);
+                type = "steps";
+                fromdate = "";
+                jsonGetGraphDeatils(fromdate, date, frequency, type);
                 break;
             case R.id.btn_weekly:
                 btn_daily.setTextColor(Color.parseColor("#ffffff"));
@@ -283,7 +287,11 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded);
                 date = getTodayDate();
+                type = "steps";
+                fromdate = "";
                 frequency = "weekly";
+                jsonGetGraphDeatils(fromdate, date, frequency, type);
+
 //                jsonGetGraphDeatils(date, frequency, type, offset);
 //                setData(10, 19);
 //                mChart.animateXY(3000, 3000);
@@ -297,6 +305,9 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 date = getTodayDate();
                 frequency = "monthly";
+                type = "steps";
+                fromdate = "";
+                jsonGetGraphDeatils(fromdate, date, frequency, type);
 //                jsonGetGraphDeatils(date, frequency, type, offset);
 //                setData(10, 29);
 //                mChart.animateXY(3000, 3000);
@@ -418,9 +429,11 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
     public void jsonGetGraphDeatils(String fromDate, String date, String frequency, String type) {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
+        JSONObject data1 = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
 
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_GRAPH, data,
+        Log.e("para ", " " + data1.toString());
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_GRAPH, data1,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -437,9 +450,19 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
                             graphViewsList = ParseJsonData.getInstance().getGraphViewList(response.toString());
 
-//                            if (graphViewsList.size() > 0) {
-////                                setData(10, 9);
-//                            }
+                            Log.e("1st ", " " + graphViewsList.get(0).getGraphViewDetailses().size());
+                            if (graphViewsList != null && graphViewsList.size() > 0) {
+                                horizontalAdapterNew = new HorizontalAdapterNew(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNew.this);
+                                horizontal_recycler_view.setAdapter(horizontalAdapterNew);
+//                                horizontal_recycler_view.smoothScrollToPosition(graphViewsList.get(0).getMonths().size() - 1);
+                                horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
+                                    @Override
+                                    public void onLoadMore(int page, int totalItemsCount) {
+                                        // data.addAll(createSampleYear());
+                                        //horizontalAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
 
 
                         } else {
@@ -530,6 +553,10 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
             }
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    public void valueFromGrpah(String stepsValue) {
+        txt_graph_steps.setText("" + stepsValue);
     }
 
 

@@ -20,7 +20,6 @@ public class BarDataSet extends BarLineScatterCandleBubbleDataSet<BarEntry> impl
      * the color used for drawing the bar shadows
      */
     private int mBarShadowColor = Color.rgb(215, 215, 215);
-
     private float mBarBorderWidth = 0.0f;
 
     private int mBarBorderColor = Color.BLACK;
@@ -68,7 +67,6 @@ public class BarDataSet extends BarLineScatterCandleBubbleDataSet<BarEntry> impl
         copied.mStackLabels = mStackLabels;
         copied.mHighLightColor = mHighLightColor;
         copied.mHighLightAlpha = mHighLightAlpha;
-
         return copied;
     }
 
