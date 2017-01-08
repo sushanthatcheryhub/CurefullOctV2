@@ -85,8 +85,8 @@
                         android:drawablePadding="@dimen/_5dp"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Password"
+                        android:imeOptions="actionNext"
                         android:inputType="textPassword"
-                        android:nextFocusDown="@+id/input_confirm_password"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white" />

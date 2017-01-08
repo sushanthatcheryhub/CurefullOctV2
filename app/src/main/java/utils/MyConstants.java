@@ -6,8 +6,8 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-//        String HOST_IP = "http://hatcheryhub.com";
-                        String HOST_IP = "http://192.168.0.57:8080";
+        String HOST_IP = "http://hatcheryhub.com";
+        //                                        String HOST_IP = "http://192.168.0.39:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
@@ -24,7 +24,7 @@ public class MyConstants {
         String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
         String OTP_LAST = "&route=2";
-        String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes";
+        String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes?";
         String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
         String SET_GOALS = URL + "endUser/healthapp/setgoal";
         String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetails";
@@ -51,6 +51,9 @@ public class MyConstants {
         String UHID_SIGN_UP = URL + "uuhid/getCfuuhidListForSignup";
         String LOGOUT = URL + "logout/user";
         String RECOMMENDED_TARGETS_STEPS = URL + "endUser/healthapp/getRecommendedDailyExercise?gender=";
+        String PROFILE_UPDATE = URL + "endUser/profile/updateProfileDetails";
+        String PRESCRIPTION_FILTER_DATA = URL + "endUser/ehr/getPrescriptionFilterDataList?";
+        String REPORTS_FILTER_DATA = URL + "endUser/ehr/getLabReportFilterDataList?";
 
 
     }
@@ -68,7 +71,10 @@ public class MyConstants {
         int LOGIN = 2;
     }
 
-    public interface PrefrenceKeys {
+
+    public interface JsonUtils {
+
+        String PROFILE_IMAGE_URL = "profileImageUrl";
         String PREF_SUBJECTS_TIME_STAMP = "subject_timestamp";
         String PREF_CLASS_ID = "class_id";
         String PREF_CLASS = "class";
@@ -81,19 +87,13 @@ public class MyConstants {
         String AT = "a_t";
         String RT = "r_t";
         String MOBILE_NO = "mobileNumber";
-        String NAME = "name";
+
         String EMAIL = "emailId";
-        String HEADERS = "headers";
-        String USER_ID = "userId";
         String USER_ROLE = "userRole";
         String RESEND_ID = "resendPasswordId";
         String RESEND_TYPE = "resendPasswordType";
-    }
-
-
-    public interface JsonUtils {
         String HTTP_CODE = "httpStatusCode";
-
+        String NAME = "name";
         String CFUUHIDs = "cfUuhid";
         String PRESCRIPTION_ID = "prescriptionId";
         String PRESCRIPTION_DATE = "prescriptionDate";
@@ -127,73 +127,9 @@ public class MyConstants {
         String USERNAME = "user_name";
         String INSTITUTE_NAME = "instituteName";
         String INSTITUTE_TYPE = "instituteType";
-
-        String PATIENT_PROFILE_ID = "patientProfileId";
-        String FIRST_NAME = "firstName";
-        String GENDER = "gender";
-        String BIRTH_DATE = "dateOfBirth";
-        String PATIENT_ID = "patient_id";
-        String EMAIL_ID = "email_id";
-        String STREET = "street";
-        String CITY = "city";
-        String PINCODE = "pincode";
-        String COUNTRY = "country";
-        String MOBILE_NO = "mobileNo";
-        String CFUUHIDID = "cfUuhidId";
-        String CFUUHID = "cfuuhid";
-        String ADDRESS = "address";
-        String STATE = "state";
-        String YEARS = "years";
         String YEAR = "year";
-        String MONTH = "month";
-        String AGE = "age";
-        String PRESCRIPTION_EXIST = "prescriptionExist";
-        String PROFILE_CREATE_DATE = "profileCreatedDate";
-        String APPOINTMENT_TIME = "appointmentTime";
-
-        //Doctors
-        String DOCTOR_ID = "doctorId";
-        String DOCTOR_PROVIDER_ID = "doctorServiceProviderId";
-        String DOCTORS_NAME = "doctorName";
-        String DOB = "dob";
-
-        //Add Patient
-        String PATIENT_NAME = "patientName";
-
-        String PATIENT_HEIGHT = "height";
-        String PATIENT_INCH = "heightInch";
-        String PATIENT_FEET = "heightFeet";
-        String PATIENT_WEIGHT_KG = "weightKg";
-        String PATIENT_WEIGHT_GM = "weightGm";
-        String PATIENT_WEIGHT = "weight";
-        String PATIENT_BLOOD_PRESURE = "bloodPresure";
-        String PATIENT_BODY_TEMP = "bodyTemp";
-        String PATIENT_APPOINTMENT_TIME = "appointmentTime";
-        String PATIENT_DOCTOR_ID = "patientDoctorId";
-        String PATIENT_DOCTOR_APP_ID = "patientDoctorAppointmentId";
-        String PATIENT_AGE = "patientAge";
-        String PATIENT_NO_OF_DOCTOR = "noOfDoctor";
-        String PATIENT_SAVE_FOR_LATER = "saveForLater";
-        String PATIENTID = "patientId";
-        //Response Webservices Keys
-
         String JSON_KEY_PAYLOAD = "payload";
-        String JSON_KEY_RESPONSE = "response";
-        String JSON_KEY_CODE = "code";
-        String JSON_KEY_MESSAGE = "message";
-        String JSON_ARRAY_PATIENT_LIST_DOCTOR_LIST = "listOfDoctorDetils";
-        String JSON_ARRAY_SYMPTOMS = "symptomsListAddByDoctor";
-        String JSON_ARRAY_SINGS = "signsListAddByDoctor";
-        String JSON_ARRAY_INVESTIGATION = "diagnosisListAddByDoctor";
-        String JSON_ARRAY_ALLERGY = "allergyListResponse";
-        String JSON_ARRAY_PATIENT_UNDER_OF_CLINIC_ST = "patientList";
-        String JSON_ARRAY_PATIENT_UNDER_CLINIC_ST = "patientUnderDoctorclinicList";
         String OK = "OK";
-
-        String CATEGORIES = "categories";
-        String EPRESCRIPTION_IMAGE = "ePrescriptionImage";
-        String E_PRESCRIPTION_CREATE_DATE = "ePrescriptionCreatedDate";
-
     }
 
     public interface IResponseCode {
@@ -215,6 +151,10 @@ public class MyConstants {
 
     public interface IDataBaseTableKeys {
         String TABLE_NOTE = "note_master";
+        String TABLE_LOGIN = "tbl_user";
+        String TABLE_EMAIL = "tbl_emailId";
+        String TABLE_EDIT_GOAL = "tbl_edit_goal";
+        String TABLE_GRAPH="tbl_graph";
     }
 
 

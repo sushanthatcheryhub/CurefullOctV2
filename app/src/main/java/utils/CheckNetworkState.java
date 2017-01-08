@@ -20,29 +20,12 @@ public class CheckNetworkState {
     public static boolean isNetworkAvailable(Context context) {
         boolean isNetworkAvailable = false;
         if (context != null) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Network[] networks = connectivityManager.getAllNetworks();
-                NetworkInfo networkInfo;
-                for (Network mNetwork : networks) {
-                    networkInfo = connectivityManager.getNetworkInfo(mNetwork);
-                    if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
-                        return true;
-                    }
-                }
-            } else {
-                if (connectivityManager != null) {
-                    //noinspection deprecation
-                    NetworkInfo[] info = connectivityManager.getAllNetworkInfo();
-                    if (info != null) {
-                        for (NetworkInfo anInfo : info) {
-                            if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
+            ConnectivityManager cm =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+            return isConnected;
         }
         return isNetworkAvailable;
     }

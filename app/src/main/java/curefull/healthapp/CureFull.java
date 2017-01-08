@@ -50,6 +50,8 @@ public class CureFull extends Application {
 
     private boolean isEditext;
 
+    private int postionGet;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -182,4 +184,11 @@ public class CureFull extends Application {
         return opensansTypefaceSemiBold;
     }
 
+    public int getPostionGet() {
+        return postionGet;
+    }
+
+    public void setPostionGet(int postionGet) {
+        this.postionGet = postionGet;
+    }
 }

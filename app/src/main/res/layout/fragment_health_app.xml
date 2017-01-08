@@ -599,6 +599,7 @@
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             style="@style/textView_dark_grey_normal_small"
+                            android:id="@+id/txt_change_aveg"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="left"
@@ -620,6 +621,7 @@
                                 android:orientation="horizontal">
 
                                 <customsTextViews.CustomTextViewOpenSanRegular
+                                    android:id="@+id/txt_change"
                                     style="@style/textView_dark_grey_normal_micro"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -633,7 +635,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
-                                    android:layout_marginLeft="@dimen/_15dp"
                                     android:gravity="right"
                                     android:text="-"
                                     android:textColor="@color/health_yellow" />
@@ -679,7 +680,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="right"
-                                    android:layout_marginLeft="@dimen/_25dp"
                                     android:gravity="right"
                                     android:text="-"
                                     android:textColor="@color/health_yellow" />
@@ -724,13 +724,13 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="right"
-                                    android:layout_marginLeft="@dimen/_25dp"
                                     android:gravity="right"
                                     android:text="-"
                                     android:textColor="@color/health_yellow" />
                             </LinearLayout>
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_water_inatke_real"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

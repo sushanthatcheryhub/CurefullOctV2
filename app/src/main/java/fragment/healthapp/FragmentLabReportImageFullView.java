@@ -76,7 +76,7 @@ public class FragmentLabReportImageFullView extends Fragment {
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH + images, image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading( images, image_item);
             } catch (Exception e) {
 
             }
@@ -150,7 +150,7 @@ public class FragmentLabReportImageFullView extends Fragment {
 
 
     public void shareClick(String prescriptionImage) {
-        String url = MyConstants.WebUrls.REPORT_IMAGE_PATH + prescriptionImage;
+        String url =  prescriptionImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);

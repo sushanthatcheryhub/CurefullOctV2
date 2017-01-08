@@ -74,7 +74,7 @@ public class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.My
         public MyViewHolder(View view) {
             super(view);
             mChart = (MyBarChart) view.findViewById(R.id.chart1);
-            mChart1 = (MyLineChart) view.findViewById(R.id.chart11);
+//            mChart1 = (MyLineChart) view.findViewById(R.id.chart11);
         }
     }
 

@@ -51,7 +51,7 @@ public class MyBarChart extends BarChart {
         //setBorderColor(Color.BLACK);
 
 
-        IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year);
+//        IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year, frequencys);
 
         XAxis xAxis = getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -60,7 +60,7 @@ public class MyBarChart extends BarChart {
         xAxis.setGranularityEnabled(false);
         xAxis.setGranularity(0f);
         xAxis.setLabelCount(16);
-        xAxis.setValueFormatter(xAxisFormatter);
+//        xAxis.setValueFormatter(xAxisFormatter);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
@@ -104,9 +104,9 @@ public class MyBarChart extends BarChart {
         l.setForm(Legend.LegendForm.NONE);
         l.setTextSize(11f);
 
-        XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
-        mv.setChartView(this);
-        setMarker(mv);
+//        XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
+//        mv.setChartView(this);
+//        setMarker(mv);
 
     }
 }

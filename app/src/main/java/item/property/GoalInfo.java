@@ -1,15 +1,17 @@
 package item.property;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import org.json.JSONObject;
 
+import utils.AppPreference;
 import utils.MyConstants;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class GoalInfo {
+public class GoalInfo implements MyConstants.JsonUtils {
 
     private String gender;
     private String dateOfBirth;
@@ -20,6 +22,7 @@ public class GoalInfo {
     private String targetWaterInTake;
     private String glassSize;
     private String glassNumber;
+    private String primaryId;
 
     public GoalInfo() {
 
@@ -30,7 +33,6 @@ public class GoalInfo {
         if (jsonObject == null)
             return;
         try {
-
             JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
             setDateOfBirth(jsonResponse1.getString("dateOfBirth"));
             setGender(jsonResponse1.getString("gender"));
@@ -47,6 +49,56 @@ public class GoalInfo {
         }
     }
 
+
+    public GoalInfo(Cursor cur) {
+        if (cur == null)
+            return;
+        try {
+            setDateOfBirth(cur.getString(cur.getColumnIndex("dateOfBirth")));
+            setGender(cur.getString(cur.getColumnIndex("gender")));
+            setHeight(cur.getString(cur.getColumnIndex("height")));
+            setWeight(cur.getString(cur.getColumnIndex("weight")));
+            setTargetStepCount(cur.getString(cur.getColumnIndex("targetStepCount")));
+            setTargetCaloriesToBurn(cur.getString(cur.getColumnIndex("targetCaloriesToBurn")));
+            setTargetWaterInTake(cur.getString(cur.getColumnIndex("targetWaterInTake")));
+            setGlassSize(cur.getString(cur.getColumnIndex("glassSize")));
+            setGlassNumber(cur.getString(cur.getColumnIndex("glassNumber")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public ContentValues getInsertingValue(JSONObject json) {
+        try {
+            JSONObject jsonResponse1 = json.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
+            ContentValues values = new ContentValues();
+            setPrimaryId(AppPreference.getInstance().getcf_uuhid());
+            values.put("edit_id", AppPreference.getInstance().getcf_uuhid());
+            values.put("dateOfBirth", jsonResponse1.getString("dateOfBirth"));
+            values.put("gender", jsonResponse1.getString("gender"));
+            values.put("height", jsonResponse1.getString("height"));
+            values.put("weight", jsonResponse1.getString("weight"));
+            values.put("targetStepCount", jsonResponse1.getString("targetStepCount"));
+            values.put("targetCaloriesToBurn", jsonResponse1.getString("targetCaloriesToBurn"));
+            values.put("targetWaterInTake", jsonResponse1.getString("targetWaterInTake"));
+            values.put("glassSize", jsonResponse1.getString("glassSize"));
+            values.put("glassNumber", jsonResponse1.getString("glassNumber"));
+            return values;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public String getPrimaryId() {
+        return primaryId;
+    }
+
+    public void setPrimaryId(String primaryId) {
+        this.primaryId = primaryId;
+    }
 
     public String getGender() {
         return gender;

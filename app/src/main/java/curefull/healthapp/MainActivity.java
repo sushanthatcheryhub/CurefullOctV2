@@ -248,7 +248,7 @@ public class MainActivity extends BaseMainActivity {
 
     public void setActionDrawerProfilePic(String name) {
         CureFull.getInstanse().getSmallImageLoader().clearCache();
-        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + name, circularImageView);
+        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
     }
 
 

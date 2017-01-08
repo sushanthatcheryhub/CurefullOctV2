@@ -65,6 +65,8 @@ import dialog.DialogFullViewClickImage;
 import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
+import item.property.FilterDataPrescription;
+import item.property.HealthNoteItems;
 import item.property.PrescriptionImageList;
 import item.property.PrescriptionListView;
 import item.property.UHIDItems;
@@ -89,12 +91,12 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private LinearLayout liner_gallery, liner_camera;
     private float pixelDensity;
     boolean flag = true;
-    private Animation alphaAnimation;
     private ImageView img_user_name, img_upload, img_gallery, img_camera, img_upload_animation;
     private RecyclerView prescriptionItemView;
     private GridLayoutManager lLayout;
     private UploadPrescriptionAdpter uploadPrescriptionAdpter;
-    private List<PrescriptionListView> prescriptionListViews;
+    private List<PrescriptionListView> prescriptionListViewsDummy;
+    private List<PrescriptionListView> prescriptionListViews = new ArrayList<>();
     private List<PrescriptionImageList> prescriptionImageLists;
     private String selectUploadPrescription = "";
     private int value = 0;
@@ -118,13 +120,15 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private String checkDialog = "";
     private boolean isUploadClick = false;
     private String doctorName, dieaseName, prescriptionDate;
+    private int offset = 0;
+    private boolean isloadMore = false;
+    private FilterDataPrescription filterDataPrescription;
 
     @Override
     public boolean onBackPressed() {
 
         if (isUploadClick) {
             isUploadClick = false;
-            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
             liner_upload_new.post(new Runnable() {
                 @Override
                 public void run() {
@@ -148,8 +152,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
         img_doctor_name = (ImageView) rootView.findViewById(R.id.img_doctor_name);
-        img_disease_name = (ImageView) rootView.findViewById(R.id.img_disease_name);
-        img_upload_by = (ImageView) rootView.findViewById(R.id.img_upload_by);
         img_date = (ImageView) rootView.findViewById(R.id.img_date);
 
 
@@ -160,9 +162,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
         txt_sort_user_name = (TextView) rootView.findViewById(R.id.txt_sort_user_name);
         txt_dates = (TextView) rootView.findViewById(R.id.txt_dates);
-        txt_upload_by = (TextView) rootView.findViewById(R.id.txt_upload_by);
-        txt_disease_names = (TextView) rootView.findViewById(R.id.txt_disease_names);
-        txt_sort_doctor_name = (TextView) rootView.findViewById(R.id.txt_sort_doctor_name);
         txt_no_prescr = (TextView) rootView.findViewById(R.id.txt_no_prescr);
         img_upload_animation = (ImageView) rootView.findViewById(R.id.img_upload_animation);
         img_gallery = (ImageView) rootView.findViewById(R.id.img_gallery);
@@ -180,16 +179,15 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
 //        img_upload_pre.setOnClickListener(this);
-        liner_animation_upload.setOnClickListener(this);
+//        liner_animation_upload.setOnClickListener(this);
         liner_upload_new.setOnClickListener(this);
         liner_camera.setOnClickListener(this);
         liner_gallery.setOnClickListener(this);
         txt_heath_note.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
         txt_lab_reports.setOnClickListener(this);
-        btn_reset.setOnClickListener(this);
+//        btn_reset.setOnClickListener(this);
 
-        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
         prescriptionItemView = (RecyclerView) rootView.findViewById(R.id.grid_list_symptom);
         int spacingInPixels = 10;
         prescriptionItemView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
@@ -201,92 +199,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         getAllHealthUserList();
         getPrescriptionList();
-
-        (rootView.findViewById(R.id.img_doctor_name)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-                    checkDialog = "img_doctor_name";
-                    rotatePhoneClockwise(img_doctor_name);
-                    listPopupWindow = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, getDoctorNameAsStringList(prescriptionListViews)));
-                    listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_sort_doctor_name));
-                    listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._110dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow.setModal(true);
-                    listPopupWindow.setOnDismissListener(FragmentPrescriptionCheck.this);
-                    listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
-                    listPopupWindow.show();
-                }
-
-            }
-        });
-
-
-        (rootView.findViewById(R.id.img_disease_name)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-                    checkDialog = "img_disease_name";
-                    rotatePhoneClockwise(img_disease_name);
-                    listPopupWindow1 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow1.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, getDiseaseListAsStringList(prescriptionListViews)));
-                    listPopupWindow1.setAnchorView(rootView.findViewById(R.id.txt_disease_names));
-                    float width = getResources().getDimension(R.dimen._190dp);
-                    listPopupWindow1.setWidth((int) getResources().getDimension(R.dimen._110dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow1.setModal(true);
-                    listPopupWindow1.setOnDismissListener(FragmentPrescriptionCheck.this);
-                    listPopupWindow1.setOnItemClickListener(popUpItemClickdisease);
-                    listPopupWindow1.show();
-                }
-
-            }
-        });
-
-
-        (rootView.findViewById(R.id.img_upload_by)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rotatePhoneClockwise(img_upload_by);
-                checkDialog = "img_upload_by";
-                listPopupWindow2 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                listPopupWindow2.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                        R.layout.adapter_list_doctor_data, MyConstants.IArrayData.listUploadBy));
-                listPopupWindow2.setAnchorView(rootView.findViewById(R.id.txt_upload_by));
-                float width = getResources().getDimension(R.dimen._190dp);
-                listPopupWindow2.setWidth((int) getResources().getDimension(R.dimen._110dp));
-//                listPopupWindow.setHeight(400);
-                listPopupWindow2.setModal(true);
-                listPopupWindow2.setOnDismissListener(FragmentPrescriptionCheck.this);
-                listPopupWindow2.setOnItemClickListener(popUpItemClickupload_by);
-                listPopupWindow2.show();
-            }
-        });
-
-        (rootView.findViewById(R.id.img_date)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-                    checkDialog = "img_date";
-                    rotatePhoneClockwise(img_date);
-                    listPopupWindow3 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow3.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, getDateAsStringList(prescriptionListViews)));
-                    listPopupWindow3.setAnchorView(rootView.findViewById(R.id.txt_dates));
-                    listPopupWindow3.setWidth((int) getResources().getDimension(R.dimen._110dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow3.setModal(true);
-                    listPopupWindow3.setOnDismissListener(FragmentPrescriptionCheck.this);
-                    listPopupWindow3.setOnItemClickListener(popUpItemClickDate);
-                    listPopupWindow3.show();
-                }
-
-            }
-        });
+        getAllFilterData();
 
 
         (rootView.findViewById(R.id.img_user_name)).setOnClickListener(new View.OnClickListener() {
@@ -323,26 +236,15 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_doctor_name);
             listPopupWindow.dismiss();
-            Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(prescriptionListViews).get(position));
-            if (prescriptionListViews != null & prescriptionListViews.size() > 0) {
+//            Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(prescriptionListViews).get(position));
+            if (filterDataPrescription.getDoctorNameList() != null & filterDataPrescription.getDoctorNameList().size() > 0) {
 //                txt_disease_names.setText("Disease Name");
 //                txt_upload_by.setText("Uploaded By");
 //                txt_dates.setText("Date");
-                clickDoctorName = getDoctorNameAsStringList(prescriptionListViews).get(position);
-                txt_sort_doctor_name.setText("" + getDoctorNameAsStringList(prescriptionListViews).get(position));
-                if (getFilterListDoctor(getDoctorNameAsStringList(prescriptionListViews).get(position)).size() > 0) {
-                    txt_no_prescr.setVisibility(View.GONE);
-                    prescriptionItemView.setVisibility(View.VISIBLE);
-                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
-                            getFilterListDoctor(getDoctorNameAsStringList(prescriptionListViews).get(position)));
-                    prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-                    uploadPrescriptionAdpter.notifyDataSetChanged();
-                } else {
-                    txt_no_prescr.setText("No Prescription Found For " + getDoctorNameAsStringList(prescriptionListViews).get(position));
-                    txt_no_prescr.setVisibility(View.VISIBLE);
-                    prescriptionItemView.setVisibility(View.GONE);
-                }
-
+                clickDoctorName = filterDataPrescription.getDoctorNameList().get(position);
+                txt_sort_doctor_name.setText("" + filterDataPrescription.getDoctorNameList().get(position));
+                getAllFilterData();
+                getPrescriptionList();
             }
         }
     };
@@ -352,26 +254,10 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_disease_name);
             listPopupWindow1.dismiss();
-            Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(prescriptionListViews).get(position));
-            if (prescriptionListViews != null & prescriptionListViews.size() > 0) {
-//                txt_sort_doctor_name.setText("Doctor Name");
-//                txt_upload_by.setText("Uploaded By");
-//                txt_dates.setText("Date");
-                clickDiseaseName = "" + getDiseaseListAsStringList(prescriptionListViews).get(position);
-                txt_disease_names.setText("" + getDiseaseListAsStringList(prescriptionListViews).get(position));
-
-                if (getFilterListDisease(getDiseaseListAsStringList(prescriptionListViews).get(position)).size() > 0) {
-                    txt_no_prescr.setVisibility(View.GONE);
-                    prescriptionItemView.setVisibility(View.VISIBLE);
-                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
-                            getFilterListDisease(getDiseaseListAsStringList(prescriptionListViews).get(position)));
-                    prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-                    uploadPrescriptionAdpter.notifyDataSetChanged();
-                } else {
-                    txt_no_prescr.setText("No Prescription Found For " + getDiseaseListAsStringList(prescriptionListViews).get(position));
-                    txt_no_prescr.setVisibility(View.VISIBLE);
-                    prescriptionItemView.setVisibility(View.GONE);
-                }
+            if (filterDataPrescription.getDiseaseNameList() != null & filterDataPrescription.getDiseaseNameList().size() > 0) {
+                clickDiseaseName = "" + filterDataPrescription.getDiseaseNameList().get(position);
+                txt_disease_names.setText("" + filterDataPrescription.getDiseaseNameList().get(position));
+                getPrescriptionList();
             }
         }
     };
@@ -382,49 +268,11 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_upload_by);
             listPopupWindow2.dismiss();
-            if (position == 0) {
-//                txt_sort_doctor_name.setText("Doctor Name");
-//                txt_disease_names.setText("Disease Name");
-//                txt_dates.setText("Date");
-                txt_upload_by.setText("" + "Self");
-                clickUploadBy = "Self";
-                if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
 
-                    if (getFilterListUploadBy("Self").size() > 0) {
-                        txt_no_prescr.setVisibility(View.GONE);
-                        prescriptionItemView.setVisibility(View.VISIBLE);
-                        uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
-                                getFilterListUploadBy("Self"));
-                        prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-                        uploadPrescriptionAdpter.notifyDataSetChanged();
-                    } else {
-                        txt_no_prescr.setText("No Prescription Found For Self");
-                        txt_no_prescr.setVisibility(View.VISIBLE);
-                        prescriptionItemView.setVisibility(View.GONE);
-                    }
-                }
-
-            } else {
-//                txt_sort_doctor_name.setText("Doctor Name");
-//                txt_disease_names.setText("Disease Name");
-//                txt_dates.setText("Date");
-                clickUploadBy = "CureFull";
-                txt_upload_by.setText("" + "CureFull");
-                if (prescriptionListViews != null && prescriptionListViews.size() > 0) {
-
-                    if (getFilterListUploadBy("CureFull").size() > 0) {
-                        txt_no_prescr.setVisibility(View.GONE);
-                        prescriptionItemView.setVisibility(View.VISIBLE);
-                        uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
-                                getFilterListUploadBy("CureFull"));
-                        prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-                        uploadPrescriptionAdpter.notifyDataSetChanged();
-                    } else {
-                        txt_no_prescr.setText("No Prescription Found For CureFull");
-                        txt_no_prescr.setVisibility(View.VISIBLE);
-                        prescriptionItemView.setVisibility(View.GONE);
-                    }
-                }
+            if (filterDataPrescription.getUploadedByList() != null & filterDataPrescription.getUploadedByList().size() > 0) {
+                clickUploadBy = filterDataPrescription.getUploadedByList().get(position);
+                txt_upload_by.setText("" + filterDataPrescription.getUploadedByList().get(position));
+                getPrescriptionList();
 
             }
         }
@@ -435,26 +283,10 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_date);
             listPopupWindow3.dismiss();
-            Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(prescriptionListViews).get(position));
-            if (prescriptionListViews != null & prescriptionListViews.size() > 0) {
-//                txt_sort_doctor_name.setText("Doctor Name");
-//                txt_disease_names.setText("Disease Name");
-//                txt_upload_by.setText("Uploaded By");
-                clickDates = getDateAsStringList(prescriptionListViews).get(position);
-                txt_dates.setText("" + getDateAsStringList(prescriptionListViews).get(position));
-
-                if (getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)).size() > 0) {
-                    txt_no_prescr.setVisibility(View.GONE);
-                    prescriptionItemView.setVisibility(View.VISIBLE);
-                    uploadPrescriptionAdpter = new UploadPrescriptionAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(),
-                            getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)));
-                    prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-                    uploadPrescriptionAdpter.notifyDataSetChanged();
-                } else {
-                    txt_no_prescr.setText("No Prescription Found For " + getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)));
-                    txt_no_prescr.setVisibility(View.VISIBLE);
-                    prescriptionItemView.setVisibility(View.GONE);
-                }
+            if (filterDataPrescription.getDateList() != null & filterDataPrescription.getDateList().size() > 0) {
+                clickDates = filterDataPrescription.getDateList().get(position);
+                txt_dates.setText("" + filterDataPrescription.getDateList().get(position));
+                getPrescriptionList();
 
             }
         }
@@ -503,6 +335,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 txt_disease_names.setText("Disease Name");
                 txt_upload_by.setText("Uploaded By");
                 txt_dates.setText("Date");
+                getAllFilterData();
                 getPrescriptionList();
                 break;
 
@@ -532,7 +365,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 break;
             case R.id.liner_upload_new:
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
                     isUploadClick = true;
                     liner_upload_new.post(new Runnable() {
                         @Override
@@ -750,98 +582,98 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
          MARGIN_RIGHT = 16;
          FAB_BUTTON_RADIUS = 28;
          */
-        int x = realtive_notes.getRight();
+        int x = realtive_notes.getLeft()/2;
         int y = realtive_notes.getTop();
         x -= ((28 * pixelDensity) + (16 * pixelDensity));
         int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
-
-        if (flag) {
-
+        try {
+            if (flag) {
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                            revealView.getLayoutParams();
+                    parameters.height = realtive_notes.getHeight();
+                    revealView.setLayoutParams(parameters);
+
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            layoutButtons.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    revealView.setVisibility(View.VISIBLE);
+                    anim.start();
+                } else {
+                    revealView.setVisibility(View.VISIBLE);
+                    layoutButtons.setVisibility(View.VISIBLE);
+                }
 
 
-            if (Build.VERSION.SDK_INT > 19) {
-                FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                        revealView.getLayoutParams();
-                parameters.height = realtive_notes.getHeight();
-                revealView.setLayoutParams(parameters);
-
-                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-                anim.setDuration(700);
-
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        layoutButtons.setVisibility(View.VISIBLE);
-                        layoutButtons.startAnimation(alphaAnimation);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-
-                    }
-                });
-
-                revealView.setVisibility(View.VISIBLE);
-                anim.start();
-            }else{
-                revealView.setVisibility(View.VISIBLE);
-                layoutButtons.setVisibility(View.VISIBLE);
-            }
-
-
-
-            flag = false;
-        } else {
+                flag = false;
+            } else {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
-            if (Build.VERSION.SDK_INT > 19) {
-                Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
-                anim.setDuration(400);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
 
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        revealView.setVisibility(View.GONE);
-                        layoutButtons.setVisibility(View.GONE);
-                    }
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealView.setVisibility(View.GONE);
+                            layoutButtons.setVisibility(View.GONE);
+                        }
 
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
 
-                    }
-                });
+                        }
+                    });
 
-                anim.start();
-            }else{
-                revealView.setVisibility(View.GONE);
-                layoutButtons.setVisibility(View.GONE);
+                    anim.start();
+                } else {
+                    revealView.setVisibility(View.GONE);
+                    layoutButtons.setVisibility(View.GONE);
+                }
+
+                flag = true;
             }
+        } catch (Exception e) {
 
-            flag = true;
         }
+
+
     }
 
     @Override
@@ -997,9 +829,32 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
 
     private void getPrescriptionList() {
+        isloadMore = false;
+        offset = 0;
+        prescriptionListViews = null;
+        prescriptionListViews = new ArrayList<>();
+
+        StringBuilder s = new StringBuilder();
+        if (!clickDoctorName.equalsIgnoreCase("")) {
+            s.append("&doctorName=" + clickDoctorName);
+        }
+        if (!clickDiseaseName.equalsIgnoreCase("")) {
+            s.append("&diseaseName=" + clickDiseaseName);
+        }
+        if (!clickDates.equalsIgnoreCase("")) {
+            s.append("&date=" + clickDates);
+        }
+        if (!clickUploadBy.equalsIgnoreCase("")) {
+            s.append("&uploadedBy=" + clickUploadBy);
+        }
+
+        if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+            s.append("");
+        }
+
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=6&offset=" + offset + s,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1015,8 +870,12 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            prescriptionListViews = ParseJsonData.getInstance().getPrescriptionList(response);
-                            if (prescriptionListViews.size() > 0 && prescriptionListViews != null) {
+                            prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
+                            if (prescriptionListViewsDummy.size() > 0 && prescriptionListViewsDummy != null) {
+                                prescriptionListViews.addAll(prescriptionListViewsDummy);
+                                if (prescriptionListViewsDummy.size() < 6) {
+                                    isloadMore = true;
+                                }
                                 AppPreference.getInstance().setPrescriptionSize(1);
                                 txt_no_prescr.setVisibility(View.GONE);
                                 prescriptionItemView.setVisibility(View.VISIBLE);
@@ -1026,6 +885,9 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 uploadPrescriptionAdpter.notifyDataSetChanged();
                             } else {
+                                if (prescriptionListViewsDummy == null) {
+                                    isloadMore = true;
+                                }
                                 AppPreference.getInstance().setPrescriptionSize(0);
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 txt_no_prescr.setVisibility(View.VISIBLE);
@@ -1060,6 +922,102 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    public void callWebServiceAgain(int offsets) {
+        if (isloadMore) {
+
+        } else {
+            StringBuilder s = new StringBuilder();
+            if (!clickDoctorName.equalsIgnoreCase("")) {
+                s.append("&doctorName=" + clickDoctorName);
+            }
+            if (!clickDiseaseName.equalsIgnoreCase("")) {
+                s.append("&diseaseName=" + clickDiseaseName);
+            }
+            if (!clickDates.equalsIgnoreCase("")) {
+                s.append("&date=" + clickDates);
+            }
+            if (!clickUploadBy.equalsIgnoreCase("")) {
+                s.append("&uploadedBy=" + clickUploadBy);
+            }
+
+            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+                s.append("");
+            }
+//            Log.e("offsect", "" + offset);
+            offset = +offsets;
+//            Log.e("off", "" + offsets);
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=6&offset=" + offset + s,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            Log.e("prescriptionlist", "" + response);
+
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
+                                if (prescriptionListViewsDummy.size() > 0 && prescriptionListViewsDummy != null) {
+                                    prescriptionListViews.addAll(prescriptionListViewsDummy);
+                                    if (prescriptionListViewsDummy.size() < 6) {
+                                        isloadMore = true;
+                                    }
+                                    AppPreference.getInstance().setPrescriptionSize(1);
+                                    txt_no_prescr.setVisibility(View.GONE);
+                                    prescriptionItemView.setVisibility(View.VISIBLE);
+                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    uploadPrescriptionAdpter.notifyDataSetChanged();
+                                } else {
+                                    if (prescriptionListViewsDummy == null) {
+                                        isloadMore = true;
+                                    }
+//                                    AppPreference.getInstance().setPrescriptionSize(0);
+                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+//                                    txt_no_prescr.setVisibility(View.VISIBLE);
+//                                    prescriptionItemView.setVisibility(View.GONE);
+                                }
+                            } else {
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                txt_no_prescr.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            txt_no_prescr.setVisibility(View.VISIBLE);
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
+                        }
+                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                    return headers;
+                }
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        }
+
     }
 
     private List<String> getUserAsStringListUFHID(List<UHIDItems> result) {
@@ -1126,97 +1084,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public ArrayList<PrescriptionListView> getFilterListDoctor(String charSequence) {
         ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
         for (PrescriptionListView str : prescriptionListViews) {
-            if (!clickDiseaseName.equalsIgnoreCase("")) {
-                if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickDates.equalsIgnoreCase("")) {
-                if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDiseaseName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else {
-                if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    searched.add(str);
-                }
+            if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                searched.add(str);
             }
 
         }
@@ -1227,97 +1096,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public ArrayList<PrescriptionListView> getFilterListDisease(String charSequence) {
         ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
         for (PrescriptionListView str : prescriptionListViews) {
-            if (!clickDoctorName.equalsIgnoreCase("")) {
-                if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickDates.equalsIgnoreCase("")) {
-                if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else {
-                if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    searched.add(str);
-                }
+            if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                searched.add(str);
             }
 
         }
@@ -1327,97 +1107,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public ArrayList<PrescriptionListView> getFilterListUploadBy(String charSequence) {
         ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
         for (PrescriptionListView str : prescriptionListViews) {
-            if (!clickDoctorName.equalsIgnoreCase("")) {
-                if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickDates.equalsIgnoreCase("")) {
-                if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDates.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else {
-                if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    searched.add(str);
-                }
+            if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                searched.add(str);
             }
         }
         return searched;
@@ -1426,97 +1117,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public ArrayList<PrescriptionListView> getFilterListDate(String charSequence) {
         ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
         for (PrescriptionListView str : prescriptionListViews) {
-            if (!clickDoctorName.equalsIgnoreCase("")) {
-                if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickUploadBy.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getPrescriptionDate().toLowerCase().contains(clickDates.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else if (!clickDiseaseName.equalsIgnoreCase("")) {
-                if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    if (!clickUploadBy.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                    searched.add(str);
-                                }
-                            }
-                        }
-                    } else if (!clickUploadBy.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getUploadedBy().toLowerCase().contains(clickUploadBy.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else if (!clickDoctorName.equalsIgnoreCase("")) {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            if (str.getDoctorName().toLowerCase().contains(clickDoctorName.toString().toLowerCase())) {
-                                searched.add(str);
-                            }
-                        }
-                    } else {
-                        if (str.getDiseaseName().toLowerCase().contains(clickDiseaseName.toString().toLowerCase())) {
-                            searched.add(str);
-                        }
-                    }
-
-                }
-            } else {
-                if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                    searched.add(str);
-                }
+            if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                searched.add(str);
             }
         }
         return searched;
@@ -1556,6 +1158,75 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                             }
 
 
+                        } else {
+
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    private void getAllFilterData() {
+
+        StringBuilder s = new StringBuilder();
+        if (!clickDoctorName.equalsIgnoreCase("")) {
+            s.append("doctorName=" + clickDoctorName);
+        }
+        if (!clickDiseaseName.equalsIgnoreCase("")) {
+            s.append("&diseaseName=" + clickDiseaseName);
+        }
+        if (!clickDates.equalsIgnoreCase("")) {
+            s.append("&date=" + clickDates);
+        }
+        if (!clickUploadBy.equalsIgnoreCase("")) {
+            s.append("&uploadedBy=" + clickUploadBy);
+        }
+
+        if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+            s.append("");
+        }
+
+
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("getFilterData, URL 1. ", response);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            filterDataPrescription = ParseJsonData.getInstance().getFilterDataPre(response);
                         } else {
 
                         }

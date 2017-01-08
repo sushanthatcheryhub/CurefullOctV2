@@ -106,7 +106,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH + labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -148,6 +148,10 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                         .replace(new FragmentLabReportImageView(), bundle, true);
             }
         });
+
+        if (position == labReportListViews.size() - 1) {
+            fragmentLabTestReports.callWebServiceAgain(labReportListViews.size());
+        }
     }
 
     @Override

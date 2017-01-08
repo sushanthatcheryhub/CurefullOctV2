@@ -37,6 +37,16 @@ public class Utils {
         return cal;
     }
 
+    public static double getConvertingPoundsIntoKilograms(double pounds) {
+        double kilograms = pounds * 0.453592;
+        return kilograms;
+    }
+
+    public static double getConvertingKilogramsIntoPounds(double kg) {
+        double pounds = kg * 2.20462;
+        return pounds;
+    }
+
 
     public static String getAge(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();
@@ -102,7 +112,7 @@ public class Utils {
     }
 
 
-    public static  String updateTime(int hours, int mins) {
+    public static String updateTime(int hours, int mins) {
 
 
         int selctHour = hours;

@@ -57,6 +57,7 @@ import dialog.DialogIP;
 import item.property.UHIDItems;
 import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
@@ -327,8 +328,11 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
         if (emailSet.size() == 1) {
             edtInputEmail.setText(new ArrayList<String>(emailSet).get(0).toString());
-        } else {
             edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+
+        } else {
+            List<String> emailSet1 = DbOperations.getEmailList(CureFull.getInstanse().getActivityIsntanse());
+            edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet1)));
         }
     }
 
@@ -362,12 +366,13 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     public void jsonUHIDCheck() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
-        JSONObject data = JsonUtilsObject.toUHID(edtInput_name.getText().toString().trim(), edt_phone.getText().toString().trim());
+        JSONObject data = JsonUtilsObject.toUHID(edtInput_name.getText().toString().trim(), edt_phone.getText().toString().trim(), edtInputEmail.getText().toString().trim());
         Log.e("data", ":- " + data.toString() + ":- " + MyConstants.WebUrls.UHID_SIGN_UP);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UHID_SIGN_UP, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btn_signup.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
@@ -392,7 +397,14 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                                             .addWithBottomTopAnimation(new FragmentUHIDSignUp(), bundle, true);
                                 }
                             } else {
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Details");
+                                btn_signup.setEnabled(true);
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

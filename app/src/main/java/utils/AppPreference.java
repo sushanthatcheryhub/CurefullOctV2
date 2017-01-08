@@ -10,7 +10,7 @@ import curefull.healthapp.CureFull;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class AppPreference implements MyConstants.PrefrenceKeys {
+public class AppPreference implements MyConstants.JsonUtils {
     private static AppPreference prefrence;
     private SharedPreferences _prefrence;
 
@@ -150,6 +150,18 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
     }
 
 
+    public void setHintScreen(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("hint_screen", className).commit();
+    }
+
+    public String getHintScreen() {
+        if (_prefrence != null)
+            return _prefrence.getString("hint_screen", "");
+        return "";
+    }
+
+
     public void setcf_uuhidNeew(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString("cf_uuhidNeew", className).commit();
@@ -238,7 +250,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public boolean getFtIN() {
         if (_prefrence != null)
-            return _prefrence.getBoolean("ftin", false);
+            return _prefrence.getBoolean("ftin", true);
         return false;
     }
 
@@ -273,7 +285,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public boolean getKgs() {
         if (_prefrence != null)
-            return _prefrence.getBoolean("kgs", false);
+            return _prefrence.getBoolean("kgs", true);
         return false;
     }
 
@@ -342,7 +354,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public String getGoalHeightFeet() {
         if (_prefrence != null)
-            return _prefrence.getString("HeightFeet", "0");
+            return _prefrence.getString("HeightFeet", "");
         return "";
     }
 
@@ -423,7 +435,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public String getGoalHeightInch() {
         if (_prefrence != null)
-            return _prefrence.getString("HeightInch", "0");
+            return _prefrence.getString("HeightInch", "");
         return "";
     }
 
@@ -446,7 +458,7 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
 
     public String getGoalWeightKg() {
         if (_prefrence != null)
-            return _prefrence.getString("WeightKg", "0");
+            return _prefrence.getString("WeightKg", "");
         return "";
     }
 
@@ -631,7 +643,6 @@ public class AppPreference implements MyConstants.PrefrenceKeys {
             return _prefrence.getInt("percentage", 0);
         return 0;
     }
-
 
 
     public void setDelete(boolean isMale) {

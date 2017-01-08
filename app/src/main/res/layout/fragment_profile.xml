@@ -135,23 +135,27 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
                     android:layout_marginTop="@dimen/_10dp"
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/img_password_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/txt_health_text"
-                        android:src="@drawable/notebook" />
+                        android:src="@drawable/password_icon" />
 
-                    <customsTextViews.CustomTextViewMontserratHairLine
+                    <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/btn_click_change"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:paddingBottom="@dimen/_5dp"
                         android:paddingTop="@dimen/_5dp"
                         android:text="Changes Password"
@@ -221,7 +225,7 @@
                     android:orientation="vertical">
 
                     <customsTextViews.CustomTextViewOpenSanRegular
-                        android:id="@+id/btn_signup"
+                        android:id="@+id/btn_save_changes"
                         style="@style/textView_dark_grey_normal_medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

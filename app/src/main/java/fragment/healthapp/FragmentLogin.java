@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -72,6 +73,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.EduationDetails;
 import item.property.UserInfo;
+import operations.DbOperations;
 import sticky.header.UnderlineTextView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
@@ -450,16 +452,23 @@ public class FragmentLogin extends Fragment implements
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
+                            ParseJsonData.getInstance().getLoginData(response.toString());
+                            UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
+//                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
+
+//                                UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
                                 if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
                                     AppPreference.getInstance().setIsLoginFirst(false);
                                 } else {
                                     AppPreference.getInstance().setIsLoginFirst(true);
                                 }
+                                Log.e("hint_screen", " " + userInfo.getHintScreen());
+                                AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
-
-
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put("email_id", userInfo.getUser_id());
+                                DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
@@ -475,7 +484,13 @@ public class FragmentLogin extends Fragment implements
                             }
                         } else {
                             login_button.setEnabled(true);
-                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Details");
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
 
 
@@ -499,7 +514,7 @@ public class FragmentLogin extends Fragment implements
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
 //                    Log.e("headers", "" +  response.headers.get("a_t"));
                     JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
                     return Response.success(jsonResponse,
                             HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
@@ -535,11 +550,13 @@ public class FragmentLogin extends Fragment implements
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
+                            UserInfo userInfo =ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
+//                                UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
                                 Log.e("mobile number", ":- " + userInfo.getMobile_number());
                                 AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
@@ -579,7 +596,7 @@ public class FragmentLogin extends Fragment implements
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
 //                    Log.e("headers", "" +  response.headers.get("a_t"));
                     JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
                     return Response.success(jsonResponse,
                             HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
@@ -595,16 +612,25 @@ public class FragmentLogin extends Fragment implements
     }
 
     private void addAdapterToViews() {
-
-        Account[] accounts = AccountManager.get(CureFull.getInstanse().getActivityIsntanse()).getAccounts();
-        Set<String> emailSet = new HashSet<String>();
-        for (Account account : accounts) {
-            if (EMAIL_PATTERN.matcher(account.name).matches()) {
-                emailSet.add(account.name);
+        if (!(DbOperations.getEmailList(CureFull.getInstanse().getActivityIsntanse()).size() > 0)) {
+            Account[] accounts = AccountManager.get(CureFull.getInstanse().getActivityIsntanse()).getAccounts();
+            for (Account account : accounts) {
+                if (EMAIL_PATTERN.matcher(account.name).matches()) {
+                    Log.e("email", ":- " + account.name);
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("email_id", account.name);
+                    DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, account.name);
+                }
             }
+            List<String> emailSet = DbOperations.getEmailList(CureFull.getInstanse().getActivityIsntanse());
+            edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+
+        } else {
+            List<String> emailSet = DbOperations.getEmailList(CureFull.getInstanse().getActivityIsntanse());
+            edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+
         }
-        Log.e("size", ":- " + emailSet.size());
-        edtInputEmail.setAdapter(new ArrayAdapter<String>(CureFull.getInstanse().getActivityIsntanse(), android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+
     }
 
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -12,8 +11,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
-import graph.MyAxisValueFormatter;
-import graph.XYMarkerView;
 import utils.MyDayAxisValueFormatter;
 
 /**
@@ -81,7 +78,7 @@ public class MyLineChart extends LineChart {
 //        l.setYOffset(11f);
 
 
-        IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year);
+//        IAxisValueFormatter xAxisFormatter = new MyDayAxisValueFormatter(this, month, year, frequencys);
         XAxis xAxis = getXAxis();
         xAxis.setTextSize(11f);
         xAxis.setTextColor(Color.WHITE);
@@ -89,7 +86,7 @@ public class MyLineChart extends LineChart {
         xAxis.setDrawLabels(false);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(false);
-        xAxis.setValueFormatter(xAxisFormatter);
+//        xAxis.setValueFormatter(xAxisFormatter);
 
 
         YAxis leftAxis = getAxisLeft();

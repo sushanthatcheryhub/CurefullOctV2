@@ -4,12 +4,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
+import item.property.GoalInfo;
 import item.property.HealthNoteItems;
+import item.property.UserInfo;
+import utils.AppPreference;
 import utils.MyConstants;
 
 /**
@@ -29,7 +33,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
 
             String query = "SELECT P.* FROM " + TABLE_NOTE
-                    + " P ORDER BY P.healthNoteId DESC ";
+                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.healthNoteId DESC ";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -50,6 +54,126 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
+    public static List<String> getEmailList(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<String>();
+        List<String> listApps = new ArrayList<String>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT P.* FROM " + TABLE_EMAIL
+                    + " P ORDER BY P.id DESC ";
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    listApps.add(cursor.getString(cursor.getColumnIndex("email_id")));
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static UserInfo getLoginList(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new UserInfo();
+        UserInfo listApps = null;
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT L.* FROM " + TABLE_LOGIN
+                    + " L ORDER BY L.cf_uuhid DESC ";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    listApps = new UserInfo(cursor);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
+    public static String getGraphList(Context context, String cf_uuhid, String graph_type, String graph_frequecy) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return "";
+        String response = "";
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT P.* FROM " + TABLE_GRAPH
+                    + " P WHERE P.cf_uuhid = '" + cf_uuhid + "' AND graph_type = '" + graph_type + "' AND graph_frequecy = '" + graph_frequecy + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                response = cursor.getString(cursor.getColumnIndex("graph_data"));
+//                cursor.moveToNext();
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return response;
+    }
+
+
+    public static void insertEmailList(Context context, ContentValues cv, String emailID) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_EMAIL + " Where email_id ='" + emailID + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_EMAIL, cv, "email_id" + "='" + emailID + "'",
+                        null);
+//                Log.e("update", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_EMAIL, null, cv);
+//                Log.e("", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
     public static void insertNoteList(Context context, ContentValues cv, int primaryId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
@@ -66,7 +190,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
-
                 database.update(TABLE_NOTE, cv, ID + "=" + primaryId,
                         null);
 //                Log.e("update", "Qurery Enty number-");
@@ -84,11 +207,142 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
+    public static void insertLoginList(Context context, ContentValues cv, String primaryId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LOGIN + " Where cf_uuhid ='" + primaryId + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cv.put("hint_screen", 1);
+                database.update(TABLE_LOGIN, cv, CF_UUHID + "='" + primaryId + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_LOGIN, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
+    public static void insertGraphList(Context context, ContentValues cv, String primaryId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_GRAPH + " Where cf_uuhid ='" + primaryId + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                cv.put("hint_screen", 1);
+                database.update(TABLE_GRAPH, cv, CF_UUHID + "='" + primaryId + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_GRAPH, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
+    public static void insertEditGoalList(Context context, ContentValues cv, String primaryId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_EDIT_GOAL + " Where edit_id ='" + primaryId + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_EDIT_GOAL, cv, "edit_id" + "='" + primaryId + "'",
+                        null);
+                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_EDIT_GOAL, null, cv);
+                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
+    public static GoalInfo getGoalList(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new GoalInfo();
+        GoalInfo listApps = null;
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT L.* FROM " + TABLE_EDIT_GOAL
+                    + " L WHERE L.edit_id = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY L.edit_id DESC ";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    listApps = new GoalInfo(cursor);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
     public static void clearUserDB() {
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            database.delete(TABLE_USER_INFO, null, null);
+            database.delete(TABLE_LOGIN, null, null);
             database.close();
         } catch (Exception e) {
         }

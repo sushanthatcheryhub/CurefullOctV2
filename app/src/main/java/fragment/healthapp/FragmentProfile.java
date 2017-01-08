@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
@@ -60,9 +72,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private float pixelDensity;
     boolean flag = true;
     private Animation alphaAnimation;
-    private ImageView img_upload, img_gallery, img_camera, img_upload_animation;
-    private EditText input_name, edt_phone, input_email;
-    private TextView btn_click_change;
+    private ImageView img_upload, img_gallery, img_camera, img_upload_animation, img_password_icon;
+    private EditText input_name, edt_phone, input_email, input_old_pass, input_new_pass;
+    private TextView btn_click_change, btn_save_changes;
     private boolean isclick = false;
     private static Bitmap bitmap_image;
     private AlertDialog dialog;
@@ -70,6 +82,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private File dir;
     private File file;
     private String fileName = "my_image.jpg";
+    private RequestQueue requestQueue;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +94,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
         btn_click_change = (TextView) rootView.findViewById(R.id.btn_click_change);
+        img_password_icon = (ImageView) rootView.findViewById(R.id.img_password_icon);
+        input_old_pass = (EditText) rootView.findViewById(R.id.input_old_pass);
+        input_new_pass = (EditText) rootView.findViewById(R.id.input_new_pass);
+
         input_name = (EditText) rootView.findViewById(R.id.input_name);
         edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
         input_email = (EditText) rootView.findViewById(R.id.input_email);
@@ -110,6 +128,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         liner_gallery.setOnClickListener(this);
         liner_remove.setOnClickListener(this);
         btn_click_change.setOnClickListener(this);
+        btn_save_changes.setOnClickListener(this);
         alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
         input_name.setText("" + AppPreference.getInstance().getUserName());
         edt_phone.setText("" + AppPreference.getInstance().getMobileNumber());
@@ -118,7 +137,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
             try {
                 CureFull.getInstanse().getSmallImageLoader().clearCache();
-                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + AppPreference.getInstance().getProfileImage(), profile_image_view);
+                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), profile_image_view);
             } catch (Exception e) {
             }
         }
@@ -131,7 +150,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
             }
         });
-
+        btn_click_change.setPaintFlags(btn_click_change.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
@@ -139,12 +158,20 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.btn_save_changes:
+                jsonUpdateProfile();
+
+                break;
             case R.id.btn_click_change:
                 if (isclick) {
+                    img_password_icon.setImageResource(R.drawable.password_icon);
+                    btn_click_change.setText("Change password");
                     isclick = false;
                     liner_password.setVisibility(View.GONE);
                 } else {
                     isclick = true;
+                    img_password_icon.setImageResource(R.drawable.cancel_red);
+                    btn_click_change.setText("Don't want to change my password");
                     liner_password.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -437,7 +464,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
                     try {
                         CureFull.getInstanse().getFullImageLoader().clearCache();
-                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + jsonObject.getString("payload"), profile_image_view);
+                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
                         CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
                     } catch (Exception e) {
 
@@ -482,6 +509,85 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 }
                 break;
         }
+    }
+
+
+    public void jsonUpdateProfile() {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+
+        final String name = input_name.getText().toString().trim();
+        final String mobNo = edt_phone.getText().toString().trim();
+        final String emailId = input_email.getText().toString().trim();
+        String oldPassowrd = "";
+        String newPasswrod = "";
+        if (isclick) {
+            oldPassowrd = input_old_pass.getText().toString().trim();
+            newPasswrod = input_new_pass.getText().toString().trim();
+        }
+
+
+        JSONObject data = JsonUtilsObject.getProfileDeatils(name, mobNo, emailId, oldPassowrd, newPasswrod);
+        Log.e("jsonUpdateProfile", ": " + data.toString());
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.PROFILE_UPDATE, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("Target, URL 3.", response.toString());
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                if (json.getString("payload").equals(null)) {
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Changed");
+                                } else {
+                                    img_password_icon.setImageResource(R.drawable.password_icon);
+                                    btn_click_change.setText("Change password");
+                                    isclick = false;
+                                    liner_password.setVisibility(View.GONE);
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Profile Changed");
+                                    AppPreference.getInstance().setUserName(name);
+                                    AppPreference.getInstance().setMobileNumber(mobNo);
+                                    AppPreference.getInstance().setUserID(emailId);
+                                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName(), AppPreference.getInstance().getcf_uuhid());
+
+                                }
+
+                            } else {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
 

@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
+import item.property.FilterDataPrescription;
+import item.property.FilterDataReports;
 import item.property.GoalInfo;
-import item.property.GraphViewDetails;
 import item.property.GraphYearMonthDeatils;
 import item.property.HealthNoteItems;
 import item.property.LabDoctorName;
@@ -19,7 +20,6 @@ import item.property.LabTestName;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionListView;
-import item.property.SignUpInfo;
 import item.property.UHIDItems;
 import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
@@ -59,23 +59,28 @@ public class ParseJsonData implements MyConstants.JsonUtils {
             JSONObject json = new JSONObject(response);
             setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
             user = new UserInfo(json);
+            ContentValues cv = user.getInsertingValue(json);
+            String primaryId = user.getPrimaryId();
+            DbOperations operations = new DbOperations();
+            operations.insertLoginList(CureFull.getInstanse().getActivityIsntanse(), cv, primaryId);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return user;
     }
 
-    public SignUpInfo getSignUpData(String response) {
-        SignUpInfo user = null;
-        try {
-            JSONObject json = new JSONObject(response);
-            setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
-            user = new SignUpInfo(json);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
+//    public SignUpInfo getSignUpData(String response) {
+//        SignUpInfo user = null;
+//        try {
+//            JSONObject json = new JSONObject(response);
+//            setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+//            user = new SignUpInfo(json);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return user;
+//    }
 
 
     public List<HealthNoteItems> getHealthNoteListItem(String response) {
@@ -90,17 +95,14 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                     detailListing = new ArrayList<HealthNoteItems>();
                     for (int i = 0; i < jsonPayload.length(); i++) {
                         JSONObject jsonObject = jsonPayload.getJSONObject(i);
-//                        details = new HealthNoteItems(jsonObject);
-//                        detailListing.add(details);
+                        details = new HealthNoteItems(jsonObject);
+                        detailListing.add(details);
                         details = new HealthNoteItems();
                         ContentValues cv = details.getInsertingValue(jsonObject);
                         int primaryId = details.getPrimaryId();
                         DbOperations operations = new DbOperations();
                         operations.insertNoteList(CureFull.getInstanse().getActivityIsntanse(), cv, primaryId);
                     }
-                    return detailListing;
-                } else {
-                    return null;
                 }
 
             } catch (Exception e) {
@@ -338,10 +340,47 @@ public class ParseJsonData implements MyConstants.JsonUtils {
         try {
             JSONObject json = new JSONObject(response);
             setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
-            user = new GoalInfo(json);
+            user = new GoalInfo();
+            ContentValues cv = user.getInsertingValue(json);
+            String primaryId = user.getPrimaryId();
+            DbOperations operations = new DbOperations();
+            operations.insertEditGoalList(CureFull.getInstanse().getActivityIsntanse(), cv, primaryId);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return user;
+    }
+
+
+    public FilterDataPrescription getFilterDataPre(String response) {
+        FilterDataPrescription details = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
+                details = new FilterDataPrescription(jord);
+            } catch (Exception e) {
+
+            }
+        }
+        return details;
+    }
+
+    public FilterDataReports getFilterDataReports(String response) {
+        FilterDataReports details = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
+                details = new FilterDataReports(jord);
+            } catch (Exception e) {
+
+            }
+        }
+        return details;
     }
 }

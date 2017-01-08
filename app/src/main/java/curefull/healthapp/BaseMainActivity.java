@@ -78,7 +78,6 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentUHID(), true);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
@@ -94,7 +93,6 @@ public class BaseMainActivity extends AppCompatActivity
                     .replace(new FragmentLogin(), false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
-
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentTermCondition(), true);
@@ -252,11 +250,11 @@ public class BaseMainActivity extends AppCompatActivity
 
     public void jsonLogout() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.LOGOUT, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.e("logout", " " + response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -268,7 +266,6 @@ public class BaseMainActivity extends AppCompatActivity
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             AppPreference.getInstance().clearAllData();
                             AppPreference.getInstance().setIsLogin(false);
-                        } else {
                         }
 
 

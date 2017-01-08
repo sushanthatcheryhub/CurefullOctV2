@@ -24,14 +24,14 @@ import static android.R.attr.bitmap;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
+public class JsonUtilsObject implements MyConstants.JsonUtils {
 
 
     public static JSONObject toLogin(String userName, String password) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put(USER_NAME, userName);
-            jsonParent.put(PASSWORD, password);
+            jsonParent.put(USER_NAME, userName.trim());
+            jsonParent.put(PASSWORD, password.trim());
 
         } catch (Exception e) {
 
@@ -42,11 +42,12 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     }
 
 
-    public static JSONObject toUHID(String name, String mobile) {
+    public static JSONObject toUHID(String name, String mobile, String emailId) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("name", name);
-            jsonParent.put("mobileNumber", mobile);
+            jsonParent.put("mobileNumber", mobile.trim());
+            jsonParent.put("emailId", emailId.trim());
 
         } catch (Exception e) {
 
@@ -60,8 +61,8 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toForgotPassword(String mobileNumber, String password) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("mobileNumber", mobileNumber);
-            jsonParent.put(PASSWORD, password);
+            jsonParent.put("mobileNumber", mobileNumber.trim());
+            jsonParent.put(PASSWORD, password.trim());
 
         } catch (Exception e) {
 
@@ -75,8 +76,8 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toForgotPasswordEmail(String mobileNumber, String password) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("userId", mobileNumber);
-            jsonParent.put(PASSWORD, password);
+            jsonParent.put("userId", mobileNumber.trim());
+            jsonParent.put(PASSWORD, password.trim());
 
         } catch (Exception e) {
 
@@ -90,7 +91,7 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("name", name);
-            jsonParent.put("mobileNumber", mobileNumber);
+            jsonParent.put("mobileNumber", mobileNumber.trim());
 
 
         } catch (Exception e) {
@@ -105,13 +106,13 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put(NAME, userName);
-            jsonParent.put(EMAIL, email);
-            jsonParent.put(PASSWORD, password);
-            jsonParent.put(MOBILE_NO, mobileNo);
-            Log.e("cf",""+uhid);
-            if("null".equalsIgnoreCase(uhid)){
+            jsonParent.put(EMAIL, email.trim());
+            jsonParent.put(PASSWORD, password.trim());
+            jsonParent.put(MOBILE_NO, mobileNo.trim());
+            Log.e("cf", "" + uhid);
+            if ("null".equalsIgnoreCase(uhid)) {
                 jsonParent.put("cfUuhid", "");
-            }else{
+            } else {
                 jsonParent.put("cfUuhid", uhid);
             }
 
@@ -127,11 +128,11 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toAddHealthNote(String subject, String details, String date, String fromTime, String toTime) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("subject", subject);
-            jsonParent.put("details", details);
-            jsonParent.put("date", date);
-            jsonParent.put("fromTime", fromTime);
-            jsonParent.put("toTime", toTime);
+            jsonParent.put("subject", subject.trim());
+            jsonParent.put("details", details.trim());
+            jsonParent.put("date", date.trim());
+            jsonParent.put("fromTime", fromTime.trim());
+            jsonParent.put("toTime", toTime.trim());
 
 
         } catch (Exception e) {
@@ -192,9 +193,9 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toSetGoals(String targetSteps, String targetCaloriesToBurn, String targetWaterInTake) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("targetSteps", targetSteps);
-            jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn);
-            jsonParent.put("targetWaterInTake", targetWaterInTake);
+            jsonParent.put("targetSteps", targetSteps.trim());
+            jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn.trim());
+            jsonParent.put("targetWaterInTake", targetWaterInTake.trim());
 
         } catch (Exception e) {
 
@@ -207,10 +208,10 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toSetGoalsDetails(String height, String weight, String dateOfBirth, String gender) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("height", height);
-            jsonParent.put("weight", weight);
-            jsonParent.put("dateOfBirth", dateOfBirth);
-            jsonParent.put("gender", gender);
+            jsonParent.put("height", height.trim());
+            jsonParent.put("weight", weight.trim());
+            jsonParent.put("dateOfBirth", dateOfBirth.trim());
+            jsonParent.put("gender", gender.trim());
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -223,12 +224,12 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
     public static JSONObject toSaveHealthAppDetails(String steps, String running, String cycling, String waterIntake, String date, String time) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("steps", steps);
-            jsonParent.put("running", running);
-            jsonParent.put("cycling", cycling);
-            jsonParent.put("waterIntake", waterIntake);
-            jsonParent.put("date", date);
-            jsonParent.put("time", time);
+            jsonParent.put("steps", steps.trim());
+            jsonParent.put("running", running.trim());
+            jsonParent.put("cycling", cycling.trim());
+            jsonParent.put("waterIntake", waterIntake.trim());
+            jsonParent.put("date", date.trim());
+            jsonParent.put("time", time.trim());
 
         } catch (Exception e) {
 
@@ -266,13 +267,28 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject getGraphDeatils(String fromDate,String date, String frequency, String type) {
+    public static JSONObject getGraphDeatils(String fromDate, String date, String frequency, String type) {
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("fromDate", fromDate);
-            jsonParent.put("toDate", date);
-            jsonParent.put("frequency", frequency);
-            jsonParent.put("type", type);
+            jsonParent.put("fromDate", fromDate.trim());
+            jsonParent.put("toDate", date.trim());
+            jsonParent.put("frequency", frequency.trim());
+            jsonParent.put("type", type.trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonParent;
+    }
+
+
+    public static JSONObject getProfileDeatils(String name, String mobileNumber, String emailId, String oldPassword, String newPassword) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("name", name);
+            jsonParent.put("mobileNumber", mobileNumber.trim());
+            jsonParent.put("emailId", emailId.trim());
+            jsonParent.put("oldPassword", oldPassword.trim());
+            jsonParent.put("newPassword", newPassword.trim());
 
         } catch (Exception e) {
 
@@ -309,295 +325,7 @@ public class JsonUtilsObject implements MyConstants.PrefrenceKeys {
         return jsonParent;
     }
 
-    public static JSONObject toAllAutoCompleteText(String userId, String userRole) {
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("userId", userId);
-            jsonParent.put("userRole", userRole);
 
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toAddSymptoms(String newSymptoms, String doctorId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("newSymptoms", newSymptoms);
-            jsonParent.put("doctorId", doctorId);
-            jsonParent.put("isMostUsed", true);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toRemoveSymptoms(String newSymptoms, String doctorId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("symptoms", newSymptoms);
-            jsonParent.put("doctorId", doctorId);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-    public static JSONObject toRemoveSigns(String newSymptoms, String doctorId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("signs", newSymptoms);
-            jsonParent.put("doctorId", doctorId);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-    public static JSONObject toAddSigns(String newSymptoms, String doctorId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("sign", newSymptoms);
-            jsonParent.put("doctorId", doctorId);
-            jsonParent.put("isMostUsed", true);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-    public static JSONObject toAddDiagonis(String newSymptoms, String doctorId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("diagnosis", newSymptoms);
-            jsonParent.put("doctorId", doctorId);
-            jsonParent.put("isMostUsed", true);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toGetPatientList(int userId, String user_Role) {
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put(USER_ID, userId);
-            jsonParent.put(USER_ROLE, user_Role);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toGetAddPatientListDone(String firstName, String gender, String emailId, String state, String city, String pincode, String country, String mobileNo, String age, int heightFeet, int heightInch, int weightKg, int weightGm, String bodyTemperature, String pulseRate, String prescriptionType, String dateOfBirth, String street, String appointmentDate, int appointmentId, int doctorServiceProviderId, int bloodPressure) {
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("firstName", firstName);
-            jsonParent.put("gender", gender);
-            jsonParent.put("emailId", emailId);
-            jsonParent.put("state", state);
-            jsonParent.put("city", city);
-            jsonParent.put("pincode", pincode);
-            jsonParent.put("country", country);
-            jsonParent.put("mobileNo", mobileNo);
-            jsonParent.put("age", age);
-            jsonParent.put("heightFeet", heightFeet);
-            jsonParent.put("heightInch", heightInch);
-            jsonParent.put("weightGm", weightGm);
-            jsonParent.put("weightGm", weightGm);
-            jsonParent.put("bodyTemperature", bodyTemperature);
-            jsonParent.put("pulseRate", pulseRate);
-            jsonParent.put("prescriptionType", prescriptionType);
-            jsonParent.put("dateOfBirth", dateOfBirth);
-            jsonParent.put("street", street);
-            jsonParent.put("appointmentDate", appointmentDate);
-            jsonParent.put("appointmentId", appointmentId);
-            jsonParent.put("doctorServiceProviderId", doctorServiceProviderId);
-            jsonParent.put("bloodPressure", bloodPressure);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toGetAddPatientListSave(String firstName, String gender, String emailId, String state, String city, String pincode, String country, String mobileNo, String dateOfBirth, String street, String appointmentDate, int doctorServiceProviderId) {
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("firstName", firstName);
-            jsonParent.put("gender", gender);
-            jsonParent.put("emailId", emailId);
-            jsonParent.put("state", state);
-            jsonParent.put("city", city);
-            jsonParent.put("pincode", pincode);
-            jsonParent.put("country", country);
-            jsonParent.put("mobileNo", mobileNo);
-            jsonParent.put("dateOfBirth", dateOfBirth);
-            jsonParent.put("street", street);
-            jsonParent.put("appointmentDate", appointmentDate);
-            jsonParent.put("doctorServiceProviderId", doctorServiceProviderId);
-            jsonParent.put("cfuhhid", "");
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toUpdatePendingPhyicalData(int heightFeet, int heightInch, int weightKg, int weightGm, String bloodPressureKgs, String bloodPressureGms, String bodyTemperature, int patientDoctorId) {
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("heightFeet", heightFeet);
-            jsonParent.put("heightInch", heightInch);
-            jsonParent.put("weightKg", weightKg);
-            jsonParent.put("weightGm", weightGm);
-            jsonParent.put("bodyTemperature", bodyTemperature);
-            jsonParent.put("bloodPressureKgs", bloodPressureKgs);
-            jsonParent.put("bloodPressureGms", bloodPressureGms);
-            jsonParent.put("patientDoctorId", patientDoctorId);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toPatientListDashBorad(String doctorHealhcareProviderId, String pageNo, String noOfRecord, String date) {
-
-
-        Log.e("date", ":- " + date);
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("doctorHealhcareProviderId", doctorHealhcareProviderId);
-            jsonParent.put("pageNo", pageNo);
-            jsonParent.put("noOfRecord", noOfRecord);
-            jsonParent.put("appointmentDate", date);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toDoctorCommonDeatils(String userId, String userRole) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("userId", userId);
-            jsonParent.put("userRole", userRole);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toSendReferToDoctor(int fromDoctorId, String hospitalName, String specilaization, String DoctorName, String note, String referDoctorEmailId, boolean SharePrescription, String ePrescriptionId, boolean CurefullDoctor, int toDoctorId, int refererPatientId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("fromDoctorId", fromDoctorId);
-            jsonParent.put("hospitalName", hospitalName);
-            jsonParent.put("specilaization", specilaization);
-            jsonParent.put("DoctorName", DoctorName);
-            jsonParent.put("note", note);
-            jsonParent.put("referDoctorEmailId", referDoctorEmailId);
-            jsonParent.put("SharePrescription", SharePrescription);
-            jsonParent.put("ePrescriptionId", ePrescriptionId);
-            jsonParent.put("CurefullDoctor", CurefullDoctor);
-            jsonParent.put("toDoctorId", toDoctorId);
-            jsonParent.put("refererPatientId", refererPatientId);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-    public static JSONObject toPrescriptionHistoryFullImage(String imageId) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("patientDoctorId", "");
-            jsonParent.put("prescriptionId", "");
-            jsonParent.put("ePrescriptionId", "");
-            jsonParent.put("imageId", imageId);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-
-    public static JSONObject toPrescriptionHistoryByDate(String id, String shortBy) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("patientDoctorId", id);
-            jsonParent.put("sortBy", shortBy);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
-
-    public static JSONObject toUploadSimgleFile(File file) {
-
-        JSONObject jsonParent = new JSONObject();
-        try {
-            jsonParent.put("file", file);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return jsonParent;
-    }
 
     public static String changeTOBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

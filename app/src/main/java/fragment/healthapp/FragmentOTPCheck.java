@@ -3,16 +3,12 @@ package fragment.healthapp;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.Context;
-import android.database.Cursor;
+import android.content.ContentValues;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,7 +19,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -42,16 +37,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import interfaces.SmsListener;
-import item.property.SignUpInfo;
+import item.property.UserInfo;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.IncomingSms;
@@ -69,7 +62,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private RequestQueue requestQueue;
     private int OTP;
-    private String health_name, health_email, health_mobile, health_password, realUHID="";
+    private String health_name, health_email, health_mobile, health_password, realUHID = "";
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false;
 
@@ -193,6 +186,16 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     btn_done.setEnabled(false);
                     submitForm();
+                }
+                return false;
+            }
+        });
+
+        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edt_confirm_password.requestFocus();
                 }
                 return false;
             }
@@ -334,17 +337,19 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-
-                            SignUpInfo userInfo = ParseJsonData.getInstance().getSignUpData(response.toString());
+                            ParseJsonData.getInstance().getLoginData(response.toString());
+                            UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
+//
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
-                                List<String> stringList = new ArrayList<>();
-                                stringList.add(userInfo.getUser_id());
-
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put("email_id", userInfo.getUser_id());
+                                DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
-                                AppPreference.getInstance().setMobileNumber(userInfo.getMobileNumber());
+                                AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
+                                AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
                                 AppPreference.getInstance().setIsLoginFirst(true);
                                 CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
@@ -385,7 +390,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
 //                    Log.e("headers", "" +  response.headers.get("a_t"));
                     JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
                     return Response.success(jsonResponse,
                             HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {

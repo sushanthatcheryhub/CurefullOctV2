@@ -33,7 +33,7 @@ public class DialogProfileFullView extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
-        CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PROFILE_IMAGE_PATH + bitmap, img_full_view);
+        CureFull.getInstanse().getFullImageLoader().startLazyLoading( bitmap, img_full_view);
 
 
     }

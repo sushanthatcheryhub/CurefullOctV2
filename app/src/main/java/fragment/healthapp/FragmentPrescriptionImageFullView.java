@@ -95,7 +95,7 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
             try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + images, gestureImageView);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(images, gestureImageView);
             } catch (Exception e) {
 
             }

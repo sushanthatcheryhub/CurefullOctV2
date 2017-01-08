@@ -106,8 +106,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
             try {
-                Log.e("path", " " + MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
+                CureFull.getInstanse().getFullImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
             } catch (Exception e) {
 
             }
@@ -150,8 +149,14 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
 
         Log.e("size after delete", ":- " + prescriptionListViews.size());
 
-        if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() == 0) {
-            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
+        Log.e("position "," "+position);
+
+//        if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() == 0) {
+//            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
+//        }
+        if (position == prescriptionListViews.size()-1) {
+            Log.e("list zise"," "+prescriptionListViews.size());
+            prescriptionCheck.callWebServiceAgain(prescriptionListViews.size());
         }
 
     }
@@ -250,7 +255,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         ArrayList<Uri> files = new ArrayList<Uri>();
         ArrayList<String> filesName = new ArrayList<String>();
         for (int i = 0; i < prescriptionImageListViews.size(); i++) {
-            filesName.add(MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionImageListViews.get(i).getPrescriptionImage());
+            filesName.add(prescriptionImageListViews.get(i).getPrescriptionImage());
         }
 
         Log.e("name ", "fileNames " + filesName.get(0).toString());

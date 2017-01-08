@@ -1,16 +1,20 @@
 package item.property;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import utils.AppPreference;
 import utils.MyConstants;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class PrescriptionListView {
+public class PrescriptionListView implements MyConstants.JsonUtils {
 
     private String cfUuhid;
     private String prescriptionId;
@@ -42,6 +46,7 @@ public class PrescriptionListView {
             e.printStackTrace();
         }
     }
+
 
     public String getCfUuhid() {
         return cfUuhid;

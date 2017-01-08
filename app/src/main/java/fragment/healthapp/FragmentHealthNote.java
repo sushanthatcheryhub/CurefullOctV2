@@ -80,12 +80,13 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private EditText edt_deatils, edt_subject;
     private TextView txt_date_time, txt_time, txt_to_time, btn_done, txt_click_here_add;
     private LinearLayout liner_date_t, liner_to_time;
-    LinearLayout date_time_picker;
+    private LinearLayout date_time_picker;
     private String firstDate = "", firstTime = "", toFirstTime = "";
     private RequestQueue requestQueue;
-    List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
+    private List<HealthNoteItems> healthNoteItemsesDummy;
+    private List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
     private ExpandableStickyListHeadersListView mListView;
-    WeakHashMap<View, Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
+    private WeakHashMap<View, Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
     private Health_Note_ListAdpter adapterRecentNew;
     private RelativeLayout realtive_no_health;
     private LinearLayout txt_prescription, txt_heath_app, txt_lab_reports;
@@ -94,6 +95,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private int newFirstTime = 0;
     private int secondTime = 0;
     private ImageView img_question_note;
+    private int offset = 0;
+    private boolean isloadMore = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -262,7 +265,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 if (firstDate.equalsIgnoreCase("")) {
                     year = c2.get(Calendar.YEAR);
                     month1 = c2.get(Calendar.MONTH);
-                    day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                    day = c2.get(Calendar.DAY_OF_MONTH);
                 } else {
                     Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = firstDate.split("-");
@@ -272,7 +275,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     month1 = (month1 - 1);
                 }
 
-                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(),  AlertDialog.THEME_HOLO_LIGHT, FragmentHealthNote.this, year, month1, day);
+                DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_HOLO_LIGHT, FragmentHealthNote.this, year, month1, day);
                 newDateDialog.getDatePicker().setCalendarViewShown(false);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c2.getTime();
@@ -305,6 +308,10 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 if (!validateDeatils()) {
                     return;
                 }
+                isloadMore = false;
+                offset = 0;
+                healthNoteItemses = null;
+                healthNoteItemses = new ArrayList<HealthNoteItems>();
                 CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 jsonHealthNoteCheck();
 
@@ -382,7 +389,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     @Override
                     public void onResponse(JSONObject response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("FragmentLogin, URL 3.", response.toString());
+                        Log.e("health, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -425,7 +432,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+                VolleyLog.e("health, URL 3.", "Error: " + error.getMessage());
             }
 
         }) {
@@ -438,7 +445,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
 //                    Log.e("headers", "" +  response.headers.get("a_t"));
                     JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
                     return Response.success(jsonResponse,
                             HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
@@ -468,12 +475,13 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE,
+            Log.e("url", " " + MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset);
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getSymptomsList, URL 1.", response);
+                            Log.e("get note, URL 1.", response);
 
                             int responseStatus = 0;
                             JSONObject json = null;
@@ -484,14 +492,18 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                 e.printStackTrace();
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
-                                if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
-                                    healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                                    Log.e("healthNoteItemses", " after:-" + healthNoteItemses.size());
+                                healthNoteItemsesDummy = ParseJsonData.getInstance().getHealthNoteListItem(response);
+                                if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
+                                    if (healthNoteItemsesDummy.size() < 10) {
+                                        isloadMore = true;
+                                    }
+                                    healthNoteItemses.addAll(healthNoteItemsesDummy);
+                                    showAdpter();
                                 }
-                                showAdpter();
+
                             } else {
-                                healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                                healthNoteItemses.addAll(healthNoteItemsesDummy);
                                 showAdpter();
 //                                realtive_no_health.setVisibility(View.VISIBLE);
 //                                mListView.setVisibility(View.GONE);
@@ -501,7 +513,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                            healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+                            healthNoteItemses.addAll(healthNoteItemsesDummy);
                             showAdpter();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
@@ -523,7 +536,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+            healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+            healthNoteItemses.addAll(healthNoteItemsesDummy);
             showAdpter();
         }
 
@@ -550,6 +564,21 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             adapterRecentNew = new Health_Note_ListAdpter(CureFull.getInstanse().getActivityIsntanse(),
                     healthNoteItemses, FragmentHealthNote.this);
             mListView.setAdapter(adapterRecentNew);
+            adapterRecentNew.notifyDataSetChanged();
+        } else {
+            realtive_no_health.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.GONE);
+        }
+
+    }
+
+    public void showAdpternew() {
+        if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
+            realtive_no_health.setVisibility(View.GONE);
+            mListView.setVisibility(View.VISIBLE);
+            adapterRecentNew = new Health_Note_ListAdpter(CureFull.getInstanse().getActivityIsntanse(),
+                    healthNoteItemses, FragmentHealthNote.this);
+            adapterRecentNew.notifyDataSetChanged();
         } else {
             realtive_no_health.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.GONE);
@@ -565,13 +594,101 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         }
     }
 
+    public void callWebServiceAgain(int offsets) {
+
+
+        if (isloadMore) {
+            Log.e("isloadMore", "" + isloadMore);
+        } else {
+            Log.e("offsect", "" + offset);
+            offset = +offsets;
+            Log.e("off", "" + offsets);
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+                StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                Log.e("getSymptomsList, URL 1.", response);
+
+                                int responseStatus = 0;
+                                JSONObject json = null;
+                                try {
+                                    json = new JSONObject(response.toString());
+                                    responseStatus = json.getInt("responseStatus");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    healthNoteItemsesDummy = ParseJsonData.getInstance().getHealthNoteListItem(response);
+                                    if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
+                                        if (healthNoteItemsesDummy.size() < 10) {
+                                            isloadMore = true;
+                                        }
+                                        healthNoteItemses.addAll(healthNoteItemsesDummy);
+                                        adapterRecentNew.notifyDataSetChanged();
+//                                            showAdpternew();
+                                    } else {
+                                        if (healthNoteItemsesDummy == null) {
+                                            isloadMore = true;
+                                        }
+                                    }
+                                } else {
+//                                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+//                                if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
+//                                    healthNoteItemses.addAll(healthNoteItemsesDummy);
+//                                    showAdpter();
+//                                }
+
+//                                realtive_no_health.setVisibility(View.VISIBLE);
+//                                mListView.setVisibility(View.GONE);
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+//                                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+//                                if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
+//                                    healthNoteItemses.addAll(healthNoteItemsesDummy);
+//                                    showAdpter();
+//                                }
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                error.printStackTrace();
+                            }
+                        }
+                ) {
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.put("a_t", AppPreference.getInstance().getAt());
+                        headers.put("r_t", AppPreference.getInstance().getRt());
+                        headers.put("user_name", AppPreference.getInstance().getUserName());
+                        headers.put("email_id", AppPreference.getInstance().getUserID());
+                        headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                        return headers;
+                    }
+                };
+
+                CureFull.getInstanse().getRequestQueue().add(postRequest);
+            } else {
+//                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+//                healthNoteItemses.addAll(healthNoteItemsesDummy);
+//                showAdpter();
+            }
+        }
+    }
+
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
         try {
             txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + Utils.formatMonth(String.valueOf(mnt)));
-            firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
+            firstDate = year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();
         }

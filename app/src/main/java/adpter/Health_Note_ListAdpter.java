@@ -182,7 +182,6 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         holder.txt_title.setText(sb);
-        Log.e("date old ", ":- " + healthNoteItemses.get(position).getNote_year());
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,6 +192,13 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
             }
         });
+
+        Log.e("position "," "+position);
+
+        if (position == healthNoteItemses.size() - 1) {
+            fragmentHealthNotes.callWebServiceAgain(healthNoteItemses.size());
+        }
+
         return convertView;
     }
 
@@ -209,7 +215,6 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         } else {
             holder = (HeaderViewHolder) convertView.getTag();
         }
-        Log.e("getHeaderView ", ":- " + healthNoteItemses.get(position).getNote_year());
         String date = "Year - " + healthNoteItemses.get(position).getNote_year();
         holder.text.setText(date.subSequence(0, 11));
         return convertView;
@@ -217,7 +222,6 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
     @Override
     public long getHeaderId(int position) {
-        Log.e("getHeaderId ", ":- " + healthNoteItemses.get(position).getNote_year());
         String date = "Year - " + healthNoteItemses.get(position).getNote_year();
         return date.subSequence(0, 11).charAt(10);
     }

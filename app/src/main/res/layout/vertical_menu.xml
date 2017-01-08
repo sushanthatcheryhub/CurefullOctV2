@@ -3,19 +3,22 @@
     android:layout_width="900dp"
     android:layout_height="match_parent">
 
-
-    <widgets.MyBarChart
+    <widgets.MyCombinedChart
         android:id="@+id/chart1"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_150dp" />
+        android:layout_height="match_parent"/>
+    <!--<widgets.MyBarChart-->
+        <!--android:id="@+id/chart1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/_150dp" />-->
 
 
-    <widgets.MyLineChart
-        android:id="@+id/chart11"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_150dp"
-        android:layout_marginLeft="@dimen/_10dp"
-        android:layout_marginRight="@dimen/_10dp" />
+    <!--<widgets.MyLineChart-->
+        <!--android:id="@+id/chart11"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/_150dp"-->
+        <!--android:layout_marginLeft="@dimen/_10dp"-->
+        <!--android:layout_marginRight="@dimen/_10dp" />-->
 
 
 </RelativeLayout>

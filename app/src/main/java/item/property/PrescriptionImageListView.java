@@ -1,5 +1,7 @@
 package item.property;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,12 +12,12 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class PrescriptionImageListView implements Parcelable {
+public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUtils {
 
     private String imageNumber;
     private String prescriptionImage;
-
     private String iPrescriptionId;
+    private String prescriptionId;
 
     public PrescriptionImageListView() {
 
@@ -28,6 +30,35 @@ public class PrescriptionImageListView implements Parcelable {
             setImageNumber(jsonObject.getString(MyConstants.JsonUtils.IMAGE_NUMBER));
             setPrescriptionImage(jsonObject.getString(MyConstants.JsonUtils.PRESCRIPTION_IMAGE));
             setiPrescriptionId(jsonObject.getString("iPrescriptionId"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public ContentValues getInsertingValue(JSONObject json, int id) {
+        try {
+            ContentValues values = new ContentValues();
+            values.put(IMAGE_NUMBER, json.getString(IMAGE_NUMBER));
+            values.put(PRESCRIPTION_IMAGE, json.getString(PRESCRIPTION_IMAGE));
+            values.put("iPrescriptionId", json.getString("iPrescriptionId"));
+            values.put(PRESCRIPTION_ID, id);
+            return values;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public PrescriptionImageListView(Cursor cur) {
+        if (cur == null)
+            return;
+        try {
+            setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
+            setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
+            setiPrescriptionId(cur.getString(cur.getColumnIndex("iPrescriptionId")));
+            setPrescriptionId(cur.getString(cur.getColumnIndex(PRESCRIPTION_ID)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,4 +115,14 @@ public class PrescriptionImageListView implements Parcelable {
             return new PrescriptionImageListView[size];
         }
     };
+
+    public String getPrescriptionId() {
+        return prescriptionId;
+    }
+
+    public void setPrescriptionId(String prescriptionId) {
+        this.prescriptionId = prescriptionId;
+    }
+
+
 }

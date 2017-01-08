@@ -188,9 +188,31 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     } else {
                         gender = "FEMALE";
                     }
-                    if (!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")) {
-                        jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(AppPreference.getInstance().getGoalHeightFeet()), String.valueOf(AppPreference.getInstance().getGoalHeightInch()))), String.valueOf(AppPreference.getInstance().getGoalWeightKg()), AppPreference.getInstance().getGoalAge(), gender);
+                    String feet = "";
+                    String inch = "";
+                    if (AppPreference.getInstance().getFtIN()) {
+                        feet = AppPreference.getInstance().getGoalHeightFeet();
+                        inch = AppPreference.getInstance().getGoalHeightInch();
+                    } else {
+                        feet = AppPreference.getInstance().getGoalHeightCm();
+                    }
 
+                    String kgs = "";
+                    if (AppPreference.getInstance().getKgs()) {
+                        kgs = AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams();
+                    } else {
+                        kgs = AppPreference.getInstance().getGoalWeightPound();
+                    }
+
+                    if (!feet.equalsIgnoreCase("0") || !feet.equalsIgnoreCase("") && !kgs.equalsIgnoreCase("0") || !kgs.equalsIgnoreCase("")) {
+                        double kg = Double.parseDouble(kgs);
+                        Log.e("kg to p ", " " + new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)));
+                        if (AppPreference.getInstance().getFtIN()) {
+                            jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(feet), String.valueOf(inch))), new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
+                        } else {
+                            jsonUploadGenderDetails(feet, new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
+
+                        }
                     }
                 }
             }
@@ -293,10 +315,15 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
         } else {
             Log.e("hello", ":- " + " hello");
-            AppPreference.getInstance().setIsFirstTimeScreen1(true);
-            DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
-            dialogHintScreenaLandingQution.setCanceledOnTouchOutside(true);
-            dialogHintScreenaLandingQution.show();
+            if (AppPreference.getInstance().getHintScreen().equalsIgnoreCase("1")) {
+
+            } else {
+                AppPreference.getInstance().setIsFirstTimeScreen1(true);
+                DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
+                dialogHintScreenaLandingQution.setCanceledOnTouchOutside(true);
+                dialogHintScreenaLandingQution.show();
+            }
+
         }
 
 
@@ -579,7 +606,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 if (firstDate.equalsIgnoreCase("")) {
                     year = c2.get(Calendar.YEAR);
                     month1 = c2.get(Calendar.MONTH);
-                    day = c2.get(Calendar.DAY_OF_MONTH) + 1;
+                    day = c2.get(Calendar.DAY_OF_MONTH);
                 } else {
                     Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = firstDate.split("-");
@@ -749,7 +776,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         int mnt = (monthOfYear + 1);
         try {
             txt_date_time.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + " " + Utils.formatMonth(String.valueOf(mnt)));
-            firstDate = year + "-" + mnt + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
+            firstDate = year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -927,7 +954,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
 //                    Log.e("headers", "" +  response.headers.get("a_t"));
                     JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.PrefrenceKeys.HEADERS, new JSONObject(response.headers));
+                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
                     return Response.success(jsonResponse,
                             HttpHeaderParser.parseCacheHeaders(response));
                 } catch (UnsupportedEncodingException e) {
@@ -957,7 +984,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE,
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=4&offset=0",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -975,12 +1002,14 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 Log.e("in", " :-" + " in");
                                 healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
-
                                 if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
                                     healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
                                     Log.e("healthNoteItemses", " after:-" + healthNoteItemses.size());
+                                    showAdpter();
+                                } else {
+                                    showAdpter();
                                 }
-                                showAdpter();
+
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -1264,14 +1293,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                             json = new JSONObject(response.toString());
                             responseStatus = json.getInt("responseStatus");
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                JSONObject json1 = new JSONObject(json.getString("payload"));
-                                String steps = json1.getString("steps");
-                                String waterIntakeDone = json1.getString("waterIntakeDone");
-                                AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
-                                String waterIntakeLeft = json1.getString("waterIntakeLeft");
-                                AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft);
-                                preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
-                                AppPreference.getInstance().setStepsCount("" + steps);
+                                if (!json.getString("payload").equals(null)) {
+                                    JSONObject json1 = new JSONObject(json.getString("payload"));
+                                    String steps = json1.getString("steps");
+                                    String waterIntakeDone = json1.getString("waterIntakeDone");
+                                    AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
+                                    String waterIntakeLeft = json1.getString("waterIntakeLeft");
+                                    AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft);
+                                    preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+                                    AppPreference.getInstance().setStepsCount("" + steps);
+                                }
+
                             } else {
 
 

@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import org.json.JSONObject;
 
+import utils.AppPreference;
 import utils.MyConstants;
 
 import static utils.MyConstants.JsonUtils.ID;
@@ -56,6 +57,7 @@ public class HealthNoteItems implements MyConstants.JsonUtils {
             values.put(NOTE_TIME, json.getString(NOTE_TIME));
             values.put(NOTE_TIME_TO, json.getString(NOTE_TIME_TO));
             values.put(YEAR, json.getString(YEAR));
+            values.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
             return values;
         } catch (Exception e) {
             e.printStackTrace();

@@ -83,7 +83,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         CardView card_view = holder.card_view;
 
         try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(MyConstants.WebUrls.REPORT_IMAGE_PATH+ prescriptionListViews.get(position).getReportImage(), image_item);
+            CureFull.getInstanse().getFullImageLoader().startLazyLoading(prescriptionListViews.get(position).getReportImage(), image_item);
         } catch (Exception e) {
 
         }
@@ -206,7 +206,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
 
 
     public void shareClick(String reportImage, String doctorName) {
-        String url = MyConstants.WebUrls.REPORT_IMAGE_PATH+ reportImage;
+        String url =  reportImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");

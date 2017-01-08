@@ -1,15 +1,17 @@
 package item.property;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import org.json.JSONObject;
 
 import utils.MyConstants;
 
+
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class UserInfo {
+public class UserInfo implements MyConstants.JsonUtils {
 
     private String fname;
     private String user_name;
@@ -19,30 +21,11 @@ public class UserInfo {
     private String r_t;
     private String cf_uuhid;
     private String profileImageUrl;
+    private String primaryId;
+    private String hintScreen;
 
     public UserInfo() {
 
-    }
-
-
-    public UserInfo(JSONObject jsonObject) {
-        if (jsonObject == null)
-            return;
-        try {
-
-            JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
-            setUser_id(jsonResponse1.getString(MyConstants.PrefrenceKeys.EMAIL));
-            setUser_name(jsonResponse1.getString(MyConstants.PrefrenceKeys.NAME));
-            setMobile_number(jsonResponse1.getString(MyConstants.PrefrenceKeys.MOBILE_NO));
-            setProfileImageUrl(jsonResponse1.getString("profileImageUrl"));
-            JSONObject jsonResponse = jsonObject.getJSONObject(MyConstants.JsonUtils.HEADERS);
-//            setFname(jsonResponse.getString(MyConstants.JsonUtils.FNAME));
-            setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
-            setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
-            setCf_uuhid(jsonResponse.getString(MyConstants.JsonUtils.CF_UUHID));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -50,20 +33,62 @@ public class UserInfo {
         if (cur == null)
             return;
         try {
-            setFname(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.FNAME)));
-//            setPhone(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.PHONE)));
-//            setGender(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.GENDER)));
-//            setAddress(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.ADDRESS)));
-//            setCity(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.CITY)));
-//            setState(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.STATE)));
-//            setPincode(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.PINCODE)));
-//            setStatus(cur.getString(cur.getColumnIndex(MyConstants.JsonUtils.STATUS)));
+            setUser_id(cur.getString(cur.getColumnIndex(EMAIL)));
+            setUser_name(cur.getString(cur.getColumnIndex(NAME)));
+            setMobile_number(cur.getString(cur.getColumnIndex(MOBILE_NO)));
+            setProfileImageUrl(cur.getString(cur.getColumnIndex(PROFILE_IMAGE_URL)));
+            setA_t(cur.getString(cur.getColumnIndex(A_T)));
+            setR_t(cur.getString(cur.getColumnIndex(R_T)));
+            setCf_uuhid(cur.getString(cur.getColumnIndex(CF_UUHID)));
+            setHintScreen(cur.getString(cur.getColumnIndex("hint_screen")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    public UserInfo(JSONObject jsonObject) {
+        if (jsonObject == null)
+            return;
+        try {
+
+            JSONObject jsonResponse1 = jsonObject.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
+            setUser_id(jsonResponse1.getString(EMAIL));
+            setUser_name(jsonResponse1.getString(NAME));
+            setMobile_number(jsonResponse1.getString(MOBILE_NO));
+            setProfileImageUrl(jsonResponse1.getString(PROFILE_IMAGE_URL));
+            JSONObject jsonResponse = jsonObject.getJSONObject(MyConstants.JsonUtils.HEADERS);
+//            setFname(jsonResponse.getString(MyConstants.JsonUtils.FNAME));
+            setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
+            setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
+            setCf_uuhid(jsonResponse.getString(MyConstants.JsonUtils.CF_UUHID));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+    public ContentValues getInsertingValue(JSONObject json) {
+        try {
+            JSONObject jsonResponse1 = json.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
+            ContentValues values = new ContentValues();
+            values.put(EMAIL, jsonResponse1.getString(EMAIL));
+            values.put(NAME, jsonResponse1.getString(NAME));
+            values.put(MOBILE_NO, jsonResponse1.getString(MOBILE_NO));
+            values.put(PROFILE_IMAGE_URL, jsonResponse1.getString(PROFILE_IMAGE_URL));
+            JSONObject jsonResponse = json.getJSONObject(MyConstants.JsonUtils.HEADERS);
+            values.put(A_T, jsonResponse.getString(A_T));
+            values.put(R_T, jsonResponse.getString(R_T));
+            setPrimaryId(jsonResponse.getString(CF_UUHID));
+            values.put(CF_UUHID, jsonResponse.getString(CF_UUHID));
+            return values;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
 
     public String getCf_uuhid() {
         return cf_uuhid;
@@ -127,5 +152,23 @@ public class UserInfo {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+
+    public String getPrimaryId() {
+        return primaryId;
+    }
+
+    public void setPrimaryId(String primaryId) {
+        this.primaryId = primaryId;
+    }
+
+
+    public String getHintScreen() {
+        return hintScreen;
+    }
+
+    public void setHintScreen(String hintScreen) {
+        this.hintScreen = hintScreen;
     }
 }
