@@ -27,13 +27,28 @@ public class Utils {
         return cal;
     }
 
-    public static float getIdealWeightMen(int inch) {
+    public static float getIdealWeightMen(double inch) {
         float cal = (float) (50 + (2.3 * inch));
         return cal;
     }
 
-    public static float getIdealWeightWomen(int inch) {
-        float cal = (float) (45.5 + (2.3 * inch));
+    public static double getMlToLiter(int ml) {
+        double cal = (ml * 0.001);
+        return cal;
+    }
+
+    public static double getLiterToMl(int liter) {
+        double cal = (liter * 1000);
+        return cal;
+    }
+
+    public static double getLiterToMl(double liter) {
+        double cal = (liter * 1000);
+        return cal;
+    }
+
+    public static double getIdealWeightWomen(double inch) {
+        double cal = (45.5 + (2.3 * inch));
         return cal;
     }
 
@@ -68,6 +83,7 @@ public class Utils {
 
 
     public static double convertFeetandInchesToCentimeter(String feet, String inches) {
+        Log.e("convert", "feet " + feet + "inches " + inches);
         double heightInFeet = 0;
         double heightInInches = 0;
         try {
@@ -80,6 +96,7 @@ public class Utils {
         } catch (NumberFormatException nfe) {
 
         }
+
         return (heightInFeet * 30.48) + (heightInInches * 2.54);
     }
 

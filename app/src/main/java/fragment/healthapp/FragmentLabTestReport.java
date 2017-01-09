@@ -2,7 +2,6 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,9 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,8 +38,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -51,14 +47,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import adpter.Filter_Reports_ListAdpter;
 import adpter.UploadLabTestReportAdpter;
-import adpter.UploadPrescriptionAdpter;
-import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
@@ -72,7 +65,6 @@ import item.property.LabReportListView;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionImageList;
-import item.property.PrescriptionListView;
 import item.property.UHIDItems;
 import utils.AppPreference;
 import utils.HandlePermission;
@@ -91,12 +83,18 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
     private RelativeLayout realtive_notes;
+    private RelativeLayout realtive_notesShort;
+    private RelativeLayout realtive_notesFilter;
     private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
-    private LinearLayout liner_gallery, liner_camera;
+    private LinearLayout revealViewShort, layoutButtonsShort, liner_short_by;
+    private LinearLayout revealViewFilter, layoutButtonsFilter, txt_filter_by;
+    private LinearLayout liner_gallery, liner_camera, liner_btn_done, liner_filter_btn_reset;
     private float pixelDensity;
     boolean flag = true;
+    boolean flagShort = true;
+    boolean flagFilter = true;
     private Animation alphaAnimation;
-    private ImageView img_upload, img_gallery, img_camera, img_upload_animation, btn_reset;
+    private ImageView img_upload, img_gallery, img_camera, img_upload_animation;
     private RecyclerView labReportItemView;
     private GridLayoutManager lLayout;
     private UploadLabTestReportAdpter uploadLabTestReportAdpter;
@@ -107,17 +105,14 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private String selectUploadPrescription = "";
     private int value = 0;
     private RequestQueue requestQueue;
-    private ListPopupWindow listPopupWindow;
-    private ListPopupWindow listPopupWindow1;
-    private ListPopupWindow listPopupWindow2;
-    private ListPopupWindow listPopupWindow3;
     private ListPopupWindow listPopupWindow4;
     private List<PrescriptionDoctorName> prescriptionDoctorNames;
     private List<PrescriptionDiseaseName> prescriptionDiseaseNames;
-    private TextView txt_no_prescr, txt_Doctor_name, txt_tst_name, txt_dates;
+    private TextView txt_no_prescr;
     private LinearLayout txt_heath_note, txt_heath_app, txt_prescription;
     private List<UHIDItems> uhidItemses;
-    private TextView txt_sort_user_name;
+    private TextView txt_sort_user_name, txt_total_prescription;
+    ;
     private int imageName = 0;
     private String fileName = "";
     private LinearLayout liner_layout_recyler;
@@ -125,18 +120,21 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private String clickDoctorName = "", clickDiseaseName = "", clickDates = "";
     private ImageView img_doctor_name, img_test_name, img_date, img_user_name;
     private String checkDialog = "";
-    private boolean isUploadClick = false;
+    private boolean isButtonRest = false, isUploadClick = false, isloadMore = false, isOpenShortBy = false, isOpenUploadNew = false, isOpenFilter = false;
     private String doctorName, dieaseName, prescriptionDate;
     private int offset = 0;
-    private boolean isloadMore = false;
     private FilterDataReports filterDataReports;
+    private LinearLayout liner_filter_date, liner_filter_doctor, liner_filter_disease;
+    private TextView txt_date, txt_doctor, txt_diease, txt_pre_total;
+
+    private RecyclerView recyclerView_filter;
+    private Filter_Reports_ListAdpter filter_prescription_listAdpter;
 
     @Override
     public boolean onBackPressed() {
 
         if (isUploadClick) {
             isUploadClick = false;
-            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
             liner_upload_new.post(new Runnable() {
                 @Override
                 public void run() {
@@ -159,20 +157,33 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
-        img_doctor_name = (ImageView) rootView.findViewById(R.id.img_doctor_name);
-        img_test_name = (ImageView) rootView.findViewById(R.id.img_test_name);
-        img_date = (ImageView) rootView.findViewById(R.id.img_date);
+        liner_filter_btn_reset = (LinearLayout) rootView.findViewById(R.id.liner_filter_btn_reset);
+        liner_btn_done = (LinearLayout) rootView.findViewById(R.id.liner_btn_done);
+        txt_pre_total = (TextView) rootView.findViewById(R.id.txt_pre_total);
+        txt_date = (TextView) rootView.findViewById(R.id.txt_date);
+        txt_doctor = (TextView) rootView.findViewById(R.id.txt_doctor);
+        txt_diease = (TextView) rootView.findViewById(R.id.txt_diease);
+
+        liner_filter_date = (LinearLayout) rootView.findViewById(R.id.txt_filter_date);
+        liner_filter_doctor = (LinearLayout) rootView.findViewById(R.id.txt_filter_doctor);
+        liner_filter_disease = (LinearLayout) rootView.findViewById(R.id.txt_filter_disease);
+
+
+        recyclerView_filter = (RecyclerView) rootView.findViewById(R.id.recyclerView_filter);
+        realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
+        realtive_notesFilter = (RelativeLayout) rootView.findViewById(R.id.realtive_notesFilter);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView_filter.setLayoutManager(mLayoutManager);
+        txt_total_prescription = (TextView) rootView.findViewById(R.id.txt_total_prescription);
+
+
         img_user_name = (ImageView) rootView.findViewById(R.id.img_user_name);
 
-        btn_reset = (ImageView) rootView.findViewById(R.id.btn_reset);
         liner_layout_recyler = (LinearLayout) rootView.findViewById(R.id.liner_layout_recyler);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
         txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
         txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
         txt_sort_user_name = (TextView) rootView.findViewById(R.id.txt_sort_user_name);
-        txt_Doctor_name = (TextView) rootView.findViewById(R.id.txt_Doctor_name);
-        txt_tst_name = (TextView) rootView.findViewById(R.id.txt_tst_name);
-        txt_dates = (TextView) rootView.findViewById(R.id.txt_dates);
         txt_no_prescr = (TextView) rootView.findViewById(R.id.txt_no_prescr);
         img_upload_animation = (ImageView) rootView.findViewById(R.id.img_upload_animation);
         img_gallery = (ImageView) rootView.findViewById(R.id.img_gallery);
@@ -186,11 +197,20 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         liner_camera = (LinearLayout) rootView.findViewById(R.id.liner_camera);
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
         layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
+
+        revealViewShort = (LinearLayout) rootView.findViewById(R.id.linearViewShort);
+        layoutButtonsShort = (LinearLayout) rootView.findViewById(R.id.layoutButtonsShort);
+        liner_short_by = (LinearLayout) rootView.findViewById(R.id.liner_short_by);
+
+
+        revealViewFilter = (LinearLayout) rootView.findViewById(R.id.linearViewFilter);
+        layoutButtonsFilter = (LinearLayout) rootView.findViewById(R.id.layoutButtonsFilter);
+        txt_filter_by = (LinearLayout) rootView.findViewById(R.id.txt_filter_by);
+
 //        img_upload_pre = (ImageView) rootView.findViewById(R.id.img_upload_pre);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
 //        img_upload_pre.setOnClickListener(this);
-        liner_animation_upload.setOnClickListener(this);
         liner_upload_new.setOnClickListener(this);
         liner_camera.setOnClickListener(this);
         liner_gallery.setOnClickListener(this);
@@ -204,81 +224,47 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         txt_heath_note.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
         txt_prescription.setOnClickListener(this);
-        btn_reset.setOnClickListener(this);
+
+        liner_short_by.setOnClickListener(this);
+        txt_filter_by.setOnClickListener(this);
+        liner_filter_date.setOnClickListener(this);
+        liner_filter_doctor.setOnClickListener(this);
+        liner_filter_disease.setOnClickListener(this);
+        liner_btn_done.setOnClickListener(this);
+        liner_filter_btn_reset.setOnClickListener(this);
+        revealViewFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                launchTwitterFilterBy(rootView);
+
+            }
+        });
+        revealViewShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchTwitterShort(rootView);
+            }
+        });
+
+        revealView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchTwitter(rootView);
+            }
+        });
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+
+        AppPreference.getInstance().setFilterDateReports("");
+        AppPreference.getInstance().setFilterDoctorReports("");
+        AppPreference.getInstance().setFilterDieseReports("");
         getAllHealthUserList();
         getLabReportList();
         getAllFilterData();
 
-        (rootView.findViewById(R.id.img_doctor_name)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (labReportListViews != null && labReportListViews.size() > 0) {
-                    checkDialog = "img_doctor_name";
-                    rotatePhoneClockwise(img_doctor_name);
-                    listPopupWindow = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, filterDataReports.getDoctorNameList()));
-                    listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_Doctor_name));
-                    listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._100dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow.setModal(true);
-                    listPopupWindow.setOnDismissListener(FragmentLabTestReport.this);
-                    listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
-                    listPopupWindow.show();
-                }
 
-            }
-        });
-
-
-        (rootView.findViewById(R.id.img_test_name)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (labReportListViews != null && labReportListViews.size() > 0) {
-                    checkDialog = "img_test_name";
-                    rotatePhoneClockwise(img_test_name);
-                    listPopupWindow1 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow1.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, filterDataReports.getDiseaseNameList()));
-                    listPopupWindow1.setAnchorView(rootView.findViewById(R.id.txt_tst_name));
-                    listPopupWindow1.setWidth((int) getResources().getDimension(R.dimen._100dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow1.setModal(true);
-                    listPopupWindow1.setOnDismissListener(FragmentLabTestReport.this);
-                    listPopupWindow1.setOnItemClickListener(popUpItemClickdisease);
-                    listPopupWindow1.show();
-
-                }
-
-            }
-        });
-
-
-        (rootView.findViewById(R.id.img_date)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (labReportListViews != null && labReportListViews.size() > 0) {
-                    checkDialog = "img_date";
-                    rotatePhoneClockwise(img_date);
-                    listPopupWindow3 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow3.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, filterDataReports.getDateList()));
-                    listPopupWindow3.setAnchorView(rootView.findViewById(R.id.txt_dates));
-                    listPopupWindow3.setWidth((int) getResources().getDimension(R.dimen._100dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow3.setModal(true);
-                    listPopupWindow3.setOnDismissListener(FragmentLabTestReport.this);
-                    listPopupWindow3.setOnItemClickListener(popUpItemClickDate);
-                    listPopupWindow3.show();
-                }
-
-            }
-        });
-
-
-        (rootView.findViewById(R.id.img_user_name)).setOnClickListener(new View.OnClickListener() {
+        (rootView.findViewById(R.id.liner_user_name_click)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (uhidItemses != null && uhidItemses.size() > 0) {
@@ -304,48 +290,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         return rootView;
     }
 
-    AdapterView.OnItemClickListener popUpItemClickDoctor = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_doctor_name);
-            listPopupWindow.dismiss();
-            if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
-                clickDoctorName = filterDataReports.getDoctorNameList().get(position);
-                txt_Doctor_name.setText("" + filterDataReports.getDoctorNameList().get(position));
-                getAllFilterData();
-                getLabReportList();
-            }
-        }
-    };
-
-    AdapterView.OnItemClickListener popUpItemClickdisease = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_test_name);
-            listPopupWindow1.dismiss();
-            if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
-                clickDiseaseName = filterDataReports.getDiseaseNameList().get(position);
-                txt_tst_name.setText("" + filterDataReports.getDiseaseNameList().get(position));
-                getAllFilterData();
-                getLabReportList();
-            }
-        }
-    };
-
-
-    AdapterView.OnItemClickListener popUpItemClickDate = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_date);
-            listPopupWindow3.dismiss();
-            if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
-                clickDates = filterDataReports.getDoctorNameList().get(position);
-                txt_dates.setText("" + filterDataReports.getDateList().get(position));
-                getAllFilterData();
-                getLabReportList();
-            }
-        }
-    };
 
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
@@ -359,10 +303,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 clickDoctorName = "";
                 clickDiseaseName = "";
                 clickDates = "";
-                txt_Doctor_name.setText("Doctor Name");
-                txt_tst_name.setText("Test Name");
-                txt_dates.setText("Date");
                 getLabReportList();
+                getAllFilterData();
 //                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
 //                        getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)));
 //                prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
@@ -374,16 +316,98 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_reset:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(btn_reset);
+
+            case R.id.liner_btn_done:
+                liner_upload_new.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitterFilterBy(rootView);
+                    }
+                });
+                clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
+                clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
+                clickDates = AppPreference.getInstance().getFilterDateReports();
+                getLabReportList();
+                getAllFilterData();
+                break;
+            case R.id.txt_filter_date:
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
+                    showAdpter(filterDataReports.getDateList(), "date");
+                }
+                break;
+            case R.id.txt_filter_doctor:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
+                    showAdpter(filterDataReports.getDoctorNameList(), "doctor");
+                }
+                break;
+            case R.id.txt_filter_disease:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.health_yellow);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
+                    showAdpter(filterDataReports.getDiseaseNameList(), "disease");
+                }
+                break;
+
+            case R.id.liner_filter_btn_reset:
+                isButtonRest = true;
                 clickDoctorName = "";
                 clickDiseaseName = "";
                 clickDates = "";
-                txt_Doctor_name.setText("Doctor Name");
-                txt_tst_name.setText("Test Name");
-                txt_dates.setText("Date");
+                AppPreference.getInstance().setFilterDateReports("");
+                AppPreference.getInstance().setFilterDoctorReports("");
+                AppPreference.getInstance().setFilterDieseReports("");
+                getAllFilterData();
                 getLabReportList();
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
+                    showAdpter(filterDataReports.getDateList(), "date");
+                }
                 break;
+            case R.id.liner_short_by:
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
+                }
+                break;
+
+            case R.id.txt_filter_by:
+
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterFilterBy(rootView);
+                        }
+                    });
+                }
+
+                break;
+
             case R.id.txt_heath_note:
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentHealthNote(), true);
@@ -410,7 +434,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             case R.id.liner_upload_new:
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                     isUploadClick = true;
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -455,34 +478,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
                 break;
-//            case R.id.img_upload_pre:
-//                showDialogOK("Choose picture from Camera or Gallery !",
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog,
-//                                                int which) {
-//                                switch (which) {
-//                                    case DialogInterface.BUTTON_POSITIVE:
-//
-//                                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-//                                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-//                                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-//                                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-//                                        break;
-//
-//                                    case DialogInterface.BUTTON_NEGATIVE:
-//                                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                                        photoPickerIntent.setType("image/*");
-//                                        startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-//
-//                                        break;
-//
-//                                }
-//                            }
-//                        });
-//
-//
-//                break;
         }
     }
 
@@ -561,57 +556,28 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) { // BEST QUALITY MATCH
-
-        //First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-
-        // Calculate inSampleSize, Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        int inSampleSize = 1;
-
-        if (height > reqHeight) {
-            inSampleSize = Math.round((float) height / (float) reqHeight);
-        }
-        int expectedWidth = width / inSampleSize;
-
-        if (expectedWidth > reqWidth) {
-            //if(Math.round((float)width / (float)reqWidth) > inSampleSize) // If bigger SampSize..
-            inSampleSize = Math.round((float) width / (float) reqWidth);
-        }
-
-        options.inSampleSize = inSampleSize;
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-
-        return BitmapFactory.decodeFile(path, options);
-    }
-
-    private void showDialogOK(String message,
-                              DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(CureFull.getInstanse().getActivityIsntanse()).setMessage(message).setCancelable(false)
-                .setPositiveButton("Camera", okListener).setNegativeButton("Gallery", okListener).show();
-    }
-
 
     public void launchTwitter(View view) {
         /*
          MARGIN_RIGHT = 16;
          FAB_BUTTON_RADIUS = 28;
          */
+
+        if (isOpenShortBy) {
+            launchTwitterShort(view);
+        }
+        if (isOpenFilter) {
+            launchTwitterFilterBy(view);
+        }
+
+
         int x = realtive_notes.getRight();
         int y = realtive_notes.getTop();
         x -= ((28 * pixelDensity) + (16 * pixelDensity));
         int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
-
         try {
             if (flag) {
-
+                isOpenUploadNew = true;
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -626,13 +592,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     anim.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animator) {
-
+                            layoutButtons.setVisibility(View.VISIBLE);
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
-                            layoutButtons.setVisibility(View.VISIBLE);
-                            layoutButtons.startAnimation(alphaAnimation);
+
                         }
 
                         @Override
@@ -656,7 +621,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
                 flag = false;
             } else {
-
+                isOpenUploadNew = false;
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -695,11 +660,239 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 flag = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
 
     }
+
+    public void launchTwitterShort(View view) {
+        if (isOpenUploadNew) {
+            launchTwitter(view);
+        }
+        if (isOpenFilter) {
+            launchTwitterFilterBy(view);
+        }
+        int x = realtive_notesShort.getLeft();
+        int y = realtive_notesShort.getTop();
+        x -= ((28 * pixelDensity) + (16 * pixelDensity));
+        int hypotenuse = (int) Math.hypot(realtive_notesShort.getWidth(), realtive_notesShort.getHeight());
+        try {
+            if (flagShort) {
+                isOpenShortBy = true;
+                if (labReportListViews != null) {
+                    txt_total_prescription.setText("Prescription (" + labReportListViews.size() + ")");
+
+                }
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                            revealViewShort.getLayoutParams();
+                    parameters.height = realtive_notesShort.getHeight();
+                    revealViewShort.setLayoutParams(parameters);
+
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewShort, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            layoutButtonsShort.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    revealViewShort.setVisibility(View.VISIBLE);
+                    anim.start();
+                } else {
+                    revealViewShort.setVisibility(View.VISIBLE);
+                    layoutButtonsShort.setVisibility(View.VISIBLE);
+                }
+
+
+                flagShort = false;
+            } else {
+                isOpenShortBy = false;
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewShort, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealViewShort.setVisibility(View.GONE);
+                            layoutButtonsShort.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    anim.start();
+                } else {
+                    revealViewShort.setVisibility(View.GONE);
+                    layoutButtonsShort.setVisibility(View.GONE);
+                }
+
+                flagShort = true;
+            }
+        } catch (Exception e) {
+
+        }
+
+
+    }
+
+    public void launchTwitterFilterBy(View view) {
+        /*
+         MARGIN_RIGHT = 16;
+         FAB_BUTTON_RADIUS = 28;
+         */
+        if (isOpenUploadNew) {
+            launchTwitter(view);
+        }
+        if (isOpenShortBy) {
+            launchTwitterShort(view);
+        }
+
+        int x = realtive_notesFilter.getLeft();
+        int y = realtive_notesFilter.getTop();
+        x -= ((28 * pixelDensity) + (16 * pixelDensity));
+        int hypotenuse = (int) Math.hypot(realtive_notesFilter.getWidth(), realtive_notesFilter.getHeight());
+        try {
+            if (flagFilter) {
+                isOpenFilter = true;
+                if (labReportListViews != null && labReportListViews.size() > 0) {
+                    txt_pre_total.setText("Prescription (" + labReportListViews.size() + ")");
+                }
+
+                if (filterDataReports.getDateList() != null) {
+                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    showAdpter(filterDataReports.getDateList(), "date");
+                }
+
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                            revealViewFilter.getLayoutParams();
+                    parameters.height = realtive_notesFilter.getHeight();
+                    revealViewFilter.setLayoutParams(parameters);
+
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            layoutButtonsFilter.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    revealViewFilter.setVisibility(View.VISIBLE);
+                    anim.start();
+                } else {
+                    revealViewFilter.setVisibility(View.VISIBLE);
+                    layoutButtonsFilter.setVisibility(View.VISIBLE);
+                }
+
+
+                flagFilter = false;
+            } else {
+                isOpenFilter = false;
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealViewFilter.setVisibility(View.GONE);
+                            layoutButtonsFilter.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    anim.start();
+                } else {
+                    revealViewFilter.setVisibility(View.GONE);
+                    layoutButtonsFilter.setVisibility(View.GONE);
+                }
+
+                flagFilter = true;
+            }
+        } catch (Exception e) {
+
+        }
+
+
+    }
+
 
     @Override
     public void optAddMoreImage(String messsage) {
@@ -776,40 +969,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
 
-//    private void sentSaveTestingServer(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImage) {
-//        String response = "";
-//        RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-//        String removeSyptoms = "";
-//        try {
-//            for (int i = 0; i < prescriptionImage.size(); i++) {
-//                if (prescriptionImage.get(i).getImageNumber() != 000) {
-//                    if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-//                        String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
-//                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
-//                        Log.e("check", "" + removeSyptoms);
-//                    } else {
-//                        int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
-//                        String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
-//                        Log.e("fileName", " " + hello);
-//                        removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
-//                        Log.e("check", "" + removeSyptoms);
-//                    }
-//
-//                }
-//            }
-//            if (removeSyptoms.endsWith(",")) {
-//                removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
-//            }
-////            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
-//            response = builderOkHttp.postR(MyConstants.WebUrls.UPLOAD_LAB_TEST_REPORT, null, getFileParam(prescriptionImage), doctorName, dieaseName, prescriptionDate, removeSyptoms);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        Log.e("response :- ", "" + response);
-//
-//    }
-
-
     public static HashMap<String, List<File>> getFileParam(List<PrescriptionImageList> image) {
         HashMap<String, List<File>> param = new HashMap<>();
         List<File> files = new ArrayList<>();
@@ -883,65 +1042,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
 
-    public void jsonUploadPrescription(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImageListss) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.LabReportUpload(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
-        Log.e("jsonUploadPrescription", ":- " + "size :- " + prescriptionImageListss.size());
-        Log.e("jsonUploadPrescription", ":- " + data.toString() + " size :- " + prescriptionImageListss.size());
-
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOAD_LAB_TEST_REPORT, data,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e("upload, URL 3.", response.toString());
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            getLabReportList();
-//                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
-//                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-//                            }
-                        } else {
-                            try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-    }
-
-
     private void getLabReportList() {
         isloadMore = false;
         offset = 0;
@@ -964,7 +1064,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=6&offset=" + offset + s,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + s,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -983,7 +1083,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
                             if (labReportListViewsDummy != null && labReportListViewsDummy.size() > 0) {
-                                if (labReportListViewsDummy.size() < 6) {
+                                if (labReportListViewsDummy.size() < 10) {
                                     isloadMore = true;
                                 }
                                 labReportListViews.addAll(labReportListViewsDummy);
@@ -1054,7 +1154,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             offset = +offsets;
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=6&offset=" + offset + s,
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + s,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -1072,7 +1172,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
                                 if (labReportListViewsDummy != null && labReportListViewsDummy.size() > 0) {
-                                    if (labReportListViewsDummy.size() < 6) {
+                                    if (labReportListViewsDummy.size() < 10) {
                                         isloadMore = true;
                                     }
                                     labReportListViews.addAll(labReportListViewsDummy);
@@ -1119,36 +1219,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
 
-    private List<String> getDiseaseListAsStringList(List<LabReportListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (LabReportListView logy : result) {
-                hsDoctorList.add(logy.getTestName());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-    }
-
-    private List<String> getDoctorNameAsStringList(List<LabReportListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (LabReportListView logy : result) {
-                hsDoctorList.add(logy.getDoctorName());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-    }
-
-    private List<String> getDateAsStringList(List<LabReportListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (LabReportListView logy : result) {
-                hsDoctorList.add(logy.getReportDate());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-    }
-
     private List<String> getUserAsStringList(List<UHIDItems> result) {
         List<String> list = new ArrayList<>();
 
@@ -1165,57 +1235,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             for (UHIDItems logy : result)
                 list.add(logy.getCfUuhid());
         return list;
-    }
-
-    private List<String> getUploadByAsStringList(List<LabReportListView> result) {
-        List<String> list = new ArrayList<>();
-
-        if (result != null)
-            for (LabReportListView logy : result)
-                list.add(logy.getUploadedBy());
-        return list;
-    }
-
-
-    public ArrayList<LabReportListView> getFilterListDoctor(String charSequence) {
-        ArrayList<LabReportListView> searched = new ArrayList<LabReportListView>();
-        for (LabReportListView str : labReportListViews) {
-            if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-
-        }
-        return searched;
-    }
-
-    public ArrayList<LabReportListView> getFilterListDisease(String charSequence) {
-        ArrayList<LabReportListView> searched = new ArrayList<LabReportListView>();
-        for (LabReportListView str : labReportListViews) {
-            if (str.getTestName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-        }
-        return searched;
-    }
-
-    public ArrayList<LabReportListView> getFilterListUploadBy(String charSequence) {
-        ArrayList<LabReportListView> searched = new ArrayList<LabReportListView>();
-        for (LabReportListView str : labReportListViews) {
-            if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-        }
-        return searched;
-    }
-
-    public ArrayList<LabReportListView> getFilterListDate(String charSequence) {
-        ArrayList<LabReportListView> searched = new ArrayList<LabReportListView>();
-        for (LabReportListView str : labReportListViews) {
-            if (str.getReportDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-        }
-        return searched;
     }
 
 
@@ -1382,39 +1401,25 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     @Override
     public void onDismiss() {
-        if (checkDialog.equalsIgnoreCase("img_doctor_name")) {
-            rotatePhoneAntiClockwise(img_doctor_name);
-        } else if (checkDialog.equalsIgnoreCase("img_test_name")) {
-            rotatePhoneAntiClockwise(img_test_name);
-        } else if (checkDialog.equalsIgnoreCase("img_date")) {
-            rotatePhoneAntiClockwise(img_date);
-        } else if (checkDialog.equalsIgnoreCase("img_user_name")) {
+        if (checkDialog.equalsIgnoreCase("img_user_name")) {
             rotatePhoneAntiClockwise(img_user_name);
         }
     }
 
     private void getAllFilterData() {
-
+        clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
+        clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
+        clickDates = AppPreference.getInstance().getFilterDateReports();
         StringBuilder s = new StringBuilder();
-        if (!clickDoctorName.equalsIgnoreCase("")) {
-            s.append("doctorName=" + clickDoctorName);
-        }
-        if (!clickDiseaseName.equalsIgnoreCase("")) {
-            s.append("&diseaseName=" + clickDiseaseName);
-        }
-        if (!clickDates.equalsIgnoreCase("")) {
-            s.append("&date=" + clickDates);
-        }
-
-
+        s.append("doctorName=" + clickDoctorName);
+        s.append("&diseaseName=" + clickDiseaseName);
+        s.append("&date=" + clickDates);
         if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
             s.append("");
         }
-
-
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1430,6 +1435,14 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             filterDataReports = ParseJsonData.getInstance().getFilterDataReports(response);
+                            if (isButtonRest) {
+                                isButtonRest = false;
+                                if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
+                                    showAdpter(filterDataReports.getDateList(), "date");
+                                }
+                            }
+
+
                         } else {
 
                         }
@@ -1457,5 +1470,21 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    public void showAdpter(ArrayList<String> strings, String filterName) {
+        if (strings != null && strings.size() > 0) {
+            filter_prescription_listAdpter = null;
+            filter_prescription_listAdpter = new Filter_Reports_ListAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(), strings, filterName);
+            recyclerView_filter.setAdapter(filter_prescription_listAdpter);
+            filter_prescription_listAdpter.notifyDataSetChanged();
+        }
+    }
+
+
+    public void callFilterAgain() {
+        getAllFilterData();
+        if (filter_prescription_listAdpter != null)
+            filter_prescription_listAdpter.notifyDataSetChanged();
     }
 }

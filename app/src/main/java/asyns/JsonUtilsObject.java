@@ -190,12 +190,12 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject toSetGoals(String targetSteps, String targetCaloriesToBurn, String targetWaterInTake) {
+    public static JSONObject toSetGoals(String targetSteps, String targetCaloriesToBurn, double targetWaterInTake) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("targetSteps", targetSteps.trim());
             jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn.trim());
-            jsonParent.put("targetWaterInTake", targetWaterInTake.trim());
+            jsonParent.put("targetWaterInTake", targetWaterInTake);
 
         } catch (Exception e) {
 
@@ -324,7 +324,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
 
         return jsonParent;
     }
-
 
 
     public static String changeTOBase64(Bitmap bitmap) {

@@ -657,6 +657,97 @@ public class AppPreference implements MyConstants.JsonUtils {
     }
 
 
+    public void setFilterDoctor(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDoctor", className).commit();
+    }
+
+    public String getFilterDoctor() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDoctor", "");
+        return "";
+    }
+
+    public void setFilterDate(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDate", className).commit();
+    }
+
+    public String getFilterDate() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDate", "");
+        return "";
+    }
+
+    public void setFilterDiese(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDiese", className).commit();
+    }
+
+    public String getFilterDiese() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDiese", "");
+        return "";
+    }
+
+
+    public void setFilterUploadBy(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("UploadBy", className).commit();
+    }
+
+    public String getFilterUploadBy() {
+        if (_prefrence != null)
+            return _prefrence.getString("UploadBy", "");
+        return "";
+    }
+
+
+    public void setFilterDoctorReports(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDoctorReports", className).commit();
+    }
+
+    public String getFilterDoctorReports() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDoctorReports", "");
+        return "";
+    }
+
+    public void setFilterDateReports(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDateReports", className).commit();
+    }
+
+    public String getFilterDateReports() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDateReports", "");
+        return "";
+    }
+
+    public void setFilterDieseReports(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("FilterDieseReports", className).commit();
+    }
+
+    public String getFilterDieseReports() {
+        if (_prefrence != null)
+            return _prefrence.getString("FilterDieseReports", "");
+        return "";
+    }
+
+
+    public void setFilterUploadByReports(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("UploadByReports", className).commit();
+    }
+
+    public String getFilterUploadByReports() {
+        if (_prefrence != null)
+            return _prefrence.getString("UploadByReports", "");
+        return "";
+    }
+
 }
 
 

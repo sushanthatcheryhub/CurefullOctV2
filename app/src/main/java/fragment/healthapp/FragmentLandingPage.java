@@ -177,46 +177,46 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
         Log.e("aaya", ":-");
 
-        List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
-        if (list != null) {
-            for (Fragment f : list) {
-                if (f != null && f instanceof FragmentEditGoal) {
-                    Log.e("FragmentEditGoal", ":-  FragmentEditGoal");
-                    String gender = "";
-                    if (AppPreference.getInstance().getMale()) {
-                        gender = "MALE";
-                    } else {
-                        gender = "FEMALE";
-                    }
-                    String feet = "";
-                    String inch = "";
-                    if (AppPreference.getInstance().getFtIN()) {
-                        feet = AppPreference.getInstance().getGoalHeightFeet();
-                        inch = AppPreference.getInstance().getGoalHeightInch();
-                    } else {
-                        feet = AppPreference.getInstance().getGoalHeightCm();
-                    }
-
-                    String kgs = "";
-                    if (AppPreference.getInstance().getKgs()) {
-                        kgs = AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams();
-                    } else {
-                        kgs = AppPreference.getInstance().getGoalWeightPound();
-                    }
-
-                    if (!feet.equalsIgnoreCase("0") || !feet.equalsIgnoreCase("") && !kgs.equalsIgnoreCase("0") || !kgs.equalsIgnoreCase("")) {
-                        double kg = Double.parseDouble(kgs);
-                        Log.e("kg to p ", " " + new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)));
-                        if (AppPreference.getInstance().getFtIN()) {
-                            jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(feet), String.valueOf(inch))), new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
-                        } else {
-                            jsonUploadGenderDetails(feet, new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
-
-                        }
-                    }
-                }
-            }
-        }
+//        List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
+//        if (list != null) {
+//            for (Fragment f : list) {
+//                if (f != null && f instanceof FragmentEditGoal) {
+//                    Log.e("FragmentEditGoal", ":-  FragmentEditGoal");
+//                    String gender = "";
+//                    if (AppPreference.getInstance().getMale()) {
+//                        gender = "MALE";
+//                    } else {
+//                        gender = "FEMALE";
+//                    }
+//                    String feet = "";
+//                    String inch = "";
+//                    if (AppPreference.getInstance().getFtIN()) {
+//                        feet = AppPreference.getInstance().getGoalHeightFeet();
+//                        inch = AppPreference.getInstance().getGoalHeightInch();
+//                    } else {
+//                        feet = AppPreference.getInstance().getGoalHeightCm();
+//                    }
+//
+//                    String kgs = "";
+//                    if (AppPreference.getInstance().getKgs()) {
+//                        kgs = AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams();
+//                    } else {
+//                        kgs = AppPreference.getInstance().getGoalWeightPound();
+//                    }
+//
+//                    if (!feet.equalsIgnoreCase("0") || !feet.equalsIgnoreCase("") && !kgs.equalsIgnoreCase("0") || !kgs.equalsIgnoreCase("")) {
+//                        double kg = Double.parseDouble(kgs);
+//                        Log.e("kg to p ", " " + new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)));
+//                        if (AppPreference.getInstance().getFtIN()) {
+//                            jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(feet), String.valueOf(inch))), new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
+//                        } else {
+//                            jsonUploadGenderDetails(feet, new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
 
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
@@ -665,12 +665,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                     img_minus_icon.setVisibility(View.VISIBLE);
                 }
                 txt_water_level.setText(waterLevel + "ml");
-                AppPreference.getInstance().setWaterInTake("" + waterLevel);
+                getIncreseWaterInTake();
                 break;
             case R.id.img_minus_icon:
                 waterLevel -= Integer.parseInt(AppPreference.getInstance().getGlass());
                 txt_water_level.setText(waterLevel + "ml");
-                AppPreference.getInstance().setWaterInTake("" + waterLevel);
                 if (waterLevel == 0) {
                     img_minus_icon.setVisibility(View.INVISIBLE);
                 }
@@ -806,7 +805,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
                     double wirght = 0;
                     Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
-                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("nul")) {
+                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
                         wirght = 0;
                     } else {
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
@@ -1221,63 +1220,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     }
 
 
-    public void jsonUploadGenderDetails(String height, String weight, String dateOfBirth, String gender) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.toSetGoalsDetails(height, weight, dateOfBirth, gender);
-        Log.e("jsonUploadPrescription", ":- " + data.toString());
-
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e("GenderDetails, URL 3.", response.toString());
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-//                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
-//                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-//                            }
-                        } else {
-                            try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-    }
-
-
     private void getDailyHealth() {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
@@ -1302,6 +1244,64 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                                     AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft);
                                     preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
                                     AppPreference.getInstance().setStepsCount("" + steps);
+                                }
+
+                            } else {
+
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    private void getIncreseWaterInTake() {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.INCRESE_WATER_INTAKE,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("getIncres, URL 1.", response);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                if (!json.getString("payload").equals(null)) {
+                                    JSONObject json1 = new JSONObject(json.getString("payload"));
+                                    String waterIntakeDone1 = json1.getString("waterIntakeDone");
+                                    String waterIntakeLeft1 = json1.getString("waterIntakeLeft");
+                                    AppPreference.getInstance().setWaterInTake("" + waterIntakeDone1);
+                                    AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
                                 }
 
                             } else {

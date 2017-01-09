@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -56,6 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import adpter.Filter_prescription_ListAdpter;
+import adpter.UHID_ListAdpter;
 import adpter.UploadPrescriptionAdpter;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -87,10 +91,16 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
     private RelativeLayout realtive_notes;
+    private RelativeLayout realtive_notesShort;
+    private RelativeLayout realtive_notesFilter;
     private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
-    private LinearLayout liner_gallery, liner_camera;
+    private LinearLayout liner_gallery, liner_camera, liner_btn_done, liner_filter_btn_reset;
+    private LinearLayout revealViewShort, layoutButtonsShort, liner_short_by;
+    private LinearLayout revealViewFilter, layoutButtonsFilter, txt_filter_by;
     private float pixelDensity;
     boolean flag = true;
+    boolean flagShort = true;
+    boolean flagFilter = true;
     private ImageView img_user_name, img_upload, img_gallery, img_camera, img_upload_animation;
     private RecyclerView prescriptionItemView;
     private GridLayoutManager lLayout;
@@ -101,14 +111,10 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private String selectUploadPrescription = "";
     private int value = 0;
     private RequestQueue requestQueue;
-    private ListPopupWindow listPopupWindow;
-    private ListPopupWindow listPopupWindow1;
-    private ListPopupWindow listPopupWindow2;
-    private ListPopupWindow listPopupWindow3;
     private ListPopupWindow listPopupWindow4;
-    private TextView txt_no_prescr, txt_sort_doctor_name, txt_disease_names, txt_upload_by, txt_dates;
+    private TextView txt_no_prescr;
     private LinearLayout txt_heath_note, txt_heath_app, txt_lab_reports;
-    private TextView txt_sort_user_name;
+    private TextView txt_sort_user_name, txt_total_prescription;
     private List<UHIDItems> uhidItemses;
     private String path;
     private int imageName = 0;
@@ -118,11 +124,16 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private String newMessage = "";
     private String clickDoctorName = "", clickDiseaseName = "", clickUploadBy = "", clickDates = "";
     private String checkDialog = "";
-    private boolean isUploadClick = false;
+    private boolean isButtonRest = false, isUploadClick = false, isloadMore = false, isOpenShortBy = false, isOpenUploadNew = false, isOpenFilter = false;
     private String doctorName, dieaseName, prescriptionDate;
     private int offset = 0;
-    private boolean isloadMore = false;
     private FilterDataPrescription filterDataPrescription;
+    private LinearLayout liner_filter_date, liner_filter_doctor, liner_filter_disease, liner_filter_uploadby;
+    private TextView txt_date, txt_doctor, txt_diease, txt_uploadby, txt_pre_total;
+
+    private RecyclerView recyclerView_filter;
+    private Filter_prescription_ListAdpter filter_prescription_listAdpter;
+
 
     @Override
     public boolean onBackPressed() {
@@ -150,18 +161,31 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         rootView = inflater.inflate(R.layout.fragment_health_presciption,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        liner_filter_btn_reset = (LinearLayout) rootView.findViewById(R.id.liner_filter_btn_reset);
+        liner_btn_done = (LinearLayout) rootView.findViewById(R.id.liner_btn_done);
+        txt_pre_total = (TextView) rootView.findViewById(R.id.txt_pre_total);
+        txt_date = (TextView) rootView.findViewById(R.id.txt_date);
+        txt_doctor = (TextView) rootView.findViewById(R.id.txt_doctor);
+        txt_diease = (TextView) rootView.findViewById(R.id.txt_diease);
+        txt_uploadby = (TextView) rootView.findViewById(R.id.txt_uploadby);
 
-        img_doctor_name = (ImageView) rootView.findViewById(R.id.img_doctor_name);
-        img_date = (ImageView) rootView.findViewById(R.id.img_date);
+        liner_filter_date = (LinearLayout) rootView.findViewById(R.id.txt_filter_date);
+        liner_filter_doctor = (LinearLayout) rootView.findViewById(R.id.txt_filter_doctor);
+        liner_filter_disease = (LinearLayout) rootView.findViewById(R.id.txt_filter_disease);
+        liner_filter_uploadby = (LinearLayout) rootView.findViewById(R.id.txt_filter_uploadby);
 
 
+        recyclerView_filter = (RecyclerView) rootView.findViewById(R.id.recyclerView_filter);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView_filter.setLayoutManager(mLayoutManager);
+
+
+        txt_total_prescription = (TextView) rootView.findViewById(R.id.txt_total_prescription);
         img_user_name = (ImageView) rootView.findViewById(R.id.img_user_name);
-        btn_reset = (ImageView) rootView.findViewById(R.id.btn_reset);
         txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
         txt_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_heath_app);
         txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
         txt_sort_user_name = (TextView) rootView.findViewById(R.id.txt_sort_user_name);
-        txt_dates = (TextView) rootView.findViewById(R.id.txt_dates);
         txt_no_prescr = (TextView) rootView.findViewById(R.id.txt_no_prescr);
         img_upload_animation = (ImageView) rootView.findViewById(R.id.img_upload_animation);
         img_gallery = (ImageView) rootView.findViewById(R.id.img_gallery);
@@ -169,12 +193,25 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         img_upload = (ImageView) rootView.findViewById(R.id.img_upload);
         pixelDensity = getResources().getDisplayMetrics().density;
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
+        realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
+        realtive_notesFilter = (RelativeLayout) rootView.findViewById(R.id.realtive_notesFilter);
         liner_animation_upload = (LinearLayout) rootView.findViewById(R.id.liner_animation_upload);
         liner_upload_new = (LinearLayout) rootView.findViewById(R.id.liner_upload_new);
         liner_gallery = (LinearLayout) rootView.findViewById(R.id.liner_gallery);
         liner_camera = (LinearLayout) rootView.findViewById(R.id.liner_camera);
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
         layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
+
+        revealViewShort = (LinearLayout) rootView.findViewById(R.id.linearViewShort);
+        layoutButtonsShort = (LinearLayout) rootView.findViewById(R.id.layoutButtonsShort);
+        liner_short_by = (LinearLayout) rootView.findViewById(R.id.liner_short_by);
+
+
+        revealViewFilter = (LinearLayout) rootView.findViewById(R.id.linearViewFilter);
+        layoutButtonsFilter = (LinearLayout) rootView.findViewById(R.id.layoutButtonsFilter);
+        txt_filter_by = (LinearLayout) rootView.findViewById(R.id.txt_filter_by);
+
+
 //        img_upload_pre = (ImageView) rootView.findViewById(R.id.img_upload_pre);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
@@ -186,6 +223,35 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         txt_heath_note.setOnClickListener(this);
         txt_heath_app.setOnClickListener(this);
         txt_lab_reports.setOnClickListener(this);
+        liner_short_by.setOnClickListener(this);
+        txt_filter_by.setOnClickListener(this);
+        liner_filter_date.setOnClickListener(this);
+        liner_filter_doctor.setOnClickListener(this);
+        liner_filter_disease.setOnClickListener(this);
+        liner_filter_uploadby.setOnClickListener(this);
+        liner_btn_done.setOnClickListener(this);
+        liner_filter_btn_reset.setOnClickListener(this);
+        revealViewFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                launchTwitterFilterBy(rootView);
+
+            }
+        });
+        revealViewShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchTwitterShort(rootView);
+            }
+        });
+
+        revealView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchTwitter(rootView);
+            }
+        });
 //        btn_reset.setOnClickListener(this);
 
         prescriptionItemView = (RecyclerView) rootView.findViewById(R.id.grid_list_symptom);
@@ -194,15 +260,17 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         lLayout = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
         prescriptionItemView.setLayoutManager(lLayout);
         prescriptionItemView.setHasFixedSize(true);
-
-
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        AppPreference.getInstance().setFilterDate("");
+        AppPreference.getInstance().setFilterDoctor("");
+        AppPreference.getInstance().setFilterDiese("");
+        AppPreference.getInstance().setFilterUploadBy("");
         getAllHealthUserList();
-        getPrescriptionList();
         getAllFilterData();
+        getPrescriptionList();
 
 
-        (rootView.findViewById(R.id.img_user_name)).setOnClickListener(new View.OnClickListener() {
+        (rootView.findViewById(R.id.liner_user_name_click)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (uhidItemses != null && uhidItemses.size() > 0) {
@@ -231,68 +299,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     }
 
 
-    AdapterView.OnItemClickListener popUpItemClickDoctor = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_doctor_name);
-            listPopupWindow.dismiss();
-//            Log.e("Doctor Name ", ":- " + getDoctorNameAsStringList(prescriptionListViews).get(position));
-            if (filterDataPrescription.getDoctorNameList() != null & filterDataPrescription.getDoctorNameList().size() > 0) {
-//                txt_disease_names.setText("Disease Name");
-//                txt_upload_by.setText("Uploaded By");
-//                txt_dates.setText("Date");
-                clickDoctorName = filterDataPrescription.getDoctorNameList().get(position);
-                txt_sort_doctor_name.setText("" + filterDataPrescription.getDoctorNameList().get(position));
-                getAllFilterData();
-                getPrescriptionList();
-            }
-        }
-    };
-
-    AdapterView.OnItemClickListener popUpItemClickdisease = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_disease_name);
-            listPopupWindow1.dismiss();
-            if (filterDataPrescription.getDiseaseNameList() != null & filterDataPrescription.getDiseaseNameList().size() > 0) {
-                clickDiseaseName = "" + filterDataPrescription.getDiseaseNameList().get(position);
-                txt_disease_names.setText("" + filterDataPrescription.getDiseaseNameList().get(position));
-                getPrescriptionList();
-            }
-        }
-    };
-
-
-    AdapterView.OnItemClickListener popUpItemClickupload_by = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_upload_by);
-            listPopupWindow2.dismiss();
-
-            if (filterDataPrescription.getUploadedByList() != null & filterDataPrescription.getUploadedByList().size() > 0) {
-                clickUploadBy = filterDataPrescription.getUploadedByList().get(position);
-                txt_upload_by.setText("" + filterDataPrescription.getUploadedByList().get(position));
-                getPrescriptionList();
-
-            }
-        }
-    };
-
-    AdapterView.OnItemClickListener popUpItemClickDate = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            rotatePhoneAntiClockwise(img_date);
-            listPopupWindow3.dismiss();
-            if (filterDataPrescription.getDateList() != null & filterDataPrescription.getDateList().size() > 0) {
-                clickDates = filterDataPrescription.getDateList().get(position);
-                txt_dates.setText("" + filterDataPrescription.getDateList().get(position));
-                getPrescriptionList();
-
-            }
-        }
-    };
-
-
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -307,15 +313,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 clickDiseaseName = "";
                 clickDates = "";
                 clickUploadBy = "";
-                txt_sort_doctor_name.setText("Doctor Name");
-                txt_disease_names.setText("Disease Name");
-                txt_upload_by.setText("Uploaded By");
-                txt_dates.setText("Date");
                 getPrescriptionList();
-//                uploadPrescriptionAdpter = new UploadPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
-//                        getFilterListDate(getDateAsStringList(prescriptionListViews).get(position)));
-//                prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-//                uploadPrescriptionAdpter.notifyDataSetChanged();
             }
         }
     };
@@ -325,18 +323,93 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.btn_reset:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(btn_reset);
+            case R.id.liner_btn_done:
+                liner_upload_new.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitterFilterBy(rootView);
+                    }
+                });
+                clickDoctorName = AppPreference.getInstance().getFilterDoctor();
+                clickDiseaseName = AppPreference.getInstance().getFilterDiese();
+                clickDates = AppPreference.getInstance().getFilterDate();
+                clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
+                getPrescriptionList();
+                getAllFilterData();
+                break;
+            case R.id.txt_filter_date:
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataPrescription.getDateList() != null && filterDataPrescription.getDateList().size() > 0) {
+                    showAdpter(filterDataPrescription.getDateList(), "date");
+                }
+                break;
+            case R.id.txt_filter_doctor:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataPrescription.getDoctorNameList() != null && filterDataPrescription.getDoctorNameList().size() > 0) {
+                    showAdpter(filterDataPrescription.getDoctorNameList(), "doctor");
+                }
+                break;
+            case R.id.txt_filter_disease:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.health_yellow);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                if (filterDataPrescription.getDiseaseNameList() != null && filterDataPrescription.getDiseaseNameList().size() > 0) {
+                    showAdpter(filterDataPrescription.getDiseaseNameList(), "disease");
+                }
+                break;
+            case R.id.txt_filter_uploadby:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.health_yellow);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                if (filterDataPrescription.getUploadedByList() != null && filterDataPrescription.getUploadedByList().size() > 0) {
+                    showAdpter(filterDataPrescription.getUploadedByList(), "uploadBy");
+                }
+                break;
+            case R.id.liner_filter_btn_reset:
+                isButtonRest = true;
                 clickDoctorName = "";
                 clickDiseaseName = "";
                 clickDates = "";
                 clickUploadBy = "";
-                txt_sort_doctor_name.setText("Doctor Name");
-                txt_disease_names.setText("Disease Name");
-                txt_upload_by.setText("Uploaded By");
-                txt_dates.setText("Date");
+                AppPreference.getInstance().setFilterDate("");
+                AppPreference.getInstance().setFilterDoctor("");
+                AppPreference.getInstance().setFilterDiese("");
+                AppPreference.getInstance().setFilterUploadBy("");
                 getAllFilterData();
                 getPrescriptionList();
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+
                 break;
 
             case R.id.txt_heath_note:
@@ -363,6 +436,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                     }
                 });
                 break;
+
+
             case R.id.liner_upload_new:
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                     isUploadClick = true;
@@ -375,6 +450,35 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 }
 
                 break;
+
+            case R.id.liner_short_by:
+
+
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
+                }
+
+                break;
+
+            case R.id.txt_filter_by:
+
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterFilterBy(rootView);
+                        }
+                    });
+                }
+
+                break;
+
+
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
                     value = 0;
@@ -582,12 +686,22 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
          MARGIN_RIGHT = 16;
          FAB_BUTTON_RADIUS = 28;
          */
-        int x = realtive_notes.getLeft()/2;
+
+        if (isOpenShortBy) {
+            launchTwitterShort(view);
+        }
+        if (isOpenFilter) {
+            launchTwitterFilterBy(view);
+        }
+
+
+        int x = realtive_notes.getRight();
         int y = realtive_notes.getTop();
         x -= ((28 * pixelDensity) + (16 * pixelDensity));
         int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
         try {
             if (flag) {
+                isOpenUploadNew = true;
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -631,7 +745,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
                 flag = false;
             } else {
-
+                isOpenUploadNew = false;
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -668,6 +782,241 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 }
 
                 flag = true;
+            }
+        } catch (Exception e) {
+
+        }
+
+
+    }
+
+    public void launchTwitterShort(View view) {
+        /*
+         MARGIN_RIGHT = 16;
+         FAB_BUTTON_RADIUS = 28;
+         */
+
+        if (isOpenUploadNew) {
+            launchTwitter(view);
+        }
+        if (isOpenFilter) {
+            launchTwitterFilterBy(view);
+        }
+        int x = realtive_notesShort.getLeft();
+        int y = realtive_notesShort.getTop();
+        x -= ((28 * pixelDensity) + (16 * pixelDensity));
+        int hypotenuse = (int) Math.hypot(realtive_notesShort.getWidth(), realtive_notesShort.getHeight());
+        try {
+            if (flagShort) {
+                isOpenShortBy = true;
+                if (prescriptionListViews != null) {
+                    txt_total_prescription.setText("Prescription (" + prescriptionListViews.size() + ")");
+
+                }
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                            revealViewShort.getLayoutParams();
+                    parameters.height = realtive_notesShort.getHeight();
+                    revealViewShort.setLayoutParams(parameters);
+
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewShort, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            layoutButtonsShort.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    revealViewShort.setVisibility(View.VISIBLE);
+                    anim.start();
+                } else {
+                    revealViewShort.setVisibility(View.VISIBLE);
+                    layoutButtonsShort.setVisibility(View.VISIBLE);
+                }
+
+
+                flagShort = false;
+            } else {
+                isOpenShortBy = false;
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewShort, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealViewShort.setVisibility(View.GONE);
+                            layoutButtonsShort.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    anim.start();
+                } else {
+                    revealViewShort.setVisibility(View.GONE);
+                    layoutButtonsShort.setVisibility(View.GONE);
+                }
+
+                flagShort = true;
+            }
+        } catch (Exception e) {
+
+        }
+
+
+    }
+
+    public void launchTwitterFilterBy(View view) {
+        /*
+         MARGIN_RIGHT = 16;
+         FAB_BUTTON_RADIUS = 28;
+         */
+
+        if (isOpenUploadNew) {
+            launchTwitter(view);
+        }
+        if (isOpenShortBy) {
+            launchTwitterShort(view);
+        }
+
+        int x = realtive_notesFilter.getLeft();
+        int y = realtive_notesFilter.getTop();
+        x -= ((28 * pixelDensity) + (16 * pixelDensity));
+        int hypotenuse = (int) Math.hypot(realtive_notesFilter.getWidth(), realtive_notesFilter.getHeight());
+        try {
+            if (flagFilter) {
+                isOpenFilter = true;
+                if (prescriptionListViews != null & prescriptionListViews.size() > 0) {
+                    txt_pre_total.setText("Prescription (" + prescriptionListViews.size() + ")");
+                }
+
+                if (filterDataPrescription != null) {
+                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                    showAdpter(filterDataPrescription.getDateList(), "date");
+                }
+
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                            revealViewFilter.getLayoutParams();
+                    parameters.height = realtive_notesFilter.getHeight();
+                    revealViewFilter.setLayoutParams(parameters);
+
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, 0, hypotenuse);
+                    anim.setDuration(700);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            layoutButtonsFilter.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    revealViewFilter.setVisibility(View.VISIBLE);
+                    anim.start();
+                } else {
+                    revealViewFilter.setVisibility(View.VISIBLE);
+                    layoutButtonsFilter.setVisibility(View.VISIBLE);
+                }
+
+
+                flagFilter = false;
+            } else {
+                isOpenFilter = false;
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, hypotenuse, 0);
+                    anim.setDuration(400);
+
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            revealViewFilter.setVisibility(View.GONE);
+                            layoutButtonsFilter.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+                    anim.start();
+                } else {
+                    revealViewFilter.setVisibility(View.GONE);
+                    layoutButtonsFilter.setVisibility(View.GONE);
+                }
+
+                flagFilter = true;
             }
         } catch (Exception e) {
 
@@ -746,11 +1095,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             });
         }
 
-
-    }
-
-
-    private void sentSaveTestingServer(String doctorName, String dieaseName, String prescriptionDate, List<PrescriptionImageList> prescriptionImage) {
 
     }
 
@@ -854,7 +1198,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=6&offset=" + offset + s,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=10&offset=" + offset + s,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -873,7 +1217,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                             prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
                             if (prescriptionListViewsDummy.size() > 0 && prescriptionListViewsDummy != null) {
                                 prescriptionListViews.addAll(prescriptionListViewsDummy);
-                                if (prescriptionListViewsDummy.size() < 6) {
+                                if (prescriptionListViewsDummy.size() < 10) {
                                     isloadMore = true;
                                 }
                                 AppPreference.getInstance().setPrescriptionSize(1);
@@ -930,18 +1274,10 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
         } else {
             StringBuilder s = new StringBuilder();
-            if (!clickDoctorName.equalsIgnoreCase("")) {
-                s.append("&doctorName=" + clickDoctorName);
-            }
-            if (!clickDiseaseName.equalsIgnoreCase("")) {
-                s.append("&diseaseName=" + clickDiseaseName);
-            }
-            if (!clickDates.equalsIgnoreCase("")) {
-                s.append("&date=" + clickDates);
-            }
-            if (!clickUploadBy.equalsIgnoreCase("")) {
-                s.append("&uploadedBy=" + clickUploadBy);
-            }
+            s.append("&doctorName=" + clickDoctorName);
+            s.append("&diseaseName=" + clickDiseaseName);
+            s.append("&date=" + clickDates);
+            s.append("&uploadedBy=" + clickUploadBy);
 
             if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 s.append("");
@@ -951,7 +1287,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 //            Log.e("off", "" + offsets);
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=6&offset=" + offset + s,
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_PRESCRIPTION_LIST + "?limit=10&offset=" + offset + s,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -968,9 +1304,9 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
-                                if (prescriptionListViewsDummy.size() > 0 && prescriptionListViewsDummy != null) {
+                                if (prescriptionListViewsDummy != null && prescriptionListViewsDummy.size() > 0) {
                                     prescriptionListViews.addAll(prescriptionListViewsDummy);
-                                    if (prescriptionListViewsDummy.size() < 6) {
+                                    if (prescriptionListViewsDummy.size() < 10) {
                                         isloadMore = true;
                                     }
                                     AppPreference.getInstance().setPrescriptionSize(1);
@@ -979,6 +1315,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                     uploadPrescriptionAdpter.notifyDataSetChanged();
                                 } else {
+                                    Log.e("what ", "" + prescriptionListViewsDummy);
+
                                     if (prescriptionListViewsDummy == null) {
                                         isloadMore = true;
                                     }
@@ -988,6 +1326,9 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 //                                    prescriptionItemView.setVisibility(View.GONE);
                                 }
                             } else {
+                                if (prescriptionListViewsDummy == null) {
+                                    isloadMore = true;
+                                }
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                 txt_no_prescr.setVisibility(View.VISIBLE);
                             }
@@ -1029,37 +1370,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         return list;
     }
 
-    private List<String> getDiseaseListAsStringList(List<PrescriptionListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (PrescriptionListView logy : result) {
-                hsDoctorList.add(logy.getDiseaseName());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-    }
-
-    private List<String> getDoctorNameAsStringList(List<PrescriptionListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (PrescriptionListView logy : result) {
-                hsDoctorList.add(logy.getDoctorName());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-    }
-
-
-    private List<String> getDateAsStringList(List<PrescriptionListView> result) {
-        Set<String> hsDoctorList = new HashSet<>();
-        if (result != null) {
-            for (PrescriptionListView logy : result) {
-                hsDoctorList.add(logy.getPrescriptionDate());
-            }
-        }
-        return new ArrayList<String>(hsDoctorList);
-
-    }
 
     private List<String> getUserAsStringList(List<UHIDItems> result) {
         List<String> list = new ArrayList<>();
@@ -1068,60 +1378,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             for (UHIDItems logy : result)
                 list.add(logy.getName());
         return list;
-    }
-
-
-    private List<String> getUploadByAsStringList(List<PrescriptionListView> result) {
-        List<String> list = new ArrayList<>();
-
-        if (result != null)
-            for (PrescriptionListView logy : result)
-                list.add(logy.getUploadedBy());
-        return list;
-    }
-
-
-    public ArrayList<PrescriptionListView> getFilterListDoctor(String charSequence) {
-        ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
-        for (PrescriptionListView str : prescriptionListViews) {
-            if (str.getDoctorName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-
-        }
-        return searched;
-    }
-
-
-    public ArrayList<PrescriptionListView> getFilterListDisease(String charSequence) {
-        ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
-        for (PrescriptionListView str : prescriptionListViews) {
-            if (str.getDiseaseName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-
-        }
-        return searched;
-    }
-
-    public ArrayList<PrescriptionListView> getFilterListUploadBy(String charSequence) {
-        ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
-        for (PrescriptionListView str : prescriptionListViews) {
-            if (str.getUploadedBy().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-        }
-        return searched;
-    }
-
-    public ArrayList<PrescriptionListView> getFilterListDate(String charSequence) {
-        ArrayList<PrescriptionListView> searched = new ArrayList<PrescriptionListView>();
-        for (PrescriptionListView str : prescriptionListViews) {
-            if (str.getPrescriptionDate().toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                searched.add(str);
-            }
-        }
-        return searched;
     }
 
 
@@ -1189,26 +1445,15 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
 
     private void getAllFilterData() {
-
+        clickDoctorName = AppPreference.getInstance().getFilterDoctor();
+        clickDiseaseName = AppPreference.getInstance().getFilterDiese();
+        clickDates = AppPreference.getInstance().getFilterDate();
+        clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
         StringBuilder s = new StringBuilder();
-        if (!clickDoctorName.equalsIgnoreCase("")) {
-            s.append("doctorName=" + clickDoctorName);
-        }
-        if (!clickDiseaseName.equalsIgnoreCase("")) {
-            s.append("&diseaseName=" + clickDiseaseName);
-        }
-        if (!clickDates.equalsIgnoreCase("")) {
-            s.append("&date=" + clickDates);
-        }
-        if (!clickUploadBy.equalsIgnoreCase("")) {
-            s.append("&uploadedBy=" + clickUploadBy);
-        }
-
-        if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
-            s.append("");
-        }
-
-
+        s.append("doctorName=" + clickDoctorName);
+        s.append("&diseaseName=" + clickDiseaseName);
+        s.append("&date=" + clickDates);
+        s.append("&uploadedBy=" + clickUploadBy);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s,
@@ -1227,6 +1472,13 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             filterDataPrescription = ParseJsonData.getInstance().getFilterDataPre(response);
+                            if (isButtonRest) {
+                                isButtonRest = false;
+                                if (filterDataPrescription.getDateList() != null && filterDataPrescription.getDateList().size() > 0) {
+                                    showAdpter(filterDataPrescription.getDateList(), "date");
+                                }
+                            }
+
                         } else {
 
                         }
@@ -1255,40 +1507,6 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
-
-
-//    class RetrieveFeedTask extends AsyncTask<String, Void, String> {
-//
-//        private Exception exception;
-//
-//        protected String doInBackground(String... urls) {
-//            try {
-//                String response = "";
-//                RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-//                try {
-////            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
-//
-////                    Log.e("path new "," "+path);
-//
-//
-//                    response = builderOkHttp.post(MyConstants.WebUrls.UPLOAD_PRESCRIPTION, null, getFileParam(path), "rahul", "cancer", "2016-12-07");
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return response;
-//            } catch (Exception e) {
-//                this.exception = e;
-//
-//                return null;
-//            }
-//        }
-//
-//        protected void onPostExecute(String feed) {
-//            Log.e("yes",""+feed);
-//            // TODO: check this.exception
-//            // TODO: do something with the feed
-//        }
-//    }
 
 
     private void getSelectedUserList(String cfUuhid) {
@@ -1396,17 +1614,24 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
     @Override
     public void onDismiss() {
-        if (checkDialog.equalsIgnoreCase("img_doctor_name")) {
-            rotatePhoneAntiClockwise(img_doctor_name);
-        } else if (checkDialog.equalsIgnoreCase("img_disease_name")) {
-            rotatePhoneAntiClockwise(img_disease_name);
-        } else if (checkDialog.equalsIgnoreCase("img_upload_by")) {
-            rotatePhoneAntiClockwise(img_upload_by);
-        } else if (checkDialog.equalsIgnoreCase("img_date")) {
-            rotatePhoneAntiClockwise(img_date);
-        } else if (checkDialog.equalsIgnoreCase("img_user_name")) {
+        if (checkDialog.equalsIgnoreCase("img_user_name")) {
             rotatePhoneAntiClockwise(img_user_name);
         }
-
     }
+
+    public void showAdpter(ArrayList<String> strings, String filterName) {
+        if (strings != null && strings.size() > 0) {
+            filter_prescription_listAdpter = null;
+            filter_prescription_listAdpter = new Filter_prescription_ListAdpter(FragmentPrescriptionCheck.this, CureFull.getInstanse().getActivityIsntanse(), strings, filterName);
+            recyclerView_filter.setAdapter(filter_prescription_listAdpter);
+            filter_prescription_listAdpter.notifyDataSetChanged();
+        }
+    }
+
+    public void callFilterAgain() {
+        getAllFilterData();
+        if (filter_prescription_listAdpter != null)
+            filter_prescription_listAdpter.notifyDataSetChanged();
+    }
+
 }

@@ -26,8 +26,8 @@ public class MyConstants {
         String OTP_LAST = "&route=2";
         String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes?";
         String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
-        String SET_GOALS = URL + "endUser/healthapp/setgoal";
-        String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetails";
+        String SET_GOALS = URL + "endUser/healthapp/updateRecommendedTarget";
+        String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetailsAndgetRecommendedTarget";
         String GET_SET_GOALS_DEATILS = URL + "endUser/healthapp/getgoal";
         String SAVE_HELTHAPP_DETALS = URL + "endUser/healthapp/savehealthappDailyDetails";
         String UPLOAD_PRESCRIPTION = URL + "endUser/ehr/uploadPrescription";
@@ -54,6 +54,7 @@ public class MyConstants {
         String PROFILE_UPDATE = URL + "endUser/profile/updateProfileDetails";
         String PRESCRIPTION_FILTER_DATA = URL + "endUser/ehr/getPrescriptionFilterDataList?";
         String REPORTS_FILTER_DATA = URL + "endUser/ehr/getLabReportFilterDataList?";
+        String INCRESE_WATER_INTAKE=URL+"endUser/healthapp/addWaterIntake";
 
 
     }

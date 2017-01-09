@@ -304,7 +304,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 if (!validateSubject()) {
                     return;
                 }
-
                 if (!validateDeatils()) {
                     return;
                 }
@@ -353,9 +352,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
 
     public void jsonHealthNoteCheck() {
-        Log.e("aacce tok", ":- " + AppPreference.getInstance().getAt());
-        Log.e("a_t ", ":- " + AppPreference.getInstance().getAt());
-        Log.e("r_t ", ":- " + AppPreference.getInstance().getRt());
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         String date = "";
@@ -502,20 +498,12 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                 }
 
                             } else {
-                                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                                healthNoteItemses.addAll(healthNoteItemsesDummy);
-                                showAdpter();
-//                                realtive_no_health.setVisibility(View.VISIBLE);
-//                                mListView.setVisibility(View.GONE);
                             }
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                            healthNoteItemses.addAll(healthNoteItemsesDummy);
-                            showAdpter();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -636,14 +624,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                         }
                                     }
                                 } else {
-//                                healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-//                                if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
-//                                    healthNoteItemses.addAll(healthNoteItemsesDummy);
-//                                    showAdpter();
-//                                }
-
-//                                realtive_no_health.setVisibility(View.VISIBLE);
-//                                mListView.setVisibility(View.GONE);
+                                realtive_no_health.setVisibility(View.VISIBLE);
+                                mListView.setVisibility(View.GONE);
                                 }
                             }
                         },

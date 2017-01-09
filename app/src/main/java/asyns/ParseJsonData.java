@@ -185,8 +185,6 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                         details = new PrescriptionListView(jsonObject);
                         detailListing.add(details);
                     }
-                } else {
-                    detailListing = new ArrayList<PrescriptionListView>();
                 }
 
 

@@ -92,7 +92,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {
             database = DatabaseHelper.openDataBase();
             String query = "SELECT L.* FROM " + TABLE_LOGIN
-                    + " L ORDER BY L.cf_uuhid DESC ";
+                    + " L WHERE L.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "'";
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
@@ -222,7 +222,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             String query = "SELECT * FROM " + TABLE_LOGIN + " Where cf_uuhid ='" + primaryId + "'";
 
             cursor = database.rawQuery(query, null);
+            AppPreference.getInstance().setcf_uuhid(primaryId);
             if (cursor.getCount() > 0) {
+
                 cv.put("hint_screen", 1);
                 database.update(TABLE_LOGIN, cv, CF_UUHID + "='" + primaryId + "'",
                         null);
