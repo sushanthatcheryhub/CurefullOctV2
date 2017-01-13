@@ -87,10 +87,7 @@ public class BaseMainActivity extends AppCompatActivity
             //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
             FragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentLogin(), false);
+
             jsonLogout();
         } else if (id == R.id.nav_policy) {
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
@@ -264,8 +261,13 @@ public class BaseMainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+                            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentLogin(), false);
                             AppPreference.getInstance().clearAllData();
                             AppPreference.getInstance().setIsLogin(false);
+
                         }
 
 

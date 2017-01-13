@@ -3,6 +3,7 @@ package adpter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.io.File;
 import java.util.List;
 
 import curefull.healthapp.R;
@@ -50,11 +54,15 @@ public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemView
     public void onBindViewHolder(ItemViewHolder holder, final int position) {
         final ImageView image_item = holder.image_item;
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
-        image_item.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
-
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//        Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
+//        image_item.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+        Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image_item);
 
 //        txt_view_symptoms.setText("" + symptomsGrids.get(position).getSymptomsName());
 //

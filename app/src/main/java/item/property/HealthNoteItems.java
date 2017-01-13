@@ -23,6 +23,7 @@ public class HealthNoteItems implements MyConstants.JsonUtils {
     private String note_to_time;
     private String note_year;
     private int primaryId;
+    private int is_offline = 0;
 
     public HealthNoteItems() {
     }
@@ -58,6 +59,7 @@ public class HealthNoteItems implements MyConstants.JsonUtils {
             values.put(NOTE_TIME_TO, json.getString(NOTE_TIME_TO));
             values.put(YEAR, json.getString(YEAR));
             values.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+            values.put("is_offline", 0);
             return values;
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,6 +73,23 @@ public class HealthNoteItems implements MyConstants.JsonUtils {
             return;
         try {
             setNote_id(cur.getInt(cur.getColumnIndex(ID)));
+            setNote_date(cur.getString(cur.getColumnIndex(NOTE_DATE)));
+            setNote_heading(cur.getString(cur.getColumnIndex(NOTE_HEADING)));
+            setDeatils(cur.getString(cur.getColumnIndex(NOTE_DEATILS)));
+            setNote_time(cur.getString(cur.getColumnIndex(NOTE_TIME)));
+            setNote_to_time(cur.getString(cur.getColumnIndex(NOTE_TIME_TO)));
+            setNote_year(cur.getString(cur.getColumnIndex(YEAR)));
+            setIs_offline(cur.getInt(cur.getColumnIndex("is_offline")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public HealthNoteItems(Cursor cur, String name) {
+        if (cur == null)
+            return;
+        try {
+            setNote_id(cur.getInt(cur.getColumnIndex("id")));
             setNote_date(cur.getString(cur.getColumnIndex(NOTE_DATE)));
             setNote_heading(cur.getString(cur.getColumnIndex(NOTE_HEADING)));
             setDeatils(cur.getString(cur.getColumnIndex(NOTE_DEATILS)));
@@ -144,5 +163,13 @@ public class HealthNoteItems implements MyConstants.JsonUtils {
 
     public void setPrimaryId(int primaryId) {
         this.primaryId = primaryId;
+    }
+
+    public int getIs_offline() {
+        return is_offline;
+    }
+
+    public void setIs_offline(int is_offline) {
+        this.is_offline = is_offline;
     }
 }

@@ -15,6 +15,7 @@ public class GraphViewDetails {
     private String date;
     private String count;
     private String waterIntake;
+    private String caloriesBurnt;
 
     public GraphViewDetails() {
     }
@@ -25,6 +26,7 @@ public class GraphViewDetails {
         try {
             setDate(jsonObject.getString("date"));
             setCount(jsonObject.getString("count"));
+            setCaloriesBurnt(jsonObject.getString("caloriesBurnt"));
             setWaterIntake(jsonObject.getString("waterIntake"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,5 +55,13 @@ public class GraphViewDetails {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getCaloriesBurnt() {
+        return caloriesBurnt;
+    }
+
+    public void setCaloriesBurnt(String caloriesBurnt) {
+        this.caloriesBurnt = caloriesBurnt;
     }
 }

@@ -1,5 +1,4 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,7 +15,6 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/liner_bottom"
             android:fillViewport="true"
             android:nestedScrollingEnabled="true">
 
@@ -211,7 +209,7 @@
                                     android:layout_marginLeft="@dimen/_5dp"
                                     android:hint="Inchs"
                                     android:inputType="numberDecimal"
-                                    android:maxLength="3"
+                                    android:maxLength="4"
                                     android:nextFocusDown="@+id/edt_kgs"
                                     android:textColor="@color/white"
                                     android:textColorHint="@color/white"
@@ -341,12 +339,12 @@
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
                                     android:id="@+id/edt_pounds"
                                     style="@style/textView_dark_grey_normal_small"
-                                    android:layout_width="@dimen/_50dp"
+                                    android:layout_width="@dimen/_70dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="@dimen/_10dp"
                                     android:hint="Pounds"
                                     android:inputType="number"
-                                    android:maxLength="3"
+                                    android:maxLength="8"
                                     android:textColor="@color/white"
                                     android:textColorHint="@color/white"
                                     android:theme="@style/TextLabel"
@@ -1182,107 +1180,6 @@
             </FrameLayout>
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/liner_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#A91922"
-            android:elevation="@dimen/_15dp"
-            android:orientation="horizontal"
-            android:padding="@dimen/_10dp">
-
-            <LinearLayout
-                android:id="@+id/txt_bottom_heath_app"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_healthapp_yellow" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/txt_bottom_health_note"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_healthnote_yellow" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/txt_bottom_home"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_home_yellow" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/txt_bottom_prescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_ehr_yellow" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/txt_bottom_reports"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_report_yellow" />
-            </LinearLayout>
-
-        </LinearLayout>
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

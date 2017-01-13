@@ -91,6 +91,7 @@
         <item name="android:typeface">normal</item>
         <item name="android:textSize">25sp</item>
     </style>
+
     <style name="textView_medium_grey_normal_medium">
         <item name="android:textColor">@color/app_medium_grey</item>
         <item name="android:textSize">@dimen/textSizeMedium</item>

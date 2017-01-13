@@ -2,6 +2,7 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,12 +20,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +39,9 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLabReportImageView;
 import fragment.healthapp.FragmentLabTestReport;
 import interfaces.IOnOtpDoneDelete;
+import item.property.LabReportImageListView;
 import item.property.LabReportListView;
+import item.property.PrescriptionImageListView;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.Utils;
@@ -105,12 +111,11 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         text_doctor_name.setText("" + labReportListViews.get(position).getDoctorName());
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
-            try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage(), image_item);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            Glide.with(applicationContext).load(labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image_item);
         }
 
 
@@ -127,11 +132,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
             @Override
             public void onClick(View view) {
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-                sendIntent.setType("text/plain");
-                applicationContext.startActivity(sendIntent);
+                shareClick(labReportListViews.get(position).getLabReportImageListViews());
             }
         });
 
@@ -152,6 +153,9 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         if (position == labReportListViews.size() - 1) {
             fragmentLabTestReports.callWebServiceAgain(labReportListViews.size());
         }
+
+        txt_disease_name.setSelected(true);
+        text_doctor_name.setSelected(true);
     }
 
     @Override
@@ -238,6 +242,30 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    public void shareClick(ArrayList<LabReportImageListView> prescriptionImageListViews) {
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        ArrayList<Uri> files = new ArrayList<Uri>();
+        ArrayList<String> filesName = new ArrayList<String>();
+        for (int i = 0; i < prescriptionImageListViews.size(); i++) {
+            filesName.add(prescriptionImageListViews.get(i).getReportImage());
+        }
+
+        Log.e("name ", "fileNames " + filesName.get(0).toString());
+        for (String path : filesName/* List of the files you want to send */) {
+            Uri uri = Uri.parse(path);
+            Log.e("uri ", "uri " + uri.toString().length());
+            files.add(uri);
+        }
+        Log.e("name ", "fileNames " + files.size());
+        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
+//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        sharingIntent.setType("image/*");
+        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Share Image"));
     }
 
 

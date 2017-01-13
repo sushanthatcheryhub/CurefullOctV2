@@ -21,6 +21,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.io.File;
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
     private LinearLayoutManager lLayout;
     private AddImageAdpter addImageAdpter;
 
-    public DialogUploadNewPrescription(Context _activiyt, Bitmap bitmap, String selectUploadPrescription, List<PrescriptionImageList> prescriptionImageLists) {
+    public DialogUploadNewPrescription(Context _activiyt, String bitmap, String selectUploadPrescription, List<PrescriptionImageList> prescriptionImageLists) {
         super(_activiyt, R.style.MyTheme);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.context = _activiyt;
@@ -67,7 +70,12 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
         btn_done = (TextView) findViewById(R.id.btn_done);
         btn_add_more_image = (TextView) findViewById(R.id.btn_add_more_image);
         btn_retry = (TextView) findViewById(R.id.btn_retry);
-        img_vew.setImageBitmap(bitmap);
+
+        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(bitmap)))
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(img_vew);
         btn_add_more_image.setOnClickListener(this);
         btn_retry.setOnClickListener(this);
         btn_done.setOnClickListener(this);
@@ -89,10 +97,15 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
                     new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageListss.get(position).getPrescriptionImage(), options);
-                            img_vew.setImageBitmap(bitmap);
+                            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(position).getPrescriptionImage())))
+                                    .thumbnail(0.5f)
+                                    .crossFade()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(img_vew);
+//                            BitmapFactory.Options options = new BitmapFactory.Options();
+//                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//                            Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageListss.get(position).getPrescriptionImage(), options);
+//                            img_vew.setImageBitmap(bitmap);
                         }
                     })
             );

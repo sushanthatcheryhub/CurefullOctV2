@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -30,6 +31,8 @@ public class RequestBuilderOkHttp {
     final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     OkHttpClient client = new OkHttpClient();
+
+
 
     public String get(String url) throws IOException {
         Request request = new Request.Builder()

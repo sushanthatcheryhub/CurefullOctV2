@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +26,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +46,7 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
+import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentPrescriptionImageFullView;
 import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
@@ -91,11 +97,11 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         final ImageView img_share = holder.img_share;
         CardView card_view = holder.card_view;
 
-        try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImage(), image_item);
-        } catch (Exception e) {
-
-        }
+        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage())
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image_item);
 
 
         img_delete.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +117,8 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
             @Override
             public void onClick(View view) {
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
-                shareClick(image_item);
+                new ShareTask(applicationContext).execute(prescriptionListViews.get(position).getPrescriptionImage());
+//                shareClick(image_item, prescriptionListViews.get(position).getPrescriptionImage());
             }
         });
 
@@ -213,19 +220,18 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     }
 
 
-    public void shareClick(ImageView prescriptionImage) {
+    public void shareClick(ImageView prescriptionImage, String image) {
+        Log.e("image", " " + image);
         Uri bmpUri = getLocalBitmapUri(prescriptionImage);
-        if (bmpUri != null) {
-            // Construct a ShareIntent with link to image
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            shareIntent.setType("image/*");
-            // Launch sharing dialog for image
-            applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Image"));
-        } else {
-            // ...sharing failed, handle error
-        }
+        // Construct a ShareIntent with link to image
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, image);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Launch sharing dialog for image
+        applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Image"));
 
 
 //        String url = MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH+ prescriptionImage;
@@ -261,5 +267,50 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
             e.printStackTrace();
         }
         return bmpUri;
+    }
+
+
+    class ShareTask extends AsyncTask<String, Void, File> {
+        private final Context context;
+
+        public ShareTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected File doInBackground(String... params) {
+            String url = params[0]; // should be easy to extend to share multiple images at once
+            try {
+                return Glide
+                        .with(context)
+                        .load(url)
+                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .get() // needs to be called on background thread
+                        ;
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(File result) {
+            if (result == null) {
+                return;
+            }
+
+            Log.e("result"," "+result);
+            Uri uri = FileProvider.getUriForFile(context, "curefull.healthapp.fileprovider", result);
+//            context.grantUriPermission("curefull.healthapp.fileprovider", uri,  Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            share(uri); // startActivity probably needs UI thread
+        }
+
+        private void share(Uri result) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/jpeg");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Shared image");
+            intent.putExtra(Intent.EXTRA_TEXT, "Look what I found!");
+            intent.putExtra(Intent.EXTRA_STREAM, result);
+            context.startActivity(Intent.createChooser(intent, "Share image"));
+        }
     }
 }

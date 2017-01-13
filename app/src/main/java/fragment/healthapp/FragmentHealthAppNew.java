@@ -82,7 +82,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     private TickerView ticker1;
     private SeekArc seekArcComplete;
     private static final char[] NUMBER_LIST = TickerUtils.getDefaultNumberList();
-    private LinearLayout txt_prescription, txt_heath_note, txt_lab_reports;
     private ListPopupWindow listPopupWindow;
     private RequestQueue requestQueue;
     private String fromdate, date, frequency, type;
@@ -107,6 +106,10 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         rootView = inflater.inflate(R.layout.fragment_health_app,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+        }
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_change_aveg = (TextView) rootView.findViewById(R.id.txt_change_aveg);
         txt_change = (TextView) rootView.findViewById(R.id.txt_change);
         txt_water_inatke_real = (TextView) rootView.findViewById(R.id.txt_water_inatke_real);
@@ -118,9 +121,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         btn_set_goal_target = (TextView) rootView.findViewById(R.id.btn_set_goal_target);
         txt_steps_txt = (TextView) rootView.findViewById(R.id.txt_steps_txt);
 //        txt_no_data = (TextView) rootView.findViewById(R.id.txt_no_data);
-        txt_prescription = (LinearLayout) rootView.findViewById(R.id.txt_prescription);
-        txt_heath_note = (LinearLayout) rootView.findViewById(R.id.txt_heath_note);
-        txt_lab_reports = (LinearLayout) rootView.findViewById(R.id.txt_lab_reports);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         ticker1 = (TickerView) rootView.findViewById(R.id.ticker1);
@@ -147,13 +147,15 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 //        }
 
         btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
-        txt_water_intake_done.setText("" + AppPreference.getInstance().getWaterInTake() + " ml Drinked");
-        txt_water_intake_left.setText("" + AppPreference.getInstance().getWaterInTakeLeft() + " ml Left");
+        txt_water_intake_done.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L Drinked");
 
+        if (AppPreference.getInstance().getWaterInTakeLeft().equalsIgnoreCase("0")) {
+            txt_water_intake_left.setText("0 L Left");
 
-        txt_lab_reports.setOnClickListener(this);
-        txt_heath_note.setOnClickListener(this);
-        txt_prescription.setOnClickListener(this);
+        } else {
+            txt_water_intake_left.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTakeLeft()))) + " L Left");
+
+        }
 
 
         (rootView.findViewById(R.id.liner_steps)).setOnClickListener(new View.OnClickListener() {
@@ -261,23 +263,12 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.txt_heath_note:
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentHealthNote(), true);
-                break;
 
             case R.id.liner_btn_goal:
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentEditGoal(), true);
                 break;
-            case R.id.txt_prescription:
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionCheck(), true);
-                break;
-            case R.id.txt_lab_reports:
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLabTestReport(), true);
-                break;
+
             case R.id.btn_daily:
                 txt_change_aveg.setText("Average of the daily");
                 btn_daily.setTextColor(Color.parseColor("#EB4748"));
@@ -425,7 +416,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
                     tickerTotal.setText("" + msg.arg1);
 
                     double wirght;
-                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0")) {
+                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
                         wirght = 0;
                     } else {
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
@@ -441,7 +432,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
     }
 
     public void jsonGetGraphDeatils(String fromDate, String date, final String frequency, final String type) {
-        Log.e("wifi "," "+CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse()));
+        Log.e("wifi ", " " + CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse()));
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
             JSONObject data1 = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
@@ -510,11 +501,11 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
             CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
         } else {
             String response = DbOperations.getGraphList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), type, frequency);
-
-            Log.e("response","response "+response);
+            Log.e("response", "response " + response);
             if (!response.equalsIgnoreCase("")) {
                 graphViewsList = ParseJsonData.getInstance().getGraphViewList(response.toString());
-                setChartGraph();
+                if (graphViewsList != null)
+                    setChartGraph();
             }
 
         }
@@ -530,6 +521,7 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
 
 
     public void setChartGraph() {
+        Log.e("graph", "dds");
         horizontalAdapterNew = new HorizontalAdapterNew(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNew.this, frequency);
         horizontal_recycler_view.setAdapter(horizontalAdapterNew);
 //                                horizontal_recycler_view.scrollToPosition(graphViewsList.get(0).getGraphViewDetailses().size() - 1);
@@ -548,10 +540,6 @@ public class FragmentHealthAppNew extends BaseBackHandlerFragment implements Vie
         });
         horizontalAdapterNew.notifyDataSetChanged();
     }
-
-
-
-
 
 
 }

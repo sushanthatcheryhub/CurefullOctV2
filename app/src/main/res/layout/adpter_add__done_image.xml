@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/_80dp"
                 android:layout_margin="@dimen/_1dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/prescription_red" />
+                android:src="@drawable/plus_red" />
 
             <customsTextViews.CustomTextViewOpenSanBold
                 android:id="@+id/txt_view"

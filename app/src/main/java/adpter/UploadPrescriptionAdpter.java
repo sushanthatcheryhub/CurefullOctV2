@@ -21,6 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,11 +107,16 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         text_doctor_name.setText("" + prescriptionListViews.get(position).getDoctorName());
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
-            try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
-            } catch (Exception e) {
-
-            }
+            Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image_item);
+//            try {
+//                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
+//            } catch (Exception e) {
+//
+//            }
         }
 
 
@@ -158,6 +165,9 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
             Log.e("list zise"," "+prescriptionListViews.size());
             prescriptionCheck.callWebServiceAgain(prescriptionListViews.size());
         }
+
+        txt_disease_name.setSelected(true);
+        text_doctor_name.setSelected(true);
 
     }
 

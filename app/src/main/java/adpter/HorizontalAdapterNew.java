@@ -66,15 +66,16 @@ public class HorizontalAdapterNew extends RecyclerView.Adapter<HorizontalAdapter
         xAxisValueFormatte = mCharts.getXAxis().getValueFormatter();
         String stepsValue = String.valueOf((int) e.getY());
 
-        Log.e("e","e "+e.getX());
-        int water=((int)e.getX())-1;
-        Log.e("water","water "+water);
+        Log.e("e", "e " + e.getX());
+        int water = ((int) e.getX()) - 1;
+        Log.e("water", "water " + water);
+        Log.e("post", "post " + CureFull.getInstanse().getPostionGet());
         try {
-            String waterValue=horizontalList.get(CureFull.getInstanse().getPostionGet()).getGraphViewDetailses().get(water).getWaterIntake();
-            Log.e("real ", "pos" + CureFull.getInstanse().getPostionGet()+" water "+horizontalList.get(CureFull.getInstanse().getPostionGet()).getGraphViewDetailses().get((int)e.getX()).getWaterIntake());
+            String waterValue = horizontalList.get(CureFull.getInstanse().getPostionGet()).getGraphViewDetailses().get(water).getWaterIntake();
+            Log.e("real ", "pos" + CureFull.getInstanse().getPostionGet() + " water " + horizontalList.get(CureFull.getInstanse().getPostionGet()).getGraphViewDetailses().get((int) e.getX()).getWaterIntake());
             Log.e("getData", " " + pos + " " + xAxisValueFormatte.getFormattedValue(e.getX(), null) + " " + e.getY());
-            fragmentHealthAppNews.valueFromGrpah(stepsValue,waterValue);
-        }catch (Exception e1){
+            fragmentHealthAppNews.valueFromGrpah(stepsValue, waterValue);
+        } catch (Exception e1) {
 
         }
 

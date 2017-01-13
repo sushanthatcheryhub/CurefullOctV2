@@ -12,9 +12,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -34,7 +40,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +53,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
@@ -51,10 +61,13 @@ import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
 import item.property.PrescriptionImageList;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.CircularImageView;
 import utils.HandlePermission;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
+
+import static utils.CheckNetworkState.context;
 
 
 /**
@@ -73,7 +86,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     boolean flag = true;
     private Animation alphaAnimation;
     private ImageView img_upload, img_gallery, img_camera, img_upload_animation, img_password_icon;
-    private EditText input_name, edt_phone, input_email, input_old_pass, input_new_pass;
+    private EditText input_name, edt_phone, input_email, input_old_pass, input_new_pass, edt_otp;
     private TextView btn_click_change, btn_save_changes;
     private boolean isclick = false;
     private static Bitmap bitmap_image;
@@ -83,6 +96,10 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private File file;
     private String fileName = "my_image.jpg";
     private RequestQueue requestQueue;
+    private int otp_number;
+    private TextInputLayout input_layout_otp;
+    private boolean isOtp = false;
+    private boolean showPwd = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,12 +111,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
         btn_click_change = (TextView) rootView.findViewById(R.id.btn_click_change);
         img_password_icon = (ImageView) rootView.findViewById(R.id.img_password_icon);
         input_old_pass = (EditText) rootView.findViewById(R.id.input_old_pass);
         input_new_pass = (EditText) rootView.findViewById(R.id.input_new_pass);
-
+        edt_otp = (EditText) rootView.findViewById(R.id.edt_otp);
         input_name = (EditText) rootView.findViewById(R.id.input_name);
         edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
         input_email = (EditText) rootView.findViewById(R.id.input_email);
@@ -135,11 +153,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         input_email.setText("" + AppPreference.getInstance().getUserID());
 
         if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
-            try {
-                CureFull.getInstanse().getSmallImageLoader().clearCache();
-                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), profile_image_view);
-            } catch (Exception e) {
-            }
+
+            Glide.with(getActivity()).load(AppPreference.getInstance().getProfileImage())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .placeholder(R.drawable.profile_avatar)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(profile_image_view);
         }
 
         profile_image_view.setOnClickListener(new View.OnClickListener() {
@@ -152,6 +172,110 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         });
         btn_click_change.setPaintFlags(btn_click_change.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+
+
+        input_old_pass.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (input_old_pass.getRight() - input_old_pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (input_old_pass.getText().toString().length() > 0) {
+                            if (!showPwd) {
+                                showPwd = true;
+                                input_old_pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                                input_old_pass.setSelection(input_old_pass.getText().length());
+                                input_old_pass.setTextSize(14f);
+                                input_old_pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                            } else {
+                                showPwd = false;
+                                input_old_pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                input_old_pass.setSelection(input_old_pass.getText().length());
+                                input_old_pass.setTextSize(14f);
+                                input_old_pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+
+                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                            }
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+        input_new_pass.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (input_new_pass.getRight() - input_new_pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (input_new_pass.getText().toString().length() > 0) {
+                            if (!showPwd) {
+                                showPwd = true;
+                                input_new_pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                                input_new_pass.setSelection(input_new_pass.getText().length());
+                                input_new_pass.setTextSize(14f);
+                                input_new_pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                            } else {
+                                showPwd = false;
+                                input_new_pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                input_new_pass.setSelection(input_new_pass.getText().length());
+                                input_new_pass.setTextSize(14f);
+                                input_new_pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+
+                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                            }
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+
+        edt_phone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 9) {
+
+                    if (!AppPreference.getInstance().getMobileNumber().equalsIgnoreCase(edt_phone.getText().toString().trim())) {
+                        isOtp = true;
+                        sendOTPService();
+                        CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Otp Sent Please check your mobile");
+                        input_layout_otp.setVisibility(View.VISIBLE);
+                    } else {
+                        isOtp = false;
+                        input_layout_otp.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
         return rootView;
     }
 
@@ -176,13 +300,18 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.liner_animation_upload:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
-                profile_image_view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitter(rootView);
-                    }
-                });
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                    profile_image_view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                }
+
                 break;
             case R.id.liner_upload_new:
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
@@ -441,40 +570,51 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 
     private void sentSaveTestingServer(String fileName) {
-        String response = "";
-        RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-        try {
-            response = builderOkHttp.postProfile(MyConstants.WebUrls.UPDATE_PROFILE, null, getFileParam(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.e("response :- ", "" + response);
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        profile_image_view.post(new Runnable() {
-            @Override
-            public void run() {
-                launchTwitter(rootView);
-            }
-        });
-
-        if (!response.equalsIgnoreCase("null")) {
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            String response = "";
+            RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
             try {
-                JSONObject jsonObject = new JSONObject(response);
-                if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
-                    AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
-                    try {
-                        CureFull.getInstanse().getFullImageLoader().clearCache();
-                        CureFull.getInstanse().getFullImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
-                        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
-                    } catch (Exception e) {
-
-                    }
-                }
-
-            } catch (JSONException e) {
+                response = builderOkHttp.postProfile(MyConstants.WebUrls.UPDATE_PROFILE, null, getFileParam(fileName));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+            Log.e("response :- ", "" + response);
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+            profile_image_view.post(new Runnable() {
+                @Override
+                public void run() {
+                    launchTwitter(rootView);
+                }
+            });
+
+            if (!"null".equalsIgnoreCase(response) || !response.equalsIgnoreCase("null")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
+                        AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
+                        try {
+                            Glide.with(getActivity()).load(jsonObject.getString("payload"))
+                                    .thumbnail(0.5f)
+                                    .crossFade()
+                                    .placeholder(R.drawable.profile_avatar)
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(profile_image_view);
+                            CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
+                        } catch (Exception e) {
+
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Upload Error");
+            }
+        } else {
+
         }
+
 
     }
 
@@ -513,20 +653,81 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 
     public void jsonUpdateProfile() {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+
+        if (!validateName()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Name cannot be left blank.");
+            return;
+        }
+        if (!validateEmail()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id cannot be left blank.");
+            return;
+        }
+        if (!validateMobileNo()) {
+            return;
+        }
+
+        if (isOtp) {
+            if (!validateOtp()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "OTP cannot be left blank.");
+                return;
+            }
+        }
+
+
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 
-        final String name = input_name.getText().toString().trim();
-        final String mobNo = edt_phone.getText().toString().trim();
-        final String emailId = input_email.getText().toString().trim();
+        final String name;
+        final String mobNo;
+        final String emailId;
+
+        Log.e("mobile", " " + AppPreference.getInstance().getMobileNumber());
+        Log.e("email", " " + AppPreference.getInstance().getUserID());
+        if (input_name.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserName().trim())) {
+            name = "";
+        } else {
+            name = input_name.getText().toString().trim();
+        }
+
+        if (edt_phone.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getMobileNumber().trim())) {
+            mobNo = "";
+        } else {
+            mobNo = edt_phone.getText().toString().trim();
+        }
+
+        if (input_email.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserID().trim())) {
+            emailId = "";
+        } else {
+            emailId = input_email.getText().toString().trim();
+        }
+
+
         String oldPassowrd = "";
         String newPasswrod = "";
         if (isclick) {
+            if (!validateOldPassword()) {
+                return;
+            }
+            if (!validateNewPassword()) {
+                return;
+            }
+
+
             oldPassowrd = input_old_pass.getText().toString().trim();
+            if (!oldPassowrd.equalsIgnoreCase(AppPreference.getInstance().getPassword())) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Old Password not Match");
+                return;
+            }
             newPasswrod = input_new_pass.getText().toString().trim();
         }
 
 
+        if (name.equalsIgnoreCase("") && mobNo.equalsIgnoreCase("") && emailId.equalsIgnoreCase("") && oldPassowrd.equalsIgnoreCase("") && newPasswrod.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Change in profile");
+            return;
+        }
+
+
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         JSONObject data = JsonUtilsObject.getProfileDeatils(name, mobNo, emailId, oldPassowrd, newPasswrod);
         Log.e("jsonUpdateProfile", ": " + data.toString());
 
@@ -542,19 +743,21 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                             json = new JSONObject(response.toString());
                             responseStatus = json.getInt("responseStatus");
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                if (json.getString("payload").equals(null)) {
+                                if (json.getString("payload").equals(null) || json.getString("payload").equalsIgnoreCase("No Data")) {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Changed");
                                 } else {
                                     img_password_icon.setImageResource(R.drawable.password_icon);
                                     btn_click_change.setText("Change password");
                                     isclick = false;
                                     liner_password.setVisibility(View.GONE);
+                                    input_layout_otp.setVisibility(View.GONE);
+                                    edt_otp.setText("");
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Profile Changed");
-                                    AppPreference.getInstance().setUserName(name);
-                                    AppPreference.getInstance().setMobileNumber(mobNo);
-                                    AppPreference.getInstance().setUserID(emailId);
+                                    AppPreference.getInstance().setUserName(input_name.getText().toString().trim());
+                                    AppPreference.getInstance().setMobileNumber(edt_phone.getText().toString().trim());
+                                    AppPreference.getInstance().setUserID(input_email.getText().toString().trim());
+                                    AppPreference.getInstance().setPassword("" + input_new_pass.getText().toString().trim());
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName(), AppPreference.getInstance().getcf_uuhid());
-
                                 }
 
                             } else {
@@ -590,5 +793,90 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
+
+    private boolean validateName() {
+        String email = input_name.getText().toString().trim();
+        if (email.isEmpty()) {
+            return false;
+        } else {
+        }
+        return true;
+    }
+
+    private boolean validateOldPassword() {
+        String email = input_old_pass.getText().toString().trim();
+        if (email.isEmpty()) {
+            return false;
+        } else {
+        }
+        return true;
+    }
+
+    private boolean validateNewPassword() {
+        String email = input_new_pass.getText().toString().trim();
+        if (email.isEmpty()) {
+            return false;
+        } else {
+        }
+        return true;
+    }
+
+
+    private boolean validateMobileNo() {
+        String email = edt_phone.getText().toString().trim();
+
+        if (email.isEmpty() || email.length() != 10) {
+            if (email.length() < 10 && email.length() > 1) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be less than 10 numbers.");
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be left blank.");
+            }
+            return false;
+
+        }
+        return true;
+    }
+
+    private boolean validateEmail() {
+        String email = input_email.getText().toString().trim();
+        if (email.isEmpty() || !isValidEmail(email)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateOtp() {
+        String email = edt_otp.getText().toString().trim();
+        if (!email.equalsIgnoreCase("" + otp_number)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void sendOTPService() {
+        Random rnd = new Random();
+        otp_number = 100000 + rnd.nextInt(900000);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(otp_number) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
 
 }

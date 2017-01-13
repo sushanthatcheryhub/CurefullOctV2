@@ -31,9 +31,70 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-
+// LIMIT 0,10
             String query = "SELECT P.* FROM " + TABLE_NOTE
-                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.healthNoteId DESC ";
+                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.dateOfNote DESC";
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    HealthNoteItems content = new HealthNoteItems(cursor);
+                    listApps.add(content);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
+    public static List<HealthNoteItems> getOfflineNoteList(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<HealthNoteItems>();
+        List<HealthNoteItems> listApps = new ArrayList<HealthNoteItems>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+// LIMIT 0,10
+            String query = "SELECT P.* FROM " + TABLE_OFFLINE_NOTE
+                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' AND P.isSent='0'";
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    HealthNoteItems content = new HealthNoteItems(cursor, "");
+                    listApps.add(content);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static List<HealthNoteItems> getNoteListLanding(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<HealthNoteItems>();
+        List<HealthNoteItems> listApps = new ArrayList<HealthNoteItems>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+// LIMIT 0,10
+            String query = "SELECT P.* FROM " + TABLE_NOTE
+                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.year DESC LIMIT 4";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -207,6 +268,30 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
+    public static void insertOfflineNoteList(Context context, ContentValues cv) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            long id = database.insert(TABLE_OFFLINE_NOTE, null, cv);
+            Log.e("", "Qurery Enty number-" + id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
     public static void insertLoginList(Context context, ContentValues cv, String primaryId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
@@ -259,7 +344,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                cv.put("hint_screen", 1);
                 database.update(TABLE_GRAPH, cv, CF_UUHID + "='" + primaryId + "'",
                         null);
 //                Log.e("updateLoginList", "Qurery Enty number-");
@@ -345,6 +429,26 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {
             database = DatabaseHelper.openDataBase();
             database.delete(TABLE_LOGIN, null, null);
+            database.close();
+        } catch (Exception e) {
+        }
+    }
+
+    public static void clearOfflineNoteDB() {
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            database.delete(TABLE_OFFLINE_NOTE, null, null);
+            database.close();
+        } catch (Exception e) {
+        }
+    }
+
+    public static void clearNoteDB() {
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            database.delete(TABLE_NOTE, null, null);
             database.close();
         } catch (Exception e) {
         }

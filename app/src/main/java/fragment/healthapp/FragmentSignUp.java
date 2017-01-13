@@ -283,7 +283,16 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "OTP_IS" + n + MyConstants.WebUrls.OTP_LAST,
+//        String firstName = "";
+//        String LastName = "";
+//        String[] name = edtInput_name.getText().toString().split(" ");
+//        if (name.length > 1) {
+//            firstName = name[0];
+//            LastName = name[1];
+//        } else {
+//            firstName = name[0];
+//        }
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -305,7 +314,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                     public void onErrorResponse(VolleyError error) {
                         btn_signup.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
                         error.printStackTrace();
                     }
                 }

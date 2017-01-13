@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import utils.HandlePermission;
 import utils.MyConstants;
 
 
@@ -76,6 +77,9 @@ public class FragmentResetPassword extends Fragment {
 
             }
         });
+        if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
+            
+        }
 
 
         return rootView;
@@ -178,7 +182,7 @@ public class FragmentResetPassword extends Fragment {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "CureFull" + n + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim()+ MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

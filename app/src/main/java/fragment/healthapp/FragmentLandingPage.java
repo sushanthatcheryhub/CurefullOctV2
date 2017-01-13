@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -108,7 +109,7 @@ import utils.Utils;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLandingPage extends BaseBackHandlerFragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+public class FragmentLandingPage extends BaseBackHandlerFragment implements MyConstants.JsonUtils, View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     private View rootView;
     private RecyclerView recyclerView_notes;
@@ -169,7 +170,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
     private boolean isSelectFrom = false;
     private int newFirstTime = 0;
     private int secondTime = 0;
-
+    int dbYear = 0;
     private ImageView imgg_question_white, imgg_question_red;
 
     @Override
@@ -230,6 +231,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
 
+
+        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+        }
+        CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
@@ -241,7 +247,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         img_plus_icon = (ImageView) rootView.findViewById(R.id.img_plus_icon);
         txt_water_level = (TextView) rootView.findViewById(R.id.txt_water_level);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
         img_pre = (ImageView) rootView.findViewById(R.id.img_pre);
         recyclerView_notes = (RecyclerView) rootView.findViewById(R.id.recyclerView_notes);
         txt_no_list_health_note = (TextView) rootView.findViewById(R.id.txt_no_list_health_note);
@@ -306,9 +311,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
-        txt_water_level.setText("" + AppPreference.getInstance().getWaterInTake() + " ml");
+        txt_water_level.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
         getDailyHealth();
-//        jsonUploadTarget();
+        jsonUploadTarget();
         doBindService();
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
@@ -542,33 +547,40 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
 
             case R.id.liner_date_t:
-                isFirstTime = true;
-                final Calendar c1 = Calendar.getInstance();
-                // Current Hour
-                int hour1 = c1.get(Calendar.HOUR_OF_DAY);
-                // Current Minute
-                int minute1 = c1.get(Calendar.MINUTE);
-                TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
-                timePickerDialog1.show();
+                if (firstDate.equalsIgnoreCase("")) {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select Date First.");
+                } else {
+                    isFirstTime = true;
+                    final Calendar c1 = Calendar.getInstance();
+                    // Current Hour
+                    int hour1 = c1.get(Calendar.HOUR_OF_DAY);
+                    // Current Minute
+                    int minute1 = c1.get(Calendar.MINUTE);
+                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
+                    timePickerDialog1.show();
+                }
+
                 break;
 
             case R.id.realtive_click:
-                if (AppPreference.getInstance().isLoginFirst()) {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentEditGoal(), true);
-                } else {
+                if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanseAll()
                             .replace(new FragmentHealthAppNew(), true);
+
+                } else {
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentEditGoal(), true);
                 }
 
                 break;
             case R.id.liner_click:
-                if (AppPreference.getInstance().isLoginFirst()) {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentEditGoal(), true);
-                } else {
+                if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanseAll()
                             .replace(new FragmentHealthAppNew(), true);
+                } else {
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentEditGoal(), true);
+
                 }
                 break;
             case R.id.btn_set_goal:
@@ -660,20 +672,27 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                 break;
             case R.id.img_plus_icon:
 
+//                if (waterLevel >= Integer.parseInt(AppPreference.getInstance().getWaterInTakeTarget())) {
+//                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Water Intake Target Done");
+//                    return;
+//                }
                 waterLevel += Integer.parseInt(AppPreference.getInstance().getGlass());
                 if (waterLevel > 0) {
                     img_minus_icon.setVisibility(View.VISIBLE);
+                } else {
+                    return;
                 }
-                txt_water_level.setText(waterLevel + "ml");
-                getIncreseWaterInTake();
+                txt_water_level.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(waterLevel)) + " L");
+                getIncreseWaterInTake("true");
                 break;
             case R.id.img_minus_icon:
                 waterLevel -= Integer.parseInt(AppPreference.getInstance().getGlass());
-                txt_water_level.setText(waterLevel + "ml");
-                if (waterLevel == 0) {
+                txt_water_level.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(waterLevel)) + " L");
+                if (waterLevel == 0 || waterLevel < 0) {
                     img_minus_icon.setVisibility(View.INVISIBLE);
+                    return;
                 }
-
+                getIncreseWaterInTake("false");
                 break;
 
         }
@@ -813,7 +832,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
                     double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), msg.arg1);
                     txt_calories.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
-                    AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("##.##").format(i2));
+                    AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("###.###").format(i2));
 //                    txt_calories.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1) + " kcal");
 
                     break;
@@ -858,7 +877,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         Log.e("aacce tok", ":- " + AppPreference.getInstance().getAt());
         Log.e("a_t ", ":- " + AppPreference.getInstance().getAt());
         Log.e("r_t ", ":- " + AppPreference.getInstance().getRt());
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         String date = "";
         if (firstDate.equalsIgnoreCase("")) {
@@ -867,6 +886,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
             int mYear = Integer.parseInt(dateFormat[0]);
             int mMonth = Integer.parseInt(dateFormat[1]);
             int mDay = Integer.parseInt(dateFormat[2]);
+            dbYear = mYear;
             date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         } else {
             Log.e("firstDate", ":- " + firstDate);
@@ -884,98 +904,142 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
         } else {
             toTime = toFirstTime;
         }
-        JSONObject data = JsonUtilsObject.toAddHealthNote(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim(), date, time, toTime);
-        Log.e("data", ":- " + data.toString());
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.HEALTH_NOTE_ADD, data,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("FragmentLogin, URL 3.", response.toString());
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Log.e("responseStatus :- ", String.valueOf(responseStatus));
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            getAllHealthList();
-                            isFabOpen = true;
-                            animateFAB();
-                            txt_no_list_health_note.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    launchTwitter(rootView);
-                                }
-                            });
-                            txt_time.setText("");
-                            txt_to_time.setText("");
-                            txt_date_time.setText("");
-                            liner_to_time.setVisibility(View.GONE);
-                            liner_date_t.setVisibility(View.GONE);
-                            date_time_picker.setVisibility(View.GONE);
-                            txt_click_here_add.setVisibility(View.VISIBLE);
-                            edt_subject.setText("");
-                            edt_deatils.setText("");
-
-
-                        } else {
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            JSONObject data = JsonUtilsObject.toAddHealthNote(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim(), date, time, toTime);
+            Log.e("data", ":- " + data.toString());
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.HEALTH_NOTE_ADD, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            Log.e("FragmentLogin, URL 3.", response.toString());
+                            int responseStatus = 0;
+                            JSONObject json = null;
                             try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            Log.e("responseStatus :- ", String.valueOf(responseStatus));
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                getAllHealthList();
+                                isFabOpen = true;
+                                animateFAB();
+                                txt_no_list_health_note.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        launchTwitter(rootView);
+                                    }
+                                });
+                                txt_time.setText("");
+                                txt_to_time.setText("");
+                                txt_date_time.setText("");
+                                liner_to_time.setVisibility(View.GONE);
+                                liner_date_t.setVisibility(View.GONE);
+                                date_time_picker.setVisibility(View.GONE);
+                                txt_click_here_add.setVisibility(View.VISIBLE);
+                                edt_subject.setText("");
+                                edt_deatils.setText("");
+
+
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+
                         }
+                    }, new Response.ErrorListener() {
 
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-
-        }) {
-
-
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                try {
-                    String jsonString = new String(response.data,
-                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-//                    Log.e("headers", "" +  response.headers.get("a_t"));
-                    JSONObject jsonResponse = new JSONObject(jsonString);
-                    jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
-                    return Response.success(jsonResponse,
-                            HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    return Response.error(new ParseError(e));
-                } catch (JSONException je) {
-                    return Response.error(new ParseError(je));
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
                 }
-            }
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
+            }) {
 
-        };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    try {
+                        String jsonString = new String(response.data,
+                                HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+//                    Log.e("headers", "" +  response.headers.get("a_t"));
+                        JSONObject jsonResponse = new JSONObject(jsonString);
+                        jsonResponse.put(MyConstants.JsonUtils.HEADERS, new JSONObject(response.headers));
+                        return Response.success(jsonResponse,
+                                HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException e) {
+                        return Response.error(new ParseError(e));
+                    } catch (JSONException je) {
+                        return Response.error(new ParseError(je));
+                    }
+                }
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
+                }
+
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        } else {
+            ContentValues cv = new ContentValues();
+            cv.put("dateOfNote", date);
+            cv.put("fromTime", time);
+            cv.put("subject", edt_subject.getText().toString().trim());
+            cv.put("details", edt_deatils.getText().toString().trim());
+            cv.put("toTime", toTime);
+            cv.put("year", dbYear);
+            cv.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+            DbOperations operations = new DbOperations();
+            operations.insertOfflineNoteList(CureFull.getInstanse().getActivityIsntanse(), cv);
+            DbOperations operations1 = new DbOperations();
+            ContentValues values = new ContentValues();
+
+            int idss = CureFull.getIdss();
+            idss = idss + 1;
+            values.put(ID, idss);
+            values.put(NOTE_DATE, date);
+            values.put(NOTE_HEADING, edt_subject.getText().toString().trim());
+            values.put(NOTE_DEATILS, edt_deatils.getText().toString().trim());
+            values.put(NOTE_TIME, time);
+            values.put(NOTE_TIME_TO, toTime);
+            values.put(YEAR, dbYear);
+            values.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+            values.put("is_offline", "1");
+            operations1.insertNoteList(CureFull.getInstanse().getActivityIsntanse(), values, idss);
+            CureFull.setIdss(idss);
+            firstTime = "";
+            toFirstTime = "";
+            firstDate = "";
+            txt_time.setText("");
+            txt_to_time.setText("");
+            txt_date_time.setText("");
+            liner_to_time.setVisibility(View.GONE);
+            liner_date_t.setVisibility(View.GONE);
+            date_time_picker.setVisibility(View.GONE);
+            txt_click_here_add.setVisibility(View.VISIBLE);
+            edt_subject.setText("");
+            edt_deatils.setText("");
+            getAllHealthList();
+        }
+
     }
 
 
@@ -1017,17 +1081,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                                showAdpter();
-                                if (healthNoteItemses.size() == 0) {
-                                    animateFAB();
-                                    txt_no_list_health_note.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            launchTwitter(rootView);
-                                        }
-                                    });
-                                }
+
 
                             }
                         }
@@ -1066,8 +1120,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
+            healthNoteItemses = DbOperations.getNoteListLanding(CureFull.getInstanse().getActivityIsntanse());
             showAdpter();
+            if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
+                animateFAB();
+                txt_no_list_health_note.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitter(rootView);
+                    }
+                });
+            }
         }
 
     }
@@ -1075,23 +1138,87 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int mintues) {
+        String todayTime = Utils.getTodayTime();
+        String[] dfd = todayTime.split(":");
+        String hrs = dfd[0];
+        String mins = dfd[1];
 
+        String date = Utils.getTodayDate();
+        String[] dateFormat = date.split("-");
+        int mYear = Integer.parseInt(dateFormat[0]);
+        int mMonth = Integer.parseInt(dateFormat[1]);
+        int mDay = Integer.parseInt(dateFormat[2]);
+        date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         if (isFirstTime) {
-            newFirstTime = hourOfDay;
-            isSelectFrom = true;
-            firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-            txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-            txt_to_time.setText("");
-            toFirstTime = "";
-        } else {
-            secondTime = hourOfDay;
-            Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
-            if (secondTime > newFirstTime) {
-                toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-                txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+            if (firstDate.equalsIgnoreCase("")) {
+                if (hourOfDay > Integer.parseInt(hrs)) {
+                    newFirstTime = hourOfDay;
+                    isSelectFrom = true;
+                    firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                    txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                    txt_to_time.setText("");
+                    toFirstTime = "";
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than Current time.");
+                }
             } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+
+                if (date.equalsIgnoreCase(firstDate)) {
+                    if (hourOfDay < Integer.parseInt(hrs) + 1 & mintues < Integer.parseInt(mins) + 1) {
+                        newFirstTime = hourOfDay;
+                        isSelectFrom = true;
+                        firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                        txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                        txt_to_time.setText("");
+                        toFirstTime = "";
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than Current time.");
+                    }
+                } else {
+                    newFirstTime = hourOfDay;
+                    isSelectFrom = true;
+                    firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                    txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                    txt_to_time.setText("");
+                    toFirstTime = "";
+                }
             }
+            if (hourOfDay > Integer.parseInt(hrs)) {
+                newFirstTime = hourOfDay;
+                isSelectFrom = true;
+                firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                txt_to_time.setText("");
+                toFirstTime = "";
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than Current time.");
+            }
+        } else {
+            if (date.equalsIgnoreCase(firstDate)) {
+                if (hourOfDay < Integer.parseInt(hrs) + 1 & mintues < Integer.parseInt(mins) + 1) {
+                    secondTime = hourOfDay;
+                    Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
+                    if (secondTime > newFirstTime) {
+                        toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                        txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+                    }
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+
+                }
+            } else {
+                secondTime = hourOfDay;
+                Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
+                if (secondTime > newFirstTime) {
+                    toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                    txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+                }
+            }
+
 
         }
 
@@ -1141,68 +1268,72 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
 
     public void jsonUploadTarget() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 
-        String steps = AppPreference.getInstance().getStepsCount();
-        String running = "0";
-        String cycling = "0";
-        String waterintake = AppPreference.getInstance().getWaterInTake();
+            String steps = AppPreference.getInstance().getStepsCount();
+            String running = "0";
+            String cycling = "0";
+            String waterintake = AppPreference.getInstance().getWaterInTake();
+            String caloriesBurnt = AppPreference.getInstance().getCaloriesCount();
+            String dateTime = getTodayDateTime();
+            String[] dateParts = dateTime.split(" ");
+            String date = dateParts[0];
+            String timeReal = dateParts[1];
 
+            JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
+            Log.e("jsonUploadTarget", ": " + data.toString());
 
-        String dateTime = getTodayDateTime();
-        String[] dateParts = dateTime.split(" ");
-        String date = dateParts[0];
-        String timeReal = dateParts[1];
-
-        JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, date, timeReal);
-        Log.e("jsonUploadTarget", ": " + data.toString());
-
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e("Target, URL 3.", response.toString());
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                        } else {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.e("Target, URL 3.", response.toString());
+                            int responseStatus = 0;
+                            JSONObject json = null;
                             try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+
                         }
+                    }, new Response.ErrorListener() {
 
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        } else {
 
-                    }
-                }, new Response.ErrorListener() {
+        }
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
-        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
     public static String getTodayDateTime() {
@@ -1221,70 +1352,82 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
 
 
     private void getDailyHealth() {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getDailyHealth, URL 1.", response);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                if (!json.getString("payload").equals(null)) {
-                                    JSONObject json1 = new JSONObject(json.getString("payload"));
-                                    String steps = json1.getString("steps");
-                                    String waterIntakeDone = json1.getString("waterIntakeDone");
-                                    AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
-                                    String waterIntakeLeft = json1.getString("waterIntakeLeft");
-                                    AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft);
-                                    preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
-                                    AppPreference.getInstance().setStepsCount("" + steps);
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            Log.e("getDailyHealth, URL 1.", response);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    if (!json.getString("payload").equals(null)) {
+                                        JSONObject json1 = new JSONObject(json.getString("payload"));
+                                        String steps = json1.getString("steps");
+                                        String waterIntakeDone = json1.getString("waterIntakeDone");
+                                        AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
+                                        String waterIntakeLeft1 = "0";
+                                        if (json1.getString("waterIntakeLeft").equals(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("0") || json1.getString("waterIntakeLeft").equalsIgnoreCase("0.0") || json1.getString("waterIntakeLeft").equalsIgnoreCase(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
+                                            waterIntakeLeft1 = "0";
+                                        } else {
+                                            waterIntakeLeft1 = json1.getString("waterIntakeLeft");
+                                        }
+
+                                        AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
+                                        preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+                                        AppPreference.getInstance().setStepsCount("" + steps);
+                                    }
+
+                                } else {
+
+
                                 }
-
-                            } else {
-
-
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
                         }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
+                        }
+                    }
+            ) {
 
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
                 }
-        ) {
+            };
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+        }
+
     }
 
 
-    private void getIncreseWaterInTake() {
+    private void getIncreseWaterInTake(String isture) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.INCRESE_WATER_INTAKE,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.INCRESE_WATER_INTAKE + isture,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1299,7 +1442,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements View
                                 if (!json.getString("payload").equals(null)) {
                                     JSONObject json1 = new JSONObject(json.getString("payload"));
                                     String waterIntakeDone1 = json1.getString("waterIntakeDone");
-                                    String waterIntakeLeft1 = json1.getString("waterIntakeLeft");
+                                    String waterIntakeLeft1 = "0";
+                                    if (json1.getString("waterIntakeLeft").equals(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
+                                        waterIntakeLeft1 = "0";
+                                    } else {
+                                        waterIntakeLeft1 = json1.getString("waterIntakeLeft");
+                                    }
+
                                     AppPreference.getInstance().setWaterInTake("" + waterIntakeDone1);
                                     AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
                                 }

@@ -30,6 +30,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,11 +96,10 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
-            try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading(images, gestureImageView);
-            } catch (Exception e) {
-
-            }
+            Glide.with(this).load(images)
+                    .thumbnail(0.5f)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(gestureImageView);
         }
 
 

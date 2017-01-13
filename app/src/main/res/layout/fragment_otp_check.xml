@@ -83,6 +83,7 @@
                         android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
                         android:drawablePadding="@dimen/_5dp"
+                        android:nextFocusDown="@+id/edt_password"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Password"
                         android:imeOptions="actionNext"
@@ -115,6 +116,7 @@
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Confirm Password"
                         android:inputType="textPassword"
+                        android:imeOptions="actionDone"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white" />

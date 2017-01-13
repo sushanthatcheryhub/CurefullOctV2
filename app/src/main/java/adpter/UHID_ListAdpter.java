@@ -77,19 +77,20 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
         final CheckBox checkBox = holder.checkbox;
         txt_cfuuhid.setText("" + healthNoteItemses.get(position).getCfUuhid());
         txt_name.setText("" + healthNoteItemses.get(position).getName());
-//        if (position == 0) {
-//            image_item.setVisibility(View.GONE);
-//        } else {
-//            image_item.setVisibility(View.VISIBLE);
-//        }
 
-        Log.e("uhid check", " " + healthNoteItemses.get(position).isDefaults());
 
         if (healthNoteItemses.get(position).isDefaults()) {
             image_item.setVisibility(View.GONE);
+            if (healthNoteItemses.get(position).isDefaults() && healthNoteItemses.get(position).isSelected()) {
+                AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
+            } else {
+                AppPreference.getInstance().setcf_uuhidNeew("");
+            }
         } else {
             if (healthNoteItemses.get(position).isSelected()) {
                 Log.e("isSelected", "true");
+                Log.e("cfuuhid", " " + healthNoteItemses.get(position).getCfUuhid());
+                AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
                 image_item.setVisibility(View.GONE);
             } else {
                 Log.e("isSelected", "false");
@@ -97,10 +98,10 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
             }
 
         }
-
         txt_name.setSelected(true);
         if (AppPreference.getInstance().getcf_uuhidNeew().equalsIgnoreCase(healthNoteItemses.get(position).getCfUuhid())) {
             checkBox.setChecked(true);
+            Log.e("innner", " " + healthNoteItemses.get(position).getCfUuhid() + " " + AppPreference.getInstance().getcf_uuhidNeew());
         } else {
             checkBox.setChecked(false);
         }
@@ -109,7 +110,6 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
         image_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to delete " + healthNoteItemses.get(position).getName() + " CFUUHID ?", "UHID", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UHID_ListAdpter.this);
                 dialogDeleteAll.show();
@@ -125,13 +125,14 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
                 if (checkBox.isChecked()) {
                     Log.e("check", ":- isChecked");
 //                    healthNoteItemses.get(position).setSelected(true);
+                    Log.e("here", "here" + healthNoteItemses.get(position).getCfUuhid());
                     AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
                     getSelectedUserList(healthNoteItemses.get(position).getCfUuhid());
                 } else {
                     Log.e("check", ":- not");
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
-                notifyDataSetChanged();
+
             }
         });
 

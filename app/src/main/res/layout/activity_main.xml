@@ -50,11 +50,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_30dp"
                 android:layout_gravity="bottom"
-                android:gravity="center_vertical"
-                android:visibility="gone"
                 android:background="#CC2C34"
                 android:clickable="true"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/footer_item_1"
@@ -67,6 +67,7 @@
         </android.support.design.widget.NavigationView>
 
     </android.support.v4.widget.DrawerLayout>
+
 
 </RelativeLayout>
 

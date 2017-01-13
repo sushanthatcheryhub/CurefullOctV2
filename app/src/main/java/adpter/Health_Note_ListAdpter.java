@@ -1,16 +1,13 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -36,17 +34,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentHealthApp;
 import fragment.healthapp.FragmentHealthNote;
 import interfaces.IOnOtpDoneDelete;
 import item.property.HealthNoteItems;
 import operations.DbOperations;
 import sticky.header.StickyListHeadersAdapter;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.CustomTypefaceSpan;
 import utils.MyConstants;
 import utils.Utils;
@@ -135,7 +132,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 //            e.printStackTrace();
 //        }
 
-        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
+        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
             try {
                 holder.txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
@@ -156,44 +153,60 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 //        holder.txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
 //        holder.txt_deatils.setSelected(true);
 
-        String name = healthNoteItemses.get(position).getNote_heading();
-        String comma = " : ";
-        String gameName = healthNoteItemses.get(position).getDeatils();
+        final String name = healthNoteItemses.get(position).getNote_heading();
+        final String comma = " : ";
+        final String gameName = healthNoteItemses.get(position).getDeatils();
 
-        String meassgeTxt = name + comma + gameName;
+        final String meassgeTxt = name + comma + gameName;
 
-        Spannable sb = new SpannableString(meassgeTxt);
-        Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
-                meassgeTxt.indexOf(comma) + comma.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
-                meassgeTxt.indexOf(gameName) + gameName.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        holder.txt_title.setText(sb);
+        CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Spannable sb = new SpannableString(meassgeTxt);
+                Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
+                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                                .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                        meassgeTxt.indexOf(name) + name.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                        meassgeTxt.indexOf(name),
+                        meassgeTxt.indexOf(name) + name.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                                .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                        meassgeTxt.indexOf(comma) + comma.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                                .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
+                        meassgeTxt.indexOf(gameName) + gameName.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.txt_title.setText(sb);
+            }
+        });
+
+
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (healthNoteItemses.get(position).getIs_offline() == 1) {
+                        DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
+                        dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
+                        dialogDeleteAll.show();
+                    } else {
+                        Toast.makeText(applicationContext, "Your in Off-Line Mode Can't Delete", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
+                    dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
+                    dialogDeleteAll.show();
+                }
 
-                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
-                dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
-                dialogDeleteAll.show();
 
             }
         });
 
-        Log.e("position "," "+position);
 
         if (position == healthNoteItemses.size() - 1) {
             fragmentHealthNotes.callWebServiceAgain(healthNoteItemses.size());
@@ -229,7 +242,15 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getAllHealthListRemove(healthNoteItemses.get(pos).getNote_id(), pos);
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                getAllHealthListRemove(healthNoteItemses.get(pos).getNote_id(), pos);
+            } else {
+                DbOperations.deleteNoteListing(healthNoteItemses.get(pos).getNote_id());
+                healthNoteItemses.remove(pos);
+                notifyDataSetChanged();
+                fragmentHealthNotes.checkSize();
+            }
+
         }
 
     }
@@ -307,6 +328,32 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    private class MyAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // WORK on UI thread here
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 
 

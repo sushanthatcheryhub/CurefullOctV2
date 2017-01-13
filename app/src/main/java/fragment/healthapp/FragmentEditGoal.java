@@ -4,9 +4,10 @@ package fragment.healthapp;
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
@@ -24,6 +25,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -53,7 +55,6 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
@@ -62,10 +63,9 @@ import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.GoalInfo;
-import item.property.PrescriptionImageList;
-import item.property.UserInfo;
 import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -105,36 +105,41 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean isUploadClick = false, doubleback = false;
     private int glassInTake = 0, glassNumber = 0;
     private int pos;
-    private LinearLayout txt_bottom_heath_app, txt_bottom_health_note, txt_bottom_home, txt_bottom_prescription, txt_bottom_reports;
 
     @Override
     public boolean onBackPressed() {
-
-        if (isUploadClick) {
-            Log.e("isclick", " " + isUploadClick);
-            isUploadClick = false;
-            btn_edit_goal.post(new Runnable() {
-                @Override
-                public void run() {
-                    launchTwitter(rootView);
-                    if (doubleback) {
-                        CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                    }
-
-                }
-            });
-            return false;
-        } else {
-            Log.e("isclick", " else");
-            if (AppPreference.getInstance().getMale() == false && AppPreference.getInstance().getFeMale() == false) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Gender");
-                return false;
-            } else if (AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Age");
-                return false;
-            } else {
+        if (AppPreference.getInstance().isEditGoal()) {
+            if (doubleback) {
+                AppPreference.getInstance().setIsEditGoalPage(false);
                 return true;
+            } else {
+                if (isUploadClick) {
+                    Log.e("isclick", " " + isUploadClick);
+                    isUploadClick = false;
+                    btn_edit_goal.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                    return false;
+                } else {
+                    Log.e("isclick", " else");
+                    if (AppPreference.getInstance().getMale() == false && AppPreference.getInstance().getFeMale() == false) {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Gender");
+                        return false;
+                    } else if (AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Age");
+                        return false;
+                    } else {
+                        AppPreference.getInstance().setIsEditGoalPage(false);
+                        return true;
+                    }
+                }
             }
+        } else {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Fill Details");
+            return false;
         }
 
 
@@ -146,16 +151,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_set_goal,
                 container, false);
+        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+        }
+
+        if (AppPreference.getInstance().isEditGoal()) {
+            CureFull.getInstanse().getActivityIsntanse().activateDrawer();
+        } else {
+            CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+        }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
-
-        txt_bottom_heath_app = (LinearLayout) rootView.findViewById(R.id.txt_bottom_heath_app);
-        txt_bottom_health_note = (LinearLayout) rootView.findViewById(R.id.txt_bottom_health_note);
-        txt_bottom_home = (LinearLayout) rootView.findViewById(R.id.txt_bottom_home);
-        txt_bottom_prescription = (LinearLayout) rootView.findViewById(R.id.txt_bottom_prescription);
-        txt_bottom_reports = (LinearLayout) rootView.findViewById(R.id.txt_bottom_reports);
-
+        AppPreference.getInstance().setIsEditGoalPage(true);
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         edt_water = (EditText) rootView.findViewById(R.id.edt_water);
         edt_steps = (EditText) rootView.findViewById(R.id.edt_steps);
@@ -189,13 +197,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         btn_done.setOnClickListener(this);
 
 
-        txt_bottom_heath_app.setOnClickListener(this);
-        txt_bottom_health_note.setOnClickListener(this);
-        txt_bottom_home.setOnClickListener(this);
-        txt_bottom_prescription.setOnClickListener(this);
-        txt_bottom_reports.setOnClickListener(this);
-
-
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
         layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
 
@@ -226,6 +227,12 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             }
         });
+
+        glassNumber = 2;
+        img_200ml.setVisibility(View.VISIBLE);
+        getAllDetails();
+
+
         radioGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -351,6 +358,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         });
 
+
         edt_feet.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -362,11 +370,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
 
                 if (s.length() > 0) {
-                    AppPreference.getInstance().setGoalHeightFeet("" + s.toString());
+                    int value = Integer.parseInt(s.toString());
+                    if (value > 9) {
+                        value = 9;
+                        edt_feet.setText("" + value);
+                        AppPreference.getInstance().setGoalHeightFeet("" + value);
+                    } else {
+                        AppPreference.getInstance().setGoalHeightFeet("" + value);
+                    }
+
+                    getEditTextLength(edt_feet);
                     bmiCalculator();
                     if (isFemale) {
                         getBmrForFeMale();
-
                         if (heightfeet > 4) {
                             if (!validateHeightinchBMI()) {
                                 return;
@@ -412,6 +428,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             }
         });
+
+
         edt_cm.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -422,7 +440,15 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
                 if (s.length() > 0) {
-                    AppPreference.getInstance().setGoalHeightCm(s.toString());
+                    double value = Double.parseDouble(s.toString());
+                    if (value > 274.32) {
+                        value = 274.32;
+                        edt_cm.setText("" + value);
+                        AppPreference.getInstance().setGoalHeightCm("" + value);
+                    } else {
+                        AppPreference.getInstance().setGoalHeightCm("" + value);
+                    }
+                    getEditTextLength(edt_cm);
                     if (!s.toString().equalsIgnoreCase("0.0")) {
                         c2f(Double.parseDouble(s.toString()), "plus");
                         bmiCalculator();
@@ -453,7 +479,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
                 if (s.length() > 0) {
-                    AppPreference.getInstance().setGoalWeightPound("" + s.toString());
+
+                    double value = Double.parseDouble(s.toString());
+                    if (value > 1102.31) {
+                        value = 1102.31;
+                        edt_pounds.setText("" + value);
+                        AppPreference.getInstance().setGoalWeightPound("" + value);
+                    } else {
+                        AppPreference.getInstance().setGoalWeightPound("" + value);
+                    }
+                    getEditTextLength(edt_pounds);
                     poundToKgs(Double.parseDouble(s.toString()));
                     bmiCalculator();
                     if (isFemale) {
@@ -504,7 +539,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         });
 
-
         edt_inchs.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -513,18 +547,22 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length() + " " + s.toString());
-
+                if (s.toString().equalsIgnoreCase("0")) {
+                    edt_inchs.setText("");
+                }
                 if (s.length() > 0) {
-
                     double value = Double.parseDouble(s.toString());
                     if (value > 11) {
                         value = 11;
                         edt_inchs.setText("" + (int) value);
                         AppPreference.getInstance().setGoalHeightInch("" + (int) value);
                     } else {
+                        if (value == 0.0) {
+                            value = 0;
+                        }
                         AppPreference.getInstance().setGoalHeightInch("" + value);
                     }
-
+                    getEditTextLength(edt_inchs);
                     Log.e("less", ":- " + " " + s.toString());
                     bmiCalculator();
                     if (isFemale) {
@@ -587,7 +625,15 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
-                    AppPreference.getInstance().setGoalWeightKg("" + s.toString());
+                    int value = Integer.parseInt(s.toString());
+                    if (value > 500) {
+                        value = 500;
+                        edt_kgs.setText("" + (int) value);
+                        AppPreference.getInstance().setGoalWeightKg("" + (int) value);
+                    } else {
+                        AppPreference.getInstance().setGoalWeightKg("" + value);
+                    }
+                    getEditTextLength(edt_kgs);
                     bmiCalculator();
                     if (isFemale) {
                         getBmrForFeMale();
@@ -631,12 +677,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             }
         });
-
-
-        glassNumber = 2;
-        img_200ml.setVisibility(View.VISIBLE);
-        getAllDetails();
-
 
         if (AppPreference.getInstance().getKgs()) {
             txt_weight.setText("Kgs");
@@ -790,8 +830,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 isCm = false;
                 AppPreference.getInstance().setFtIN(true);
                 AppPreference.getInstance().setCM(false);
+                if (edt_inchs.getText().toString().trim().equalsIgnoreCase("")) {
+                    edt_inchs.setText("" + 0);
+                } else {
+                    edt_inchs.setText("" + AppPreference.getInstance().getGoalHeightInch());
+                }
                 edt_feet.setText("" + AppPreference.getInstance().getGoalHeightFeet());
-                edt_inchs.setText("" + AppPreference.getInstance().getGoalHeightInch());
+
 
             } else {
                 if (pos == position)
@@ -803,7 +848,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 edt_inchs.setVisibility(View.GONE);
                 edt_cm.setVisibility(View.VISIBLE);
                 edt_cm.setText("" + new DecimalFormat("###.#").format(Utils.convertFeetandInchesToCentimeter(AppPreference.getInstance().getGoalHeightFeet(), AppPreference.getInstance().getGoalHeightInch())));
-
                 AppPreference.getInstance().setCM(true);
                 AppPreference.getInstance().setFtIN(false);
             }
@@ -952,6 +996,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateHeightinchBMI() {
         String email = edt_inchs.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Inchs can not be blank");
             return false;
         }
         return true;
@@ -961,6 +1006,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateWeightKgsBMI() {
         String email = edt_kgs.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Kg can not be blank");
             return false;
         }
         return true;
@@ -970,6 +1016,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateAge() {
         String email = edt_years.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "DOB can not be blank");
             return false;
         }
         return true;
@@ -979,6 +1026,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateHeightCM() {
         String email = edt_cm.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height CM can not be blank");
             return false;
         }
         return true;
@@ -987,23 +1035,20 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateWeightPounds() {
         String email = edt_pounds.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Weight Pound can not be blank");
             return false;
         }
         return true;
     }
 
     public void c2f(double cm, String plus) {
-        Log.e("right cm", " " + cm);
         double feet = cm / 30.48;
         double inches = (cm / 2.54) - ((int) feet * 12);
         heightfeet = (int) feet;
-        if (plus.equalsIgnoreCase("plus")) {
-            heightInch = inches;
-        } else {
-            heightInch = inches;
-        }
+        String valueInches = new DecimalFormat("###.#").format(inches);
+        heightInch = Double.parseDouble(valueInches);
         AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);
-        AppPreference.getInstance().setGoalHeightInch("" + new DecimalFormat("#.#").format(heightInch));
+        AppPreference.getInstance().setGoalHeightInch("" + heightInch);
         Log.e("There are ", (int) feet + " feet and " + new DecimalFormat("###.#").format(inches) + " inches in " + cm + "cm");
     }
 
@@ -1172,7 +1217,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 String targetWaterInTake = json1.getString("targetWaterInTake");
                                 AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(targetStepCount));
                                 AppPreference.getInstance().setWaterInTakeTarget(targetWaterInTake);
-                                edt_water.setText(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake)) + " L");
+                                edt_water.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake))) + " L");
                                 btn_edit_goal.setText("Edit Goal");
 //                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
 //                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
@@ -1189,7 +1234,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
 
 
                     }
@@ -1259,13 +1303,21 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         try {
                             json = new JSONObject(response.toString());
                             responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                JSONObject json1 = new JSONObject(json.getString("payload"));
+                                String galssSize = json1.getString("glassSize");
+                                String glassNumber = json1.getString("glassNumber");
+                                AppPreference.getInstance().setGlass("" + galssSize);
+                                AppPreference.getInstance().setIsLoginFirst(false);
+                                AppPreference.getInstance().setStepStarts(true);
+                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                            } else {
+
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                        } else {
 
-                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1327,59 +1379,71 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_500ml.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_done:
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    String gender = "";
+                    if (AppPreference.getInstance().getMale() == true) {
+                        gender = "MALE";
+                    } else {
+                        gender = "FEMALE";
+                    }
+                    if (glassNumber != 0) {
+                        doubleback = true;
+                        jsonGlassTarget(glassInTake, glassNumber);
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select glass for water Intake");
+                    }
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
-                String gender = "";
-                if (AppPreference.getInstance().getMale() == true) {
-                    gender = "MALE";
-                } else {
-                    gender = "FEMALE";
-                }
-                if (glassNumber != 0) {
-                    doubleback = true;
-                    jsonGlassTarget(glassInTake, glassNumber);
-                    AppPreference.getInstance().setGlass("" + glassInTake);
-                    AppPreference.getInstance().setIsLoginFirst(false);
-                    AppPreference.getInstance().setStepStarts(true);
-                    CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select glass for water Intake");
                 }
 
 
                 break;
 
             case R.id.btn_edit_goal:
-                edt_water.setEnabled(true);
-                edt_water.setFocusable(true);
-                edt_water.setFocusableInTouchMode(true);
-                edt_steps.setEnabled(true);
-                edt_steps.setFocusableInTouchMode(true);
-                edt_steps.setFocusable(true);
-                edt_calories.setEnabled(true);
-                edt_calories.setFocusable(true);
-                edt_calories.setFocusableInTouchMode(true);
-                if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Done")) {
-                    String steps = edt_steps.getText().toString().trim();
-                    String calories = edt_calories.getText().toString().trim();
-                    double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
-                    jsonUploadTarget(steps, calories, Utils.getLiterToMl(water));
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    edt_water.setEnabled(true);
+                    edt_water.setFocusable(true);
+                    edt_water.setFocusableInTouchMode(true);
+                    edt_steps.setEnabled(true);
+
+                    edt_steps.setFocusableInTouchMode(true);
+                    edt_steps.setFocusable(true);
+                    edt_steps.setActivated(true);
+                    edt_calories.setEnabled(true);
+                    edt_calories.setFocusable(true);
+                    edt_calories.setFocusableInTouchMode(true);
+                    if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Done")) {
+                        String steps = edt_steps.getText().toString().trim();
+                        String calories = edt_calories.getText().toString().trim();
+                        double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+                        jsonUploadTarget(steps, calories, Utils.getLiterToMl(water));
+                    }
+                    if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Edit Goal")) {
+                        btn_edit_goal.setText("Done");
+                        double change = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+                        edt_water.setText("" + change);
+                    }
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
-                if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Edit Goal")) {
-                    btn_edit_goal.setText("Done");
-                    double change = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
-                    edt_water.setText("" + change);
-                }
+
                 break;
 
             case R.id.btn_edit_done:
-                edt_cm.clearFocus();
-                edt_feet.clearFocus();
-                edt_pounds.clearFocus();
-                edt_inchs.clearFocus();
-                edt_kgs.clearFocus();
-                edt_grams.clearFocus();
-                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
-                setRecommededDetails();
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    edt_cm.clearFocus();
+                    edt_feet.clearFocus();
+                    edt_pounds.clearFocus();
+                    edt_inchs.clearFocus();
+                    edt_kgs.clearFocus();
+                    edt_grams.clearFocus();
+                    CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
+                    setRecommededDetails();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                }
+
                 break;
             case R.id.txt_btn_set_glass:
                 isUploadClick = true;
@@ -1387,67 +1451,34 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
                 break;
 
-            case R.id.txt_bottom_heath_app:
-
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentHealthAppNew(), false);
-
-                break;
-
-            case R.id.txt_bottom_health_note:
-
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentHealthNote(), false);
-
-                break;
-
-            case R.id.txt_bottom_home:
-
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLandingPage(), false);
-
-                break;
-            case R.id.txt_bottom_prescription:
-
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionCheck(), false);
-
-                break;
-            case R.id.txt_bottom_reports:
-
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLabTestReport(), false);
-
-                break;
-
         }
-
     }
 
 
     private void getAllDetails() {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_SET_GOALS_DEATILS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getAllDetails, URL 1.", response);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            ParseJsonData.getInstance().getGoalDeatils(response.toString());
-                            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
-                            if (userInfo == null)
-                                return;
-                            setGoals(userInfo);
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_SET_GOALS_DEATILS,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            Log.e("getAllDetails, URL 1.", response);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                ParseJsonData.getInstance().getGoalDeatils(response.toString());
+                                userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                                if (userInfo == null)
+                                    return;
+                                setGoals(userInfo);
 //                            if (!userInfo.getDateOfBirth().equalsIgnoreCase("")) {
 //                                edt_years.setText("" + AppPreference.getInstance().getGoalAgeNew());
 //                            }
@@ -1464,36 +1495,40 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 //                            }
 
 
-                        } else {
-                            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
-                            if (userInfo == null)
-                                return;
-                            setGoals(userInfo);
+                            } else {
+                                userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                                if (userInfo == null)
+                                    return;
+                                setGoals(userInfo);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
                         }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
                 }
-        ) {
+            };
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+        }
+
     }
 
     @Override
@@ -1562,7 +1597,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
             }
         }
-
         String gender = "MALE";
         if (!isMale && !isFemale) {
             return;
@@ -1572,7 +1606,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         } else {
             gender = "FEMALE";
         }
-
         String dateOfBirth = AppPreference.getInstance().getGoalAge();
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(totalHeight), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
@@ -1589,6 +1622,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                             json = new JSONObject(response.toString());
                             responseStatus = json.getInt("responseStatus");
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                AppPreference.getInstance().setIsEditGoal(true);
                                 JSONObject json1 = new JSONObject(json.getString("payload"));
                                 String targetStepCount = json1.getString("targetStepCount");
                                 String targetCaloriesToBurn = json1.getString("targetCaloriesToBurn");
@@ -1601,7 +1635,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                     edt_calories.setText("" + targetCaloriesToBurn);
                                 }
                                 if (!targetWaterInTake.equalsIgnoreCase("null")) {
-                                    edt_water.setText("" + Utils.getMlToLiter(Integer.parseInt(targetWaterInTake)) + " L");
+                                    edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake))) + " L");
                                     AppPreference.getInstance().setWaterInTakeTarget(targetWaterInTake);
                                 }
 
@@ -1644,6 +1678,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
 
     public void setGoals(GoalInfo userInfo) {
+        AppPreference.getInstance().setIsEditGoal(true);
+
+        Log.e("getHeight cm", ": -" + userInfo.getHeight());
+        if (!"null".equals(userInfo.getHeight())) {
+            c2f(Double.parseDouble(userInfo.getHeight()), "minus");
+            AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);
+            AppPreference.getInstance().setGoalHeightInch("" + heightInch);
+            Log.e("heightfeet", ": -" + heightfeet);
+            Log.e("heightInch", ": -" + heightInch);
+        }
         String age = userInfo.getDateOfBirth();
         if (!age.equalsIgnoreCase("null")) {
             String[] dateFormat = age.split("-");
@@ -1653,15 +1697,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             edt_years.setText("" + (mDay < 10 ? "0" + mDay : mDay) + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + mYear);
             AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(mYear, mMonth, mDay));
             AppPreference.getInstance().setGoalAge(userInfo.getDateOfBirth());
-        }
-
-        Log.e("getHeight cm", ": -" + userInfo.getHeight());
-        if (!"null".equals(userInfo.getHeight())) {
-            c2f(Double.parseDouble(userInfo.getHeight()), "minus");
-            AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);
-            AppPreference.getInstance().setGoalHeightInch("" + heightInch);
-            Log.e("heightfeet", ": -" + heightfeet);
-            Log.e("heightInch", ": -" + heightInch);
         }
         Log.e("getWeight", ": -" + userInfo.getWeight());
         if (!userInfo.getWeight().equalsIgnoreCase("null")) {
@@ -1688,7 +1723,12 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         }
 
-
+        if (!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")) {
+            edt_feet.setText("" + AppPreference.getInstance().getGoalHeightFeet());
+        }
+        if (!AppPreference.getInstance().getGoalHeightInch().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalHeightInch().equalsIgnoreCase("0")) {
+            edt_inchs.setText("" + AppPreference.getInstance().getGoalHeightInch());
+        }
         if (!userInfo.getTargetStepCount().equalsIgnoreCase("null")) {
             edt_steps.setText("" + userInfo.getTargetStepCount());
             AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(userInfo.getTargetStepCount()));
@@ -1698,19 +1738,14 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         }
 
         if (!userInfo.getTargetWaterInTake().equalsIgnoreCase("null")) {
-            edt_water.setText("" + Utils.getMlToLiter(Integer.parseInt(userInfo.getTargetWaterInTake())) + " L");
+            edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(userInfo.getTargetWaterInTake()))) + " L");
             AppPreference.getInstance().setWaterInTakeTarget(userInfo.getTargetWaterInTake());
         }
 
 //                            if (!AppPreference.getInstance().getGoalAge().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
 //                                edt_years.setText("" + AppPreference.getInstance().getGoalAgeNew());
 //                            }
-        if (!AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalHeightFeet().equalsIgnoreCase("0")) {
-            edt_feet.setText("" + AppPreference.getInstance().getGoalHeightFeet());
-        }
-        if (!AppPreference.getInstance().getGoalHeightInch().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalHeightInch().equalsIgnoreCase("0")) {
-            edt_inchs.setText("" + AppPreference.getInstance().getGoalHeightInch());
-        }
+
         if (!AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("") && !AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0")) {
             edt_kgs.setText("" + AppPreference.getInstance().getGoalWeightKg());
         }
@@ -1920,6 +1955,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         }
 
 
+    }
+
+
+    public void getEditTextLength(EditText txt_view_remaining_pills) {
+        InputMethodManager imm = (InputMethodManager) CureFull.getInstanse().getActivityIsntanse().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(txt_view_remaining_pills,
+                InputMethodManager.SHOW_IMPLICIT);
+        try {
+            txt_view_remaining_pills.setSelection(txt_view_remaining_pills.getText()
+                    .length());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

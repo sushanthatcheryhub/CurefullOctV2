@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import item.property.EduationDetails;
+import item.property.HealthNoteItems;
 import item.property.LabReportImageList;
 import item.property.PrescriptionImageList;
+import utils.AppPreference;
 import utils.MyConstants;
 
 import static android.R.attr.bitmap;
@@ -144,6 +146,27 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
+    public static JSONObject toAddOfflineHealthNote(List<HealthNoteItems> healthNoteItemsesDummy) {
+        JSONObject jsonParent = new JSONObject();
+        JSONArray obj1 = new JSONArray();
+        try {
+            for (int i = 0; i < healthNoteItemsesDummy.size(); i++) {
+                JSONObject list1 = new JSONObject();
+                list1.put("subject", healthNoteItemsesDummy.get(i).getNote_heading());
+                list1.put("details", healthNoteItemsesDummy.get(i).getDeatils());
+                list1.put("date", healthNoteItemsesDummy.get(i).getNote_date());
+                list1.put("fromTime", healthNoteItemsesDummy.get(i).getNote_time());
+                list1.put("toTime", healthNoteItemsesDummy.get(i).getNote_to_time());
+                obj1.put(list1);
+            }
+            jsonParent.put("healthNoteList", obj1);
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+        return jsonParent;
+    }
+
+
     public static JSONObject toSignUpFacebook(String facebookId, String name, String emailId, String dateOfBirth, String gender, String relationshipStatus, String profileImageUrl, String devices, ArrayList<EduationDetails> eduationDeatilsResults) {
 
         JSONObject jsonParent = new JSONObject();
@@ -221,13 +244,14 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject toSaveHealthAppDetails(String steps, String running, String cycling, String waterIntake, String date, String time) {
+    public static JSONObject toSaveHealthAppDetails(String steps, String running, String cycling, String waterIntake, String caloriesBurnt, String date, String time) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("steps", steps.trim());
             jsonParent.put("running", running.trim());
             jsonParent.put("cycling", cycling.trim());
             jsonParent.put("waterIntake", waterIntake.trim());
+            jsonParent.put("caloriesBurnt", caloriesBurnt);
             jsonParent.put("date", date.trim());
             jsonParent.put("time", time.trim());
 
@@ -317,6 +341,43 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             }
             jsonParent.put("reportImageList", obj1);
 
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject setRemMed() {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+            JSONObject jsonParent1 = new JSONObject();
+            jsonParent1.put("startDate", "2017-01-12");
+            jsonParent1.put("noOfDays", 5);
+            jsonParent1.put("unitOfInterval", "hours");
+            jsonParent1.put("interval", 7);
+            jsonParent1.put("alramTime", "08:00,13:00,16:00");
+            jsonParent1.put("noOfDayInWeek", "MON,THU,SAT");
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < 2; i++) {
+                    JSONObject list1 = new JSONObject();
+                    list1.put("medicineType", "tab");
+                    list1.put("medicineName", "crocine");
+                    list1.put("doctorName", "susahnt");
+                    list1.put("medicinePotency", "600 mg");
+                    list1.put("medicineQuantity", "1");
+                    list1.put("isAtferMeal", true);
+                    obj1.put(list1);
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            jsonParent1.put("medicineReminderDetailsRequest", obj1);
+            jsonParent.put("medicineScheduleRequest", jsonParent1);
         } catch (Exception e) {
 
             e.printStackTrace();

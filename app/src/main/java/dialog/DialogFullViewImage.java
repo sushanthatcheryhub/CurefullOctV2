@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +41,7 @@ public class DialogFullViewImage extends Dialog {
     Context context;
     private GestureImageView img_full_view;
 
-    public DialogFullViewImage(Context _activiyt, Bitmap bitmap) {
+    public DialogFullViewImage(Context _activiyt, String bitmap) {
         super(_activiyt, R.style.MyTheme);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.context = _activiyt;
@@ -48,7 +53,12 @@ public class DialogFullViewImage extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
-        img_full_view.setImageBitmap(bitmap);
+
+        Glide.with(context).load(Uri.fromFile(new File(bitmap)))
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(img_full_view);
     }
 
 

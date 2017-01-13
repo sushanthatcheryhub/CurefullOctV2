@@ -44,6 +44,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.ByteArrayOutputStream;
@@ -128,7 +130,6 @@ public class MainActivity extends BaseMainActivity {
         showActionBarToggle(false);
         disableDrawer();
         changeTitle("cureFull");
-
 
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
@@ -247,8 +248,12 @@ public class MainActivity extends BaseMainActivity {
     }
 
     public void setActionDrawerProfilePic(String name) {
-        CureFull.getInstanse().getSmallImageLoader().clearCache();
-        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
+        Glide.with(this).load(name)
+                .thumbnail(0.5f)
+                .crossFade()
+                .placeholder(R.drawable.profile_avatar)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(circularImageView);
     }
 
 

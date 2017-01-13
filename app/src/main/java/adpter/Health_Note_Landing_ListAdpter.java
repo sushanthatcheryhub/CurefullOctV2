@@ -69,7 +69,9 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
         String hrs = dateParts1[0];
         String mins = dateParts1[1];
 
-        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")) {
+        Log.e("new value", "" + healthNoteItemses.get(position).getNote_to_time());
+
+        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")||healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
             try {
                 Log.e("time", "" + hrs + ":- " + mins);
                 txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
@@ -99,7 +101,7 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
         Spannable sb = new SpannableString(meassgeTxt);
         Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(name),
                 meassgeTxt.indexOf(name) + name.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -108,11 +110,11 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
                 meassgeTxt.indexOf(name) + name.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(comma),
                 meassgeTxt.indexOf(comma) + comma.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(gameName),
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_title.setText(sb);

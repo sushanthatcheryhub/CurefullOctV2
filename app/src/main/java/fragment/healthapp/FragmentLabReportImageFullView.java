@@ -19,6 +19,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,11 +77,10 @@ public class FragmentLabReportImageFullView extends Fragment {
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
-            try {
-                CureFull.getInstanse().getFullImageLoader().startLazyLoading( images, image_item);
-            } catch (Exception e) {
-
-            }
+            Glide.with(this).load(images)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image_item);
         }
 
 
@@ -150,7 +151,7 @@ public class FragmentLabReportImageFullView extends Fragment {
 
 
     public void shareClick(String prescriptionImage) {
-        String url =  prescriptionImage;
+        String url = prescriptionImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);

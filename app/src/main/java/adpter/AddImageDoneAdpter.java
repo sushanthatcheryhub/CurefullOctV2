@@ -3,6 +3,7 @@ package adpter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.io.File;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
@@ -68,6 +72,19 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
         Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
         image_item.setImageBitmap(bitmap);
 
+//        Log.e("pics"," "+prescriptionImageLists.get(position).getPrescriptionImage());
+//
+//        if(!prescriptionImageLists.get(position).getPrescriptionImage().equals("null")){
+//            Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
+//                    .thumbnail(0.5f)
+//                    .crossFade()
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(image_item);
+//
+//        }
+
+
+
         if (isDelete) {
             holder.btn_checkbox.setVisibility(View.VISIBLE);
             holder.txt_view.setVisibility(View.GONE);
@@ -81,10 +98,7 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             public void onClick(View view) {
                 Log.e("click", "ok");
                 if (!isDelete && prescriptionImageLists.get(position).getImageNumber() != 000) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
-                    DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext, bitmap);
+                    DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext, prescriptionImageLists.get(position).getPrescriptionImage());
                     dialogFullViewImage.show();
                 } else if (prescriptionImageLists.get(position).getImageNumber() == 000) {
                     Log.e("ok", "ok");

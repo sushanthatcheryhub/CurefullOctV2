@@ -17,13 +17,11 @@ public class IncomingSms extends BroadcastReceiver {
 
     // Get the object of SmsManager
     final SmsManager sms = SmsManager.getDefault();
-    SharedPreferences sharedpreferences;
     private static SmsListener mListener;
 
     public void onReceive(Context context, Intent intent) {
         String senderNum = "";
         String message = "";
-        sharedpreferences = context.getSharedPreferences("Sms", Context.MODE_PRIVATE);
         final Bundle bundle = intent.getExtras();
         try {
             if (bundle != null) {
@@ -41,7 +39,7 @@ public class IncomingSms extends BroadcastReceiver {
 //                    editor.putString("Phone", senderNum);
 //                    editor.putString("Message", message);
 //                    editor.commit();
-                    if (message.contains("OTP_IS")) {
+                    if (message.contains("Dear User,")) {
                         mListener.messageReceived(message);
                     }
 

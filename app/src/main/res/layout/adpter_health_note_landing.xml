@@ -60,7 +60,7 @@
                     android:singleLine="true"
                     android:gravity="left"
                     android:text="Health App"
-                    android:textColor="@color/white"
+                    android:textColor="@color/health_yellow"
                     />
 
                 <!--<customsTextViews.CustomTextViewOpenSanBold-->
@@ -94,7 +94,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/white" />
+            android:background="@color/health_yellow" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

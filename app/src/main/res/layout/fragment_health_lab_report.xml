@@ -18,7 +18,6 @@
             android:id="@+id/liner_layout_recyler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/liner_bottom"
             android:layout_below="@+id/liner_dialog"
             android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
@@ -39,117 +38,14 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/liner_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#A91922"
-            android:elevation="@dimen/_15dp"
-            android:orientation="horizontal"
-            android:padding="@dimen/_10dp">
-
-            <LinearLayout
-                android:id="@+id/txt_heath_note"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:text="Health Note"
-                    android:textColor="@color/health_yellow"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/notebook_small" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
-
-            <LinearLayout
-                android:id="@+id/txt_heath_app"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:text="Health App"
-                    android:textColor="@color/health_yellow"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/step_count_small_icon_1" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
-
-            <LinearLayout
-                android:id="@+id/txt_prescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:text="Prescriptions"
-                    android:textColor="@color/health_yellow"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/prescription_small_icon" />
-            </LinearLayout>
-
-        </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/top_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/_5dp"
             android:background="@color/health_yellow"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/_5dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -176,7 +72,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/_5dp"
                     android:layout_toRightOf="@+id/txt_health_text"
-                    android:src="@drawable/prescription_red" />
+                    android:src="@drawable/reports_small_icon" />
 
 
                 <LinearLayout
@@ -535,6 +431,7 @@
                                     android:orientation="horizontal">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
+                                        android:id="@+id/txt_short_cancel"
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -580,12 +477,13 @@
                                     android:orientation="horizontal">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
+                                        android:id="@+id/txt_short_apply"
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
-                                        android:text="Reset"
+                                        android:text="Apply"
                                         android:textColor="@color/health_yellow_bottom" />
 
 
@@ -595,7 +493,7 @@
 
 
                             <RadioGroup
-                                android:id="@+id/radioGenderShort"
+                                android:id="@+id/radioShort"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
@@ -604,7 +502,7 @@
                                 android:orientation="vertical">
 
                                 <customsTextViews.CustomRadioButtonOpenSanRegular
-                                    android:id="@+id/radioMale"
+                                    android:id="@+id/radioNewtest"
                                     style="@style/textView_dark_grey_normal_small"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -615,7 +513,7 @@
                                     android:textColor="@color/health_yellow" />
 
                                 <customsTextViews.CustomRadioButtonOpenSanRegular
-                                    android:id="@+id/radioFemale"
+                                    android:id="@+id/radioOldest"
                                     style="@style/textView_dark_grey_normal_small"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -750,7 +648,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
-                                        android:text="Done"
+                                        android:text="Apply"
                                         android:textColor="@color/health_yellow_bottom" />
 
 
@@ -844,7 +742,6 @@
 
 
                                     </LinearLayout>
-
 
 
                                 </LinearLayout>

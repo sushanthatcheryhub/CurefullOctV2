@@ -16,6 +16,7 @@ import java.util.List;
 
 import LazyLoaderLibs.ImageType;
 import LazyLoaderLibs.PhoneSpecificImage;
+import interfaces.IGlobalIsbackButtonVisible;
 import operations.DatabaseHelper;
 import utils.FlowOrganizer;
 
@@ -49,8 +50,10 @@ public class CureFull extends Application {
     }
 
     private boolean isEditext;
-
     private int postionGet;
+    private IGlobalIsbackButtonVisible iGlobalIsbackButtonVisible;
+
+    private static int idss = 0;
 
     @Override
     public void onCreate() {
@@ -190,5 +193,21 @@ public class CureFull extends Application {
 
     public void setPostionGet(int postionGet) {
         this.postionGet = postionGet;
+    }
+
+    public IGlobalIsbackButtonVisible getiGlobalIsbackButtonVisible() {
+        return iGlobalIsbackButtonVisible;
+    }
+
+    public void setiGlobalIsbackButtonVisible(IGlobalIsbackButtonVisible iGlobalIsbackButtonVisible) {
+        this.iGlobalIsbackButtonVisible = iGlobalIsbackButtonVisible;
+    }
+
+    public static int getIdss() {
+        return idss;
+    }
+
+    public static void setIdss(int idss) {
+        CureFull.idss = idss;
     }
 }

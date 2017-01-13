@@ -457,30 +457,36 @@ public class FragmentLogin extends Fragment implements
 //                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
 
-//                                UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
-                                if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
-                                    AppPreference.getInstance().setIsLoginFirst(false);
+                                if (userInfo != null) {
+                                    if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
+                                        AppPreference.getInstance().setIsLoginFirst(false);
+                                    } else {
+                                        AppPreference.getInstance().setIsLoginFirst(true);
+                                    }
+                                    Log.e("hint_screen", " " + userInfo.getHintScreen());
+                                    AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
+                                    AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
+                                    AppPreference.getInstance().setUserName(userInfo.getUser_name());
+                                    ContentValues contentValues = new ContentValues();
+                                    contentValues.put("email_id", userInfo.getUser_id());
+                                    DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
+                                    AppPreference.getInstance().setUserID(userInfo.getUser_id());
+                                    AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+                                    AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
+                                    AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
+                                    AppPreference.getInstance().setProfileImage(userInfo.getProfileImageUrl());
+                                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(userInfo.getProfileImageUrl());
+                                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
+                                    AppPreference.getInstance().setAt(userInfo.getA_t());
+                                    AppPreference.getInstance().setRt(userInfo.getR_t());
+                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                    CureFull.getInstanse().getFlowInstanse()
+                                            .replace(new FragmentHomeScreenAll(), false);
                                 } else {
-                                    AppPreference.getInstance().setIsLoginFirst(true);
+                                    login_button.setEnabled(true);
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
                                 }
-                                Log.e("hint_screen", " " + userInfo.getHintScreen());
-                                AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
-                                AppPreference.getInstance().setUserName(userInfo.getUser_name());
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put("email_id", userInfo.getUser_id());
-                                DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
-                                AppPreference.getInstance().setUserID(userInfo.getUser_id());
-                                AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
-                                AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
-                                AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
-                                AppPreference.getInstance().setProfileImage(userInfo.getProfileImageUrl());
-                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(userInfo.getProfileImageUrl());
-                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
-                                AppPreference.getInstance().setAt(userInfo.getA_t());
-                                AppPreference.getInstance().setRt(userInfo.getR_t());
-                                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                CureFull.getInstanse().getFlowInstanse()
-                                        .replace(new FragmentHomeScreenAll(), false);
+
                             }
                         } else {
                             login_button.setEnabled(true);
@@ -550,7 +556,7 @@ public class FragmentLogin extends Fragment implements
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            UserInfo userInfo =ParseJsonData.getInstance().getLoginData(response.toString());
+                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
 //                                UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());

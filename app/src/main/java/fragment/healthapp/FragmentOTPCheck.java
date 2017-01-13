@@ -93,17 +93,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         }
 
         Log.e("OTP", ":- " + OTP);
-        btn_click_resend_otp.setText("" + OTP);
+//        btn_click_resend_otp.setText("" + OTP);
         btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    edt_confirm_password.requestFocus();
-                }
-                return false;
-            }
-        });
+
 
         edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -143,9 +135,11 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         IncomingSms.bindListener(new SmsListener() {
             @Override
             public void messageReceived(String messageText) {
-                edt_otp_password.setText(messageText.replace("OTP_IS", ""));
+                edt_otp_password.setText("");
+                edt_otp_password.setText(messageText.trim().replace("DearUser,Yourverificationcodeis.Thanxforusingcurefull.Stayrelief", ""));
             }
         });
+
         edt_confirm_password.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -180,6 +174,17 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
+
+        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edt_confirm_password.requestFocus();
+                }
+                return false;
+            }
+        });
+
         edt_confirm_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -191,15 +196,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             }
         });
 
-        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    edt_confirm_password.requestFocus();
-                }
-                return false;
-            }
-        });
 
         return rootView;
     }
@@ -249,7 +245,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private boolean validateOTP() {
         String email = edt_otp_password.getText().toString().trim();
         if (email.isEmpty()) {
-            edt_otp_password.setError("Name cannot be left blank.");
+            edt_otp_password.setError("Otp cannot be left blank.");
             requestFocus(edt_otp_password);
             return false;
         } else {
@@ -295,7 +291,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
     private void sendOTPService() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "OTP_IS" + OTP + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(OTP) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -340,24 +336,30 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             ParseJsonData.getInstance().getLoginData(response.toString());
                             UserInfo userInfo = DbOperations.getLoginList(CureFull.getInstanse().getActivityIsntanse());
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
-//
-                                AppPreference.getInstance().setUserName(userInfo.getUser_name());
-                                AppPreference.getInstance().setUserID(userInfo.getUser_id());
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put("email_id", userInfo.getUser_id());
-                                DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
-                                AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
-                                AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
-                                AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
-                                AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
-                                AppPreference.getInstance().setIsLoginFirst(true);
-                                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
-                                AppPreference.getInstance().setAt(userInfo.getA_t());
-                                AppPreference.getInstance().setRt(userInfo.getR_t());
+
+                                if (userInfo != null) {
+                                    AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
+                                    AppPreference.getInstance().setUserName(userInfo.getUser_name());
+                                    AppPreference.getInstance().setUserID(userInfo.getUser_id());
+                                    ContentValues contentValues = new ContentValues();
+                                    contentValues.put("email_id", userInfo.getUser_id());
+                                    DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
+                                    AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
+                                    AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
+                                    AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
+                                    AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
+                                    AppPreference.getInstance().setIsLoginFirst(true);
+                                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
+                                    AppPreference.getInstance().setAt(userInfo.getA_t());
+                                    AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());
-                                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                CureFull.getInstanse().getFlowInstanse()
-                                        .replace(new FragmentHomeScreenAll(), false);
+                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                    CureFull.getInstanse().getFlowInstanse()
+                                            .replace(new FragmentHomeScreenAll(), false);
+                                } else {
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
+                                }
+
                             }
                         } else if (responseStatus == 101) {
                             try {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     android:id="@+id/relative_action_bar"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/_25dp">
 
     <RelativeLayout
@@ -19,13 +19,22 @@
             android:src="@drawable/menu" />
 
         <ImageView
+            android:id="@+id/img_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/img_share"
+            android:padding="@dimen/_5dp"
+            android:src="@drawable/bell_white" />
+
+        <ImageView
             android:id="@+id/img_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:padding="@dimen/_5dp"
-            android:src="@drawable/share" />
+            android:src="@drawable/share_white" />
 
 
     </RelativeLayout>

@@ -19,6 +19,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,11 +84,11 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         final ImageView img_share = holder.img_share;
         CardView card_view = holder.card_view;
 
-        try {
-            CureFull.getInstanse().getFullImageLoader().startLazyLoading(prescriptionListViews.get(position).getReportImage(), image_item);
-        } catch (Exception e) {
-
-        }
+        Glide.with(applicationContext).load(prescriptionListViews.get(position).getReportImage())
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image_item);
 
 
         img_delete.setOnClickListener(new View.OnClickListener() {
@@ -204,9 +206,8 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
     }
 
 
-
     public void shareClick(String reportImage, String doctorName) {
-        String url =  reportImage;
+        String url = reportImage;
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         Uri imageUri = Uri.parse(url);
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");

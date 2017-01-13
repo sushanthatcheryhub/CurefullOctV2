@@ -126,6 +126,32 @@ public class AppPreference implements MyConstants.JsonUtils {
     }
 
 
+    public void setIsEditGoal(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("EditGoal", isLogin).commit();
+        }
+    }
+
+    public boolean isEditGoal() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("EditGoal", false);
+        return false;
+    }
+
+
+    public void setIsEditGoalPage(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("EditGoalPage", isLogin).commit();
+        }
+    }
+
+    public boolean isEditGoalPage() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("EditGoalPage", false);
+        return false;
+    }
+
+
     public void setIsFirstTimeScreen1(boolean isLogin) {
         if (_prefrence != null) {
             _prefrence.edit().putBoolean("screen1", isLogin).commit();

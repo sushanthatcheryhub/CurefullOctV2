@@ -34,7 +34,6 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_5dp"
                     android:contentDescription="@string/app_name"
-                    android:src="@drawable/profile_avatar"
                     app:civ_border_color="@color/health_yellow" />
             </LinearLayout>
 
@@ -103,6 +102,30 @@
                         android:drawableLeft="@drawable/mobile_icon"
                         android:drawablePadding="@dimen/_5dp"
                         android:hint="Phone No"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:paddingBottom="@dimen/_12dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_otp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:visibility="gone"
+                    android:textColorHint="@color/white"
+                    android:theme="@style/TextLabel">
+
+                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                        android:id="@+id/edt_otp"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/mobile_icon"
+                        android:drawablePadding="@dimen/_5dp"
+                        android:hint="One time password"
                         android:inputType="number"
                         android:maxLength="10"
                         android:paddingBottom="@dimen/_12dp"
@@ -186,6 +209,7 @@
                             android:layout_height="wrap_content"
                             android:drawableLeft="@drawable/password_icon"
                             android:drawablePadding="@dimen/_5dp"
+                            android:drawableRight="@drawable/password_hide"
                             android:hint="Old Password"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
@@ -209,6 +233,7 @@
                             android:drawableLeft="@drawable/password_icon"
                             android:drawablePadding="@dimen/_5dp"
                             android:hint="New Password"
+                            android:drawableRight="@drawable/password_hide"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
                             android:textColor="@color/white"

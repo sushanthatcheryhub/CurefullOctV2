@@ -54,7 +54,8 @@ public class MyConstants {
         String PROFILE_UPDATE = URL + "endUser/profile/updateProfileDetails";
         String PRESCRIPTION_FILTER_DATA = URL + "endUser/ehr/getPrescriptionFilterDataList?";
         String REPORTS_FILTER_DATA = URL + "endUser/ehr/getLabReportFilterDataList?";
-        String INCRESE_WATER_INTAKE=URL+"endUser/healthapp/addWaterIntake";
+        String INCRESE_WATER_INTAKE = URL + "endUser/healthapp/addWaterIntake?isWaterIntakeAdd=";
+        String ADD_LIST_OF_HEALTH_NOTE=URL+"healthNote/addListOfHealthNote";
 
 
     }
@@ -64,6 +65,7 @@ public class MyConstants {
         String ISSUE_WITH_DATA = "Issue with data";
         String No_DATA = "No data";
         String ISSUES_WITH_SERVER = "Issue with sever error";
+        String OFFLINE_MODE="Your in Offline Mode";
     }
 
 
@@ -155,7 +157,8 @@ public class MyConstants {
         String TABLE_LOGIN = "tbl_user";
         String TABLE_EMAIL = "tbl_emailId";
         String TABLE_EDIT_GOAL = "tbl_edit_goal";
-        String TABLE_GRAPH="tbl_graph";
+        String TABLE_GRAPH = "tbl_graph";
+        String TABLE_OFFLINE_NOTE = "offline_note_master";
     }
 
 
