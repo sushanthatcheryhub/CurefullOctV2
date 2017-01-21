@@ -2,29 +2,30 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
+import android.content.ClipData;
 import android.content.ContentValues;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -40,29 +41,29 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.SimpleMultiPartRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.text.DecimalFormat;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import adpter.Filter_prescription_ListAdpter;
-import adpter.UHID_ListAdpter;
 import adpter.UploadPrescriptionAdpter;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -73,17 +74,18 @@ import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
 import item.property.FilterDataPrescription;
-import item.property.HealthNoteItems;
 import item.property.PrescriptionImageList;
 import item.property.PrescriptionListView;
 import item.property.UHIDItems;
+import okhttp3.RequestBody;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
 import utils.SpacesItemDecoration;
-import utils.Utils;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -95,13 +97,14 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
+    public static final int SELECT_PHOTO_MULTIPLE = 5432;
     private RelativeLayout realtive_notes;
-    private RelativeLayout realtive_notesShort;
+    private RelativeLayout realtive_notesShort, liner_short_by, txt_filter_by, liner_upload_new;
     private RelativeLayout realtive_notesFilter;
-    private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
+    private LinearLayout revealView, layoutButtons, liner_animation_upload;
     private LinearLayout liner_gallery, liner_camera, liner_btn_done, liner_filter_btn_reset;
-    private LinearLayout revealViewShort, layoutButtonsShort, liner_short_by;
-    private LinearLayout revealViewFilter, layoutButtonsFilter, txt_filter_by;
+    private LinearLayout revealViewShort, layoutButtonsShort;
+    private LinearLayout revealViewFilter, layoutButtonsFilter;
     private float pixelDensity;
     boolean flag = true;
     boolean flagShort = true;
@@ -141,6 +144,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
     private TextView txt_short_cancel, txt_short_apply;
+    private boolean isList = false;
 
 
     @Override
@@ -189,6 +193,9 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
         }
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
+        }
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
         txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
@@ -210,7 +217,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
 
         recyclerView_filter = (RecyclerView) rootView.findViewById(R.id.recyclerView_filter);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(CureFull.getInstanse().getActivityIsntanse());
         recyclerView_filter.setLayoutManager(mLayoutManager);
 
 
@@ -227,7 +234,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
         realtive_notesFilter = (RelativeLayout) rootView.findViewById(R.id.realtive_notesFilter);
         liner_animation_upload = (LinearLayout) rootView.findViewById(R.id.liner_animation_upload);
-        liner_upload_new = (LinearLayout) rootView.findViewById(R.id.liner_upload_new);
+        liner_upload_new = (RelativeLayout) rootView.findViewById(R.id.liner_upload_new);
         liner_gallery = (LinearLayout) rootView.findViewById(R.id.liner_gallery);
         liner_camera = (LinearLayout) rootView.findViewById(R.id.liner_camera);
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
@@ -235,12 +242,12 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
         revealViewShort = (LinearLayout) rootView.findViewById(R.id.linearViewShort);
         layoutButtonsShort = (LinearLayout) rootView.findViewById(R.id.layoutButtonsShort);
-        liner_short_by = (LinearLayout) rootView.findViewById(R.id.liner_short_by);
+        liner_short_by = (RelativeLayout) rootView.findViewById(R.id.liner_short_by);
 
 
         revealViewFilter = (LinearLayout) rootView.findViewById(R.id.linearViewFilter);
         layoutButtonsFilter = (LinearLayout) rootView.findViewById(R.id.layoutButtonsFilter);
-        txt_filter_by = (LinearLayout) rootView.findViewById(R.id.txt_filter_by);
+        txt_filter_by = (RelativeLayout) rootView.findViewById(R.id.txt_filter_by);
 
 
 //        img_upload_pre = (ImageView) rootView.findViewById(R.id.img_upload_pre);
@@ -335,8 +342,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 }
             }
         });
-
-
+        txt_pre_total.setSelected(true);
+        txt_total_prescription.setSelected(true);
         return rootView;
     }
 
@@ -547,38 +554,40 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 break;
 
             case R.id.liner_short_by:
+                if (isList) {
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                            liner_upload_new.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitterShort(rootView);
+                                }
+                            });
+                        }
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
 
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        liner_upload_new.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterShort(rootView);
-                            }
-                        });
                     }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-
                 }
 
 
                 break;
 
             case R.id.txt_filter_by:
+                if (isList) {
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                            liner_upload_new.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitterFilterBy(rootView);
+                                }
+                            });
+                        }
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
 
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        liner_upload_new.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterFilterBy(rootView);
-                            }
-                        });
                     }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-
                 }
 
 
@@ -624,9 +633,18 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                     });
                     selectUploadPrescription = "gallery";
                     CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                    Log.e("sdk", " " + Build.VERSION.SDK_INT);
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+//                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                        intent.setType("image/*");
+                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PHOTO);
+                    } else {
+                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                        photoPickerIntent.setType("image/*");
+                        startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                    }
+
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
@@ -659,12 +677,20 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 //            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            Matrix matrix = new Matrix();
+            matrix.setRotate(90);
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap_old = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
+            Bitmap bitmap = Bitmap.createBitmap(bitmap_old, 0, 0, bitmap_old.getWidth(), bitmap_old.getHeight(), matrix, true);
+
             PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
             prescriptionImageList.setImageNumber(value + 1);
             value = value + 1;
             imageName = imageName + 1;
             Log.e("parent", " " + Environment.getExternalStorageDirectory());
             prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
+
+
             prescriptionImageList.setChecked(false);
             prescriptionImageLists.add(prescriptionImageList);
             if (newMessage.equalsIgnoreCase("yes")) {
@@ -685,22 +711,34 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 //            img_vew.setImageBitmap(bitmap);
         } else {
             if (data != null) {
-                if (requestCode == SELECT_PHOTO) {
+                if (requestCode == SELECT_PHOTO_MULTIPLE) {
                     // Let's read picked image data - its URI
-                    Uri pickedImage = data.getData();
+                    if (data != null) {
+                        ClipData clipData = data.getClipData();
+                        if (clipData != null) {
+                            for (int i = 0; i < clipData.getItemCount(); i++) {
+                                ClipData.Item item = clipData.getItemAt(i);
+                                Uri uri = item.getUri();
+                                //In case you need image's absolute path
+                                String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
+                                Log.e("path", "-" + path + "-" + clipData.getItemCount());
+                                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+                                prescriptionImageList.setImageNumber(value + 1);
+                                value = value + 1;
+                                prescriptionImageList.setPrescriptionImage(path);
+                                prescriptionImageList.setChecked(false);
+                                prescriptionImageLists.add(prescriptionImageList);
+                            }
+                        }
+                    }
+//                    Uri pickedImage = data.getData();
+//                    // Let's read picked image path using content resolver
+//                    String[] filePath = {MediaStore.Images.Media.DATA};
+//
+//                    Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(pickedImage, filePath, null, null, null);
+//                    cursor.moveToFirst();
+//                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 
-                    // Let's read picked image path using content resolver
-                    String[] filePath = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
-                    cursor.moveToFirst();
-                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-                    PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-                    prescriptionImageList.setImageNumber(value + 1);
-                    value = value + 1;
-
-                    prescriptionImageList.setPrescriptionImage(imagePath);
-                    prescriptionImageList.setChecked(false);
-                    prescriptionImageLists.add(prescriptionImageList);
 
                     if (newMessage.equalsIgnoreCase("yes")) {
                         PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
@@ -712,7 +750,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                         dialogFullViewClickImage.setiOnDoneMoreImage(this);
                         dialogFullViewClickImage.show();
                     } else {
-                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), imagePath, selectUploadPrescription, prescriptionImageLists);
+                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
                         dialogUploadNewPrescription.setiOnAddMoreImage(this);
                         dialogUploadNewPrescription.show();
                     }
@@ -720,7 +758,57 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 //                img_vew.setImageBitmap(bitmap);
                     // Do something with the bitmap
                     // At the end remember to close the cursor or you will end with the RuntimeException!
-                    cursor.close();
+                } else if (requestCode == SELECT_PHOTO) {
+                    if (data != null) {
+//                        ClipData clipData = data.getClipData();
+//                        if (clipData != null) {
+//                            for (int i = 0; i < clipData.getItemCount(); i++) {
+//                                ClipData.Item item = clipData.getItemAt(i);
+//                                Uri uri = item.getUri();
+//                                //In case you need image's absolute path
+//                                String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
+//                                Log.e("path", "-" + path + "-" + clipData.getItemCount());
+//                                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+//                                prescriptionImageList.setImageNumber(value + 1);
+//                                value = value + 1;
+//                                prescriptionImageList.setPrescriptionImage(path);
+//                                prescriptionImageList.setChecked(false);
+//                                prescriptionImageLists.add(prescriptionImageList);
+//                            }
+//                        }
+                    }
+                    //                    Uri pickedImage = data.getData();
+//                    // Let's read picked image path using content resolver
+                    if (data != null) {
+                        Uri pickedImage = data.getData();
+                        String[] filePath = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(pickedImage, filePath, null, null, null);
+                        cursor.moveToFirst();
+                        String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+                        PrescriptionImageList labReportImageList = new PrescriptionImageList();
+                        labReportImageList.setImageNumber(value + 1);
+                        value = value + 1;
+                        labReportImageList.setPrescriptionImage(imagePath);
+                        labReportImageList.setChecked(false);
+                        prescriptionImageLists.add(labReportImageList);
+
+
+                        if (newMessage.equalsIgnoreCase("yes")) {
+                            PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                            prescriptionImageList1.setImageNumber(000);
+                            prescriptionImageList1.setPrescriptionImage(null);
+                            prescriptionImageList1.setChecked(false);
+                            prescriptionImageLists.add(prescriptionImageList1);
+                            DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
+                            dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                            dialogFullViewClickImage.show();
+                        } else {
+                            DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
+                            dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                            dialogUploadNewPrescription.show();
+                        }
+                    }
+
                 }
             }
 
@@ -728,41 +816,21 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) { // BEST QUALITY MATCH
-
-        //First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-
-        // Calculate inSampleSize, Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        int inSampleSize = 1;
-
-        if (height > reqHeight) {
-            inSampleSize = Math.round((float) height / (float) reqHeight);
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null,
+                    null, null);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        int expectedWidth = width / inSampleSize;
-
-        if (expectedWidth > reqWidth) {
-            //if(Math.round((float)width / (float)reqWidth) > inSampleSize) // If bigger SampSize..
-            inSampleSize = Math.round((float) width / (float) reqWidth);
-        }
-
-        options.inSampleSize = inSampleSize;
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-
-        return BitmapFactory.decodeFile(path, options);
-    }
-
-    private void showDialogOK(String message,
-                              DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(CureFull.getInstanse().getActivityIsntanse()).setMessage(message).setCancelable(false)
-                .setPositiveButton("Camera", okListener).setNegativeButton("Gallery", okListener).show();
     }
 
 
@@ -1132,6 +1200,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             } else {
                 prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
@@ -1143,6 +1212,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
             } else {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
@@ -1163,6 +1233,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             } else {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         } else {
@@ -1175,17 +1246,16 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                     doctorName = doctorNames;
                     dieaseName = dieaseNames;
                     prescriptionDate = prescriptionDates;
+//                    imageUpload(prescriptionImageListss);
                     new LongOperation().execute(prescriptionImageListss);
 //                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
                 }
             });
         }
-
-
     }
 
 
-    public static HashMap<String, List<File>> getFileParam(List<PrescriptionImageList> image) {
+    public HashMap<String, List<File>> getFileParam(List<PrescriptionImageList> image) {
         HashMap<String, List<File>> param = new HashMap<>();
         List<File> files = new ArrayList<>();
         for (int i = 0; i < image.size(); i++) {
@@ -1245,6 +1315,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         @Override
         protected void onPostExecute(String result) {
             getPrescriptionList();
+            getAllFilterData();
             // might want to change "executed" for the returned string passed
             // into onPostExecute() but that is upto you
         }
@@ -1269,10 +1340,10 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
             StringBuilder s = new StringBuilder();
             if (!clickDoctorName.equalsIgnoreCase("")) {
-                s.append("&doctorName=" + clickDoctorName);
+                s.append("&doctorName=" + clickDoctorName.replace(" ", "%20"));
             }
             if (!clickDiseaseName.equalsIgnoreCase("")) {
-                s.append("&diseaseName=" + clickDiseaseName);
+                s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
             }
             if (!clickDates.equalsIgnoreCase("")) {
                 s.append("&date=" + clickDates);
@@ -1305,6 +1376,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
                                 if (prescriptionListViewsDummy != null && prescriptionListViewsDummy.size() > 0) {
+                                    isList = true;
                                     prescriptionListViews.addAll(prescriptionListViewsDummy);
                                     if (prescriptionListViewsDummy.size() < 10) {
                                         isloadMore = true;
@@ -1318,13 +1390,14 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                                     uploadPrescriptionAdpter.notifyDataSetChanged();
                                 } else {
+                                    isList = false;
                                     if (prescriptionListViewsDummy == null) {
                                         isloadMore = true;
                                     }
                                     AppPreference.getInstance().setPrescriptionSize(0);
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
-                                            txt_no_prescr.setText("No Presciption Uploaded Yet!");
+                                    txt_no_prescr.setText("No Presciption Uploaded Yet!");
                                     txt_no_prescr.setVisibility(View.VISIBLE);
                                     prescriptionItemView.setVisibility(View.GONE);
                                 }
@@ -1545,7 +1618,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
-        }else{
+        } else {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
@@ -1560,8 +1633,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         clickDates = AppPreference.getInstance().getFilterDate();
         clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
         StringBuilder s = new StringBuilder();
-        s.append("doctorName=" + clickDoctorName);
-        s.append("&diseaseName=" + clickDiseaseName);
+        s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
+        s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
         s.append("&date=" + clickDates);
         s.append("&uploadedBy=" + clickUploadBy);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
@@ -1743,5 +1816,246 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         if (filter_prescription_listAdpter != null)
             filter_prescription_listAdpter.notifyDataSetChanged();
     }
+
+    public static Bitmap imageRotate(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+
+    public String compressImage(String imageUri) {
+
+        String filePath = getRealPathFromURI(imageUri);
+        Bitmap scaledBitmap = null;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+//      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
+//      you try the use the bitmap here, you will get null.
+        options.inJustDecodeBounds = true;
+        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
+
+        int actualHeight = options.outHeight;
+        int actualWidth = options.outWidth;
+
+//      max Height and width values of the compressed image is taken as 816x612
+
+        float maxHeight = 816.0f;
+        float maxWidth = 612.0f;
+        float imgRatio = actualWidth / actualHeight;
+        float maxRatio = maxWidth / maxHeight;
+
+//      width and height values are set maintaining the aspect ratio of the image
+
+        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+            if (imgRatio < maxRatio) {
+                imgRatio = maxHeight / actualHeight;
+                actualWidth = (int) (imgRatio * actualWidth);
+                actualHeight = (int) maxHeight;
+            } else if (imgRatio > maxRatio) {
+                imgRatio = maxWidth / actualWidth;
+                actualHeight = (int) (imgRatio * actualHeight);
+                actualWidth = (int) maxWidth;
+            } else {
+                actualHeight = (int) maxHeight;
+                actualWidth = (int) maxWidth;
+
+            }
+        }
+
+//      setting inSampleSize value allows to load a scaled down version of the original image
+
+        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
+
+//      inJustDecodeBounds set to false to load the actual bitmap
+        options.inJustDecodeBounds = false;
+
+//      this options allow android to claim the bitmap memory if it runs low on memory
+        options.inPurgeable = true;
+        options.inInputShareable = true;
+        options.inTempStorage = new byte[16 * 1024];
+
+        try {
+//          load the bitmap from its path
+            bmp = BitmapFactory.decodeFile(filePath, options);
+        } catch (OutOfMemoryError exception) {
+            exception.printStackTrace();
+
+        }
+        try {
+            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
+        } catch (OutOfMemoryError exception) {
+            exception.printStackTrace();
+        }
+
+        float ratioX = actualWidth / (float) options.outWidth;
+        float ratioY = actualHeight / (float) options.outHeight;
+        float middleX = actualWidth / 2.0f;
+        float middleY = actualHeight / 2.0f;
+
+        Matrix scaleMatrix = new Matrix();
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
+
+        Canvas canvas = new Canvas(scaledBitmap);
+        canvas.setMatrix(scaleMatrix);
+        canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+
+//      check the rotation of the image and display it properly
+        ExifInterface exif;
+        try {
+            exif = new ExifInterface(filePath);
+
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION, 0);
+            Log.d("EXIF", "Exif: " + orientation);
+            Matrix matrix = new Matrix();
+            if (orientation == 6) {
+                matrix.postRotate(90);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 3) {
+                matrix.postRotate(180);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 8) {
+                matrix.postRotate(270);
+                Log.d("EXIF", "Exif: " + orientation);
+            }
+            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
+                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
+                    true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        FileOutputStream out = null;
+        String filename = getFilename();
+        try {
+            out = new FileOutputStream(filename);
+
+//          write the compressed bitmap at the destination specified by filename.
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return filename;
+
+    }
+
+
+    public String getFilename() {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        String uriSting = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
+        return uriSting;
+
+    }
+
+    private String getRealPathFromURI(String contentURI) {
+        Uri contentUri = Uri.parse(contentURI);
+        Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(contentUri, null, null, null, null);
+        if (cursor == null) {
+            return contentUri.getPath();
+        } else {
+            cursor.moveToFirst();
+            int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(index);
+        }
+    }
+
+    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        final float totalPixels = width * height;
+        final float totalReqPixelsCap = reqWidth * reqHeight * 2;
+        while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+            inSampleSize++;
+        }
+
+        return inSampleSize;
+    }
+
+    private void imageUpload(final List<PrescriptionImageList> prescriptionImage) {
+        String removeSyptoms = "";
+        for (int i = 0; i < prescriptionImage.size(); i++) {
+            if (prescriptionImage.get(i).getImageNumber() != 000) {
+
+                if (selectUploadPrescription.equalsIgnoreCase("camera")) {
+                    String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
+                    removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
+                    Log.e("check", "" + removeSyptoms);
+                } else {
+                    int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
+                    String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
+                    Log.e("fileName", " " + hello);
+                    removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
+                    Log.e("check", "" + removeSyptoms);
+                }
+
+
+            }
+        }
+        if (removeSyptoms.endsWith(",")) {
+            removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
+        }
+        final String finalRemoveSyptoms = removeSyptoms;
+        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, MyConstants.WebUrls.UPLOAD_PRESCRIPTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("Response", response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("healthRecordDate", prescriptionDate);
+                headers.put("doctorName", doctorName);
+                headers.put("disease", dieaseName);
+                headers.put("imageOrder", finalRemoveSyptoms);
+                return headers;
+            }
+
+        };
+        HashMap<String, List<File>> fileParams = getFileParam(prescriptionImage);
+        if (fileParams != null && fileParams.size() > 0) {
+            for (Map.Entry<String, List<File>> entry : fileParams.entrySet()) {
+                if (entry.getValue() != null) {
+                    for (int i = 0; i < entry.getValue().size(); i++) {
+                        Log.e("hello ", " " + entry.getKey() + " " + entry.getValue().get(i).toString());
+                        smr.addFile(entry.getKey(), entry.getValue().get(i).toString());
+                    }
+
+                }
+            }
+        }
+        Log.e("smr ", " " + smr.getFilesToUpload());
+        CureFull.getInstanse().getRequestQueue().add(smr);
+
+    }
+
 
 }

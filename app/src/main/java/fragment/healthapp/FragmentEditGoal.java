@@ -38,14 +38,14 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -768,21 +768,21 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         String meassgeNew = you + termCondtiions;
 
         Spannable sb1 = new SpannableString(meassgeNew);
-        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb1.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
                         .getColor(R.color.health_yellow)), meassgeNew.indexOf(you),
                 meassgeNew.indexOf(you) + you.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb1.setSpan(new UnderlineSpan(), meassgeNew.indexOf(you),
                 meassgeNew.indexOf(you) + you.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb1.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
                         .getColor(R.color.health_yellow)), meassgeNew.indexOf(termCondtiions),
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         txt_btn_set_glass.setText(sb1);
         txt_btn_set_glass.setOnClickListener(this);
-        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+        alphaAnimation = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.alpha_anim);
 
         edt_feet.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -800,6 +800,26 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     edt_grams.requestFocus();
+                }
+                return false;
+            }
+        });
+
+
+        edt_grams.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    setRecommededDetails();
+                }
+                return false;
+            }
+        });
+        edt_pounds.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    setRecommededDetails();
                 }
                 return false;
             }
@@ -996,7 +1016,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateHeightinchBMI() {
         String email = edt_inchs.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Inchs can not be blank");
             return false;
         }
         return true;
@@ -1006,7 +1025,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateWeightKgsBMI() {
         String email = edt_kgs.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Kg can not be blank");
             return false;
         }
         return true;
@@ -1016,7 +1034,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateAge() {
         String email = edt_years.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "DOB can not be blank");
             return false;
         }
         return true;
@@ -1026,7 +1043,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateHeightCM() {
         String email = edt_cm.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height CM can not be blank");
             return false;
         }
         return true;
@@ -1035,7 +1051,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateWeightPounds() {
         String email = edt_pounds.getText().toString().trim();
         if (email.equalsIgnoreCase("")) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Weight Pound can not be blank");
             return false;
         }
         return true;
@@ -1217,7 +1232,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 String targetWaterInTake = json1.getString("targetWaterInTake");
                                 AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(targetStepCount));
                                 AppPreference.getInstance().setWaterInTakeTarget(targetWaterInTake);
-                                edt_water.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake))) + " L");
+                                edt_water.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake))) + " L");
                                 btn_edit_goal.setText("Edit Goal");
 //                            UserInfo userInfo = ParseJsonData.getInstance().getLoginData(response.toString());
 //                            if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
@@ -1416,13 +1431,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Done")) {
                         String steps = edt_steps.getText().toString().trim();
                         String calories = edt_calories.getText().toString().trim();
-                        double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
-                        jsonUploadTarget(steps, calories, Utils.getLiterToMl(water));
+                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("")) {
+                            double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+                            jsonUploadTarget(steps, calories, Utils.getLiterToMl(water));
+                        }
+
                     }
                     if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Edit Goal")) {
                         btn_edit_goal.setText("Done");
-                        double change = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
-                        edt_water.setText("" + change);
+                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("")) {
+                            double change = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+                            edt_water.setText("" + change);
+                        }
+
                     }
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
@@ -1526,7 +1547,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-
+            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+            if (userInfo == null)
+                return;
+            setGoals(userInfo);
         }
 
     }
@@ -1551,15 +1575,18 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     public void setRecommededDetails() {
 
         if (!validateAge()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "DOB can not be blank");
             return;
         }
 
         if (isCm) {
             if (!validateHeightCM()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height CM can not be blank");
                 return;
             }
         } else {
             if (!validateHeightFeetBMI()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height Feet can not be blank");
                 return;
             }
 
@@ -1568,10 +1595,12 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         if (isPounds) {
             if (!validateWeightPounds()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Pound can not be blank");
                 return;
             }
         } else {
             if (!validateWeightKgsBMI()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Weight kg can not be blank");
                 return;
             }
         }
@@ -1599,6 +1628,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         }
         String gender = "MALE";
         if (!isMale && !isFemale) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Gender can not be blank");
             return;
         }
         if (isMale) {

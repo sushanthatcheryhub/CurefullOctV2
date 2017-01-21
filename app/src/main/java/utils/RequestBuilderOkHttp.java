@@ -96,6 +96,7 @@ public class RequestBuilderOkHttp {
             for (Map.Entry<String, List<File>> entry : fileParams.entrySet()) {
                 if (entry.getValue() != null) {
                     for (int i = 0; i < entry.getValue().size(); i++) {
+                        Log.e("checl"," "+entry.getKey()+" "+entry.getValue().get(i).getName()+" "+entry.getValue().get(i));
                         buildernew.addFormDataPart(entry.getKey(), entry.getValue().get(i).getName(), RequestBody.create(MEDIA_TYPE_PNG, entry.getValue().get(i)));
                     }
 
@@ -206,6 +207,7 @@ public class RequestBuilderOkHttp {
         if (fileParams != null && fileParams.size() > 0) {
             for (Map.Entry<String, File> entry : fileParams.entrySet()) {
                 if (entry.getValue() != null && entry.getValue().exists()) {
+                    Log.e("sdsd","sdsds"+entry.getValue());
                     buildernew.addFormDataPart(entry.getKey(), entry.getValue().getName(), RequestBody.create(MEDIA_TYPE_PNG, entry.getValue()));
                 }
             }

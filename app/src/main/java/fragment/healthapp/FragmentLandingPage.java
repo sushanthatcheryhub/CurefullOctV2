@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,17 +48,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.ParseError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -84,7 +90,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import adpter.Health_Note_Landing_ListAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -100,6 +105,7 @@ import ticker.TickerUtils;
 import ticker.TickerView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
+import utils.CustomTypefaceSpan;
 import utils.HandlePermission;
 import utils.MyConstants;
 import utils.SeekArc;
@@ -112,15 +118,13 @@ import utils.Utils;
 public class FragmentLandingPage extends BaseBackHandlerFragment implements MyConstants.JsonUtils, View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     private View rootView;
-    private RecyclerView recyclerView_notes;
     private static TextView txt_calories;
     private TextView txt_water_level;
-    private TextView txt_no_list_health_note;
     private TextView txt_name;
     private TextView txt_health_note;
     private TextView btn_set_goal;
     private TextView txt_date_time;
-    private TextView txt_time;
+    private TextView txt_time, txt_date_times, txt_title;
     private TextView txt_to_time;
     private TextView btn_done;
     private TextView txt_click_here_add;
@@ -140,15 +144,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     // method in order to stop all sensors from sending data to this listener.
     private OnDataPointListener mListener;
     // [END mListener_variable_reference]
-    private RelativeLayout realtive_click;
     private LinearLayout linear_health_app, liner_date_t, liner_to_time, linear_health_note;
     private ActivityRecognition arclient;
     private RelativeLayout realtive_notes;
     private static TickerView ticker1;
     private static TickerView text_steps_count;
-    private FloatingActionButton img_fab;
     ImageButton imageButton;
-    LinearLayout revealView, layoutButtons, liner_click, linear_prescription_click, linear_lab_report_click, date_time_picker;
+    LinearLayout liner_bottomd, revealView, layoutButtons, liner_click, linear_prescription_click, linear_lab_report_click, date_time_picker;
     Animation alphaAnimation;
     float pixelDensity;
     boolean flag = true;
@@ -157,7 +159,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private Boolean isFabOpen = false;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
     private EditText edt_deatils, edt_subject;
-    private Health_Note_Landing_ListAdpter health_note_listAdpter;
     List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
     private String firstDate = "", firstTime = "", toFirstTime = "";
     SharedPreferences preferences;
@@ -175,51 +176,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
     @Override
     public boolean onBackPressed() {
-
-        Log.e("aaya", ":-");
-
-//        List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
-//        if (list != null) {
-//            for (Fragment f : list) {
-//                if (f != null && f instanceof FragmentEditGoal) {
-//                    Log.e("FragmentEditGoal", ":-  FragmentEditGoal");
-//                    String gender = "";
-//                    if (AppPreference.getInstance().getMale()) {
-//                        gender = "MALE";
-//                    } else {
-//                        gender = "FEMALE";
-//                    }
-//                    String feet = "";
-//                    String inch = "";
-//                    if (AppPreference.getInstance().getFtIN()) {
-//                        feet = AppPreference.getInstance().getGoalHeightFeet();
-//                        inch = AppPreference.getInstance().getGoalHeightInch();
-//                    } else {
-//                        feet = AppPreference.getInstance().getGoalHeightCm();
-//                    }
-//
-//                    String kgs = "";
-//                    if (AppPreference.getInstance().getKgs()) {
-//                        kgs = AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams();
-//                    } else {
-//                        kgs = AppPreference.getInstance().getGoalWeightPound();
-//                    }
-//
-//                    if (!feet.equalsIgnoreCase("0") || !feet.equalsIgnoreCase("") && !kgs.equalsIgnoreCase("0") || !kgs.equalsIgnoreCase("")) {
-//                        double kg = Double.parseDouble(kgs);
-//                        Log.e("kg to p ", " " + new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)));
-//                        if (AppPreference.getInstance().getFtIN()) {
-//                            jsonUploadGenderDetails(String.valueOf(Utils.convertFeetandInchesToCentimeter(String.valueOf(feet), String.valueOf(inch))), new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
-//                        } else {
-//                            jsonUploadGenderDetails(feet, new DecimalFormat("##.###").format(Utils.getConvertingKilogramsIntoPounds(kg)), AppPreference.getInstance().getGoalAge(), gender);
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         return super.onBackPressed();
     }
@@ -235,10 +191,16 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
         }
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
+        }
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
+        txt_date_times = (TextView) rootView.findViewById(R.id.txt_date_times);
+        txt_title = (TextView) rootView.findViewById(R.id.txt_title);
+        liner_bottomd = (LinearLayout) rootView.findViewById(R.id.liner_bottomd);
         linear_health_note = (LinearLayout) rootView.findViewById(R.id.linear_health_note);
         imgg_question_white = (ImageView) rootView.findViewById(R.id.imgg_question_white);
         imgg_question_red = (ImageView) rootView.findViewById(R.id.imgg_question_red);
@@ -246,10 +208,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         img_minus_icon = (ImageView) rootView.findViewById(R.id.img_minus_icon);
         img_plus_icon = (ImageView) rootView.findViewById(R.id.img_plus_icon);
         txt_water_level = (TextView) rootView.findViewById(R.id.txt_water_level);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         img_pre = (ImageView) rootView.findViewById(R.id.img_pre);
-        recyclerView_notes = (RecyclerView) rootView.findViewById(R.id.recyclerView_notes);
-        txt_no_list_health_note = (TextView) rootView.findViewById(R.id.txt_no_list_health_note);
         txt_click_here_add = (TextView) rootView.findViewById(R.id.txt_click_here_add);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);
         txt_to_time = (TextView) rootView.findViewById(R.id.txt_to_time);
@@ -263,7 +223,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         linear_lab_report_click = (LinearLayout) rootView.findViewById(R.id.linear_lab_report_click);
         linear_prescription_click = (LinearLayout) rootView.findViewById(R.id.linear_prescription_click);
         liner_click = (LinearLayout) rootView.findViewById(R.id.liner_click);
-        realtive_click = (RelativeLayout) rootView.findViewById(R.id.realtive_click);
         seekArcComplete = (SeekArc) rootView.findViewById(R.id.seekArcComplete);
         text_steps_count = (TickerView) rootView.findViewById(R.id.text_steps_count);
         ticker1 = (TickerView) rootView.findViewById(R.id.ticker1);
@@ -271,7 +230,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         ticker1.setCharacterList(NUMBER_LIST);
         ticker1.setText("0" + "%");
         btn_set_goal = (TextView) rootView.findViewById(R.id.btn_set_goal);
-        img_fab = (FloatingActionButton) rootView.findViewById(R.id.img_fab);
         pixelDensity = getResources().getDisplayMetrics().density;
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
         layoutButtons = (LinearLayout) rootView.findViewById(R.id.layoutButtons);
@@ -281,8 +239,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
         linear_lab_report_click.setOnClickListener(this);
         linear_prescription_click.setOnClickListener(this);
-        img_fab.setOnClickListener(this);
-        realtive_click.setOnClickListener(this);
         liner_click.setOnClickListener(this);
         btn_set_goal.setOnClickListener(this);
         txt_date_time.setOnClickListener(this);
@@ -296,24 +252,22 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         imgg_question_red.setOnClickListener(this);
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
 //        if (AppPreference.getInstance().getStepStarts()) {
-        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
-        CureFull.getInstanse().getActivityIsntanse().startService(intent);
+
 
 //        }
-        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+        alphaAnimation = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.alpha_anim);
         txt_health_note = (TextView) rootView.findViewById(R.id.txt_health_note);
-        rotate_forward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_forward);
-        rotate_backward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_backward);
+        rotate_forward = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.rotate_backward);
         // Construct SwitchDateTimePicker
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView_notes.setLayoutManager(mLayoutManager);
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
         txt_water_level.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
         getDailyHealth();
-        jsonUploadTarget();
+        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+        CureFull.getInstanse().getActivityIsntanse().startService(intent);
         doBindService();
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
@@ -372,160 +326,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 return false;
             }
         });
+
+        jsonUploadTarget();
         return rootView;
     }
 
-
-    public void showAdpter() {
-        if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
-            txt_no_list_health_note.setVisibility(View.GONE);
-            recyclerView_notes.setVisibility(View.VISIBLE);
-            health_note_listAdpter = new Health_Note_Landing_ListAdpter(CureFull.getInstanse().getActivityIsntanse(), healthNoteItemses);
-            recyclerView_notes.setAdapter(health_note_listAdpter);
-            health_note_listAdpter.notifyDataSetChanged();
-        } else {
-            Log.e("no one", ":- no");
-            isFabOpen = false;
-            flag = true;
-//            txt_no_list_health_note.setVisibility(View.VISIBLE);
-            recyclerView_notes.setVisibility(View.GONE);
-
-            txt_no_list_health_note.post(new Runnable() {
-                @Override
-                public void run() {
-                    launchTwitter(rootView);
-                }
-            });
-            animateFAB();
-        }
-
-    }
-
-
-    public void launchTwitter(View view) {
-        /*
-         MARGIN_RIGHT = 16;
-         FAB_BUTTON_RADIUS = 28;
-         */
-        int x = realtive_notes.getRight();
-        int y = realtive_notes.getBottom();
-        x -= ((28 * pixelDensity) + (16 * pixelDensity));
-        int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
-        Log.e("flag ", ": " + flag);
-        if (flag) {
-
-//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
-//            imageButton.setImageResource(R.drawable.image_cancel);
-
-            if (Build.VERSION.SDK_INT > 19) {
-                FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                        revealView.getLayoutParams();
-                parameters.height = realtive_notes.getHeight();
-                revealView.setLayoutParams(parameters);
-                try {
-                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-                    anim.setDuration(700);
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            layoutButtons.setVisibility(View.VISIBLE);
-                            layoutButtons.startAnimation(alphaAnimation);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
-
-                        }
-                    });
-
-                    revealView.setVisibility(View.VISIBLE);
-                    anim.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-            } else {
-                layoutButtons.setVisibility(View.VISIBLE);
-                revealView.setVisibility(View.VISIBLE);
-            }
-            flag = false;
-
-        } else {
-
-//            imageButton.setBackgroundResource(R.drawable.rounded_button);
-//            imageButton.setImageResource(R.drawable.twitter_logo);
-
-            if (Build.VERSION.SDK_INT > 19) {
-                try {
-                    Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, hypotenuse, 0);
-                    anim.setDuration(400);
-
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            revealView.setVisibility(View.GONE);
-                            layoutButtons.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
-
-                        }
-                    });
-
-                    anim.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else {
-                revealView.setVisibility(View.GONE);
-                layoutButtons.setVisibility(View.GONE);
-            }
-
-            flag = true;
-        }
-    }
-
-    public void animateFAB() {
-        Log.d("isFabOpen", ":- " + isFabOpen);
-        if (isFabOpen) {
-            img_fab.startAnimation(rotate_backward);
-            isFabOpen = false;
-            Log.d("Raj", "close");
-            liner_to_time.setVisibility(View.GONE);
-            liner_date_t.setVisibility(View.GONE);
-            date_time_picker.setVisibility(View.GONE);
-            txt_click_here_add.setVisibility(View.VISIBLE);
-        } else {
-            img_fab.startAnimation(rotate_forward);
-            isFabOpen = true;
-            Log.d("Raj", "open");
-
-        }
-
-    }
 
     @Override
     public void onClick(View view) {
@@ -556,27 +361,27 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     int hour1 = c1.get(Calendar.HOUR_OF_DAY);
                     // Current Minute
                     int minute1 = c1.get(Calendar.MINUTE);
-                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
+                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), this, hour1, minute1, false);
                     timePickerDialog1.show();
                 }
 
                 break;
 
-            case R.id.realtive_click:
-                if (AppPreference.getInstance().isEditGoal()) {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentHealthAppNew(), true);
-
-                } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentEditGoal(), true);
-                }
-
-                break;
+//            case R.id.realtive_click:
+//                if (AppPreference.getInstance().isEditGoal()) {
+//                    CureFull.getInstanse().getFlowInstanseAll()
+//                            .replace(new FragmentHealthAppNew(), true);
+//
+//                } else {
+//                    CureFull.getInstanse().getFlowInstanseAll()
+//                            .replace(new FragmentEditGoal(), true);
+//                }
+//
+//                break;
             case R.id.liner_click:
                 if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentHealthAppNew(), true);
+                            .replace(new FragmentHealthAppNewProgress(), true);
                 } else {
                     CureFull.getInstanse().getFlowInstanseAll()
                             .replace(new FragmentEditGoal(), true);
@@ -584,7 +389,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 }
                 break;
             case R.id.btn_set_goal:
-//                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(getActivity());
+//                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
 //                dialogFullViewPrescription.show();
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentEditGoal(), true);
@@ -600,17 +405,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentPrescriptionCheck(), true);
                 break;
-            case R.id.img_fab:
-                if (healthNoteItemses != null && healthNoteItemses.size() > 0) {
-                    animateFAB();
-                    txt_no_list_health_note.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            launchTwitter(rootView);
-                        }
-                    });
-                }
-                break;
+
             case R.id.txt_date_time:
                 final int year, day;
                 int month1;
@@ -635,7 +430,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
                 newDateDialog.show();
 
-//                dateTimeFragment.show(getActivity().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
+//                dateTimeFragment.show(CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
                 break;
             case R.id.txt_to_time:
                 if (isSelectFrom) {
@@ -645,7 +440,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     int hour = c.get(Calendar.HOUR_OF_DAY);
                     // Current Minute
                     int minute = c.get(Calendar.MINUTE);
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, false);
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), this, hour, minute, false);
                     timePickerDialog.show();
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select first from time.");
@@ -671,7 +466,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 liner_to_time.setVisibility(View.VISIBLE);
                 break;
             case R.id.img_plus_icon:
-
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_plus_icon);
 //                if (waterLevel >= Integer.parseInt(AppPreference.getInstance().getWaterInTakeTarget())) {
 //                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Water Intake Target Done");
 //                    return;
@@ -682,12 +477,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 } else {
                     return;
                 }
-                txt_water_level.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(waterLevel)) + " L");
+                txt_water_level.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(waterLevel)) + " L");
                 getIncreseWaterInTake("true");
                 break;
             case R.id.img_minus_icon:
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_minus_icon);
                 waterLevel -= Integer.parseInt(AppPreference.getInstance().getGlass());
-                txt_water_level.setText(new DecimalFormat("###.#").format(Utils.getMlToLiter(waterLevel)) + " L");
+                txt_water_level.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(waterLevel)) + " L");
                 if (waterLevel == 0 || waterLevel < 0) {
                     img_minus_icon.setVisibility(View.INVISIBLE);
                     return;
@@ -926,13 +722,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 getAllHealthList();
                                 isFabOpen = true;
-                                animateFAB();
-                                txt_no_list_health_note.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        launchTwitter(rootView);
-                                    }
-                                });
                                 txt_time.setText("");
                                 txt_to_time.setText("");
                                 txt_date_time.setText("");
@@ -1067,10 +856,19 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                 healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
                                 if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
                                     healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                                    Log.e("healthNoteItemses", " after:-" + healthNoteItemses.size());
-                                    showAdpter();
+                                    if (healthNoteItemses != null & healthNoteItemses.size() > 0) {
+                                        liner_bottomd.setVisibility(View.VISIBLE);
+                                        noteData();
+                                    } else {
+                                        liner_bottomd.setVisibility(View.GONE);
+                                    }
                                 } else {
-                                    showAdpter();
+                                    if (healthNoteItemses != null & healthNoteItemses.size() > 0) {
+                                        liner_bottomd.setVisibility(View.VISIBLE);
+                                        noteData();
+                                    } else {
+                                        liner_bottomd.setVisibility(View.GONE);
+                                    }
                                 }
 
                             } else {
@@ -1090,15 +888,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
-                            showAdpter();
-                            if (healthNoteItemses.size() == 0) {
-                                animateFAB();
-                                txt_no_list_health_note.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        launchTwitter(rootView);
-                                    }
-                                });
+                            if (healthNoteItemses != null & healthNoteItemses.size() > 0) {
+                                liner_bottomd.setVisibility(View.VISIBLE);
+                                noteData();
+                            } else {
+                                liner_bottomd.setVisibility(View.GONE);
                             }
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
@@ -1121,15 +915,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
             healthNoteItemses = DbOperations.getNoteListLanding(CureFull.getInstanse().getActivityIsntanse());
-            showAdpter();
-            if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
-                animateFAB();
-                txt_no_list_health_note.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitter(rootView);
-                    }
-                });
+            if (healthNoteItemses != null & healthNoteItemses.size() > 0) {
+                liner_bottomd.setVisibility(View.VISIBLE);
+                noteData();
+            } else {
+                liner_bottomd.setVisibility(View.GONE);
             }
         }
 
@@ -1485,6 +1275,69 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    public void noteData() {
+        String dateTime = healthNoteItemses.get(0).getNote_date();
+        String[] dateParts = dateTime.split("-");
+        String years = dateParts[0];
+        String months = dateParts[1];
+        String days = dateParts[2];
+        String times = healthNoteItemses.get(0).getNote_time();
+        String[] dateParts1 = times.split(":");
+        String hrs = dateParts1[0];
+        String mins = dateParts1[1];
+
+        Log.e("new value", "" + healthNoteItemses.get(0).getNote_to_time());
+
+        if (healthNoteItemses.get(0).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(0).getNote_to_time().equalsIgnoreCase("")) {
+            try {
+                Log.e("time", "" + hrs + ":- " + mins);
+                txt_date_times.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String times1 = healthNoteItemses.get(0).getNote_to_time();
+            String[] dateParts11 = times1.split(":");
+            String hrs1 = dateParts11[0];
+            String mins1 = dateParts11[1];
+
+            Log.e("hi", "hi" + times1);
+            try {
+                txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String name = healthNoteItemses.get(0).getNote_heading();
+        String comma = " : ";
+        String gameName = healthNoteItemses.get(0).getDeatils();
+
+        String meassgeTxt = name + comma + gameName;
+
+        Spannable sb = new SpannableString(meassgeTxt);
+        Typeface font = Typeface.createFromAsset(CureFull.getInstanse().getActivityIsntanse().getAssets(), "Montserrat-Bold.ttf");
+        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(comma),
+                meassgeTxt.indexOf(comma) + comma.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(gameName),
+                meassgeTxt.indexOf(gameName) + gameName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        txt_title.setText(sb);
     }
 
 }

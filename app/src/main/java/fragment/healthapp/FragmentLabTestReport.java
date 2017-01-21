@@ -2,11 +2,11 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
+import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -35,12 +35,12 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -86,11 +86,11 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int SELECT_PHOTO = 12345;
     private RelativeLayout realtive_notes;
-    private RelativeLayout realtive_notesShort;
+    private RelativeLayout realtive_notesShort, liner_short_by, txt_filter_by, liner_upload_new;
     private RelativeLayout realtive_notesFilter;
-    private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
-    private LinearLayout revealViewShort, layoutButtonsShort, liner_short_by;
-    private LinearLayout revealViewFilter, layoutButtonsFilter, txt_filter_by;
+    private LinearLayout revealView, layoutButtons, liner_animation_upload;
+    private LinearLayout revealViewShort, layoutButtonsShort;
+    private LinearLayout revealViewFilter, layoutButtonsFilter;
     private LinearLayout liner_gallery, liner_camera, liner_btn_done, liner_filter_btn_reset;
     private float pixelDensity;
     boolean flag = true;
@@ -135,7 +135,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private RadioButton radioNewtest, radioOldest;
 
     private TextView txt_short_cancel, txt_short_apply;
-
+    private boolean isList = false;
 
     @Override
     public boolean onBackPressed() {
@@ -184,6 +184,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
         }
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
+        }
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
         txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
@@ -206,7 +209,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         recyclerView_filter = (RecyclerView) rootView.findViewById(R.id.recyclerView_filter);
         realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
         realtive_notesFilter = (RelativeLayout) rootView.findViewById(R.id.realtive_notesFilter);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(CureFull.getInstanse().getActivityIsntanse());
         recyclerView_filter.setLayoutManager(mLayoutManager);
         txt_total_prescription = (TextView) rootView.findViewById(R.id.txt_total_prescription);
 
@@ -223,7 +226,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         pixelDensity = getResources().getDisplayMetrics().density;
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         liner_animation_upload = (LinearLayout) rootView.findViewById(R.id.liner_animation_upload);
-        liner_upload_new = (LinearLayout) rootView.findViewById(R.id.liner_upload_new);
+        liner_upload_new = (RelativeLayout) rootView.findViewById(R.id.liner_upload_new);
         liner_gallery = (LinearLayout) rootView.findViewById(R.id.liner_gallery);
         liner_camera = (LinearLayout) rootView.findViewById(R.id.liner_camera);
         revealView = (LinearLayout) rootView.findViewById(R.id.linearView);
@@ -231,12 +234,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
         revealViewShort = (LinearLayout) rootView.findViewById(R.id.linearViewShort);
         layoutButtonsShort = (LinearLayout) rootView.findViewById(R.id.layoutButtonsShort);
-        liner_short_by = (LinearLayout) rootView.findViewById(R.id.liner_short_by);
+        liner_short_by = (RelativeLayout) rootView.findViewById(R.id.liner_short_by);
 
 
         revealViewFilter = (LinearLayout) rootView.findViewById(R.id.linearViewFilter);
         layoutButtonsFilter = (LinearLayout) rootView.findViewById(R.id.layoutButtonsFilter);
-        txt_filter_by = (LinearLayout) rootView.findViewById(R.id.txt_filter_by);
+        txt_filter_by = (RelativeLayout) rootView.findViewById(R.id.txt_filter_by);
 
 //        img_upload_pre = (ImageView) rootView.findViewById(R.id.img_upload_pre);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -245,7 +248,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         liner_upload_new.setOnClickListener(this);
         liner_camera.setOnClickListener(this);
         liner_gallery.setOnClickListener(this);
-        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+        alphaAnimation = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.alpha_anim);
         labReportItemView = (RecyclerView) rootView.findViewById(R.id.grid_list_symptom);
         int spacingInPixels = 10;
         labReportItemView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
@@ -325,7 +328,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 }
             }
         });
-
+        txt_pre_total.setSelected(true);
+        txt_total_prescription.setSelected(true);
         return rootView;
     }
 
@@ -471,35 +475,40 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
                 break;
             case R.id.liner_short_by:
-
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        liner_upload_new.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterShort(rootView);
-                            }
-                        });
+                if (isList) {
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                            liner_upload_new.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitterShort(rootView);
+                                }
+                            });
+                        }
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                     }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                 }
+
 
                 break;
 
             case R.id.txt_filter_by:
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        liner_upload_new.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterFilterBy(rootView);
-                            }
-                        });
+                if (isList) {
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                            liner_upload_new.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    launchTwitterFilterBy(rootView);
+                                }
+                            });
+                        }
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                     }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                 }
+
                 break;
 
             case R.id.liner_animation_upload:
@@ -560,6 +569,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 selectUploadPrescription = "gallery";
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
                 break;
@@ -597,11 +607,30 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         } else {
             if (data != null) {
                 if (requestCode == SELECT_PHOTO) {
+
+//                    if (data != null) {
+//                        ClipData clipData = data.getClipData();
+//                        if (clipData != null) {
+//                            for (int i = 0; i < clipData.getItemCount(); i++) {
+//                                ClipData.Item item = clipData.getItemAt(i);
+//                                Uri uri = item.getUri();
+//                                //In case you need image's absolute path
+//                                String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
+//                                Log.e("path", "-" + path + "-" + clipData.getItemCount());
+//                                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+//                                prescriptionImageList.setImageNumber(value + 1);
+//                                value = value + 1;
+//                                prescriptionImageList.setPrescriptionImage(path);
+//                                prescriptionImageList.setChecked(false);
+//                                prescriptionImageLists.add(prescriptionImageList);
+//                            }
+//                        }
+//                    }
                     // Let's read picked image data - its URI
                     Uri pickedImage = data.getData();
                     // Let's read picked image path using content resolver
                     String[] filePath = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getActivity().getContentResolver().query(pickedImage, filePath, null, null, null);
+                    Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(pickedImage, filePath, null, null, null);
                     cursor.moveToFirst();
                     String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
                     PrescriptionImageList labReportImageList = new PrescriptionImageList();
@@ -620,14 +649,13 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         dialogFullViewClickImage.setiOnDoneMoreImage(this);
                         dialogFullViewClickImage.show();
                     } else {
-                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), imagePath, selectUploadPrescription, prescriptionImageLists);
+                        DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
                         dialogUploadNewPrescription.setiOnAddMoreImage(this);
                         dialogUploadNewPrescription.show();
                     }
 //                img_vew.setImageBitmap(bitmap);
                     // Do something with the bitmap
                     // At the end remember to close the cursor or you will end with the RuntimeException!
-                    cursor.close();
                 }
             }
 
@@ -995,6 +1023,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             } else {
                 prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
@@ -1007,6 +1036,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             } else {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
@@ -1026,6 +1056,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
             } else {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
@@ -1108,6 +1139,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         @Override
         protected void onPostExecute(String result) {
             getLabReportList();
+            getAllFilterData();
             // might want to change "executed" for the returned string passed
             // into onPostExecute() but that is upto you
         }
@@ -1131,10 +1163,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             StringBuilder s = new StringBuilder();
             if (!clickDoctorName.equalsIgnoreCase("")) {
-                s.append("&doctorName=" + clickDoctorName);
+                s.append("&doctorName=" + clickDoctorName.replace(" ", "%20"));
             }
             if (!clickDiseaseName.equalsIgnoreCase("")) {
-                s.append("&diseaseName=" + clickDiseaseName);
+                s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
             }
             if (!clickDates.equalsIgnoreCase("")) {
                 s.append("&date=" + clickDates);
@@ -1164,6 +1196,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
                                 if (labReportListViewsDummy != null && labReportListViewsDummy.size() > 0) {
+                                    isList=true;
                                     if (labReportListViewsDummy.size() < 10) {
                                         isloadMore = true;
                                     }
@@ -1175,6 +1208,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     labReportItemView.setAdapter(uploadLabTestReportAdpter);
                                     uploadLabTestReportAdpter.notifyDataSetChanged();
                                 } else {
+                                    isList=false;
                                     if (labReportListViewsDummy == null) {
                                         isloadMore = true;
                                     }
@@ -1515,8 +1549,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
         clickDates = AppPreference.getInstance().getFilterDateReports();
         StringBuilder s = new StringBuilder();
-        s.append("doctorName=" + clickDoctorName);
-        s.append("&diseaseName=" + clickDiseaseName);
+        s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
+        s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
         s.append("&date=" + clickDates);
         if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
             s.append("");
@@ -1590,5 +1624,22 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         getAllFilterData();
         if (filter_prescription_listAdpter != null)
             filter_prescription_listAdpter.notifyDataSetChanged();
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null,
+                    null, null);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }

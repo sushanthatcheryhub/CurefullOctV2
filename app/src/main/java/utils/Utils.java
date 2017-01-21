@@ -2,10 +2,30 @@ package utils;
 
 import android.util.Log;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+
+import java.io.File;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import curefull.healthapp.CureFull;
 
 public class Utils {
 
@@ -159,6 +179,37 @@ public class Utils {
         return aTime;
     }
 
+
+    public static String updateTimeAMPM(int hours, int mins) {
+
+
+        int selctHour = hours;
+
+        String timeSet = "";
+        if (selctHour > 12) {
+            selctHour -= 12;
+            timeSet = "pm";
+        } else if (selctHour == 0) {
+            selctHour += 12;
+            timeSet = "am";
+        } else if (selctHour == 12) {
+            timeSet = "pm";
+        } else {
+            timeSet = "am";
+        }
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        // Append in a StringBuilder
+        String aTime = new StringBuilder().append(selctHour).append(":").append(minutes).append(" ").append(timeSet).toString();
+
+        return aTime;
+    }
+
     public static String getTodayTime() {
         String formattedDate = null;
         try {
@@ -173,4 +224,52 @@ public class Utils {
         return formattedDate;
     }
 
+
+    public static String uploadFile(String bucketName, String folderName, String fileName, File imageFile) {
+
+        String imageUploadUrl = null;
+    /*
+    String yourAccessKeyID = "AKIAJN5QJUNXG75URSMA";
+	String yourSecretAccessKey = "4C59wSvi9p3nGdHy31OVWdvdToJGz9xOJMPLZy/m";
+
+	AWSCredentials credentials = new BasicAWSCredentials(yourAccessKeyID,  yourSecretAccessKey);*/
+        AWSCredentials credentials = new BasicAWSCredentials("AKIAJN5QJUNXG75URSMA", "4C59wSvi9p3nGdHy31OVWdvdToJGz9xOJMPLZy/m");
+        AmazonS3 s3client = new AmazonS3Client(credentials);
+//        s3client.setRegion(Region.getRegion(Regions.AP_SOUTH_1));
+        try {
+
+            if (!(s3client.doesBucketExist(bucketName))) {
+                // Note that CreateBucketRequest does not specify region. So bucket is
+                // created in the region specified in the client.
+                s3client.createBucket(new CreateBucketRequest(
+                        bucketName));
+            }
+
+
+        } catch (Exception e) {
+
+        }
+        TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+        // Request server-side encryption.
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        Log.e("imageFile", " " + imageFile.getAbsolutePath() + " " + imageFile.getName());
+        TransferObserver observer = transferUtility.upload(
+                "curefull.storage.test",
+                imageFile.getName(),
+                imageFile
+        );
+        observer.setTransferListener(CureFull.getInstanse().getActivityIsntanse());
+//        TransferObserver observer = transferUtility.download(
+//                "curefull.storage.test/cure.ehr",
+//                "",
+//                imageFile
+//        );
+
+//        for (Bucket bucket : s3client.listBuckets()) {
+//            Log.e("Bucket list - ", bucket.getName());
+//        }
+        observer.refresh();
+        return "";
+    }
 }

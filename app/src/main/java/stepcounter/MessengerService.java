@@ -66,6 +66,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     public static final int STOP_FOREGROUND = 4;
 
+    boolean activityRunning;
+
 
     /**
      * Handler of incoming messages from clients.
@@ -189,7 +191,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         simpleStepDetector = new SimpleStepDetector();
         simpleStepDetector.registerListener(this);
-        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_GAME);
 
     }
 
@@ -228,5 +230,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
             simpleStepDetector.updateAccel(
                     event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
+
     }
 }

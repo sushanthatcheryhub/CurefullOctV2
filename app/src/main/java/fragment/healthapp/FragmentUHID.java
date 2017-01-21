@@ -14,14 +14,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -31,14 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import adpter.Health_Note_Landing_ListAdpter;
 import adpter.UHID_ListAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import item.property.HealthNoteItems;
-import item.property.PrescriptionImageList;
 import item.property.UHIDItems;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -67,6 +64,9 @@ public class FragmentUHID extends Fragment {
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+        }
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
         CureFull.getInstanse().getActivityIsntanse().selectedNav(2);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);

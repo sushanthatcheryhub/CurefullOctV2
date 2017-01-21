@@ -1,0 +1,482 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/login_gradient"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/liner_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/top_view"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/_15dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/liner_filter_by"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@drawable/my_ripple"
+                    android:padding="@dimen/_10dp">
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="Filter"
+                        android:textColor="@color/health_yellow_bottom"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/img_filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/_5dp"
+                        android:src="@drawable/filter_yellow" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/health_yellow_bottom" />
+
+                <RelativeLayout
+                    android:id="@+id/txt_doctor_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/my_ripple"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="Doctor Name"
+                        android:textColor="@color/health_yellow_bottom"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/down_arrow_yellow_large" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/health_yellow_bottom" />
+
+                <RelativeLayout
+                    android:id="@+id/rel_set_reminder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/my_ripple"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:text="Set Reminder"
+                        android:textColor="@color/health_yellow_bottom"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/img_calender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/calendar_yellow_large" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/health_yellow" />
+
+        </LinearLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/liner_dialog">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView_doctor"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:nestedScrollingEnabled="false"></android.support.v7.widget.RecyclerView>
+
+                <customsTextViews.CustomTextViewOpenSanBold
+                    android:id="@+id/txt_self"
+                    style="@style/textView_dark_grey_normal_micro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:gravity="center_horizontal"
+                    android:text="Prescribed by - Self"
+                    android:textColor="@color/health_yellow_bottom"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView_self"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/txt_self"
+                    android:layout_marginTop="@dimen/_5dp"
+                    android:nestedScrollingEnabled="false"></android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+
+
+        </android.support.v4.widget.NestedScrollView>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/liner_bottom"
+            android:layout_below="@+id/liner_dialog"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/frameLayoutShort"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearViewShort"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:background="#CC000000"
+                    android:gravity="right"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/layoutButtonsShort"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_gradient"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:id="@+id/liner_dialogShort"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:elevation="@dimen/_15dp"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/btn_reset"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="left"
+                                    android:layout_weight="1"
+                                    android:gravity="left"
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
+
+                                    <customsTextViews.CustomTextViewOpenSanBold
+                                        android:id="@+id/txt_short_reset"
+                                        style="@style/textView_dark_grey_normal_micro"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:gravity="center_vertical"
+                                        android:text="Reset"
+                                        android:textColor="@color/health_yellow_bottom" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="left"
+                                    android:layout_weight="1"
+                                    android:gravity="left"
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
+
+                                    <customsTextViews.CustomTextViewOpenSanBold
+                                        style="@style/textView_dark_grey_normal_micro"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:gravity="center_vertical"
+                                        android:textColor="@color/health_yellow_bottom" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/btn_apply"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
+
+                                    <customsTextViews.CustomTextViewOpenSanBold
+                                        android:id="@+id/txt_short_apply"
+                                        style="@style/textView_dark_grey_normal_micro"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:gravity="center_vertical"
+                                        android:text="Apply"
+                                        android:textColor="@color/health_yellow_bottom" />
+
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/health_yellow" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+
+                                    <LinearLayout
+                                        android:id="@+id/txt_filter_reminder"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:gravity="left"
+                                        android:orientation="horizontal"
+                                        android:padding="@dimen/_10dp">
+
+                                        <customsTextViews.CustomTextViewOpenSanBold
+                                            android:id="@+id/txt_reminder"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_vertical"
+                                            android:gravity="center_vertical"
+                                            android:text="Reminder"
+                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textStyle="bold" />
+
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/txt_filter_status"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:gravity="left"
+                                        android:orientation="horizontal"
+                                        android:padding="@dimen/_10dp">
+
+                                        <customsTextViews.CustomTextViewOpenSanBold
+                                            android:id="@+id/txt_status"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_vertical"
+                                            android:gravity="center_vertical"
+                                            android:text="Status"
+                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textStyle="bold" />
+
+
+                                    </LinearLayout>
+
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@color/health_yellow" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5dp"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <RadioGroup
+                                        android:id="@+id/radioReminder"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginBottom="@dimen/_10dp"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:orientation="vertical"
+                                        android:visibility="gone">
+
+                                        <customsTextViews.CustomRadioButtonOpenSanRegular
+                                            android:id="@+id/radioCurefull"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:button="@drawable/checkbox_yellow_selector"
+                                            android:clickable="true"
+                                            android:paddingLeft="@dimen/_5dp"
+                                            android:text="Curefull"
+                                            android:textColor="@color/health_yellow" />
+
+                                        <customsTextViews.CustomRadioButtonOpenSanRegular
+                                            android:id="@+id/radioSelf"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="@dimen/_15dp"
+                                            android:button="@drawable/checkbox_yellow_selector"
+                                            android:clickable="true"
+                                            android:paddingLeft="@dimen/_5dp"
+                                            android:text="Self"
+                                            android:textColor="@color/health_yellow" />
+
+                                    </RadioGroup>
+
+                                    <RadioGroup
+                                        android:id="@+id/radioStatus"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginBottom="@dimen/_10dp"
+                                        android:layout_marginLeft="@dimen/_10dp"
+                                        android:orientation="vertical"
+                                        android:visibility="gone">
+
+                                        <customsTextViews.CustomRadioButtonOpenSanRegular
+                                            android:id="@+id/radioPending"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:button="@drawable/checkbox_yellow_selector"
+                                            android:clickable="true"
+                                            android:paddingLeft="@dimen/_5dp"
+                                            android:text="Pending"
+                                            android:textColor="@color/health_yellow" />
+
+                                        <customsTextViews.CustomRadioButtonOpenSanRegular
+                                            android:id="@+id/radioDone"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="@dimen/_15dp"
+                                            android:button="@drawable/checkbox_yellow_selector"
+                                            android:clickable="true"
+                                            android:paddingLeft="@dimen/_5dp"
+                                            android:text="Done"
+                                            android:textColor="@color/health_yellow" />
+
+                                    </RadioGroup>
+
+                                </LinearLayout>
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/realtive_notesShort"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible">
+
+
+                </RelativeLayout>
+
+            </FrameLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_no_medicine"
+                style="@style/textView_dark_grey_normal_micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:elevation="@dimen/_10dp"
+                android:gravity="center"
+                android:padding="@dimen/_2dp"
+                android:text="No Reminder Set Yet!!"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

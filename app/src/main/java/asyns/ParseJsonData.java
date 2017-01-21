@@ -9,14 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
+import item.property.DoctorVistReminderListView;
 import item.property.FilterDataPrescription;
 import item.property.FilterDataReports;
 import item.property.GoalInfo;
 import item.property.GraphYearMonthDeatils;
+import item.property.GraphYearMonthDeatilsList;
 import item.property.HealthNoteItems;
 import item.property.LabDoctorName;
 import item.property.LabReportListView;
 import item.property.LabTestName;
+import item.property.LabTestReminderListView;
+import item.property.MedicineReminderListView;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionListView;
@@ -90,7 +94,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
             try {
                 JSONObject json = new JSONObject(response);
                 setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
-                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null")) {
+                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null") || !json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("No Data")) {
                     JSONArray jsonPayload = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
                     detailListing = new ArrayList<HealthNoteItems>();
                     for (int i = 0; i < jsonPayload.length(); i++) {
@@ -195,6 +199,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
         return detailListing;
     }
 
+
     public List<LabReportListView> getLabTestReportList(String response) {
         LabReportListView details = null;
         ArrayList<LabReportListView> detailListing = null;
@@ -223,19 +228,18 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     }
 
 
-    public List<GraphYearMonthDeatils> getGraphViewList(String response) {
-        GraphYearMonthDeatils details = null;
-        ArrayList<GraphYearMonthDeatils> detailListing = null;
+    public List<GraphYearMonthDeatilsList> getGraphViewList(String response) {
+        GraphYearMonthDeatilsList details = null;
+        ArrayList<GraphYearMonthDeatilsList> detailListing = null;
 
         if (response != null) {
             try {
                 JSONObject json = new JSONObject(response);
                 setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
                 JSONArray jord = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
-                detailListing = new ArrayList<GraphYearMonthDeatils>();
+                detailListing = new ArrayList<GraphYearMonthDeatilsList>();
                 for (int i = 0; i < jord.length(); i++) {
-                    JSONObject jsonObject = jord.getJSONObject(i);
-                    details = new GraphYearMonthDeatils(jsonObject);
+                    details = new GraphYearMonthDeatilsList(jord.getJSONObject(i));
                     detailListing.add(details);
                 }
             } catch (Exception e) {
@@ -375,6 +379,66 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                 setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
                 JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
                 details = new FilterDataReports(jord);
+            } catch (Exception e) {
+
+            }
+        }
+        return details;
+    }
+
+
+    public MedicineReminderListView getReminderMedicineList(String response) {
+        MedicineReminderListView details = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null") || !json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("")) {
+                    JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
+                    details = new MedicineReminderListView(jord);
+                }
+
+
+            } catch (Exception e) {
+
+            }
+        }
+        return details;
+    }
+
+
+    public LabTestReminderListView getReminderLabTestList(String response) {
+        LabTestReminderListView details = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null") || !json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("")) {
+                    JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
+                    details = new LabTestReminderListView(jord);
+                }
+
+            } catch (Exception e) {
+
+            }
+        }
+        return details;
+    }
+
+    public DoctorVistReminderListView getReminderDoctorList(String response) {
+        DoctorVistReminderListView details = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null") || !json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("")) {
+                    JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
+                    details = new DoctorVistReminderListView(jord);
+                }
+
             } catch (Exception e) {
 
             }

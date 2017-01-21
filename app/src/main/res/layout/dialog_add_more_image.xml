@@ -107,6 +107,8 @@
                             android:hint="Doctor Name"
                             android:inputType="textCapSentences"
                             android:padding="@dimen/_5dp"
+                            android:imeOptions="actionNext"
+                            android:nextFocusRight="@+id/input_disease"
                             android:textColor="@color/health_login_text"
                             android:textColorHint="@color/health_hint_color"
                             android:textStyle="bold" />
@@ -136,6 +138,7 @@
                             android:hint="Disease Name"
                             android:inputType="textCapSentences"
                             android:padding="@dimen/_5dp"
+                            android:imeOptions="actionDone"
                             android:textColor="@color/health_login_text"
                             android:textColorHint="@color/health_hint_color"
                             android:textStyle="bold" />

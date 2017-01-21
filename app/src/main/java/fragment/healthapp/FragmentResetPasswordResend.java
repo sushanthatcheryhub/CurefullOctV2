@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.Random;
@@ -72,7 +72,11 @@ public class FragmentResetPasswordResend extends Fragment {
             public void messageReceived(String messageText) {
                 liner_resend.setVisibility(View.GONE);
                 liner_next.setVisibility(View.VISIBLE);
-//                edt_otp_password.setText(messageText.replace("OTP_IS", ""));
+                Log.e("hi", "hi");
+//                edt_otp_password.setText("");
+//                String mgs=messageText.replace("Dear User ,\n" + "Your verification code is ","");
+//                String again=mgs.replace("\nThanx for using Curefull. Stay Relief.","");
+//                edt_otp_password.setText(""+again);
             }
         });
 

@@ -439,7 +439,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="bottom"
                                             android:layout_marginLeft="@dimen/_10dp"
-                                            android:background="@drawable/login_patient_button_selector"
+                                            android:background="@drawable/yellow_button_selector"
                                             android:elevation="@dimen/_10dp"
                                             android:gravity="center_vertical"
                                             android:paddingBottom="@dimen/_2dp"
@@ -447,7 +447,7 @@
                                             android:paddingRight="@dimen/_15dp"
                                             android:paddingTop="@dimen/_2dp"
                                             android:text="Done"
-                                            android:textColor="@color/health_login_text" />
+                                            android:textColor="@color/health_red_drawer" />
 
                                     </LinearLayout>
                                 </LinearLayout>
@@ -495,7 +495,7 @@
             <sticky.header.ExpandableStickyListHeadersListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:drawSelectorOnTop="true"
                 android:fastScrollEnabled="true"

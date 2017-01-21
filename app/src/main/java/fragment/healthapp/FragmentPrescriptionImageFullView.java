@@ -1,21 +1,13 @@
 package fragment.healthapp;
 
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,36 +15,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import adpter.PrescriptionImageViewAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import image.zoom.GestureImageView;
-import item.property.PrescriptionImageListView;
 import utils.AppPreference;
 import utils.MyConstants;
-import utils.SpacesItemDecoration;
 
 
 /**
@@ -96,10 +87,29 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
-            Glide.with(this).load(images)
-                    .thumbnail(0.5f)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(gestureImageView);
+//            Glide.with(this).load(images)
+//                    .thumbnail(0.5f)
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(gestureImageView);
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(images).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .dontAnimate().into(new BitmapImageViewTarget(gestureImageView) {
+                @Override
+                public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
+                    gestureImageView.setImageBitmap(bmp);
+                    img_share.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                            prepareShareIntent(bmp);
+                        }
+                    });
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                }
+            });
         }
 
 
@@ -110,12 +120,12 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             }
         });
 
-        img_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                shareClick(images);
-            }
-        });
+//        img_share.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                shareClick(images);
+//            }
+//        });
 
 
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -186,86 +196,38 @@ public class FragmentPrescriptionImageFullView extends Fragment {
     }
 
 
-    public void shareClick(String prescriptionImage) {
-
-
-        Uri bmpUri = getLocalBitmapUri(gestureImageView);
-        if (bmpUri != null) {
-            // Construct a ShareIntent with link to image
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            shareIntent.setType("image/*");
-            // Launch sharing dialog for image
-            startActivity(Intent.createChooser(shareIntent, "Share Image"));
-        } else {
-            // ...sharing failed, handle error
-        }
-
-
-//        String url = MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH + prescriptionImage;
-//        Log.e("url ", "url " + url);
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        Uri imageUri = Uri.fromFile(new File(url));
-//        Log.e("uri ", "uri  " + imageUri.getPath() + " :- " );
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
-//        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//        sharingIntent.setType("image/*");
-//        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        startActivity(Intent.createChooser(sharingIntent, "Share images..."));
-
-
-//        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-//        shareIntent.setType("text/plain");
-//        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);
-//        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//
-//        PackageManager pm = getActivity().getPackageManager();
-//        List<ResolveInfo> activityList = pm.queryIntentActivities(shareIntent, 0);
-//        for (final ResolveInfo app : activityList)
-//        {
-//            if ((app.activityInfo.name).contains("android.gm"))
-//            {
-//                final ActivityInfo activity = app.activityInfo;
-//                final ComponentName name = new ComponentName(activity.applicationInfo.packageName, activity.name);
-//                shareIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-//                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-//                shareIntent.setComponent(name);
-//                startActivity(shareIntent);
-//                break;
-//            }
-//        }
-
+    private void prepareShareIntent(Bitmap bmp) {
+        Uri bmpUri = getLocalBitmapUri(bmp); // see previous remote images section
+        // Construct share intent as described above based on bitmap
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
 
     }
 
 
-    public Uri getLocalBitmapUri(ImageView imageView) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable) {
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
+    private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
+        File file = new File(CureFull.getInstanse().getActivityIsntanse().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out = null;
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
+            out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             bmpUri = Uri.fromFile(file);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return bmpUri;
     }
-
 
 }

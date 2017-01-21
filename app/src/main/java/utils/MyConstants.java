@@ -6,10 +6,11 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-        String HOST_IP = "http://hatcheryhub.com";
-        //                                        String HOST_IP = "http://192.168.0.39:8080";
+                String HOST_IP = "http://lp.hatcheryhub.com";
+//        String HOST_IP = "http://192.168.0.33:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
+//        String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -55,7 +56,13 @@ public class MyConstants {
         String PRESCRIPTION_FILTER_DATA = URL + "endUser/ehr/getPrescriptionFilterDataList?";
         String REPORTS_FILTER_DATA = URL + "endUser/ehr/getLabReportFilterDataList?";
         String INCRESE_WATER_INTAKE = URL + "endUser/healthapp/addWaterIntake?isWaterIntakeAdd=";
-        String ADD_LIST_OF_HEALTH_NOTE=URL+"healthNote/addListOfHealthNote";
+        String ADD_LIST_OF_HEALTH_NOTE = URL + "healthNote/addListOfHealthNote";
+        String ADD_MEDICINE_REM = URL + "enduser/medicineService/addMedicineReminder";
+        String GET_LIST_OF_MED = URL + "enduser/medicineService/getListOfMedicineDosageByDate?";
+        String ADD_LAB_TEST_REM = URL + "endUser/labTestReminderService/addLabTestReminder";
+        String GET_LIST_OF_LAB_TEST = URL + "endUser/labTestReminderService/getListOfLabTestReminder?";
+        String ADD_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/addOrEditDoctorFollowupReminder";
+        String GET_LIST_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/getDoctorFollowupReminder?";
 
 
     }
@@ -65,7 +72,7 @@ public class MyConstants {
         String ISSUE_WITH_DATA = "Issue with data";
         String No_DATA = "No data";
         String ISSUES_WITH_SERVER = "Issue with sever error";
-        String OFFLINE_MODE="Your in Offline Mode";
+        String OFFLINE_MODE = "Your in Offline Mode";
     }
 
 
@@ -163,7 +170,8 @@ public class MyConstants {
 
 
     public interface IArrayData {
-        String[] listPopUp = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        String[] listPopUpDogase = {"1", "2", "3", "4", "5", "6"};
+        String[] listPopUp = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
         String[] listPopUpWeightKgs = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109"};
         String[] listPopUpWeightGms = {"100", "200", "300", "400", "500", "600", "700", "800", "900"};
         String[] listPopUpBloodGrp = {"0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"};
@@ -171,7 +179,8 @@ public class MyConstants {
         String[] listPopUpWeight = {"Kgs", "Pounds"};
         String[] listUploadBy = {"Self", "CureFull"};
         String[] listStepsName = {"Steps", "Running", "Cycling"};
-
+        String[] listDays = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+        String[] mMonths = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
         String[] listDaily = {"011", "111", "222", "332", "344", "345", "634", "7343", "3438", "3439", "1340", "3411", "3412", "1343", "1344", "1345", "3416", "3417", "1348", "1349", "2340", "2341", "2234", "3423", "3424", "3425", "2643", "2734", "2834", "29343", "3340"};
         String[] listWeekly = {"340", "341", "342", "343", "434", "534", "634", "347"};
         String[] listMonths = {"100", "200", "300", "400", "500", "600", "700", "800", "900", "545", "123", "000"};

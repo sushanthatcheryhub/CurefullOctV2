@@ -5,16 +5,12 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -22,7 +18,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -38,14 +33,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.ParseError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -62,19 +57,18 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogProfileFullView;
+import dialog.DialogTCFullView;
 import item.property.EduationDetails;
 import item.property.UserInfo;
 import operations.DbOperations;
-import sticky.header.UnderlineTextView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CustomTypefaceSpan;
@@ -237,7 +231,13 @@ public class FragmentLogin extends Fragment implements
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_term_conditions.setText(sb1);
 
-
+        txt_term_conditions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogTCFullView dialogProfileFullView = new DialogTCFullView(CureFull.getInstanse().getActivityIsntanse());
+                dialogProfileFullView.show();
+            }
+        });
         edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -297,6 +297,8 @@ public class FragmentLogin extends Fragment implements
         if (HandlePermission.checkPermissionReadContact(CureFull.getInstanse().getActivityIsntanse())) {
             addAdapterToViews();
         }
+        AppPreference.getInstance().clearAllData();
+        AppPreference.getInstance().setIsLogin(false);
         return rootView;
     }
 

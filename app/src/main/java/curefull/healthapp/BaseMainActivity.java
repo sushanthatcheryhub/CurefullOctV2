@@ -1,12 +1,8 @@
 package curefull.healthapp;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,19 +17,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,21 +36,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import asyns.JsonUtilsObject;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentProfile;
-import fragment.healthapp.FragmentReminder;
-import fragment.healthapp.FragmentResetNewPassword;
+import fragment.healthapp.FragmentReminderMedicine;
 import fragment.healthapp.FragmentSettingPage;
 import fragment.healthapp.FragmentTermCondition;
 import fragment.healthapp.FragmentUHID;
-import item.property.PrescriptionImageList;
-import stepcounter.MessengerService;
 import utils.AppPreference;
 import utils.MyConstants;
-
-import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
 public class BaseMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,22 +63,24 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentUHID(), true);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
-
+            CureFull.getInstanse().cancel();
             // ek ye simple method hota hai.
             //
             //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
             FragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
             jsonLogout();
         } else if (id == R.id.nav_policy) {
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentTermCondition(), true);
@@ -98,9 +89,10 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentSettingPage(), true);
         } else if (id == R.id.nav_reminder) {
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
-                    .replace(new FragmentReminder(), true);
+                    .replace(new FragmentReminderMedicine(), true);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -244,6 +236,37 @@ public class BaseMainActivity extends AppCompatActivity
         return aTime;
     }
 
+    public String updateTimeSpace(int hours, int mins) {
+
+
+        int selctHour = hours;
+
+        String timeSet = "";
+        if (selctHour > 12) {
+            selctHour -= 12;
+            timeSet = "pm";
+        } else if (selctHour == 00) {
+            selctHour += 12;
+            timeSet = "am";
+        } else if (selctHour == 12) {
+            timeSet = "pm";
+        } else {
+            timeSet = "am";
+        }
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+//        // Append in a StringBuilder
+//        String aTime = new StringBuilder().append(selctHour).append(':')
+//                .append(minutes).append(" ").append(timeSet).toString();
+        String aTime = new StringBuilder().append(selctHour).append(':').append(minutes).append(' ').append(timeSet).toString();
+        return aTime;
+    }
+
 
     public void jsonLogout() {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
@@ -265,8 +288,7 @@ public class BaseMainActivity extends AppCompatActivity
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentLogin(), false);
-                            AppPreference.getInstance().clearAllData();
-                            AppPreference.getInstance().setIsLogin(false);
+
 
                         }
 

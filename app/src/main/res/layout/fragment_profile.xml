@@ -34,6 +34,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_5dp"
                     android:contentDescription="@string/app_name"
+                    android:src="@drawable/profile_avatar"
                     app:civ_border_color="@color/health_yellow" />
             </LinearLayout>
 
@@ -114,9 +115,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
-                    android:visibility="gone"
                     android:textColorHint="@color/white"
-                    android:theme="@style/TextLabel">
+                    android:theme="@style/TextLabel"
+                    android:visibility="gone">
 
                     <customsTextViews.CustomEditTextViewMontserratHairLine
                         android:id="@+id/edt_otp"
@@ -159,8 +160,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
                     android:layout_marginTop="@dimen/_10dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -181,7 +182,7 @@
                         android:layout_gravity="center_vertical"
                         android:paddingBottom="@dimen/_5dp"
                         android:paddingTop="@dimen/_5dp"
-                        android:text="Changes Password"
+                        android:text="Change Password"
                         android:textColor="@color/health_yellow" />
 
                 </LinearLayout>
@@ -232,8 +233,8 @@
                             android:layout_height="wrap_content"
                             android:drawableLeft="@drawable/password_icon"
                             android:drawablePadding="@dimen/_5dp"
-                            android:hint="New Password"
                             android:drawableRight="@drawable/password_hide"
+                            android:hint="New Password"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
                             android:textColor="@color/white"

@@ -17,6 +17,7 @@ import java.util.List;
 import LazyLoaderLibs.ImageType;
 import LazyLoaderLibs.PhoneSpecificImage;
 import interfaces.IGlobalIsbackButtonVisible;
+import interfaces.IGlobalTopBarButtonVisible;
 import operations.DatabaseHelper;
 import utils.FlowOrganizer;
 
@@ -52,6 +53,7 @@ public class CureFull extends Application {
     private boolean isEditext;
     private int postionGet;
     private IGlobalIsbackButtonVisible iGlobalIsbackButtonVisible;
+    private IGlobalTopBarButtonVisible iGlobalTopBarButtonVisible;
 
     private static int idss = 0;
 
@@ -106,6 +108,7 @@ public class CureFull extends Application {
         }
         return _flowAll;
     }
+
 
     public PhoneSpecificImage getFullImageLoader() {
         if (fullImageLoader == null) {
@@ -209,5 +212,13 @@ public class CureFull extends Application {
 
     public static void setIdss(int idss) {
         CureFull.idss = idss;
+    }
+
+    public IGlobalTopBarButtonVisible getiGlobalTopBarButtonVisible() {
+        return iGlobalTopBarButtonVisible;
+    }
+
+    public void setiGlobalTopBarButtonVisible(IGlobalTopBarButtonVisible iGlobalTopBarButtonVisible) {
+        this.iGlobalTopBarButtonVisible = iGlobalTopBarButtonVisible;
     }
 }

@@ -17,12 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -159,31 +159,26 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
         final String meassgeTxt = name + comma + gameName;
 
-        CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Spannable sb = new SpannableString(meassgeTxt);
-                Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
-                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                                .getColor(R.color.white)), meassgeTxt.indexOf(name),
-                        meassgeTxt.indexOf(name) + name.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-                sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                        meassgeTxt.indexOf(name),
-                        meassgeTxt.indexOf(name) + name.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                                .getColor(R.color.white)), meassgeTxt.indexOf(comma),
-                        meassgeTxt.indexOf(comma) + comma.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                                .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
-                        meassgeTxt.indexOf(gameName) + gameName.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.txt_title.setText(sb);
-            }
-        });
+        Spannable sb = new SpannableString(meassgeTxt);
+        Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                meassgeTxt.indexOf(name),
+                meassgeTxt.indexOf(name) + name.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                meassgeTxt.indexOf(comma) + comma.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
+                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
+                meassgeTxt.indexOf(gameName) + gameName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.txt_title.setText(sb);
 
 
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +283,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getSymptomsList, URL 1.", response);
+                        Log.e("getHealthAdpter, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;

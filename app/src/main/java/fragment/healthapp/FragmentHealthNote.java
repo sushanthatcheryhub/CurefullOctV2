@@ -22,26 +22,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.ParseError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,7 +50,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import adpter.Health_Note_Landing_ListAdpter;
 import adpter.Health_Note_ListAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -67,7 +62,6 @@ import sticky.header.ExpandableStickyListHeadersListView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
-import utils.SwitchDateTimeDialogFragment;
 import utils.Utils;
 
 
@@ -110,6 +104,9 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+        }
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
         img_question_note = (ImageView) rootView.findViewById(R.id.img_question_note);
 
@@ -256,7 +253,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     int hour1 = c1.get(Calendar.HOUR_OF_DAY);
                     // Current Minute
                     int minute1 = c1.get(Calendar.MINUTE);
-                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(getActivity(), this, hour1, minute1, false);
+                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), this, hour1, minute1, false);
                     timePickerDialog1.show();
                 }
                 break;
@@ -296,7 +293,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     int hour = c.get(Calendar.HOUR_OF_DAY);
                     // Current Minute
                     int minute = c.get(Calendar.MINUTE);
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, false);
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), this, hour, minute, false);
                     timePickerDialog.show();
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select first from time.");
@@ -624,7 +621,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             btn_done.setEnabled(true);
 
 
-
             ContentValues cv = new ContentValues();
             cv.put("dateOfNote", date);
             cv.put("fromTime", time);
@@ -673,8 +669,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-            Log.e("url", " " + MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset);
-            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset,
+            Log.e("url", " " + MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=15&offset=" + offset);
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=15&offset=" + offset,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -692,7 +688,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                 healthNoteItemsesDummy = null;
                                 healthNoteItemsesDummy = ParseJsonData.getInstance().getHealthNoteListItem(response);
                                 if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
-                                    if (healthNoteItemsesDummy.size() < 10) {
+                                    if (healthNoteItemsesDummy.size() < 15) {
                                         isloadMore = true;
                                     }
                                     healthNoteItemses.addAll(healthNoteItemsesDummy);
@@ -730,6 +726,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+            Log.e("net ", "off");
             healthNoteItemsesDummy = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
             isloadMore = false;
             offset = 0;
@@ -751,7 +748,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-                    StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=10&offset=" + offset,
+                    StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=15&offset=" + offset,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -769,7 +766,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                     if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                         healthNoteItemsesDummy = ParseJsonData.getInstance().getHealthNoteListItem(response);
                                         if (healthNoteItemsesDummy != null && healthNoteItemsesDummy.size() > 0) {
-                                            if (healthNoteItemsesDummy.size() < 10) {
+                                            if (healthNoteItemsesDummy.size() < 15) {
                                                 isloadMore = true;
                                             }
                                             healthNoteItemses.addAll(healthNoteItemsesDummy);
@@ -853,7 +850,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             adapterRecentNew = new Health_Note_ListAdpter(CureFull.getInstanse().getActivityIsntanse(),
                     healthNoteItemses, FragmentHealthNote.this);
             mListView.setAdapter(adapterRecentNew);
-            adapterRecentNew.notifyDataSetChanged();
         } else {
             realtive_no_health.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.GONE);

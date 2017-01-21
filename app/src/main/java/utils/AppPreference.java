@@ -774,6 +774,18 @@ public class AppPreference implements MyConstants.JsonUtils {
         return "";
     }
 
+
+    public void setGraphDate(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("GraphDate", className).commit();
+    }
+
+    public String getGraphDate() {
+        if (_prefrence != null)
+            return _prefrence.getString("GraphDate", "");
+        return "";
+    }
+
 }
 
 

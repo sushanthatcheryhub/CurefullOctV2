@@ -2,6 +2,7 @@ package fragment.healthapp;
 
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -37,6 +39,15 @@ public class FragmentTermCondition extends Fragment {
         WebSettings webSetting = webView.getSettings();
         webSetting.setSupportZoom(true);
         webSetting.setJavaScriptEnabled(true);
+        webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // chromium, enable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///android_asset/term_condtion.html");
@@ -47,6 +58,17 @@ public class FragmentTermCondition extends Fragment {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             return super.shouldOverrideUrlLoading(view, url);
+        }
+
+
+        public WebViewClient() {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         }
     }
 

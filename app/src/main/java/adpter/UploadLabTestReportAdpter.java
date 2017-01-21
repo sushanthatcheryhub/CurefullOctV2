@@ -2,30 +2,45 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,8 +51,11 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
+import fragment.healthapp.FragmentLabReportImageFullView;
 import fragment.healthapp.FragmentLabReportImageView;
 import fragment.healthapp.FragmentLabTestReport;
+import fragment.healthapp.FragmentPrescriptionImageFullView;
+import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.LabReportImageListView;
 import item.property.LabReportListView;
@@ -87,7 +105,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         final ImageView img_share = holder.img_share;
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
-
+        final ProgressBar progressBar = holder.progress_bar_one;
         Log.e("position", position + "");
 
         String date = labReportListViews.get(position).getReportDate();
@@ -112,9 +130,22 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
             Glide.with(applicationContext).load(labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage())
-                    .thumbnail(0.5f)
+                    .thumbnail(0.1f)
                     .crossFade()
+                    .priority(Priority.HIGH)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
                     .into(image_item);
         }
 
@@ -131,22 +162,44 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
-                shareClick(labReportListViews.get(position).getLabReportImageListViews());
+                if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
+                    final ArrayList<Uri> files = new ArrayList<Uri>();
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
+                        files.add(getLocalBitmapUri(getBitmapFromURL(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage())));
+                    }
+                    prepareShareIntent(files);
+                }
+
             }
         });
 
         relative_card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putString("doctorName", labReportListViews.get(position).getDoctorName());
-                bundle.putString("dieaseName", labReportListViews.get(position).getTestName());
-                bundle.putString("date", labReportListViews.get(position).getReportDate());
-                bundle.putString("id", labReportListViews.get(position).getReportId());
-                bundle.putParcelableArrayList("imageList", labReportListViews.get(position).getLabReportImageListViews());
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLabReportImageView(), bundle, true);
+
+                if (labReportListViews.get(position).getLabReportImageListViews().size() > 1) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("doctorName", labReportListViews.get(position).getDoctorName());
+                    bundle.putString("dieaseName", labReportListViews.get(position).getTestName());
+                    bundle.putString("date", labReportListViews.get(position).getReportDate());
+                    bundle.putString("id", labReportListViews.get(position).getReportId());
+                    bundle.putParcelableArrayList("imageList", labReportListViews.get(position).getLabReportImageListViews());
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentLabReportImageView(), bundle, true);
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("prescriptionId", labReportListViews.get(position).getReportId());
+                    bundle.putString("iPrescriptionId", labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImageId());
+                    bundle.putString("doctorName", labReportListViews.get(position).getDoctorName());
+                    bundle.putString("dieaseName", labReportListViews.get(position).getTestName());
+                    bundle.putString("date", labReportListViews.get(position).getReportDate());
+                    bundle.putString("imageList", labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage());
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentLabReportImageFullView(), bundle, true);
+                }
+
+
             }
         });
 
@@ -170,6 +223,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         public TextView txt_date, text_doctor_name, txt_disease_name, txt_count_file;
         public ImageView img_delete, image_item, img_share;
         public RelativeLayout relative_card_view;
+        public ProgressBar progress_bar_one;
 
         ItemViewHolder(View view) {
             super(view);
@@ -187,6 +241,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                     .findViewById(R.id.img_share);
             this.image_item = (ImageView) itemView
                     .findViewById(R.id.image_item);
+            this.progress_bar_one = (ProgressBar) itemView.findViewById(R.id.progress_bar_one);
             this.relative_card_view = (RelativeLayout) itemView.findViewById(R.id.relative_card_view);
         }
     }
@@ -244,28 +299,48 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
-    public void shareClick(ArrayList<LabReportImageListView> prescriptionImageListViews) {
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        ArrayList<Uri> files = new ArrayList<Uri>();
-        ArrayList<String> filesName = new ArrayList<String>();
-        for (int i = 0; i < prescriptionImageListViews.size(); i++) {
-            filesName.add(prescriptionImageListViews.get(i).getReportImage());
-        }
+    private void prepareShareIntent(ArrayList<Uri> files) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Lab Report");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
+    }
 
-        Log.e("name ", "fileNames " + filesName.get(0).toString());
-        for (String path : filesName/* List of the files you want to send */) {
-            Uri uri = Uri.parse(path);
-            Log.e("uri ", "uri " + uri.toString().length());
-            files.add(uri);
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            return null;
         }
-        Log.e("name ", "fileNames " + files.size());
-        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
-        sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-        sharingIntent.setType("image/*");
-        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Share Image"));
+    }
+
+    private Uri getLocalBitmapUri(Bitmap bmp) {
+        Uri bmpUri = null;
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bmpUri = Uri.fromFile(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 
 

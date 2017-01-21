@@ -162,84 +162,80 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="@dimen/_15dp"
-                android:orientation="horizontal"
-                android:padding="@dimen/_10dp">
+                android:orientation="horizontal">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/liner_short_by"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"  android:background="@drawable/my_ripple"
+
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
 
                     <customsTextViews.CustomTextViewOpenSanBold
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
                         android:text="Sort By"
                         android:textColor="@color/health_yellow_bottom"
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="@dimen/_5dp"
                         android:src="@drawable/sorting_yellow" />
-                </LinearLayout>
+                </RelativeLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/health_yellow_bottom" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/txt_filter_by"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/_10dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
-                    android:orientation="horizontal">
+                    android:background="@drawable/my_ripple"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
 
                     <customsTextViews.CustomTextViewOpenSanBold
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/_5dp"
-                        android:gravity="center_vertical"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
                         android:text="Filter"
                         android:textColor="@color/health_yellow_bottom"
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="@dimen/_5dp"
                         android:src="@drawable/filter_yellow" />
-                </LinearLayout>
+                </RelativeLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/health_yellow_bottom" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/liner_upload_new"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_10dp"
                     android:layout_weight="1"
-                    android:gravity="left"
-                    android:orientation="horizontal">
+                    android:background="@drawable/my_ripple"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
 
                     <customsTextViews.CustomTextViewOpenSanBold
                         style="@style/textView_dark_grey_normal_micro"
@@ -252,11 +248,13 @@
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_5dp"
                         android:src="@drawable/upload_yellow" />
-                </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -302,7 +300,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_5dp">
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -330,7 +329,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_5dp">
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -419,8 +419,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:elevation="@dimen/_15dp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_10dp">
+                                android:orientation="horizontal">
 
                                 <LinearLayout
                                     android:layout_width="0dp"
@@ -428,7 +427,8 @@
                                     android:layout_gravity="left"
                                     android:layout_weight="1"
                                     android:gravity="left"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         android:id="@+id/txt_short_cancel"
@@ -449,7 +449,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:layout_weight="1"
                                     android:gravity="left"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         android:id="@+id/txt_total_prescription"
@@ -474,7 +475,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:layout_weight="1"
                                     android:gravity="right"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         android:id="@+id/txt_short_apply"
@@ -584,24 +586,22 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:elevation="@dimen/_15dp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_15dp">
+                                android:orientation="horizontal">
 
                                 <LinearLayout
                                     android:id="@+id/liner_filter_btn_reset"
                                     android:layout_width="0dp"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:layout_gravity="left"
                                     android:layout_weight="1"
                                     android:gravity="left"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         style="@style/textView_dark_grey_normal_micro"
-                                        android:layout_width="wrap_content"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_gravity="center_vertical"
-                                        android:gravity="center_vertical"
                                         android:text="Reset"
                                         android:textColor="@color/health_yellow_bottom" />
 
@@ -614,7 +614,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:layout_weight="1"
                                     android:gravity="left"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         android:id="@+id/txt_pre_total"
@@ -626,7 +627,7 @@
                                         android:gravity="center_vertical"
                                         android:marqueeRepeatLimit="marquee_forever"
                                         android:singleLine="true"
-                                        android:text="Prescription(15)"
+                                        android:text="Prescription(0)"
                                         android:textColor="@color/health_yellow_bottom" />
 
 
@@ -640,7 +641,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:layout_weight="1"
                                     android:gravity="right"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
                                         style="@style/textView_dark_grey_normal_micro"

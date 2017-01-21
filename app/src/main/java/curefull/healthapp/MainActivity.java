@@ -18,11 +18,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -36,6 +38,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -44,6 +48,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -74,7 +80,7 @@ import utils.MyConstants;
 import utils.NotificationUtils;
 import utils.Utils;
 
-public class MainActivity extends BaseMainActivity {
+public class MainActivity extends BaseMainActivity implements TransferListener {
 
     static {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -93,7 +99,6 @@ public class MainActivity extends BaseMainActivity {
     private TextView txt_doctor_name_edu;
     private ImageView img_drawer, img_share;
     private CircularImageView circularImageView;
-    private LinearLayout liner_logout;
     private NavigationView navigationView;
     SharedPreferences preferences;
     private File myPath;
@@ -105,8 +110,17 @@ public class MainActivity extends BaseMainActivity {
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            Drawable background = this.getResources().getDrawable(R.drawable.login_gradient);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+//            window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
+            window.setBackgroundDrawable(background);
+        }
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        liner_logout = (LinearLayout) findViewById(R.id.liner_logout);
         img_share = (ImageView) findViewById(R.id.img_share);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -162,17 +176,17 @@ public class MainActivity extends BaseMainActivity {
         });
 
 
-        liner_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AppPreference.getInstance().clearAllData();
-                AppPreference.getInstance().setIsLogin(false);
-                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
-                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentLogin(), false);
-            }
-        });
+//        liner_logout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                AppPreference.getInstance().clearAllData();
+//                AppPreference.getInstance().setIsLogin(false);
+//                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+//                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+//                CureFull.getInstanse().getFlowInstanse()
+//                        .replace(new FragmentLogin(), false);
+//            }
+//        });
 
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,12 +262,13 @@ public class MainActivity extends BaseMainActivity {
     }
 
     public void setActionDrawerProfilePic(String name) {
-        Glide.with(this).load(name)
-                .thumbnail(0.5f)
-                .crossFade()
-                .placeholder(R.drawable.profile_avatar)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(circularImageView);
+        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
+//        Glide.with(this).load(name)
+//                .thumbnail(0.5f)
+//                .placeholder(R.drawable.profile_avatar)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .skipMemoryCache(true)
+//                .into(circularImageView);
     }
 
 
@@ -531,5 +546,20 @@ public class MainActivity extends BaseMainActivity {
         sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
         sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
         startActivity(Intent.createChooser(sharingIntent, "Share image using"));
+    }
+
+    @Override
+    public void onStateChanged(int id, TransferState state) {
+        Log.e("state"," "+state.name());
+    }
+
+    @Override
+    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+        Log.e("bytesTotal"," "+bytesCurrent);
+    }
+
+    @Override
+    public void onError(int id, Exception ex) {
+                Log.e("error",""+ex.getMessage());
     }
 }

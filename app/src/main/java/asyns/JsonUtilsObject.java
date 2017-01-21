@@ -17,6 +17,7 @@ import java.util.List;
 import item.property.EduationDetails;
 import item.property.HealthNoteItems;
 import item.property.LabReportImageList;
+import item.property.MedicineReminderItem;
 import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -350,27 +351,29 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject setRemMed() {
+    public static JSONObject setRemMed(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent,String alarmTime) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
             JSONObject jsonParent1 = new JSONObject();
-            jsonParent1.put("startDate", "2017-01-12");
-            jsonParent1.put("noOfDays", 5);
+            jsonParent1.put("startDate", startFrom);
+            jsonParent1.put("noOfDays", duration);
             jsonParent1.put("unitOfInterval", "hours");
             jsonParent1.put("interval", 7);
-            jsonParent1.put("alramTime", "08:00,13:00,16:00");
-            jsonParent1.put("noOfDayInWeek", "MON,THU,SAT");
+            jsonParent1.put("alramTime", alarmTime);
+            jsonParent1.put("noOfDosage", doages);
+            jsonParent1.put("noOfDayInWeek", noOfDayInweek);
             JSONArray obj1 = new JSONArray();
             try {
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < listCurrent.size(); i++) {
                     JSONObject list1 = new JSONObject();
-                    list1.put("medicineType", "tab");
-                    list1.put("medicineName", "crocine");
-                    list1.put("doctorName", "susahnt");
+                    list1.put("medicineType", listCurrent.get(i).getType());
+                    list1.put("medicineName", listCurrent.get(i).getMedicineName());
+                    list1.put("doctorName", listCurrent.get(i).getDoctorName());
                     list1.put("medicinePotency", "600 mg");
-                    list1.put("medicineQuantity", "1");
-                    list1.put("isAtferMeal", true);
+                    list1.put("medicineQuantity", listCurrent.get(i).getInterval());
+                    list1.put("isAtferMeal", listCurrent.get(i).isBaMealAfter());
+                    list1.put("isBeforeMeal", listCurrent.get(i).isBaMealBefore());
                     obj1.put(list1);
                 }
             } catch (JSONException e1) {
@@ -393,6 +396,48 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
         return encoded;
+    }
+
+
+    public static JSONObject toSetLabTestReminder(String doctorName, String testName, String labName, String labTestDate, String labTestTime, String labTestReminderId, boolean isNewLabTest, boolean isAtterMeal) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("testName", testName);
+            jsonParent.put("labName", labName);
+            jsonParent.put("labTestDate", labTestDate);
+            jsonParent.put("labTestTime", labTestTime);
+            jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+            jsonParent.put("labTestReminderId", labTestReminderId);
+            jsonParent.put("isNewLabTest", isNewLabTest);
+            jsonParent.put("isAtterMeal", isAtterMeal);
+            jsonParent.put("isSelf", true);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject toSetDoctorVisitReminder(String doctorName, String hospitalName, String follwupDate, String followupTime, String doctorFollowupReminderId, boolean isNewReminder) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("hospitalName", hospitalName);
+            jsonParent.put("follwupDate", follwupDate);
+            jsonParent.put("followupTime", followupTime);
+            jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+            jsonParent.put("doctorFollowupReminderId", doctorFollowupReminderId);
+            jsonParent.put("isNewReminder", isNewReminder);
+            jsonParent.put("isSelf", true);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
     }
 
 

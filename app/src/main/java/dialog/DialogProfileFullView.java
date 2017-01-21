@@ -8,6 +8,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import image.zoom.GestureImageView;
@@ -33,7 +36,13 @@ public class DialogProfileFullView extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
-        CureFull.getInstanse().getFullImageLoader().startLazyLoading( bitmap, img_full_view);
+        CureFull.getInstanse().getFullImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), img_full_view);
+
+//        Glide.with(context).load(AppPreference.getInstance().getProfileImage())
+//                .thumbnail(0.5f)
+//                .crossFade()
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .into(img_full_view);
 
 
     }

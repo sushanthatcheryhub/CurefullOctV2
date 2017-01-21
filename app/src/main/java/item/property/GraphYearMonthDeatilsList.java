@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
 public class GraphYearMonthDeatilsList {
-    private String months;
     private ArrayList<GraphViewDetails> graphViewDetailses;
 
     public GraphYearMonthDeatilsList() {
@@ -19,21 +18,12 @@ public class GraphYearMonthDeatilsList {
         if (jsonObject == null)
             return;
         try {
-            setMonths(jsonObject.getString("month"));
             setGraphViewDetailses(jsonObject.getJSONArray("graphDetailsList"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-    public String getMonths() {
-        return months;
-    }
-
-    public void setMonths(String months) {
-        this.months = months;
-    }
 
     public ArrayList<GraphViewDetails> getGraphViewDetailses() {
         return graphViewDetailses;

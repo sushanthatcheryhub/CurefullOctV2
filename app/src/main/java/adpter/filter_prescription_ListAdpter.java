@@ -7,36 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import curefull.healthapp.CureFull;
-import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
-import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentPrescriptionCheck;
-import fragment.healthapp.FragmentUHID;
-import interfaces.IOnOtpDoneDelete;
-import item.property.UHIDItems;
 import utils.AppPreference;
-import utils.MyConstants;
 import utils.Utils;
 
 /**

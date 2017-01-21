@@ -7,9 +7,11 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,7 +47,8 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
     private LinearLayout liner_date_select;
     private ImageView btn_delete;
     private String type;
-    private boolean isclick = false;
+    private boolean isclick = false, isClickDate = false;
+
 
     public DialogFullViewClickImage(Context _activiyt, List<PrescriptionImageList> prescriptionImageLists, String type) {
         super(_activiyt, R.style.MyTheme);
@@ -78,7 +81,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
             recyclerViewAddImage.setLayoutManager(lLayout);
             recyclerViewAddImage.setHasFixedSize(true);
             addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                    prescriptionImageListss, isdelete,DialogFullViewClickImage.this);
+                    prescriptionImageListss, isdelete, DialogFullViewClickImage.this);
             addImageAdpter.setiOnCheckCheckbox(this);
             recyclerViewAddImage.setAdapter(addImageAdpter);
             addImageAdpter.notifyDataSetChanged();
@@ -93,6 +96,27 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
             txt_health_text.setText("You added " + (prescriptionImageListss.size() - 1) + " file in this prescription please add detail for better experince");
 
         }
+
+
+        input_disease.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    final Calendar c1 = Calendar.getInstance();
+                    final int year = c1.get(Calendar.YEAR);
+                    final int month = c1.get(Calendar.MONTH);
+                    final int day = c1.get(Calendar.DAY_OF_MONTH);
+
+                    DatePickerDialog newDateDialog = new DatePickerDialog(CureFull.getInstanse().getActivityIsntanse(), AlertDialog.THEME_HOLO_LIGHT, DialogFullViewClickImage.this, year, month, day);
+                    newDateDialog.getDatePicker().setCalendarViewShown(false);
+//                c.add(Calendar.DATE, 1);
+                    Date newDate = c1.getTime();
+                    newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
+                    newDateDialog.show();
+                }
+                return false;
+            }
+        });
     }
 
     public IOnDoneMoreImage getiOnDoneMoreImage() {
@@ -121,7 +145,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                     }
 
                     if (iOnDoneMoreImage != null) {
-                        iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss,"no");
+                        iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss, "no");
                         dismiss();
                     }
                 } else {
@@ -247,9 +271,9 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         }
     }
 
-    public void isCheck(){
+    public void isCheck() {
         if (iOnDoneMoreImage != null) {
-            iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss,"yes");
+            iOnDoneMoreImage.optDoneMoreImage(input_doctor_name.getText().toString(), input_disease.getText().toString(), date, prescriptionImageListss, "yes");
             dismiss();
         }
     }

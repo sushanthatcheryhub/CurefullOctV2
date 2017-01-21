@@ -32,15 +32,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.SimpleMultiPartRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -50,7 +52,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -59,14 +60,18 @@ import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
+import interfaces.SmsListener;
 import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CircularImageView;
 import utils.HandlePermission;
+import utils.IncomingSms;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
+import utils.Utils;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static utils.CheckNetworkState.context;
 
 
@@ -100,6 +105,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private TextInputLayout input_layout_otp;
     private boolean isOtp = false;
     private boolean showPwd = false;
+    private LinearLayout linearView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,6 +117,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+
+        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
+        }
+
+        linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
         btn_click_change = (TextView) rootView.findViewById(R.id.btn_click_change);
@@ -147,19 +159,34 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         liner_remove.setOnClickListener(this);
         btn_click_change.setOnClickListener(this);
         btn_save_changes.setOnClickListener(this);
-        alphaAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha_anim);
+        alphaAnimation = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.alpha_anim);
         input_name.setText("" + AppPreference.getInstance().getUserName());
         edt_phone.setText("" + AppPreference.getInstance().getMobileNumber());
         input_email.setText("" + AppPreference.getInstance().getUserID());
 
-        if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
 
-            Glide.with(getActivity()).load(AppPreference.getInstance().getProfileImage())
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .placeholder(R.drawable.profile_avatar)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(profile_image_view);
+        linearView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                profile_image_view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchTwitter(rootView);
+                    }
+                });
+            }
+        });
+
+        if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
+            CureFull.getInstanse().getSmallImageLoader().clearCache();
+            CureFull.getInstanse().getSmallImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), profile_image_view);
+
+//            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(AppPreference.getInstance().getProfileImage())
+//                    .thumbnail(0.5f)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .skipMemoryCache(true)
+//                    .into(profile_image_view);
         }
 
         profile_image_view.setOnClickListener(new View.OnClickListener() {
@@ -275,6 +302,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
             }
         });
 
+        IncomingSms.bindListener(new SmsListener() {
+            @Override
+            public void messageReceived(String messageText) {
+                edt_otp.setText("");
+                String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
+                String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
+                edt_otp.setText("" + again);
+            }
+        });
+
 
         return rootView;
     }
@@ -294,7 +331,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     liner_password.setVisibility(View.GONE);
                 } else {
                     isclick = true;
-                    img_password_icon.setImageResource(R.drawable.cancel_red);
+                    img_password_icon.setImageResource(R.drawable.remove_red);
                     btn_click_change.setText("Don't want to change my password");
                     liner_password.setVisibility(View.VISIBLE);
                 }
@@ -388,6 +425,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
             //Get our saved file into a bitmap object:
             File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+            Utils.uploadFile("", "", "", file1);
             Uri pickedImage = Uri.fromFile(file1);
             // Let's read picked image path using content resolver
             Intent cropIntent = new Intent("com.android.camera.action.CROP");
@@ -417,6 +455,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 if (requestCode == SELECT_PHOTO) {
                     // Let's read picked image data - its URI
                     Uri pickedImage = data.getData();
+
                     // Let's read picked image path using content resolver
                     Intent cropIntent = new Intent("com.android.camera.action.CROP");
                     // indicate image type and Uri
@@ -445,12 +484,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         } else if (requestCode == PICK_FROM_CROP) {
 //            Uri selectedImageUri= data.getData();
 //            String[] filePath = {MediaStore.Images.Media.DATA};
-//            Cursor cursor = getActivity().getContentResolver().query(selectedImageUri, filePath, null, null, null);
+//            Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(selectedImageUri, filePath, null, null, null);
 //            cursor.moveToFirst();
 //            String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 //            cursor.close();
             if (file.exists())
-                sentSaveTestingServer(file.getPath());
+                imageUpload(file.getPath());
+//                sentSaveTestingServer(file.getPath());
         }
     }
 
@@ -593,12 +633,14 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
                         AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
                         try {
-                            Glide.with(getActivity()).load(jsonObject.getString("payload"))
-                                    .thumbnail(0.5f)
-                                    .crossFade()
-                                    .placeholder(R.drawable.profile_avatar)
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(profile_image_view);
+
+                            CureFull.getInstanse().getSmallImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
+
+//                            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
+//                                    .thumbnail(0.5f)
+//                                    .crossFade()
+//                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                                    .into(profile_image_view);
                             CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
                         } catch (Exception e) {
 
@@ -622,6 +664,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     public static HashMap<String, File> getFileParam(String image) {
         HashMap<String, File> param = new HashMap<>();
         param.put("profileImage", new File(image));
+        Log.e("file ", " " + new File(image).canRead());
         return param;
     }
 
@@ -668,7 +711,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
         if (isOtp) {
             if (!validateOtp()) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "OTP cannot be left blank.");
                 return;
             }
         }
@@ -757,6 +799,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                                     AppPreference.getInstance().setMobileNumber(edt_phone.getText().toString().trim());
                                     AppPreference.getInstance().setUserID(input_email.getText().toString().trim());
                                     AppPreference.getInstance().setPassword("" + input_new_pass.getText().toString().trim());
+                                    input_old_pass.setText("");
+                                    input_new_pass.setText("");
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName(), AppPreference.getInstance().getcf_uuhid());
                                 }
 
@@ -847,7 +891,11 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
     private boolean validateOtp() {
         String email = edt_otp.getText().toString().trim();
-        if (!email.equalsIgnoreCase("" + otp_number)) {
+        if (email.equalsIgnoreCase("")) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "OTP can not be left blank.");
+            return false;
+        } else if (!email.equalsIgnoreCase("" + otp_number)) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "OTP not matched.");
             return false;
         }
         return true;
@@ -861,6 +909,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         Random rnd = new Random();
         otp_number = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(otp_number) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
@@ -877,6 +926,69 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+
+    private void imageUpload(final String imagePath) {
+        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, MyConstants.WebUrls.UPDATE_PROFILE,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("Response", response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        profile_image_view.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchTwitter(rootView);
+                            }
+                        });
+                        if (!"null".equalsIgnoreCase(response) || !response.equalsIgnoreCase("null")) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
+                                    AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
+                                    try {
+                                        CureFull.getInstanse().getSmallImageLoader().clearCache();
+                                        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
+//                                        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
+//                                                .thumbnail(0.5f)
+//                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                                                .skipMemoryCache(true)
+//                                                .into(profile_image_view);
+                                        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
+                                    } catch (Exception e) {
+
+                                    }
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Upload Error");
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+        smr.addFile("profileImage", imagePath);
+        CureFull.getInstanse().getRequestQueue().add(smr);
+
     }
 
 }

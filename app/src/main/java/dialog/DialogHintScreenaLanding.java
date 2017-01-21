@@ -41,8 +41,8 @@ public class DialogHintScreenaLanding extends Dialog {
         txt_health_text = (TextView) findViewById(R.id.txt_health_text);
 
 
-        String you = "About Health Note ";
-        String termCondtiions = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
+        String you = "Health Diary";
+        String termCondtiions = " to store signs of any health issue.";
 
         String meassgeNew = you + termCondtiions;
 
@@ -57,7 +57,7 @@ public class DialogHintScreenaLanding extends Dialog {
                         .getColor(R.color.health_yellow)), meassgeNew.indexOf(termCondtiions),
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb1.setSpan(new RelativeSizeSpan(1.4f), 0, 17, 0);
+        sb1.setSpan(new RelativeSizeSpan(1.4f), 0, 12, 0);
         txt_health_text.setText(sb1);
         realtive_hint=(RelativeLayout)findViewById(R.id.realtive_hint);
 

@@ -71,17 +71,18 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
         btn_add_more_image = (TextView) findViewById(R.id.btn_add_more_image);
         btn_retry = (TextView) findViewById(R.id.btn_retry);
 
-        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(bitmap)))
-                .thumbnail(0.5f)
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(img_vew);
+
         btn_add_more_image.setOnClickListener(this);
         btn_retry.setOnClickListener(this);
         btn_done.setOnClickListener(this);
         selectUploadPrescriptions = selectUploadPrescription;
         prescriptionImageListss = prescriptionImageLists;
         if (prescriptionImageListss.size() > 0) {
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(0).getPrescriptionImage())))
+                    .thumbnail(0.5f)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(img_vew);
             liner_mid.setVisibility(View.VISIBLE);
             recyclerViewAddImage = (RecyclerView) findViewById(R.id.grid_list_symptom);
             int spacingInPixels = 10;

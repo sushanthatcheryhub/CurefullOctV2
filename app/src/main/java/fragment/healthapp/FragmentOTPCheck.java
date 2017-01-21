@@ -22,15 +22,15 @@ import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.ParseError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -136,7 +136,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             @Override
             public void messageReceived(String messageText) {
                 edt_otp_password.setText("");
-                edt_otp_password.setText(messageText.trim().replace("DearUser,Yourverificationcodeis.Thanxforusingcurefull.Stayrelief", ""));
+                String mgs=messageText.replace("Dear User ,\n" + "Your verification code is ","");
+                String again=mgs.replace("\nThanx for using Curefull. Stay Relief.","");
+                edt_otp_password.setText(""+again);
             }
         });
 

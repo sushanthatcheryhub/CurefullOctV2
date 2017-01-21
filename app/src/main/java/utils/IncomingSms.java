@@ -39,7 +39,7 @@ public class IncomingSms extends BroadcastReceiver {
 //                    editor.putString("Phone", senderNum);
 //                    editor.putString("Message", message);
 //                    editor.commit();
-                    if (message.contains("Dear User,")) {
+                    if (message.contains("Dear User ,")) {
                         mListener.messageReceived(message);
                     }
 

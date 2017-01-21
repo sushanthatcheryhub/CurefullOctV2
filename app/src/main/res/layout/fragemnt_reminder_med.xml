@@ -40,8 +40,7 @@
                         android:layout_centerVertical="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginRight="@dimen/_5dp"
-
-                        android:src="@drawable/notebook" />
+                        android:src="@drawable/set_reminder_yellow" />
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_health_text"
@@ -79,475 +78,13 @@
                         android:text="Medicine Detail"
                         android:textColor="@color/health_yellow" />
 
-                    <LinearLayout
-                        android:id="@+id/linearView"
+                    <ListView
+                        android:id="@+id/list_view_current_visit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/txt_med_detail"
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/_10dp"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:visibility="visible">
-
-                        <customsTextViews.CustomTextViewOpenSanRegular
-                            style="@style/textView_dark_grey_normal_small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="left"
-                            android:elevation="@dimen/_5dp"
-                            android:gravity="left"
-                            android:text="Tpye"
-                            android:textColor="@color/health_yellow" />
-
-                        <LinearLayout
-                            android:id="@+id/layou_mymessages_favourites"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginTop="@dimen/_5dp"
-                            android:orientation="horizontal">
-
-                            <RelativeLayout
-                                android:id="@+id/layout_tablet"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/registerandloginbuttonselector"
-                                android:orientation="vertical"
-                                android:paddingBottom="@dimen/_4dp">
-
-                                <ImageView
-                                    android:id="@+id/image_tablet"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="@dimen/_5dp"
-                                    android:src="@drawable/ic_circle_48dp" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/image_tablet"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_gravity="center_horizontal"
-                                    android:gravity="center_horizontal"
-                                    android:text="Tablet"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black" />
-
-                            <RelativeLayout
-                                android:id="@+id/layout_capsule"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/registerandloginbuttonselector"
-                                android:orientation="vertical"
-                                android:paddingBottom="@dimen/_4dp">
-
-                                <ImageView
-                                    android:id="@+id/img_capsule"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="@dimen/_5dp"
-                                    android:src="@drawable/ic_circle_48dp" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/img_capsule"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_gravity="center_horizontal"
-                                    android:gravity="center_horizontal"
-                                    android:text="Capsule"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black" />
-
-                            <RelativeLayout
-                                android:id="@+id/layout_syrup"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/registerandloginbuttonselector"
-                                android:orientation="vertical"
-                                android:paddingBottom="@dimen/_4dp">
-
-                                <ImageView
-                                    android:id="@+id/img_syrup"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="@dimen/_5dp"
-                                    android:src="@drawable/ic_circle_48dp" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/img_syrup"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_gravity="center_horizontal"
-                                    android:gravity="center_horizontal"
-                                    android:text="Syrup"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black" />
-
-                            <RelativeLayout
-                                android:id="@+id/layout_drops"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/registerandloginbuttonselector"
-                                android:orientation="vertical"
-                                android:paddingBottom="@dimen/_4dp">
-
-                                <ImageView
-                                    android:id="@+id/img_drops"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="@dimen/_5dp"
-                                    android:src="@drawable/ic_circle_48dp" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/img_drops"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_gravity="center_horizontal"
-                                    android:gravity="center_horizontal"
-                                    android:text="Drops"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black" />
-
-                            <RelativeLayout
-                                android:id="@+id/layout_injection"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/registerandloginbuttonselector"
-                                android:orientation="vertical"
-                                android:paddingBottom="@dimen/_4dp">
-
-                                <ImageView
-                                    android:id="@+id/img_injection"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="@dimen/_5dp"
-                                    android:src="@drawable/ic_circle_48dp" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/img_injection"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_gravity="center_horizontal"
-                                    android:gravity="center_horizontal"
-                                    android:text="Injection"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black" />
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <customsTextViews.CustomTextViewOpenSanRegular
-                                        style="@style/textView_dark_grey_normal_micro"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:gravity="center_horizontal"
-                                        android:paddingBottom="@dimen/_5dp"
-                                        android:paddingTop="@dimen/_5dp"
-                                        android:singleLine="true"
-                                        android:text="Doctor Name"
-                                        android:textColor="@color/health_yellow"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <LinearLayout
-                                        android:layout_width="@dimen/_130dp"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/search_bar_add"
-                                        android:orientation="horizontal">
-
-
-                                        <customsTextViews.CustomEditTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:ellipsize="end"
-                                            android:hint="Type Doctor Name"
-                                            android:imeOptions="actionNext"
-                                            android:inputType="textCapWords"
-                                            android:marqueeRepeatLimit="marquee_forever"
-                                            android:maxLength="35"
-                                            android:nextFocusDown="@id/edt_deatils"
-                                            android:padding="@dimen/_4dp"
-                                            android:singleLine="true"
-                                            android:textColor="#282828"
-                                            android:textColorHint="@color/health_yellow" />
-
-                                    </LinearLayout>
-
-
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <customsTextViews.CustomTextViewOpenSanRegular
-                                        style="@style/textView_dark_grey_normal_micro"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:gravity="center_horizontal"
-                                        android:paddingBottom="@dimen/_5dp"
-                                        android:paddingTop="@dimen/_5dp"
-                                        android:singleLine="true"
-                                        android:text="Medicine Name"
-                                        android:textColor="@color/health_yellow"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <LinearLayout
-                                        android:layout_width="@dimen/_130dp"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/search_bar_add"
-                                        android:orientation="horizontal">
-
-
-                                        <customsTextViews.CustomEditTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:ellipsize="end"
-                                            android:hint="Type Medicine Name"
-                                            android:imeOptions="actionNext"
-                                            android:inputType="textCapWords"
-                                            android:marqueeRepeatLimit="marquee_forever"
-                                            android:maxLength="35"
-                                            android:nextFocusDown="@id/edt_deatils"
-                                            android:padding="@dimen/_4dp"
-                                            android:singleLine="true"
-                                            android:textColor="#282828"
-                                            android:textColorHint="@color/health_yellow" />
-
-                                    </LinearLayout>
-
-
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_15dp"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:gravity="center"
-                                android:orientation="horizontal">
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center_horizontal"
-                                    android:paddingBottom="@dimen/_5dp"
-                                    android:paddingTop="@dimen/_5dp"
-                                    android:singleLine="true"
-                                    android:text="Dosage"
-                                    android:textColor="@color/health_yellow"
-                                    android:textStyle="bold" />
-
-                                <ImageView
-                                    android:id="@+id/img_minus_icon"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:padding="@dimen/_5dp"
-                                    android:src="@drawable/minus_red" />
-
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center_horizontal"
-                                    android:paddingBottom="@dimen/_5dp"
-                                    android:paddingTop="@dimen/_5dp"
-                                    android:singleLine="true"
-                                    android:text="1"
-                                    android:textColor="@color/health_yellow"
-                                    android:textStyle="bold" />
-
-                                <ImageView
-                                    android:id="@+id/img_plus_icon"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:padding="@dimen/_5dp"
-                                    android:src="@drawable/plus_red" />
-
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginLeft="@dimen/_10dp"
-                                android:orientation="horizontal">
-
-                                <customsTextViews.CustomTextViewOpenSanRegular
-                                    style="@style/textView_dark_grey_normal_micro"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:gravity="center_vertical"
-                                    android:singleLine="true"
-                                    android:text="When "
-                                    android:textColor="@color/health_yellow"
-                                    android:textStyle="bold" />
-
-                                <RadioGroup
-                                    android:id="@+id/radioGender"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginLeft="@dimen/_5dp"
-                                    android:orientation="horizontal">
-
-                                    <customsTextViews.CustomRadioButtonOpenSanRegular
-                                        android:id="@+id/radioMale"
-                                        style="@style/textView_dark_grey_normal_micro"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:button="@drawable/checkbox_yellow_selector"
-                                        android:clickable="true"
-                                        android:paddingLeft="@dimen/_5dp"
-                                        android:text="Before Meal"
-                                        android:textColor="@color/health_yellow" />
-
-                                    <customsTextViews.CustomRadioButtonOpenSanRegular
-                                        android:id="@+id/radioFemale"
-                                        style="@style/textView_dark_grey_normal_micro"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="@dimen/_15dp"
-                                        android:button="@drawable/checkbox_yellow_selector"
-                                        android:clickable="true"
-                                        android:paddingLeft="@dimen/_5dp"
-                                        android:text="After Meal"
-                                        android:textColor="@color/health_yellow" />
-
-                                </RadioGroup>
-
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10dp"
-                            android:orientation="horizontal">
-
-                            <customsTextViews.CustomTextViewOpenSanRegular
-                                android:id="@+id/txt_btn_add_more_med"
-                                style="@style/textView_dark_grey_normal_micro"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:background="@android:color/transparent"
-                                android:text="Add more medicine if the schedule is same"
-                                android:textColor="@color/health_yellow" />
-
-                        </LinearLayout>
-
-
-                    </LinearLayout>
+                        android:divider="@null"
+                        android:listSelector="@color/transparent_bg_list"></ListView>
 
 
                 </RelativeLayout>
@@ -564,23 +101,36 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/_10dp">
 
-                    <customsTextViews.CustomTextViewOpenSanRegular
-                        android:id="@+id/btn_done"
-                        style="@style/textView_dark_grey_normal_small"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:elevation="@dimen/_5dp"
-                        android:gravity="left"
-                        android:text="Schedule"
-                        android:textColor="@color/health_red_drawer" />
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/schedule_red" />
+
+                        <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/btn_done"
+                            style="@style/textView_dark_grey_normal_small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:elevation="@dimen/_5dp"
+                            android:gravity="left"
+                            android:text="Schedule"
+                            android:textColor="@color/health_red_drawer" />
+                    </LinearLayout>
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/edit_red" />
+                        android:src="@drawable/schedule_up_arrow_red" />
 
                 </RelativeLayout>
 
@@ -619,55 +169,47 @@
                                 android:textStyle="bold" />
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:id="@+id/liner_date_select"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
                                 android:layout_marginLeft="@dimen/_10dp"
-                                android:layout_weight="1.5"
                                 android:orientation="vertical">
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
 
-                                    <LinearLayout
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+
+                                    <customsTextViews.CustomTextViewOpenSanRegular
+                                        android:id="@+id/edt_years"
+                                        style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
+                                        android:layout_gravity="center_horizontal"
+                                        android:background="@android:color/transparent"
+                                        android:text="DD/MM/YYYY"
+                                        android:textColor="@color/health_yellow" />
 
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="bottom"
+                                        android:layout_marginBottom="@dimen/_2dp"
+                                        android:src="@drawable/input_arrow_yellow" />
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:padding="@dimen/_4dp"
-                                            android:text="DD/MM/YYYY"
-                                            android:textColor="@color/health_yellow" />
-
-                                        <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_vertical"
-                                            android:src="@drawable/edit_red" />
-
-                                    </LinearLayout>
-
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="1dp"
-                                        android:background="@color/health_edit_line" />
                                 </LinearLayout>
                             </LinearLayout>
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_duration_txt"
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:layout_marginLeft="@dimen/_5dp"
+                                android:layout_marginLeft="@dimen/_25dp"
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Duration"
@@ -675,46 +217,37 @@
                                 android:textStyle="bold" />
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:id="@+id/liner_duration"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_5dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:padding="@dimen/_5dp">
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
+                                    android:orientation="horizontal">
 
-                                    <LinearLayout
+
+                                    <customsTextViews.CustomTextViewOpenSanRegular
+                                        android:id="@+id/txt_duration"
+                                        style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
+                                        android:layout_gravity="center_horizontal"
+                                        android:background="@android:color/transparent"
+                                        android:text="0"
+                                        android:textColor="@color/health_yellow" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="bottom"
+                                        android:layout_marginBottom="@dimen/_2dp"
+                                        android:src="@drawable/input_arrow_yellow" />
 
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:padding="@dimen/_4dp"
-                                            android:text="3"
-                                            android:textColor="@color/health_yellow" />
-
-                                        <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_vertical"
-                                            android:src="@drawable/edit_red" />
-
-                                    </LinearLayout>
-
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="1dp"
-                                        android:background="@color/health_edit_line" />
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
@@ -774,9 +307,9 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_5dp"
+                            android:layout_marginTop="@dimen/_10dp"
                             android:orientation="horizontal">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -791,67 +324,82 @@
                                 android:textStyle="bold" />
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_10dp"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
 
                                 <LinearLayout
+                                    android:id="@+id/liner_doages"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
+                                    android:orientation="horizontal">
 
-                                    <LinearLayout
+
+                                    <customsTextViews.CustomTextViewOpenSanRegular
+                                        android:id="@+id/txt_dogaes"
+                                        style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
+                                        android:layout_gravity="center_horizontal"
+                                        android:background="@android:color/transparent"
+                                        android:text="0"
+                                        android:textColor="@color/health_yellow" />
 
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="bottom"
+                                        android:layout_marginBottom="@dimen/_2dp"
+                                        android:src="@drawable/input_arrow_yellow" />
 
-                                        <customsTextViews.CustomTextViewOpenSanRegular
-                                            style="@style/textView_dark_grey_normal_micro"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginRight="@dimen/_3dp"
-                                            android:background="@android:color/transparent"
-                                            android:padding="@dimen/_4dp"
-                                            android:text="3"
-                                            android:textColor="@color/health_yellow" />
-
-                                        <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_gravity="center_vertical"
-                                            android:src="@drawable/edit_red" />
-
-                                    </LinearLayout>
-
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="1dp"
-                                        android:background="@color/health_edit_line" />
                                 </LinearLayout>
+
                             </LinearLayout>
 
 
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/liner_reminder_visible"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10dp"
-                            android:orientation="horizontal">
+                            android:visibility="gone"
+                            android:layout_marginTop="@dimen/_5dp"
+                            android:orientation="vertical">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal"
-                                android:background="@android:color/transparent"
-                                android:text="We have set reminder for 8:30am,3:00pm,9:00pm.you can also change time by taping on time."
-                                android:textColor="@color/health_yellow" />
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center_vertical"
+                                android:singleLine="true"
+                                android:text="We have set reminder for :"
+                                android:textColor="@color/health_yellow"
+                                android:textStyle="bold" />
 
+                            <LinearLayout
+                                android:id="@+id/linear_page_count"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"></LinearLayout>
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="@dimen/_5dp"
+                                android:singleLine="true"
+                                android:text="You can also change time by taping on time."
+                                android:textColor="@color/health_yellow"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -863,6 +411,7 @@
                             android:orientation="horizontal">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_set_reminder"
                                 style="@style/textView_dark_grey_normal_small"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

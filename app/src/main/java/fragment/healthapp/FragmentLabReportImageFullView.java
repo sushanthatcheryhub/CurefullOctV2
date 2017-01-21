@@ -2,8 +2,11 @@ package fragment.healthapp;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,21 +15,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,10 +84,30 @@ public class FragmentLabReportImageFullView extends Fragment {
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
             images = bundle.getString("imageList");
-            Glide.with(this).load(images)
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(image_item);
+//            Glide.with(this).load(images)
+//                    .crossFade()
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(image_item);
+
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(images).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .dontAnimate().into(new BitmapImageViewTarget(image_item) {
+                @Override
+                public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
+                    image_item.setImageBitmap(bmp);
+                    img_share.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                            prepareShareIntent(bmp);
+                        }
+                    });
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                }
+            });
         }
 
 
@@ -88,12 +115,6 @@ public class FragmentLabReportImageFullView extends Fragment {
             @Override
             public void onClick(View view) {
                 getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
-            }
-        });
-        img_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                shareClick(images);
             }
         });
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -150,15 +171,38 @@ public class FragmentLabReportImageFullView extends Fragment {
     }
 
 
-    public void shareClick(String prescriptionImage) {
-        String url = prescriptionImage;
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        Uri imageUri = Uri.parse(url);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctoreName + " Report " + date);
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:-" + doctoreName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-        sharingIntent.setType("image/*");
-        CureFull.getInstanse().getActivityIsntanse().startActivity(sharingIntent);
+    private void prepareShareIntent(Bitmap bmp) {
+        Uri bmpUri = getLocalBitmapUri(bmp); // see previous remote images section
+        // Construct share intent as described above based on bitmap
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Lab Report");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
+
+    }
+
+
+    private Uri getLocalBitmapUri(Bitmap bmp) {
+        Uri bmpUri = null;
+        File file = new File(CureFull.getInstanse().getActivityIsntanse().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bmpUri = Uri.fromFile(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 
 }

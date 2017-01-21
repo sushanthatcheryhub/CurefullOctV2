@@ -1,0 +1,62 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+
+    <RelativeLayout
+        android:layout_width="@dimen/_70dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/vprogressbar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/_5dp"
+            android:layout_marginLeft="@dimen/_10dp"
+            android:layout_marginRight="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_60dp"
+            android:elevation="@dimen/_10dp"
+            android:max="2000"
+            android:progress="2000"
+            android:progressDrawable="@drawable/progess_bar_selector" />
+
+        <View
+            android:id="@+id/view_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:layout_below="@+id/vprogressbar"
+            android:layout_marginTop="@dimen/_2dp"
+            android:background="@color/health_yellow" />
+
+
+        <customsTextViews.CustomTextViewOpenSanRegular
+            android:id="@+id/txt_date"
+            style="@style/textView_dark_grey_normal_micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_line"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="@dimen/_60dp"
+            android:layout_marginTop="@dimen/_5dp"
+            android:layout_toLeftOf="@+id/img_edit_rem"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="Jan 1"
+            android:textColor="@color/white" />
+
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

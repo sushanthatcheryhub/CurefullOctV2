@@ -581,15 +581,31 @@
                     </RelativeLayout>
 
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/_150dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_150dp"
+                        android:orientation="vertical">
 
                         <widgets.HorizontalRecyclerView
                             android:id="@+id/horizontal_recycler_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent" />
-                    </LinearLayout>
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/_35dp"
+                            android:layout_alignParentBottom="true"
+                          >
+
+                            <View
+                                android:id="@+id/view_line"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/health_yellow" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -598,8 +614,8 @@
                         android:orientation="vertical">
 
                         <customsTextViews.CustomTextViewOpenSanRegular
-                            style="@style/textView_dark_grey_normal_small"
                             android:id="@+id/txt_change_aveg"
+                            style="@style/textView_dark_grey_normal_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="left"
@@ -611,6 +627,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_20dp"
+                            android:layout_marginTop="@dimen/_5dp"
                             android:orientation="horizontal">
 
 
@@ -648,9 +665,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_20dp"
                                 android:hint="0"
-                                android:textColorHint="@color/health_yellow"
                                 android:textColor="@color/health_yellow"
-                                />
+                                android:textColorHint="@color/health_yellow" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -687,6 +703,7 @@
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_micro"
+                                android:id="@+id/txt_calories"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_20dp"

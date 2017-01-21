@@ -3,13 +3,10 @@ package adpter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,28 +14,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,12 +42,9 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentPrescriptionImageFullView;
-import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.PrescriptionImageListView;
-import item.property.PrescriptionListView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -97,11 +90,31 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         final ImageView img_share = holder.img_share;
         CardView card_view = holder.card_view;
 
-        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage())
-                .thumbnail(0.5f)
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(image_item);
+//        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage())
+//                .thumbnail(0.5f)
+//                .crossFade()
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .into(image_item);
+
+        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage()).asBitmap().priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate().into(new BitmapImageViewTarget(image_item) {
+            @Override
+            public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
+                image_item.setImageBitmap(bmp);
+                img_share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                        prepareShareIntent(bmp);
+                    }
+                });
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+            }
+        });
 
 
         img_delete.setOnClickListener(new View.OnClickListener() {
@@ -111,14 +124,6 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(PrescriptionImageViewAdpter.this);
                 dialogDeleteAll.show();
-            }
-        });
-        img_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
-                new ShareTask(applicationContext).execute(prescriptionListViews.get(position).getPrescriptionImage());
-//                shareClick(image_item, prescriptionListViews.get(position).getPrescriptionImage());
             }
         });
 
@@ -220,97 +225,37 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     }
 
 
-    public void shareClick(ImageView prescriptionImage, String image) {
-        Log.e("image", " " + image);
-        Uri bmpUri = getLocalBitmapUri(prescriptionImage);
-        // Construct a ShareIntent with link to image
+    private void prepareShareIntent(Bitmap bmp) {
+        Uri bmpUri = getLocalBitmapUri(bmp); // see previous remote images section
+        // Construct share intent as described above based on bitmap
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, image);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
         shareIntent.setType("image/*");
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
 
-        // Launch sharing dialog for image
-        applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Image"));
-
-
-//        String url = MyConstants.WebUrls.PRECRIPTION_IMAGE_PATH+ prescriptionImage;
-//        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//        Uri imageUri = Uri.parse(url);
-//        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, doctorName + " Report");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + doctorName + "\n" + "Mobile No:- 9654052212" + "\n" + "Email Id:- sushant@gmail.com" + "\n" + "Note : Normal Hai");
-//        sharingIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//        sharingIntent.setType("image/*");
-//        applicationContext.startActivity(sharingIntent);
     }
 
-    public Uri getLocalBitmapUri(ImageView imageView) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable) {
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
+
+    private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out = null;
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
+            out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             bmpUri = Uri.fromFile(file);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return bmpUri;
-    }
-
-
-    class ShareTask extends AsyncTask<String, Void, File> {
-        private final Context context;
-
-        public ShareTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected File doInBackground(String... params) {
-            String url = params[0]; // should be easy to extend to share multiple images at once
-            try {
-                return Glide
-                        .with(context)
-                        .load(url)
-                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                        .get() // needs to be called on background thread
-                        ;
-            } catch (Exception ex) {
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(File result) {
-            if (result == null) {
-                return;
-            }
-
-            Log.e("result"," "+result);
-            Uri uri = FileProvider.getUriForFile(context, "curefull.healthapp.fileprovider", result);
-//            context.grantUriPermission("curefull.healthapp.fileprovider", uri,  Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            share(uri); // startActivity probably needs UI thread
-        }
-
-        private void share(Uri result) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("image/jpeg");
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Shared image");
-            intent.putExtra(Intent.EXTRA_TEXT, "Look what I found!");
-            intent.putExtra(Intent.EXTRA_STREAM, result);
-            context.startActivity(Intent.createChooser(intent, "Share image"));
-        }
     }
 }

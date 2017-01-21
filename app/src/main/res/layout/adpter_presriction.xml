@@ -14,13 +14,24 @@
         android:layout_height="@dimen/_140dp"
         android:orientation="vertical">
 
+        <ProgressBar
+            android:id="@+id/progress_bar_one"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/health_yellow"
+            android:maxHeight="@dimen/_20dp"
+            android:minHeight="@dimen/_20dp" />
+
 
         <ImageView
             android:id="@+id/image_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="fitXY"
             android:layout_centerInParent="true"
-            android:scaleType="fitXY" />
+           />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,7 +100,7 @@
                         android:layout_gravity="center_vertical"
                         android:padding="@dimen/_3dp"
                         android:src="@drawable/delete_icon"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/img_share"

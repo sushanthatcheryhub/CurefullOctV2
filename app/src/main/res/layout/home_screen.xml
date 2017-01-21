@@ -7,11 +7,126 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+    <LinearLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#A91922"
+        android:elevation="@dimen/_15dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/liner_medincine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_ripple_yellow"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="@dimen/_10dp">
+
+            <customsTextViews.CustomTextViewOpenSanBold
+                android:id="@+id/txt_med"
+                style="@style/textView_dark_grey_normal_micro"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:text="Medicine"
+                android:textColor="@color/health_yellow_bottom"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/img_medicine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_5dp"
+                android:layout_toRightOf="@+id/txt_med"
+                android:src="@drawable/medicine_icon_yellow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/health_yellow_bottom" />
+
+        <LinearLayout
+            android:id="@+id/liner_doctor_visit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/my_ripple_yellow"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <customsTextViews.CustomTextViewOpenSanBold
+                android:id="@+id/txt_doctor_visit"
+                style="@style/textView_dark_grey_normal_micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:text="Doctor Visit"
+                android:textColor="@color/health_yellow_bottom"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/img_doctor_visit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_5dp"
+                android:src="@drawable/doctor_icon_yellow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/health_yellow_bottom" />
+
+        <LinearLayout
+            android:id="@+id/liner_lab_test"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:background="@drawable/my_ripple_yellow"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="@dimen/_10dp">
+
+            <customsTextViews.CustomTextViewOpenSanBold
+                android:id="@+id/txt_lab_test"
+                style="@style/textView_dark_grey_normal_micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:text="Lab Test"
+                android:textColor="@color/health_yellow_bottom"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/img_lab_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_5dp"
+                android:src="@drawable/lab_icon_yellow" />
+        </LinearLayout>
+
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/framge_child"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/liner_bottom_view">
+        android:layout_above="@+id/liner_bottom_view"
+        android:layout_below="@+id/top_view">
 
     </FrameLayout>
 
@@ -21,8 +136,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#A91922"
-        android:elevation="@dimen/_15dp"
-        android:padding="@dimen/_10dp">
+        android:elevation="@dimen/_15dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,18 +146,20 @@
             <LinearLayout
                 android:id="@+id/txt_bottom_heath_app"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/my_ripple"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_10dp">
 
 
                 <ImageView
+                    android:id="@+id/img_health_app"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/_5dp"
                     android:src="@drawable/footer_healthapp_yellow" />
             </LinearLayout>
 
@@ -51,13 +167,16 @@
             <LinearLayout
                 android:id="@+id/txt_bottom_health_note"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
+                android:background="@drawable/my_ripple"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_10dp">
 
                 <ImageView
+                    android:id="@+id/img_health_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -69,13 +188,16 @@
             <LinearLayout
                 android:id="@+id/txt_bottom_home"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
+                android:background="@drawable/my_ripple"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_10dp">
 
                 <ImageView
+                    android:id="@+id/img_health_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -90,11 +212,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
+                android:background="@drawable/my_ripple"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_10dp">
 
 
                 <ImageView
+                    android:id="@+id/img_health_pre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -108,10 +233,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
+                android:background="@drawable/my_ripple"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/_10dp">
 
                 <ImageView
+                    android:id="@+id/img_health_report"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

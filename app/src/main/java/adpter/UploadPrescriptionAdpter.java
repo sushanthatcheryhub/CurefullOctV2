@@ -2,34 +2,47 @@ package adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,13 +51,11 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentPrescriptionCheck;
+import fragment.healthapp.FragmentPrescriptionImageFullView;
 import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
-import item.property.PrescriptionImageListView;
 import item.property.PrescriptionListView;
-import item.property.PrescriptionUploadItems;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.Utils;
@@ -59,6 +70,10 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
     List<PrescriptionListView> prescriptionListViews;
     private RequestQueue requestQueue;
     private FragmentPrescriptionCheck prescriptionCheck;
+    private Uri uri;
+    ArrayList<Uri> files = null;
+    int size = 1;
+    int pos;
 
     public UploadPrescriptionAdpter(FragmentPrescriptionCheck fragmentPrescriptionCheck, Context applicationContexts,
                                     List<PrescriptionListView> prescriptionListViews) {
@@ -87,6 +102,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         final ImageView img_delete = holder.img_delete;
         final ImageView image_item = holder.image_item;
         final ImageView img_share = holder.img_share;
+        final ProgressBar progressBar = holder.progress_bar_one;
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
@@ -108,9 +124,22 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         txt_disease_name.setText("" + prescriptionListViews.get(position).getDiseaseName());
         if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
             Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage())
-                    .thumbnail(0.5f)
+                    .thumbnail(0.1f)
                     .crossFade()
+                    .priority(Priority.HIGH)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
                     .into(image_item);
 //            try {
 //                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
@@ -132,8 +161,18 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
-                shareClick(prescriptionListViews.get(position).getPrescriptionImageListViews());
+                size = 1;
+                if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
+                    files = new ArrayList<Uri>();
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    pos = position;
+                    for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageListViews().size(); i++) {
+                        new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+                    }
+                }
+
+
+//                shareClick(prescriptionListViews.get(position).getPrescriptionImageListViews());
             }
         });
 
@@ -142,27 +181,41 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
             @Override
             public void onClick(View view) {
 
-                Bundle bundle = new Bundle();
-                bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
-                bundle.putString("dieaseName", prescriptionListViews.get(position).getDiseaseName());
-                bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
-                bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
-                bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews());
-                CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionImageView(), bundle, true);
+                if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 1) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
+                    bundle.putString("dieaseName", prescriptionListViews.get(position).getDiseaseName());
+                    bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
+                    bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
+                    bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews());
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentPrescriptionImageView(), bundle, true);
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("prescriptionId", prescriptionListViews.get(position).getPrescriptionId());
+                    bundle.putString("iPrescriptionId", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getiPrescriptionId());
+                    bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
+                    bundle.putString("dieaseName", prescriptionListViews.get(position).getDiseaseName());
+                    bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
+                    bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
+                    CureFull.getInstanse().getFlowInstanseAll()
+                            .replace(new FragmentPrescriptionImageFullView(), bundle, true);
+                }
+
+
             }
         });
 
 
         Log.e("size after delete", ":- " + prescriptionListViews.size());
 
-        Log.e("position "," "+position);
+        Log.e("position ", " " + position);
 
 //        if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() == 0) {
 //            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
 //        }
-        if (position == prescriptionListViews.size()-1) {
-            Log.e("list zise"," "+prescriptionListViews.size());
+        if (position == prescriptionListViews.size() - 1) {
+            Log.e("list zise", " " + prescriptionListViews.size());
             prescriptionCheck.callWebServiceAgain(prescriptionListViews.size());
         }
 
@@ -184,6 +237,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         public TextView txt_date, text_doctor_name, txt_disease_name, txt_count_file;
         public ImageView img_delete, image_item, img_share;
         public RelativeLayout relative_card_view;
+        public ProgressBar progress_bar_one;
 
         ItemViewHolder(View view) {
             super(view);
@@ -201,6 +255,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                     .findViewById(R.id.image_item);
             this.img_share = (ImageView) itemView
                     .findViewById(R.id.img_share);
+            this.progress_bar_one = (ProgressBar) itemView.findViewById(R.id.progress_bar_one);
             this.relative_card_view = (RelativeLayout) itemView.findViewById(R.id.relative_card_view);
         }
     }
@@ -260,27 +315,83 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
     }
 
 
-    public void shareClick(ArrayList<PrescriptionImageListView> prescriptionImageListViews) {
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        ArrayList<Uri> files = new ArrayList<Uri>();
-        ArrayList<String> filesName = new ArrayList<String>();
-        for (int i = 0; i < prescriptionImageListViews.size(); i++) {
-            filesName.add(prescriptionImageListViews.get(i).getPrescriptionImage());
+    private void prepareShareIntent(ArrayList<Uri> files) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Lab Report");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
+    }
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private Uri getLocalBitmapUri(Bitmap bmp) {
+        Uri bmpUri = null;
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 50, out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bmpUri = Uri.fromFile(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
+
+
+    private class LongOperation extends AsyncTask<String, Void, Bitmap> {
+
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+
+            Log.e("url", " " + params[0]);
+            try {
+                URL url = new URL(params[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                return null;
+            }
+
         }
 
-        Log.e("name ", "fileNames " + filesName.get(0).toString());
-        for (String path : filesName/* List of the files you want to send */) {
-            Uri uri = Uri.parse(path);
-            Log.e("uri ", "uri " + uri.toString().length());
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            uri = getLocalBitmapUri(result);
             files.add(uri);
+            if (size == prescriptionListViews.get(pos).getPrescriptionImageListViews().size()) {
+                prepareShareIntent(files);
+            }
+            size += 1;
         }
-        Log.e("name ", "fileNames " + files.size());
-        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Report");
-//        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
-        sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-        sharingIntent.setType("image/*");
-        applicationContext.startActivity(Intent.createChooser(sharingIntent, "Share Image"));
     }
 }
