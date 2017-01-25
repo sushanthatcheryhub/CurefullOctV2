@@ -57,6 +57,8 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
     private boolean isBeforeMeal = false, isAfterMeal = false;
     private String firstTime = "";
     private RequestQueue requestQueue;
+    private String labTestReminderId = "";
+    private boolean isNewReminder = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,6 +97,36 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                 }
             }
         });
+
+
+        Bundle vBundle = getArguments();
+        if (vBundle != null) {
+            edt_doctor_name.setText("" + vBundle.getString("doctorName"));
+            edt_test_name.setText("" + vBundle.getString("testName"));
+            edt_lab_name.setText("" + vBundle.getString("testName"));
+            txt_date.setText("" + vBundle.getString("date"));
+            startFrom = vBundle.getString("date");
+            String[] newDate = startFrom.split("/");
+            String day = newDate[0];
+            String month = newDate[1];
+            String year = newDate[2];
+            startFrom = year + "-" + month + "-" + day;
+
+            firstTime = vBundle.getString("time");
+            txt_time_select.setText("" + firstTime);
+            String[] newTime = firstTime.split(" ");
+            firstTime = newTime[0];
+            isNewReminder = false;
+            labTestReminderId = vBundle.getString("labTestReminderId");
+            if (vBundle.getBoolean("isAfterMeal")) {
+                isAfterMeal = true;
+                radioAfterMeal.setChecked(true);
+            } else {
+                radioBeforeMeal.setChecked(true);
+                isAfterMeal = false;
+            }
+        }
+
         return rootView;
     }
 
@@ -123,7 +155,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                 newDateDialog.getDatePicker().setSpinnersShown(true);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c1.getTime();
-                newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
+                newDateDialog.getDatePicker().setMinDate(newDate.getTime());
                 newDateDialog.show();
                 break;
 
@@ -181,7 +213,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.toSetLabTestReminder(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, "", true, isAfterMeal);
+        JSONObject data = JsonUtilsObject.toSetLabTestReminder(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal);
         Log.e("jsonUploadLabRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM, data,

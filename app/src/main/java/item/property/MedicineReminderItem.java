@@ -17,6 +17,7 @@ public class MedicineReminderItem implements MyConstants.JsonUtils {
     private boolean baMealBefore;
     private String type = "";
     private int interval;
+    private boolean isShow;
 
 
     public int getId() {
@@ -73,5 +74,13 @@ public class MedicineReminderItem implements MyConstants.JsonUtils {
 
     public void setBaMealBefore(boolean baMealBefore) {
         this.baMealBefore = baMealBefore;
+    }
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
     }
 }

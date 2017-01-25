@@ -96,8 +96,12 @@
     <string name="remote_service_disconnected">Step Counter has been disconnected</string>
     <string name="remote_service_stopped">Step Counter has been stopped</string>
 
-
-
+    <string name="first_launch">First Launch</string>
+    <string name="num_of_missed_messages">MissedMessageCount</string>
+    <string name="lines_of_message_count">LinesOfMessageCount</string>
+    <string name="preferences">PreferencesFile</string>
+    <string name="notification_number">1337</string>
+    <string name="project_number">1079942567480</string>
 
 
 </resources>

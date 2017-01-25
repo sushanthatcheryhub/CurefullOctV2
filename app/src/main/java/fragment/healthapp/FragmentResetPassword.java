@@ -6,10 +6,12 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -64,23 +66,42 @@ public class FragmentResetPassword extends Fragment {
 //                    return;
 //                }
 
-                if (isValidEmail(input_mobile_number.getText().toString().trim())) {
-                    checkEmailId();
+//                if (isValidEmail(input_mobile_number.getText().toString().trim())) {
+//                    checkEmailId();
+//
+//                } else
 
-                } else if (isValidPhoneNumber(input_mobile_number.getText().toString().trim())) {
-                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                    checkMoileNumber();
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Enter");
+                if (!validateMobileNo()) {
+                    return;
                 }
-
+//                    if (isValidPhoneNumber(input_mobile_number.getText().toString().trim())) {
+//                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+//
+//                } else {
+//                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Enter");
+//                }
+                checkMoileNumber();
 
             }
         });
         if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
-            
-        }
 
+        }
+        input_mobile_number.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (!validateMobileNo()) {
+                        return false;
+                    } else {
+                        btn_reset_password.setEnabled(false);
+                        checkMoileNumber();
+                    }
+
+                }
+                return false;
+            }
+        });
 
         return rootView;
     }
@@ -141,7 +162,7 @@ public class FragmentResetPassword extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         Log.e("getSymptomsList, URL 1.", response);
-
+                        btn_reset_password.setEnabled(true);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
@@ -167,6 +188,7 @@ public class FragmentResetPassword extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        btn_reset_password.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         error.printStackTrace();
                     }
@@ -182,16 +204,17 @@ public class FragmentResetPassword extends Fragment {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim()+ MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
-                        bundle.putString("mobile", input_mobile_number.getText().toString().trim());
+                        bundle.putString("otp", String.valueOf(n));
+                        bundle.putString("MOBILE", input_mobile_number.getText().toString().trim());
                         CureFull.getInstanse().getFlowInstanse()
-                                .addWithBottomTopAnimation(new FragmentResetPasswordResend(), bundle, true);
+                                .addWithBottomTopAnimation(new FragmentOTPCheckForgot(), bundle, true);
                     }
                 },
                 new Response.ErrorListener() {
@@ -220,6 +243,21 @@ public class FragmentResetPassword extends Fragment {
             return Patterns.PHONE.matcher(phoneNumber).matches();
         }
         return false;
+    }
+
+    private boolean validateMobileNo() {
+        String email = input_mobile_number.getText().toString().trim();
+
+        if (email.isEmpty() || email.length() != 10) {
+            if (email.length() < 10 && email.length() > 1) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be less than 10 numbers.");
+            } else {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be left blank.");
+            }
+            return false;
+
+        }
+        return true;
     }
 
 }

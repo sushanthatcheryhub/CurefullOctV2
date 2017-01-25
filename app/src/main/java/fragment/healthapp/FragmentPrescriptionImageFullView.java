@@ -39,9 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import adpter.UploadPrescriptionAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogDeleteAll;
 import image.zoom.GestureImageView;
+import interfaces.IOnOtpDoneDelete;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -49,14 +52,14 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentPrescriptionImageFullView extends Fragment {
+public class FragmentPrescriptionImageFullView extends Fragment implements IOnOtpDoneDelete {
 
 
     private View rootView;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView gestureImageView;
-    private String doctoreName, prescriptionId, iPrescriptionId, date;
+    private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date;
     private RequestQueue requestQueue;
     private Bundle bundle;
     private String images;
@@ -85,7 +88,8 @@ public class FragmentPrescriptionImageFullView extends Fragment {
             txt_doctor_name.setText("" + doctoreName);
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionId = bundle.getString("prescriptionId");
-            iPrescriptionId = bundle.getString("iPrescriptionId");
+            prescriptionFollowupId = bundle.getString("prescriptionFollowupId");
+            prescriptionPartId = bundle.getString("prescriptionPartId");
             images = bundle.getString("imageList");
 //            Glide.with(this).load(images)
 //                    .thumbnail(0.5f)
@@ -116,7 +120,11 @@ public class FragmentPrescriptionImageFullView extends Fragment {
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", 0);
+                dialogDeleteAll.setiOnOtpDoneDelete(FragmentPrescriptionImageFullView.this);
+                dialogDeleteAll.show();
+
             }
         });
 
@@ -146,10 +154,10 @@ public class FragmentPrescriptionImageFullView extends Fragment {
         return "";
     }
 
-    private void getPrescriptionDelete(String id, String realId, String name) {
+    private void getPrescriptionDelete(String id, String prescriptionFollowupId, String name, String prescriptionPartId) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&iPrescriptionId=" + realId + "&doctor_name=" + name,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + name,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -230,4 +238,11 @@ public class FragmentPrescriptionImageFullView extends Fragment {
         return bmpUri;
     }
 
+    @Override
+    public void optDoneDelete(String messsage, String dialogName, int pos) {
+        if (messsage.equalsIgnoreCase("OK")) {
+            getPrescriptionDelete(prescriptionId, prescriptionFollowupId, doctoreName, prescriptionPartId);
+        }
+
+    }
 }

@@ -35,8 +35,6 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
             setReminder_selfListViews(jsonObject.getJSONArray("medicineReminderBySelf"));
             JSONObject jsonObject1 = new JSONObject(jsonObject.getString("listOfMedicineUnderDoctor"));
             setReminderDoctorNames(jsonToMap(jsonObject1));
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

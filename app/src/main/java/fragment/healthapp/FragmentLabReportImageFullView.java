@@ -37,9 +37,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import adpter.UploadLabTestReportAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogDeleteAll;
 import image.zoom.GestureImageView;
+import interfaces.IOnOtpDoneDelete;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -47,7 +50,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLabReportImageFullView extends Fragment {
+public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDoneDelete {
 
 
     private View rootView;
@@ -114,7 +117,11 @@ public class FragmentLabReportImageFullView extends Fragment {
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", 0);
+                dialogDeleteAll.setiOnOtpDoneDelete(FragmentLabReportImageFullView.this);
+                dialogDeleteAll.show();
+
             }
         });
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -205,4 +212,10 @@ public class FragmentLabReportImageFullView extends Fragment {
         return bmpUri;
     }
 
+    @Override
+    public void optDoneDelete(String messsage, String dialogName, int pos) {
+        if (messsage.equalsIgnoreCase("OK")) {
+            getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
+        }
+    }
 }

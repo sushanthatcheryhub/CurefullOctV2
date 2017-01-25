@@ -52,7 +52,14 @@
                     android:gravity="right"
                     android:text="Combiflame"
                     android:textColor="@color/health_yellow" />
-
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/txt_hospital"
+                    style="@style/textView_dark_grey_normal_micro_mini"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="Combiflame"
+                    android:textColor="@color/health_yellow" />
 
             </LinearLayout>
 

@@ -193,7 +193,8 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                 } else {
                     Bundle bundle = new Bundle();
                     bundle.putString("prescriptionId", prescriptionListViews.get(position).getPrescriptionId());
-                    bundle.putString("iPrescriptionId", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getiPrescriptionId());
+                    bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptonImageFollowupId());
+                    bundle.putString("prescriptionPartId", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImagePartId());
                     bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
                     bundle.putString("dieaseName", prescriptionListViews.get(position).getDiseaseName());
                     bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());

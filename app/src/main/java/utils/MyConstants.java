@@ -6,11 +6,11 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-                String HOST_IP = "http://lp.hatcheryhub.com";
-//        String HOST_IP = "http://192.168.0.33:8080";
+        String HOST_IP = "http://lp.hatcheryhub.com";
+//                String HOST_IP = "http://192.168.0.30:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
-//        String HOST_LOCATION = "/CurefullRestService/api/v1/";
+//                String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -63,7 +63,15 @@ public class MyConstants {
         String GET_LIST_OF_LAB_TEST = URL + "endUser/labTestReminderService/getListOfLabTestReminder?";
         String ADD_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/addOrEditDoctorFollowupReminder";
         String GET_LIST_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/getDoctorFollowupReminder?";
+        String GET_LIST_DOCTOR_NAME_MEDICINE = URL + "enduser/medicineService/getListOfDoctorNameForReminder?cfuuhId=";
+        String GET_LIST_DOCTOR_NAME_DOCTOR_VISIT = URL + "enduser/dotorFollowupService/getListOfDoctorNameForFollowup?cfuuhId=";
+        String GET_LIST_DOCTOR_NAME_LAB_TEST = URL + "endUser/labTestReminderService/getListOfDoctorNameForLabTest?cfuuhId=";
 
+        String DOCTOR_VIsit_DELETE_ = URL + "enduser/dotorFollowupService/deleteDoctorFollowupReminder?doctorFollowupReminderId=";
+        String LAB_TEST_DELETE_ = URL + "endUser/labTestReminderService/deleteLabTestReminder?labTestReminderId=";
+        String MEDICINCE_DELETE_ = URL + "enduser/medicineService/deleteMedicineReminder?medicineReminderId=";
+
+        String MEDICINCE_HISTORY_API=URL+"enduser/medicineService/historyOfMedicineReminder?cfuuhId=";
 
     }
 

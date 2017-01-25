@@ -17,11 +17,16 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -38,10 +43,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,10 +81,17 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private String startFrom = "";
     private ListPopupWindow listPopupWindow;
     private String duration = "";
-    private String doages = "";
+    private String doages = "", timeToTakeMedicne = "";
     private LinearLayout liner_date_select, linear_page_count, liner_reminder_visible;
-    String addDays = "";
+    private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
+    private int interval;
+    private boolean isNewReminder = true, isVisible = false;
+    private String medicineReminderId = "";
+    private MultiSelectToggleGroup multiSelect;
+    private RelativeLayout relative_schedule, relative_bottom_area,reltvi_new;
+    private ImageView img_rotate;
+    private ScrollView scrollView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,6 +102,12 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+        scrollView=(ScrollView)rootView.findViewById(R.id.top_view);
+        multiSelect =
+                (MultiSelectToggleGroup) rootView.findViewById(R.id.multi_selection_group);
+        reltvi_new = (RelativeLayout) rootView.findViewById(R.id.reltvi_new);
+        relative_bottom_area = (RelativeLayout) rootView.findViewById(R.id.relative_bottom_area);
+        relative_schedule = (RelativeLayout) rootView.findViewById(R.id.relative_schedule);
         liner_reminder_visible = (LinearLayout) rootView.findViewById(R.id.liner_reminder_visible);
         linear_page_count = (LinearLayout) rootView.findViewById(R.id.linear_page_count);
         txt_duration_txt = (TextView) rootView.findViewById(R.id.txt_duration_txt);
@@ -96,7 +117,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         txt_set_reminder = (TextView) rootView.findViewById(R.id.txt_set_reminder);
         liner_date_select = (LinearLayout) rootView.findViewById(R.id.liner_date_select);
         list_view_current_visit = (ListView) rootView.findViewById(R.id.list_view_current_visit);
-
+        img_rotate = (ImageView) rootView.findViewById(R.id.img_rotate);
         list_view_current_visit.setOnTouchListener(new ListView.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -120,7 +141,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         });
         txt_set_reminder.setOnClickListener(this);
         liner_date_select.setOnClickListener(this);
-
+        relative_schedule.setOnClickListener(this);
         (rootView.findViewById(R.id.liner_duration)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,18 +171,76 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 listPopupWindow.show();
             }
         });
-        setupMultiSelectToggleGroup();
-        setReminderMediceList();
+
         edt_years.setPaintFlags(edt_years.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         txt_duration.setPaintFlags(txt_duration.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         txt_dogaes.setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        return rootView;
-    }
 
 
-    private void setupMultiSelectToggleGroup() {
-        final MultiSelectToggleGroup multiSelect =
-                (MultiSelectToggleGroup) rootView.findViewById(R.id.multi_selection_group);
+        Bundle vBundle = getArguments();
+        if (vBundle != null) {
+            MedicineReminderItem reminderItem = new MedicineReminderItem();
+            reminderItem.setId(1);
+            reminderItem.setShow(true);
+            reminderItem.setDoctorName(vBundle.getString("doctorName"));
+            reminderItem.setMedicineName(vBundle.getString("medicineName"));
+            reminderItem.setInterval(0);
+            reminderItem.setBaMealAfter(vBundle.getBoolean("afterMeal"));
+            reminderItem.setBaMealBefore(vBundle.getBoolean("beforeMeal"));
+            listCurrent.add(reminderItem);
+            setAdapterCurrentVisit();
+            edt_years.setText("" + vBundle.getString("date"));
+            startFrom = vBundle.getString("date");
+            String[] newDate = startFrom.split("/");
+            String day = newDate[0];
+            String month = newDate[1];
+            String year = newDate[2];
+            startFrom = year + "-" + month + "-" + day;
+            isNewReminder = false;
+            timeToTakeMedicne = vBundle.getString("timeToTakeMedicne");
+            liner_reminder_visible.setVisibility(View.VISIBLE);
+            linear_page_count.removeAllViews();
+            showPage(0, timeToTakeMedicne);
+            medicineReminderId = vBundle.getString("medicineReminderId");
+            String noOfDaysInWeek = vBundle.getString("noOfDaysInWeek");
+            String[] weeks = noOfDaysInWeek.split(",");
+            Set<Integer> singlesSet = new HashSet<>();
+            if (weeks != null & weeks.length > 0) {
+                for (int i = 0; i < weeks.length; i++) {
+                    switch (weeks[i]) {
+                        case "SUN":
+                            singlesSet.add(0);
+                            break;
+                        case "MON":
+                            singlesSet.add(1);
+                            break;
+                        case "TUE":
+                            singlesSet.add(2);
+                            break;
+                        case "WED":
+                            singlesSet.add(3);
+                            break;
+                        case "THU":
+                            singlesSet.add(4);
+                            break;
+                        case "FRI":
+                            singlesSet.add(5);
+                            break;
+                        case "SAT":
+                            singlesSet.add(6);
+                            break;
+                    }
+
+                }
+                multiSelect.setCheckedPositions(singlesSet);
+            }
+
+
+        } else {
+            setReminderMediceList();
+        }
+
+
         multiSelect.setOnCheckedPositionChangeListener(
                 new ToggleButtonGroup.OnCheckedPositionChangeListener() {
                     @Override
@@ -175,7 +254,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                         }
                     }
                 });
+
+        return rootView;
     }
+
 
     AdapterView.OnItemClickListener popUpItemClick1 = new AdapterView.OnItemClickListener() {
         @Override
@@ -194,13 +276,29 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             linear_page_count.removeAllViews();
             txt_dogaes.setText("" + MyConstants.IArrayData.listPopUp[position]);
             doages = MyConstants.IArrayData.listPopUp[position];
-            showPage(Integer.parseInt(doages));
+            showPage(Integer.parseInt(doages), timeToTakeMedicne);
         }
     };
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.relative_schedule:
+                if (isVisible) {
+                    rotatePhoneAntiClockwise(img_rotate);
+                    isVisible = false;
+                    relative_bottom_area.setVisibility(View.GONE);
+                } else {
+                    scrollView.post(new Runnable() {
+                        public void run() {
+                            scrollView.smoothScrollTo(0, reltvi_new.getHeight());
+                        }
+                    });
+                    rotatePhoneClockwise(img_rotate);
+                    isVisible = true;
+                    relative_bottom_area.setVisibility(View.VISIBLE);
+                }
+                break;
             case R.id.txt_set_reminder:
                 setMedReminderDetails();
                 break;
@@ -226,7 +324,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 newDateDialog.getDatePicker().setSpinnersShown(true);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c1.getTime();
-                newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
+                newDateDialog.getDatePicker().setMinDate(newDate.getTime());
                 newDateDialog.show();
 
 
@@ -254,6 +352,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         MedicineReminderItem reminderItem = new MedicineReminderItem();
         reminderItem.setId(1);
         reminderItem.setInterval(0);
+        reminderItem.setShow(false);
         reminderItem.setBaMealAfter(false);
         reminderItem.setBaMealBefore(false);
         listCurrent.add(reminderItem);
@@ -304,22 +403,23 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         }
         String newTime = "";
         String hello = "";
+
         for (int i = 0; i < view_text_page.length; i++) {
             hello = "" + view_text_page[i].getText();
             if (i == (view_text_page.length - 1)) {
-                newTime += hello.substring(0, hello.length() - 3);
+                newTime += get24hrsFormat(hello.substring(0, hello.length() - 1));
             } else {
-                if (hello.endsWith("am, ")) {
-                    newTime += hello.substring(0, hello.length() - 4) + ",";
-                } else if (hello.endsWith("pm, ")) {
-                    newTime += hello.substring(0, hello.length() - 4) + ",";
+                if (hello.endsWith(" am, ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
+                } else if (hello.endsWith(" pm, ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
                 }
             }
 
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.setRemMed(startFrom, duration, doages, addDays, listCurrent, newTime);
+        JSONObject data = JsonUtilsObject.setRemMed(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
         Log.e("jsonUploadMedRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM, data,
@@ -418,83 +518,175 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void showPage(final int totalPage) {
+    public void showPage(final int totalPage, String timeToTakeMedicne) {
 
-        int value = (14 / totalPage);
-        Log.e("value", "" + value);
+        if (timeToTakeMedicne.equalsIgnoreCase("")) {
+            interval = (14 / totalPage);
+            Log.e("value", "" + interval);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 0, 0, 0);
+            view_text_page = new CustomTextViewOpenSanRegular[totalPage];
+            int text = 0;
+            for (int i = 0; i < totalPage; i++) {
+                if (i == 0) {
+                    text = 9;
+                } else {
+                    text = text + interval;
+                }
 
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 0);
-        view_text_page = new CustomTextViewOpenSanRegular[totalPage];
-        int text = 0;
-        for (int i = 0; i < totalPage; i++) {
-            if (i == 0) {
-                text = 9;
-            } else {
-                text = text + value;
-            }
-
-            view_text_page[i] = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
+                view_text_page[i] = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
 //            CustomTextViewOpenSanRegular view_text_page = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
-            view_text_page[i].setGravity(Gravity.CENTER_VERTICAL);
-            view_text_page[i].setTextSize(12);
-            view_text_page[i].setSingleLine(true);
-            view_text_page[i].setId(i);
-            view_text_page[i].setLayoutParams(params);
-            Log.e("i ", " " + i);
-            if (i == (totalPage - 1)) {
-                view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTime(text, 0) + ".");
-            } else {
-                view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTime(text, 0) + ", ");
-            }
-            view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
-            view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            final int finalI = i;
-            view_text_page[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+                view_text_page[i].setGravity(Gravity.CENTER_VERTICAL);
+                view_text_page[i].setTextSize(12);
+                view_text_page[i].setSingleLine(true);
+                view_text_page[i].setId(i);
+                view_text_page[i].setLayoutParams(params);
+                Log.e("i ", " " + i);
+                if (i == (totalPage - 1)) {
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(text, 0) + ".");
+                } else {
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(text, 0) + ", ");
+                }
+                view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
+                view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                final int finalI = i;
+                view_text_page[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                    String time = "" + view_text_page[finalI].getText();
-                    Log.e("time", " " + time);
-                    if (time.endsWith("am, ")) {
-                        time = time.substring(0, time.length() - 4);
-                    } else if (time.endsWith("pm, ")) {
-                        time = time.substring(0, time.length() - 4);
-                    } else if (time.endsWith("am.")) {
-                        time = time.substring(0, time.length() - 3);
-                    } else if (time.endsWith("pm.")) {
-                        time = time.substring(0, time.length() - 3);
-                    }
-                    String[] hello = time.split(":");
-                    String hour = hello[0];
-                    String mintue = hello[1];
-
-                    int hour1 = Integer.parseInt(hour);
-                    // Current Minute
-                    int minute1 = Integer.parseInt(mintue);
-
-                    TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            if (finalI == (totalPage - 1)) {
-                                view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTime(hourOfDay, minute) + ".");
-                            } else {
-                                view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTime(hourOfDay, minute) + ", ");
-
-                            }
+                        String time = "" + view_text_page[finalI].getText();
+                        Log.e("time", " " + time);
+                        if (time.endsWith(" am, ")) {
+                            time = time.substring(0, time.length() - 5);
+                        } else if (time.endsWith(" pm, ")) {
+                            time = time.substring(0, time.length() - 5);
+                        } else if (time.endsWith(" am.")) {
+                            time = time.substring(0, time.length() - 4);
+                        } else if (time.endsWith(" pm.")) {
+                            time = time.substring(0, time.length() - 4);
                         }
-                    }, hour1, minute1, false);
-                    timePickerDialog1.show();
+                        String[] hello = time.split(":");
+                        String hour = hello[0];
+                        String mintue = hello[1];
+
+                        int hour1 = Integer.parseInt(hour);
+                        // Current Minute
+                        int minute1 = Integer.parseInt(mintue);
+
+                        TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                if (finalI == (totalPage - 1)) {
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ".");
+                                } else {
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ", ");
+
+                                }
+                            }
+                        }, hour1, minute1, false);
+                        timePickerDialog1.show();
 //                    pageNo = view.getId();
 
+                    }
+                });
+                linear_page_count.addView(view_text_page[i]);
+            }
+        } else {
+            String[] timeToMedo = timeToTakeMedicne.split(",");
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 0, 0, 0);
+            view_text_page = new CustomTextViewOpenSanRegular[timeToMedo.length];
+
+            for (int i = 0; i < timeToMedo.length; i++) {
+                view_text_page[i] = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
+//            CustomTextViewOpenSanRegular view_text_page = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
+                view_text_page[i].setGravity(Gravity.CENTER_VERTICAL);
+                view_text_page[i].setTextSize(12);
+                view_text_page[i].setSingleLine(true);
+                view_text_page[i].setId(i);
+                view_text_page[i].setLayoutParams(params);
+                Log.e("i ", " " + i);
+                if (i == (timeToMedo.length - 1)) {
+                    String[] text = timeToMedo[i].split(":");
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + ".");
+                } else {
+                    String[] text = timeToMedo[i].split(":");
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + ", ");
                 }
-            });
-            linear_page_count.addView(view_text_page[i]);
+                view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
+                view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                final int finalI = i;
+                view_text_page[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String time = "" + view_text_page[finalI].getText();
+                        Log.e("time", " " + time);
+                        if (time.endsWith(" am, ")) {
+                            time = time.substring(0, time.length() - 5);
+                        } else if (time.endsWith(" pm, ")) {
+                            time = time.substring(0, time.length() - 5);
+                        } else if (time.endsWith(" am.")) {
+                            time = time.substring(0, time.length() - 4);
+                        } else if (time.endsWith(" pm.")) {
+                            time = time.substring(0, time.length() - 4);
+                        }
+                        String[] hello = time.split(":");
+                        String hour = hello[0];
+                        String mintue = hello[1];
+
+                        int hour1 = Integer.parseInt(hour);
+                        // Current Minute
+                        int minute1 = Integer.parseInt(mintue);
+
+                        TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                if (finalI == (totalPage - 1)) {
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ".");
+                                } else {
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ", ");
+
+                                }
+                            }
+                        }, hour1, minute1, false);
+                        timePickerDialog1.show();
+//                    pageNo = view.getId();
+
+                    }
+                });
+                linear_page_count.addView(view_text_page[i]);
+            }
+
+
         }
 
 
     }
 
 
+    public String get24hrsFormat(String time) {
+        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+        Date date = null;
+        try {
+            date = parseFormat.parse(time);
+            Log.e("format ", parseFormat.format(date) + " = " + displayFormat.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return displayFormat.format(date);
+    }
+
+    private void rotatePhoneClockwise(ImageView imageView) {
+        Animation rotate = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.semi_anti_rotate_anim);
+        imageView.startAnimation(rotate);
+    }
+
+    private void rotatePhoneAntiClockwise(ImageView imageView) {
+        Animation rotate = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.semi_rotate_anim);
+        imageView.startAnimation(rotate);
+    }
 }

@@ -1,12 +1,10 @@
 package curefull.healthapp;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.RemoteInput;
-import android.content.ComponentName;
-import android.content.DialogInterface;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -24,15 +22,10 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,18 +34,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,15 +49,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import fragment.healthapp.FragmentEditGoal;
+import awsgcm.MessageReceivingService;
 import fragment.healthapp.FragmentHomeScreenAll;
 import fragment.healthapp.FragmentLabTestReport;
-import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentProfile;
@@ -76,9 +61,6 @@ import fragment.healthapp.FragmentSignUp;
 import utils.AppPreference;
 import utils.CircularImageView;
 import utils.HandlePermission;
-import utils.MyConstants;
-import utils.NotificationUtils;
-import utils.Utils;
 
 public class MainActivity extends BaseMainActivity implements TransferListener {
 
@@ -91,7 +73,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
-    private GoogleApiClient mClient = null;
     private RelativeLayout relative_logo, relative_action_bar;
     private ActionBarDrawerToggle toggle;
     private ProgressBar progress_bar;
@@ -105,6 +86,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     String encodedImage;
     private View view1;
 
+    // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +101,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
 //            window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
             window.setBackgroundDrawable(background);
         }
-
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         img_share = (ImageView) findViewById(R.id.img_share);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
@@ -145,6 +126,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         disableDrawer();
         changeTitle("cureFull");
 
+        startService(new Intent(this, MessageReceivingService.class));
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+
+        Log.e("id "," "+refreshedToken);
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
@@ -175,19 +160,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
             }
         });
 
-
-//        liner_logout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                AppPreference.getInstance().clearAllData();
-//                AppPreference.getInstance().setIsLogin(false);
-//                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
-//                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-//                CureFull.getInstanse().getFlowInstanse()
-//                        .replace(new FragmentLogin(), false);
-//            }
-//        });
-
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,18 +168,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
                 shareClick();
             }
         });
-
-//        Toast.makeText(this, getMessageText(getIntent()), Toast.LENGTH_SHORT).show();
-
-//        if (checkAndRequestPermissions()) {
-//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-//            CureFull.getInstanse().getFlowInstanse()
-//                    .replace(new FragmentLogin(), false);
-//        }else{
-//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-//            CureFull.getInstanse().getFlowInstanse()
-//                    .replace(new FragmentLogin(), false);
-//        }
 
 
         Intent intent = getIntent();
@@ -221,8 +181,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
                 Log.e("data", "" + data.toString());
             }
         }
-
-
     }
 
     @Override
@@ -272,15 +230,15 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     }
 
 
-    private CharSequence getMessageText(Intent intent) {
-        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-        if (remoteInput != null) {
-            return remoteInput.getCharSequence(NotificationUtils.KEY_TEXT_REPLY);
-        }
-        Toast.makeText(this, "Remoteinput is null", Toast.LENGTH_SHORT).show();
-
-        return null;
-    }
+//    private CharSequence getMessageText(Intent intent) {
+//        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+//        if (remoteInput != null) {
+//            return remoteInput.getCharSequence(NotificationUtils.KEY_TEXT_REPLY);
+//        }
+//        Toast.makeText(this, "Remoteinput is null", Toast.LENGTH_SHORT).show();
+//
+//        return null;
+//    }
 
     @Override
     public void onLowMemory() {
@@ -373,6 +331,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     }
 
 
+
+
     public void changeColorActionBar(String color) {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor(color));
 //        getSupportActionBar().setBackgroundDrawable(colorDrawable);
@@ -405,6 +365,11 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         String action = intent.getAction();
         Log.e("bundle", "push event :- " + action);
     }
+
+
+
+
+
 
 
     @Override

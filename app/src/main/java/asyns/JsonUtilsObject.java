@@ -351,7 +351,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject setRemMed(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent,String alarmTime) {
+    public static JSONObject setRemMed(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
@@ -359,7 +359,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent1.put("startDate", startFrom);
             jsonParent1.put("noOfDays", duration);
             jsonParent1.put("unitOfInterval", "hours");
-            jsonParent1.put("interval", 7);
+            jsonParent1.put("interval", interval);
             jsonParent1.put("alramTime", alarmTime);
             jsonParent1.put("noOfDosage", doages);
             jsonParent1.put("noOfDayInWeek", noOfDayInweek);
@@ -410,7 +410,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
             jsonParent.put("labTestReminderId", labTestReminderId);
             jsonParent.put("isNewLabTest", isNewLabTest);
-            jsonParent.put("isAtterMeal", isAtterMeal);
+            jsonParent.put("isAfterMeal", isAtterMeal);
             jsonParent.put("isSelf", true);
 
         } catch (Exception e) {

@@ -1,6 +1,5 @@
 package fragment.healthapp;
 
-import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -11,7 +10,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,10 +17,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -32,7 +26,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -40,7 +33,6 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,19 +52,6 @@ import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataSource;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.request.OnDataPointListener;
-import com.google.android.gms.fitness.result.DataReadResult;
-import com.google.android.gms.location.ActivityRecognition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,7 +67,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -134,7 +112,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     //    private CircularImageView circularImageView;
     public static final String TAG = "BasicSensorsApi";
     // [START auth_variable_references]
-    private GoogleApiClient mClient = null;
     // [END auth_variable_references]
     private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -142,10 +119,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     // [START mListener_variable_reference]
     // Need to hold a reference to this listener, as it's passed into the "unregister"
     // method in order to stop all sensors from sending data to this listener.
-    private OnDataPointListener mListener;
     // [END mListener_variable_reference]
     private LinearLayout linear_health_app, liner_date_t, liner_to_time, linear_health_note;
-    private ActivityRecognition arclient;
     private RelativeLayout realtive_notes;
     private static TickerView ticker1;
     private static TickerView text_steps_count;
@@ -621,7 +596,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     double wirght = 0;
                     Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
                     if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
-                        wirght = 0;
+                        wirght = 40;
                     } else {
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
                     }
@@ -1014,47 +989,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
     }
 
-    public int getStepsCount(long startTime, long endTime) {
-        DataSource ESTIMATED_STEP_DELTAS = new DataSource.Builder()
-                .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
-                .setType(DataSource.TYPE_DERIVED)
-                .setStreamName("estimated_steps")
-                .setAppPackageName("com.google.android.gms").build();
-        PendingResult<DataReadResult> pendingResult = Fitness.HistoryApi
-                .readData(
-                        mClient,
-                        new DataReadRequest.Builder()
-                                .aggregate(ESTIMATED_STEP_DELTAS,
-                                        DataType.AGGREGATE_STEP_COUNT_DELTA)
-                                .bucketByTime(1, TimeUnit.HOURS)
-                                .setTimeRange(startTime, endTime,
-                                        TimeUnit.MILLISECONDS).build());
-        int steps = 0;
-        DataReadResult dataReadResult = pendingResult.await();
-        if (dataReadResult.getBuckets().size() > 0) {
-            //Log.e("TAG", "Number of returned buckets of DataSets is: "
-            //+ dataReadResult.getBuckets().size());
-            for (Bucket bucket : dataReadResult.getBuckets()) {
-                List<DataSet> dataSets = bucket.getDataSets();
-                for (DataSet dataSet : dataSets) {
-                    for (DataPoint dp : dataSet.getDataPoints()) {
-                        for (Field field : dp.getDataType().getFields()) {
-                            steps += dp.getValue(field).asInt();
-                        }
-                    }
-                }
-            }
-        } else if (dataReadResult.getDataSets().size() > 0) {
-            for (DataSet dataSet : dataReadResult.getDataSets()) {
-                for (DataPoint dp : dataSet.getDataPoints()) {
-                    for (Field field : dp.getDataType().getFields()) {
-                        steps += dp.getValue(field).asInt();
-                    }
-                }
-            }
-        }
-        return steps;
-    }
 
 
     public void jsonUploadTarget() {

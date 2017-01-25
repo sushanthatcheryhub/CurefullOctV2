@@ -1684,10 +1684,11 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                Log.e("a_t",""+AppPreference.getInstance().getAt());
+                Log.e("cf_uuhid",""+AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
-
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 

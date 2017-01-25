@@ -3,13 +3,27 @@ package adpter;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -17,6 +31,8 @@ import fragment.healthapp.FragmentDoctorVisitSetReminder;
 import item.property.Doctor_Visit_Reminder_DoctorListView;
 import item.property.Lab_Test_Reminder_DoctorListView;
 import item.property.Reminder_DoctorListView;
+import utils.AppPreference;
+import utils.MyConstants;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -50,7 +66,7 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
         TextView txt_med_name = holder.txt_med_name;
         TextView txt_med_time = holder.txt_med_time;
         TextView txt_hospital = holder.txt_hospital;
-        ImageView img_edit_rem = holder.img_edit_rem;
+        final ImageView img_edit_rem = holder.img_edit_rem;
 
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("Dr. " + healthNoteItemses.get(position).getDoctorName());
@@ -58,6 +74,7 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_edit_rem);
                 Bundle bundle = new Bundle();
                 bundle.putString("doctorFollowupReminderId", healthNoteItemses.get(position).getDoctorFollowupReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
@@ -68,7 +85,6 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
                         .replace(new FragmentDoctorVisitSetReminder(), bundle, true);
             }
         });
-
 
     }
 
@@ -88,6 +104,5 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
             this.txt_med_time = (TextView) itemView.findViewById(R.id.txt_med_time);
         }
     }
-
 
 }

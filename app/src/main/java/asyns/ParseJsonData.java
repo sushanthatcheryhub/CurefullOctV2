@@ -293,7 +293,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     }
 
 
-    public List<LabDoctorName> getLabDoctorName(String response) {
+    public ArrayList<LabDoctorName> getLabDoctorName(String response) {
         LabDoctorName details = null;
         ArrayList<LabDoctorName> detailListing = null;
 
@@ -445,4 +445,6 @@ public class ParseJsonData implements MyConstants.JsonUtils {
         }
         return details;
     }
+
+
 }

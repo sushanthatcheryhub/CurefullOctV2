@@ -71,6 +71,7 @@
                     android:padding="@dimen/_10dp">
 
                     <customsTextViews.CustomTextViewOpenSanBold
+                        android:id="@+id/txt_doctor_name_txt"
                         style="@style/textView_dark_grey_normal_micro_mini"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -81,6 +82,7 @@
                         android:textStyle="bold" />
 
                     <ImageView
+                        android:id="@+id/img_user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -144,6 +146,40 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <RelativeLayout
+                    android:id="@+id/realtive_today"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="@dimen/_5dp"
+                    android:orientation="horizontal">
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:id="@+id/text_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Today, "
+                        android:fontFamily=""
+                        android:textColor="@color/health_yellow_bottom"
+                        android:textStyle="bold" />
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:id="@+id/txt_date_dialog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/text_date"
+                        android:layout_centerHorizontal="true"
+                        android:text="26/11/1989"
+                        android:textColor="@color/health_yellow_bottom"
+                        android:textStyle="bold" />
+
+
+                </RelativeLayout>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView_doctor"
                     android:layout_width="match_parent"
@@ -172,7 +208,51 @@
                     android:layout_below="@+id/txt_self"
                     android:layout_marginTop="@dimen/_5dp"
                     android:nestedScrollingEnabled="false"></android.support.v7.widget.RecyclerView>
+                <RelativeLayout
+                    android:id="@+id/relative_bottom_next"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:orientation="horizontal">
 
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        android:id="@+id/btn_history"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:background="@drawable/yellow_button_selector"
+                        android:elevation="@dimen/_5dp"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="@dimen/_2dp"
+                        android:paddingLeft="@dimen/_10dp"
+                        android:paddingRight="@dimen/_10dp"
+                        android:paddingTop="@dimen/_2dp"
+                        android:text="Previous"
+                        android:textColor="@color/health_red_drawer"
+                        android:textStyle="bold" />
+
+                    <customsTextViews.CustomTextViewOpenSanRegular
+                        android:id="@+id/btn_next"
+                        style="@style/textView_dark_grey_normal_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="bottom"
+                        android:layout_marginRight="@dimen/_10dp"
+                        android:background="@drawable/yellow_button_selector"
+                        android:elevation="@dimen/_5dp"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="@dimen/_2dp"
+                        android:paddingLeft="@dimen/_10dp"
+                        android:paddingRight="@dimen/_10dp"
+                        android:paddingTop="@dimen/_2dp"
+                        android:text="Next"
+                        android:textColor="@color/health_red_drawer"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
             </LinearLayout>
 
 

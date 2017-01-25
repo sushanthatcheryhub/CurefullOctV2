@@ -15,6 +15,11 @@ public class Lab_Test_Reminder_DoctorListView {
     private String doctorName;
     private int hour;
     private int mintue;
+    private boolean afterMeal;
+    private String labTestReminderId;
+    private int year;
+    private int month;
+    private int date;
 
     public Lab_Test_Reminder_DoctorListView() {
 
@@ -28,9 +33,15 @@ public class Lab_Test_Reminder_DoctorListView {
             JSONObject jsonObject1 = new JSONObject(json);
             setDoctorName(jsonObject1.getString("doctorName"));
             setRemMedicineName(jsonObject1.getString("testName"));
+            setLabTestReminderId(jsonObject1.getString("labTestReminderId"));
+            setAfterMeal(jsonObject1.getBoolean("afterMeal"));
             JSONObject jsonObject2 = new JSONObject(jsonObject1.getString("labTestTime"));
             setHour(jsonObject2.getInt("hour"));
             setMintue(jsonObject2.getInt("minute"));
+            JSONObject jsonObject3 = new JSONObject(jsonObject1.getString("labTestDate"));
+            setYear(jsonObject3.getInt("year"));
+            setDate(jsonObject3.getInt("dayOfMonth"));
+            setMonth(jsonObject3.getInt("monthValue"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,5 +79,46 @@ public class Lab_Test_Reminder_DoctorListView {
 
     public void setMintue(int mintue) {
         this.mintue = mintue;
+    }
+
+    public boolean isAfterMeal() {
+        return afterMeal;
+    }
+
+    public void setAfterMeal(boolean afterMeal) {
+        this.afterMeal = afterMeal;
+    }
+
+
+    public String getLabTestReminderId() {
+        return labTestReminderId;
+    }
+
+    public void setLabTestReminderId(String labTestReminderId) {
+        this.labTestReminderId = labTestReminderId;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = date;
     }
 }

@@ -419,7 +419,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
                     double wirght;
                     if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
-                        wirght = 0;
+                        wirght = 40;
                     } else {
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
                     }

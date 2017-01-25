@@ -133,7 +133,8 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("prescriptionId", id);
-                bundle.putString("iPrescriptionId", prescriptionListViews.get(position).getiPrescriptionId());
+                bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptonImageFollowupId());
+                bundle.putString("prescriptionPartId", prescriptionListViews.get(position).getPrescriptionImagePartId());
                 bundle.putString("doctorName", doctorName);
                 bundle.putString("dieaseName", dieaseName);
                 bundle.putString("date", dates);
@@ -149,7 +150,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(id, prescriptionListViews.get(pos).getiPrescriptionId(), doctorName, pos);
+            getPrescriptionDelete(id, prescriptionListViews.get(pos).getPrescriptonImageFollowupId(), doctorName, pos, prescriptionListViews.get(pos).getPrescriptionImagePartId());
         }
 
     }
@@ -171,11 +172,11 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         }
     }
 
-    private void getPrescriptionDelete(String id, String realId, String name, final int pos) {
+    private void getPrescriptionDelete(String id, String prescriptionFollowupId, String name, final int pos, String prescriptionPartId) {
         Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&iPrescriptionId=" + realId + "&doctor_name=" + name,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + name,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

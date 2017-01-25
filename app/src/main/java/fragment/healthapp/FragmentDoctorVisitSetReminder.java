@@ -60,7 +60,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
     private LinearLayout txt_reminder_every;
     private ListPopupWindow listPopupWindow;
     private boolean isNewReminder = true;
-    private String doctorFollowupReminderId="";
+    private String doctorFollowupReminderId = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,12 +107,21 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
         if (vBundle != null) {
             edt_test_name.setText("" + vBundle.getString("doctorName"));
             edt_lab_name.setText("" + vBundle.getString("hospitalName"));
-            firstTime = vBundle.getString("time");
+
+            txt_date.setText("" + vBundle.getString("date"));
             startFrom = vBundle.getString("date");
-            txt_date.setText("" + startFrom);
+            String[] newDate = startFrom.split("/");
+            String day = newDate[0];
+            String month = newDate[1];
+            String year = newDate[2];
+            startFrom = year + "-" + month + "-" + day;
+            firstTime = vBundle.getString("time");
             txt_time_select.setText("" + firstTime);
+            String[] newTime = firstTime.split(" ");
+            firstTime = newTime[0];
+
             isNewReminder = false;
-            doctorFollowupReminderId=vBundle.getString("doctorFollowupReminderId");
+            doctorFollowupReminderId = vBundle.getString("doctorFollowupReminderId");
         }
 
 
@@ -152,7 +161,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                 newDateDialog.getDatePicker().setSpinnersShown(true);
 //                c.add(Calendar.DATE, 1);
                 Date newDate = c1.getTime();
-                newDateDialog.getDatePicker().setMaxDate(newDate.getTime());
+                newDateDialog.getDatePicker().setMinDate(newDate.getTime());
                 newDateDialog.show();
                 break;
 

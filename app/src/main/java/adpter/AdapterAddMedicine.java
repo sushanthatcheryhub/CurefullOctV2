@@ -327,19 +327,19 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.img_minus_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 intervalCunt = medicineReminderItems.get(position).getInterval();
                 if (intervalCunt != 0) {
                     --intervalCunt;
                     holder.txt_interval_count.setText("" + intervalCunt);
                     medicineReminderItems.get(position).setInterval(intervalCunt);
                 }
-
-
             }
         });
         holder.img_plus_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 intervalCunt = medicineReminderItems.get(position).getInterval();
                 ++intervalCunt;
                 holder.txt_interval_count.setText("" + intervalCunt);
@@ -389,12 +389,13 @@ public class AdapterAddMedicine extends BaseAdapter {
             }
         });
 
-        if (medicineReminderItems.get(position).isBaMealAfter() == true) {
+        if (medicineReminderItems.get(position).isBaMealAfter()) {
             holder.radioAfter.setChecked(true);
         } else {
             holder.radioAfter.setChecked(false);
         }
-        if (medicineReminderItems.get(position).isBaMealBefore() == true) {
+
+        if (medicineReminderItems.get(position).isBaMealBefore()) {
             holder.radioBefore.setChecked(true);
         } else {
             holder.radioBefore.setChecked(false);
@@ -452,8 +453,13 @@ public class AdapterAddMedicine extends BaseAdapter {
         });
 
         if (position == medicineReminderItems.size() - 1) {
-            holder.txt_btn_add_more_med.setVisibility(View.VISIBLE);
-            holder.txt_btn_add_more_med.setPaintFlags(holder.txt_btn_add_more_med.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            if (medicineReminderItems.get(position).isShow()) {
+                holder.txt_btn_add_more_med.setVisibility(View.INVISIBLE);
+            } else {
+                holder.txt_btn_add_more_med.setVisibility(View.VISIBLE);
+                holder.txt_btn_add_more_med.setPaintFlags(holder.txt_btn_add_more_med.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            }
+
         }
 
 

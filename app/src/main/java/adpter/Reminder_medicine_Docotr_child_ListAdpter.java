@@ -36,11 +36,12 @@ public class Reminder_medicine_Docotr_child_ListAdpter extends RecyclerView.Adap
 
     Context applicationContext;
     List<ReminderDoctorName> healthNoteItemses;
-
+    private String checking;
     public Reminder_medicine_Docotr_child_ListAdpter(Context applicationContexts,
-                                                     List<ReminderDoctorName> healthNoteItemses) {
+                                                     List<ReminderDoctorName> healthNoteItemses, String check) {
         this.healthNoteItemses = healthNoteItemses;
         this.applicationContext = applicationContexts;
+        this.checking = check;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class Reminder_medicine_Docotr_child_ListAdpter extends RecyclerView.Adap
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         txt_doctor_self.setText("Prescribed by - Dr." + healthNoteItemses.get(position).getDoctorName());
-        Reminder_doctor_ListAdpter adapter = new Reminder_doctor_ListAdpter(applicationContext, healthNoteItemses.get(position).getReminder_doctorListViews());
+        Reminder_doctor_ListAdpter adapter = new Reminder_doctor_ListAdpter(applicationContext, healthNoteItemses.get(position).getReminder_doctorListViews(),checking);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
