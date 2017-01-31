@@ -75,8 +75,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            Log.e("", "steps received in service:" + msg.what);
-            Log.e("", "steps arg in service: " + msg.arg1);
+            Log.e("yaya", "steps received in service:" + msg.what);
+            Log.e("yaya", "steps arg in service: " + msg.arg1);
             if (preferences.getBoolean("isDestroy", false)) {
                 Log.e("check", "check:" + "isdes");
             } else {
@@ -129,8 +129,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
     public int onStartCommand(Intent intent, int flags, int startId) {
         // This always shows up in the notifications area when this Service is running.
         // TODO: String localization
-        Notification notification = getNotification();
-        startForeground(NOTIF_ID, notification);
+//        Notification notification = getNotification();
+//        startForeground(NOTIF_ID, notification);
         return START_STICKY;
     }
 
@@ -191,23 +191,24 @@ public class MessengerService extends Service implements StepListener, SensorEve
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         simpleStepDetector = new SimpleStepDetector();
         simpleStepDetector.registerListener(this);
-        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_GAME);
-
+        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
     public void step(long timeNs) {
+//        numSteps = preferences.getInt("stepsIn", 0);
         numSteps++;
-        Log.e("", "steps in service step:" + numSteps);
-        Notification notification = getNotification();
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(NOTIF_ID, notification);
+        Log.e("step", "steps" + numSteps);
+//        Notification notification = getNotification();
+//        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        mNotificationManager.notify(NOTIF_ID, notification);
 
 
         try {
             if (preferences.getBoolean("isDestroy", false)) {
                 Log.e("check", "check:" + "isdes");
             } else {
+                Log.e("message", "steps" + numSteps);
                 Message message = new Message();
                 message.what = MSG_SET_VALUE;
                 message.arg1 = numSteps;
@@ -215,7 +216,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
             }
 
         } catch (RemoteException e) {
-            Log.e("", "steps error:" + e.getMessage());
+            Log.e("step", "steps error:" + e.getMessage());
             e.printStackTrace();
         }
     }

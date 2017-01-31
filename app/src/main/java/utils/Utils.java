@@ -205,7 +205,7 @@ public class Utils {
             minutes = String.valueOf(mins);
 
         // Append in a StringBuilder
-        String aTime = new StringBuilder().append(selctHour).append(":").append(minutes).append(" ").append(timeSet).toString();
+        String aTime = new StringBuilder().append((selctHour < 10 ? "0" + selctHour : selctHour)).append(":").append(minutes).append(" ").append(timeSet).toString();
 
         return aTime;
     }

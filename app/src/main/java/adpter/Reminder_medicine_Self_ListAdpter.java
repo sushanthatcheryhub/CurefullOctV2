@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -84,8 +85,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         TextView txt_med_time = holder.txt_med_time;
         final ImageView img_edit_rem = holder.img_edit_rem;
         final ImageView img_editm_delete = holder.img_editm_delete;
-
-
+        final CheckBox checkBox = holder.checkbox;
         if (checking.equalsIgnoreCase("No")) {
             img_edit_rem.setVisibility(View.VISIBLE);
             img_editm_delete.setVisibility(View.VISIBLE);
@@ -142,6 +142,11 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 bundle.putString("medicineName", "" + healthNoteItemses.get(position).getRemMedicineName());
                 bundle.putString("timeToTakeMedicne", "" + healthNoteItemses.get(position).getTimeToTake());
                 bundle.putString("noOfDaysInWeek", "" + healthNoteItemses.get(position).getNoOfDaysInWeek());
+                bundle.putInt("quantity", healthNoteItemses.get(position).getQuantity());
+                bundle.putString("noOfDays", "" + healthNoteItemses.get(position).getNoOfDays());
+                bundle.putInt("interval", healthNoteItemses.get(position).getInterval());
+                bundle.putString("noOfDosage", "" + healthNoteItemses.get(position).getNoOfDosage());
+                bundle.putString("type", "" + healthNoteItemses.get(position).getType());
                 bundle.putBoolean("beforeMeal", healthNoteItemses.get(position).isBeforeMeal());
                 bundle.putBoolean("afterMeal", healthNoteItemses.get(position).isAfterMeal());
                 bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
@@ -150,12 +155,38 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
             }
         });
 
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
+            checkBox.setChecked(false);
+        } else {
+            checkBox.setChecked(true);
+        }
+
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkBox.isChecked()) {
+                    Log.e("check", ":- isChecked");
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getMedicineReminderId(), position, false, true);
+                } else {
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getMedicineReminderId(), position, false, false);
+                    Log.e("check", ":- not");
+//                    healthNoteItemses.get(position).setSelected(false);
+                }
+
+            }
+        });
+
+
+        txt_med_name.setSelected(true);
+
     }
 
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getMedicineReminderId(), pos);
+            getDoctorVisitDelete(healthNoteItemses.get(pos).getMedicineReminderId(), pos, true, false);
         }
     }
 
@@ -165,6 +196,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         public TextView txt_meal;
         public TextView txt_med_time;
         public ImageView img_edit_rem, img_editm_delete;
+        public CheckBox checkbox;
 
         ItemViewHolder(View view) {
             super(view);
@@ -175,13 +207,14 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
             this.txt_meal = (TextView) itemView
                     .findViewById(R.id.txt_meal);
             this.txt_med_time = (TextView) itemView.findViewById(R.id.txt_med_time);
+            this.checkbox = (CheckBox) itemView.findViewById(R.id.chkStateStep);
         }
     }
 
-    private void getDoctorVisitDelete(String id, final int pos) {
+    private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -196,8 +229,11 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            healthNoteItemses.remove(pos);
-                            notifyDataSetChanged();
+                            if (isDeleted) {
+                                healthNoteItemses.remove(pos);
+                                notifyDataSetChanged();
+                            }
+
                         } else {
                         }
                     }

@@ -176,6 +176,7 @@
                     android:layout_width="@dimen/_40dp"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:visibility="invisible"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -206,6 +207,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/_5dp"
+                    android:visibility="invisible"
                     android:layout_toLeftOf="@+id/liner_count"
                     android:layout_toRightOf="@+id/linear_dates"
                     android:ellipsize="marquee"

@@ -466,7 +466,7 @@
                                         android:gravity="center_vertical"
                                         android:marqueeRepeatLimit="marquee_forever"
                                         android:singleLine="true"
-                                        android:text="Prescription(0)"
+                                        android:text="Lab Report(0)"
                                         android:textColor="@color/health_yellow_bottom" />
 
 
@@ -633,7 +633,7 @@
                                         android:gravity="center_vertical"
                                         android:marqueeRepeatLimit="marquee_forever"
                                         android:singleLine="true"
-                                        android:text="Prescription(0)"
+                                        android:text="Lab Report(0)"
                                         android:textColor="@color/health_yellow_bottom" />
 
 

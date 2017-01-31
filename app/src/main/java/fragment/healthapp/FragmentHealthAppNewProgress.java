@@ -110,6 +110,12 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
+
+        AppPreference.getInstance().setFragmentHealthApp(true);
+        AppPreference.getInstance().setFragmentHealthNote(false);
+        AppPreference.getInstance().setFragmentHealthpre(false);
+        AppPreference.getInstance().setFragmentHealthReprts(false);
+
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_calories = (TextView) rootView.findViewById(R.id.txt_calories);
         txt_change_aveg = (TextView) rootView.findViewById(R.id.txt_change_aveg);

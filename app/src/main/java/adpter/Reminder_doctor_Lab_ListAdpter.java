@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
 
     Context applicationContext;
     List<Doctor_Visit_Reminder_DoctorListView> healthNoteItemses;
+    private RequestQueue requestQueue;
 
     public Reminder_doctor_Lab_ListAdpter(Context applicationContexts,
                                           List<Doctor_Visit_Reminder_DoctorListView> healthNoteItemses) {
@@ -67,7 +69,7 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
         TextView txt_med_time = holder.txt_med_time;
         TextView txt_hospital = holder.txt_hospital;
         final ImageView img_edit_rem = holder.img_edit_rem;
-
+        final CheckBox checkBox = holder.checkbox;
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("Dr. " + healthNoteItemses.get(position).getDoctorName());
         txt_hospital.setText("" + healthNoteItemses.get(position).getRemMedicineName());
@@ -86,6 +88,29 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
             }
         });
 
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
+            checkBox.setChecked(false);
+        } else {
+            checkBox.setChecked(true);
+        }
+
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkBox.isChecked()) {
+                    Log.e("check", ":- isChecked");
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, true);
+                } else {
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, false);
+                    Log.e("check", ":- not");
+//                    healthNoteItemses.get(position).setSelected(false);
+                }
+
+            }
+        });
+
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -93,6 +118,7 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
         public TextView txt_med_name;
         public TextView txt_med_time, txt_hospital;
         public ImageView img_edit_rem;
+        public CheckBox checkbox;
 
         ItemViewHolder(View view) {
             super(view);
@@ -102,7 +128,60 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
             this.txt_med_name = (TextView) itemView
                     .findViewById(R.id.txt_med_name);
             this.txt_med_time = (TextView) itemView.findViewById(R.id.txt_med_time);
+            this.checkbox = (CheckBox) itemView.findViewById(R.id.chkStateStep);
         }
+    }
+
+
+    private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DOCTOR_VIsit_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("Doctor Delete, URL 1.", response);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            if (isDeleted) {
+                                healthNoteItemses.remove(pos);
+                                notifyDataSetChanged();
+                            }
+
+                        } else {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
 }

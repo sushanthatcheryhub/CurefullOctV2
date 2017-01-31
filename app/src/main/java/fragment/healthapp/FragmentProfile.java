@@ -2,6 +2,7 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -118,10 +120,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
 
+        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+        }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
-
         linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
@@ -316,6 +320,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         return rootView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -512,6 +517,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void launchTwitter(View view) {
         /*
          MARGIN_RIGHT = 16;

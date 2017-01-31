@@ -14,7 +14,6 @@ public class FilterDataPrescription {
 
     ArrayList<String> dateList;
     ArrayList<String> doctorNameList;
-    ArrayList<String> diseaseNameList;
     ArrayList<String> uploadedByList;
 
     public FilterDataPrescription() {
@@ -26,7 +25,7 @@ public class FilterDataPrescription {
         try {
             setDateList(jord.getJSONArray("dateList"));
             setDoctorNameList(jord.getJSONArray("doctorNameList"));
-            setDiseaseNameList(jord.getJSONArray("diseaseNameList"));
+//            setDiseaseNameList(jord.getJSONArray("diseaseNameList"));
             setUploadedByList(jord.getJSONArray("uploadedByList"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -50,13 +49,6 @@ public class FilterDataPrescription {
         this.doctorNameList = doctorNameList;
     }
 
-    public ArrayList<String> getDiseaseNameList() {
-        return diseaseNameList;
-    }
-
-    public void setDiseaseNameList(ArrayList<String> diseaseNameList) {
-        this.diseaseNameList = diseaseNameList;
-    }
 
     public ArrayList<String> getUploadedByList() {
         return uploadedByList;
@@ -92,18 +84,6 @@ public class FilterDataPrescription {
         }
     }
 
-    public void setDiseaseNameList(JSONArray symptomslistArray) {
-        if (symptomslistArray == null)
-            return;
-        this.diseaseNameList = new ArrayList<String>();
-        for (int i = 0; i < symptomslistArray.length(); i++) {
-            try {
-                this.diseaseNameList.add(symptomslistArray.get(i).toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public void setUploadedByList(JSONArray symptomslistArray) {
         if (symptomslistArray == null)

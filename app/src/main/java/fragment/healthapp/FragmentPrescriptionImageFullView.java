@@ -47,6 +47,7 @@ import image.zoom.GestureImageView;
 import interfaces.IOnOtpDoneDelete;
 import utils.AppPreference;
 import utils.MyConstants;
+import utils.Utils;
 
 
 /**
@@ -83,10 +84,21 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
         bundle = getArguments();
         if (bundle != null) {
             date = bundle.getString("date");
-            txt_date.setText("" + date);
+            if (!date.equalsIgnoreCase("")) {
+                String[] dateFormat = date.split("-");
+                int mYear = Integer.parseInt(dateFormat[0]);
+                int mMonth = Integer.parseInt(dateFormat[1]);
+                int mDay = Integer.parseInt(dateFormat[2]);
+                try {
+                    String completeDate = mDay + " " + Utils.formatMonth(String.valueOf(mMonth)) + "," + mYear;
+                    txt_date.setText("" + completeDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
             doctoreName = bundle.getString("doctorName");
             txt_doctor_name.setText("" + doctoreName);
-            txt_diease_name.setText("" + bundle.getString("dieaseName"));
+//            txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionId = bundle.getString("prescriptionId");
             prescriptionFollowupId = bundle.getString("prescriptionFollowupId");
             prescriptionPartId = bundle.getString("prescriptionPartId");

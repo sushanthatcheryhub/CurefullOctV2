@@ -108,6 +108,13 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
+
+
+
+        AppPreference.getInstance().setFragmentHealthApp(false);
+        AppPreference.getInstance().setFragmentHealthNote(true);
+        AppPreference.getInstance().setFragmentHealthpre(false);
+        AppPreference.getInstance().setFragmentHealthReprts(false);
         img_question_note = (ImageView) rootView.findViewById(R.id.img_question_note);
 
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);

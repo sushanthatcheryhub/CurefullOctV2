@@ -7,10 +7,10 @@ public class MyConstants {
 
     public interface WebUrls {
         String HOST_IP = "http://lp.hatcheryhub.com";
-//                String HOST_IP = "http://192.168.0.30:8080";
+        //                String HOST_IP = "http://192.168.0.32:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
-//                String HOST_LOCATION = "/CurefullRestService/api/v1/";
+        //                String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -58,6 +58,7 @@ public class MyConstants {
         String INCRESE_WATER_INTAKE = URL + "endUser/healthapp/addWaterIntake?isWaterIntakeAdd=";
         String ADD_LIST_OF_HEALTH_NOTE = URL + "healthNote/addListOfHealthNote";
         String ADD_MEDICINE_REM = URL + "enduser/medicineService/addMedicineReminder";
+        String EDIT_MEDICINE_REM = URL + "enduser/medicineService/editMedicineReminder";
         String GET_LIST_OF_MED = URL + "enduser/medicineService/getListOfMedicineDosageByDate?";
         String ADD_LAB_TEST_REM = URL + "endUser/labTestReminderService/addLabTestReminder";
         String GET_LIST_OF_LAB_TEST = URL + "endUser/labTestReminderService/getListOfLabTestReminder?";
@@ -71,7 +72,22 @@ public class MyConstants {
         String LAB_TEST_DELETE_ = URL + "endUser/labTestReminderService/deleteLabTestReminder?labTestReminderId=";
         String MEDICINCE_DELETE_ = URL + "enduser/medicineService/deleteMedicineReminder?medicineReminderId=";
 
-        String MEDICINCE_HISTORY_API=URL+"enduser/medicineService/historyOfMedicineReminder?cfuuhId=";
+        String MEDICINCE_HISTORY_API = URL + "enduser/medicineService/historyOfMedicineReminder?cfuuhId=";
+
+        //Upload AWS Image
+        String SAVE_UPLOAD_PRESCRIPTION_METADATA = URL + "endUser/ehr/saveUploadPrescriptionMetadata";
+        String TEMPORY_CREDENTIALS = URL + "aws/getTemporaryCredentials";
+        String UPLOADED_PRESCRETION_DATA = URL + "endUser/ehr/saveUploadedPrescriptionData";
+
+
+    }
+
+    public interface AWSType {
+        String BUCKET_NAME = "cure.ehr.lp";
+        String BUCKET_PROFILE_NAME = "cure.user.profile.lp";
+        String FOLDER_PRECREPTION_NAME = "/prescription";
+        String FOLDER_LAB_REPORT_NAME = "/labReport";
+        String FOLDER_PROFILE_NAME = "/profileImages";
 
     }
 

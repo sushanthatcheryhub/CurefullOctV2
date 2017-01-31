@@ -93,7 +93,7 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new PrescriptionImageViewAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), completeDate);
+                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), bundle.getString("date"), bundle.getString("prescriptionFollowupId"));
                 prescriptionItemView.setAdapter(prescriptionImageViewAdpter);
 //                uploadPrescriptionAdpter.notifyDataSetChanged();
             }

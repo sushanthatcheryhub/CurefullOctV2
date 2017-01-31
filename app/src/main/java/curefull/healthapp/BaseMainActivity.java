@@ -59,12 +59,11 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
@@ -81,16 +80,14 @@ public class BaseMainActivity extends AppCompatActivity
             jsonLogout();
         } else if (id == R.id.nav_policy) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentTermCondition(), true);
         } else if (id == R.id.nav_setting) {
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentSettingPage(), true);
         } else if (id == R.id.nav_reminder) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
             CureFull.getInstanse().getFlowInstanseAll()
                     .replace(new FragmentReminderMedicine(), true);
         }
@@ -232,7 +229,7 @@ public class BaseMainActivity extends AppCompatActivity
 //        // Append in a StringBuilder
 //        String aTime = new StringBuilder().append(selctHour).append(':')
 //                .append(minutes).append(" ").append(timeSet).toString();
-        String aTime = new StringBuilder().append(selctHour).append(':').append(minutes).append(timeSet).toString();
+        String aTime = new StringBuilder().append((selctHour < 10 ? "0" + selctHour : selctHour)).append(':').append(minutes).append(timeSet).toString();
         return aTime;
     }
 
@@ -263,7 +260,7 @@ public class BaseMainActivity extends AppCompatActivity
 //        // Append in a StringBuilder
 //        String aTime = new StringBuilder().append(selctHour).append(':')
 //                .append(minutes).append(" ").append(timeSet).toString();
-        String aTime = new StringBuilder().append(selctHour).append(':').append(minutes).append(' ').append(timeSet).toString();
+        String aTime = new StringBuilder().append((selctHour < 10 ? "0" + selctHour : selctHour)).append(':').append(minutes).append(' ').append(timeSet).toString();
         return aTime;
     }
 

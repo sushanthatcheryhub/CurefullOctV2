@@ -86,10 +86,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
     private int interval;
-    private boolean isNewReminder = true, isVisible = false;
+    private boolean isNewReminder = true, isVisible = false, isEdit = false;
     private String medicineReminderId = "";
     private MultiSelectToggleGroup multiSelect;
-    private RelativeLayout relative_schedule, relative_bottom_area,reltvi_new;
+    private RelativeLayout relative_schedule, relative_bottom_area, reltvi_new;
     private ImageView img_rotate;
     private ScrollView scrollView;
 
@@ -102,7 +102,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
-        scrollView=(ScrollView)rootView.findViewById(R.id.top_view);
+        scrollView = (ScrollView) rootView.findViewById(R.id.top_view);
         multiSelect =
                 (MultiSelectToggleGroup) rootView.findViewById(R.id.multi_selection_group);
         reltvi_new = (RelativeLayout) rootView.findViewById(R.id.reltvi_new);
@@ -179,16 +179,23 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         Bundle vBundle = getArguments();
         if (vBundle != null) {
+            isEdit = true;
             MedicineReminderItem reminderItem = new MedicineReminderItem();
             reminderItem.setId(1);
             reminderItem.setShow(true);
+            reminderItem.setType(vBundle.getString("type"));
             reminderItem.setDoctorName(vBundle.getString("doctorName"));
             reminderItem.setMedicineName(vBundle.getString("medicineName"));
-            reminderItem.setInterval(0);
+            reminderItem.setInterval(vBundle.getInt("quantity"));
             reminderItem.setBaMealAfter(vBundle.getBoolean("afterMeal"));
             reminderItem.setBaMealBefore(vBundle.getBoolean("beforeMeal"));
             listCurrent.add(reminderItem);
             setAdapterCurrentVisit();
+            duration = vBundle.getString("noOfDays");
+            txt_duration.setText("" + duration);
+            doages = vBundle.getString("noOfDosage");
+            txt_dogaes.setText("" + doages);
+            interval = vBundle.getInt("interval");
             edt_years.setText("" + vBundle.getString("date"));
             startFrom = vBundle.getString("date");
             String[] newDate = startFrom.split("/");
@@ -203,6 +210,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             showPage(0, timeToTakeMedicne);
             medicineReminderId = vBundle.getString("medicineReminderId");
             String noOfDaysInWeek = vBundle.getString("noOfDaysInWeek");
+            addDays = noOfDaysInWeek;
             String[] weeks = noOfDaysInWeek.split(",");
             Set<Integer> singlesSet = new HashSet<>();
             if (weeks != null & weeks.length > 0) {
@@ -276,7 +284,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             linear_page_count.removeAllViews();
             txt_dogaes.setText("" + MyConstants.IArrayData.listPopUp[position]);
             doages = MyConstants.IArrayData.listPopUp[position];
-            showPage(Integer.parseInt(doages), timeToTakeMedicne);
+            showPage(Integer.parseInt(doages), "");
         }
     };
 
@@ -300,7 +308,11 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 }
                 break;
             case R.id.txt_set_reminder:
-                setMedReminderDetails();
+                if (isEdit) {
+                    setMedReminderDetailsEdit();
+                } else {
+                    setMedReminderDetails();
+                }
                 break;
 
             case R.id.liner_date_select:
@@ -419,10 +431,97 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.setRemMed(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
+        JSONObject data = JsonUtilsObject.setRemMedAdd(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
         Log.e("jsonUploadMedRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("MedRemDetails, URL 3.", response.toString());
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+
+    public void setMedReminderDetailsEdit() {
+
+        if (!validateDate()) {
+            return;
+        }
+        if (!validateDuration()) {
+            return;
+        }
+        if (!validateDays()) {
+            return;
+        }
+        if (!validateDoages()) {
+            return;
+        }
+        String newTime = "";
+        String hello = "";
+
+        for (int i = 0; i < view_text_page.length; i++) {
+            hello = "" + view_text_page[i].getText();
+            if (i == (view_text_page.length - 1)) {
+                newTime += get24hrsFormat(hello.substring(0, hello.length() - 1));
+            } else {
+                if (hello.endsWith(" am, ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
+                } else if (hello.endsWith(" pm, ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
+                }
+            }
+
+        }
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.setRemMedEdit(medicineReminderId, startFrom, duration, doages, addDays, listCurrent, newTime, interval);
+        Log.e("jsonUploadMedEdit", ":- " + data.toString());
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.EDIT_MEDICINE_REM, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -667,17 +766,18 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     public String get24hrsFormat(String time) {
+        String timeNew = "";
         SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
         SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
         Date date = null;
         try {
             date = parseFormat.parse(time);
-            Log.e("format ", parseFormat.format(date) + " = " + displayFormat.format(date));
-        } catch (ParseException e) {
+            timeNew = displayFormat.format(date);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return displayFormat.format(date);
+        return timeNew;
     }
 
     private void rotatePhoneClockwise(ImageView imageView) {

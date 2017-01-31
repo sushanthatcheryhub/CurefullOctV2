@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -70,6 +71,7 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         TextView txt_hospital = holder.txt_hospital;
         final ImageView img_edit_rem = holder.img_edit_rem;
         final ImageView img_editm_delete = holder.img_editm_delete;
+        final CheckBox checkBox = holder.checkbox;
 
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("Dr. " + healthNoteItemses.get(position).getDoctorName());
@@ -101,12 +103,36 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
             }
         });
 
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
+            checkBox.setChecked(false);
+        } else {
+            checkBox.setChecked(true);
+        }
+
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkBox.isChecked()) {
+                    Log.e("check", ":- isChecked");
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, true);
+                } else {
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, false);
+                    Log.e("check", ":- not");
+//                    healthNoteItemses.get(position).setSelected(false);
+                }
+
+            }
+        });
+
+
     }
 
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), pos);
+            getDoctorVisitDelete(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), pos, true, false);
         }
     }
 
@@ -115,6 +141,7 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         public TextView txt_med_name, txt_hospital;
         public TextView txt_med_time;
         public ImageView img_edit_rem, img_editm_delete;
+        public CheckBox checkbox;
 
         ItemViewHolder(View view) {
             super(view);
@@ -125,13 +152,14 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
             this.txt_med_name = (TextView) itemView
                     .findViewById(R.id.txt_med_name);
             this.txt_med_time = (TextView) itemView.findViewById(R.id.txt_med_time);
+            this.checkbox = (CheckBox) itemView.findViewById(R.id.chkStateStep);
         }
     }
 
-    private void getDoctorVisitDelete(String id, final int pos) {
+    private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DOCTOR_VIsit_DELETE_ + id,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DOCTOR_VIsit_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -146,8 +174,11 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            healthNoteItemses.remove(pos);
-                            notifyDataSetChanged();
+                            if (isDeleted) {
+                                healthNoteItemses.remove(pos);
+                                notifyDataSetChanged();
+                            }
+
                         } else {
                         }
                     }

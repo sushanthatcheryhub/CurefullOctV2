@@ -123,7 +123,7 @@ public class AdapterAddMedicine extends BaseAdapter {
 
         if (!medicineReminderItems.get(position).getType().equalsIgnoreCase("")) {
             String types = medicineReminderItems.get(position).getType();
-            if (types.equalsIgnoreCase("Tablet")) {
+            if (types.equalsIgnoreCase("TAB")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.buttonclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -139,7 +139,7 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
                 holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
-            } else if (types.equalsIgnoreCase("Capsule")) {
+            } else if (types.equalsIgnoreCase("CAP")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.buttonclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -155,7 +155,7 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
                 holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
-            } else if (types.equalsIgnoreCase("Syrup")) {
+            } else if (types.equalsIgnoreCase("SYR")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.buttonclick);
@@ -171,7 +171,7 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
                 holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
-            } else if (types.equalsIgnoreCase("Drops")) {
+            } else if (types.equalsIgnoreCase("DRO")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -188,7 +188,7 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
                 holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
-            } else if (types.equalsIgnoreCase("Injection")) {
+            } else if (types.equalsIgnoreCase("INJ")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -211,7 +211,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_tablet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("Tablet");
+                medicineReminderItems.get(position).setType("TAB");
                 holder.layout_tablet.setBackgroundResource(R.drawable.buttonclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -234,7 +234,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_capsule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("Capsule");
+                medicineReminderItems.get(position).setType("CAP");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.buttonclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -257,7 +257,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_syrup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("Syrup");
+                medicineReminderItems.get(position).setType("SYR");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.buttonclick);
@@ -280,7 +280,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_drops.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("Drops");
+                medicineReminderItems.get(position).setType("DRO");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -302,7 +302,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_injection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("Injection");
+                medicineReminderItems.get(position).setType("INJ");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);

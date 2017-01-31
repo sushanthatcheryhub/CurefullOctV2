@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -71,6 +72,8 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
         TextView txt_hospital = holder.txt_hospital;
         final ImageView img_edit_rem = holder.img_edit_rem;
         final ImageView img_editm_delete = holder.img_editm_delete;
+        final CheckBox checkBox = holder.checkbox;
+
 
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName());
@@ -96,6 +99,7 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
                 Bundle bundle = new Bundle();
                 bundle.putString("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
+                bundle.putString("labName", "" + healthNoteItemses.get(position).getLabName());
                 bundle.putString("testName", "" + healthNoteItemses.get(position).getRemMedicineName());
                 bundle.putBoolean("isAfterMeal", healthNoteItemses.get(position).isAfterMeal());
                 bundle.putString("time", "" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
@@ -104,12 +108,35 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
                         .replace(new FragmentLabTestSetReminder(), bundle, true);
             }
         });
+
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
+            checkBox.setChecked(false);
+        } else {
+            checkBox.setChecked(true);
+        }
+
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkBox.isChecked()) {
+                    Log.e("check", ":- isChecked");
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, true);
+                } else {
+                    getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, false);
+                    Log.e("check", ":- not");
+//                    healthNoteItemses.get(position).setSelected(false);
+                }
+
+            }
+        });
     }
 
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getLabTestReminderId(), pos);
+            getDoctorVisitDelete(healthNoteItemses.get(pos).getLabTestReminderId(), pos, true, false);
         }
     }
 
@@ -119,6 +146,7 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
         public TextView txt_med_time;
         public TextView txt_hospital;
         public ImageView img_edit_rem, img_editm_delete;
+        public CheckBox checkbox;
 
         ItemViewHolder(View view) {
             super(view);
@@ -128,13 +156,14 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
                     .findViewById(R.id.txt_med_name);
             this.txt_med_time = (TextView) itemView.findViewById(R.id.txt_med_time);
             this.txt_hospital = (TextView) itemView.findViewById(R.id.txt_hospital);
+            this.checkbox = (CheckBox) itemView.findViewById(R.id.chkStateStep);
         }
     }
 
-    private void getDoctorVisitDelete(String id, final int pos) {
+    private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.LAB_TEST_DELETE_ + id,
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.LAB_TEST_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -149,8 +178,11 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            healthNoteItemses.remove(pos);
-                            notifyDataSetChanged();
+                            if (isDeleted) {
+                                healthNoteItemses.remove(pos);
+                                notifyDataSetChanged();
+                            }
+
                         } else {
                         }
                     }

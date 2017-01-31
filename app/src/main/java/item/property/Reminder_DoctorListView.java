@@ -22,7 +22,12 @@ public class Reminder_DoctorListView {
     private int year;
     private int month;
     private int date;
-
+    private int quantity;
+    private int noOfDays;
+    private int interval;
+    private int noOfDosage;
+    private String type;
+    private String status;
 
     public Reminder_DoctorListView() {
 
@@ -35,6 +40,13 @@ public class Reminder_DoctorListView {
             String json = gson.toJson(jsonObject);
             JSONObject jsonObject1 = new JSONObject(json);
             setDoctorName(jsonObject1.getString("doctorName"));
+
+            setQuantity(jsonObject1.getInt("quantity"));
+            setNoOfDays(jsonObject1.getInt("noOfDays"));
+            setInterval(jsonObject1.getInt("interval"));
+            setNoOfDosage(jsonObject1.getInt("noOfDosage"));
+            setType(jsonObject1.getString("type"));
+            setStatus(jsonObject1.getString("status"));
             setRemMedicineName(jsonObject1.getString("medicineName"));
             setNoOfDaysInWeek(jsonObject1.getString("noOfDaysInWeek"));
             setMedicineReminderId(jsonObject1.getString("medicineReminderId"));
@@ -133,5 +145,53 @@ public class Reminder_DoctorListView {
 
     public void setDate(int date) {
         this.date = date;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getNoOfDays() {
+        return noOfDays;
+    }
+
+    public void setNoOfDays(int noOfDays) {
+        this.noOfDays = noOfDays;
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getNoOfDosage() {
+        return noOfDosage;
+    }
+
+    public void setNoOfDosage(int noOfDosage) {
+        this.noOfDosage = noOfDosage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

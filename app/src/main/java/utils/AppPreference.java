@@ -786,6 +786,56 @@ public class AppPreference implements MyConstants.JsonUtils {
         return "";
     }
 
+
+    public void setFragmentHealthApp(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("HealthApp", isLogin).commit();
+        }
+    }
+
+    public boolean isFragmentHealthApp() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("HealthApp", false);
+        return false;
+    }
+
+    public void setFragmentHealthNote(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("HealthNote", isLogin).commit();
+        }
+    }
+
+    public boolean isFragmentHealthNote() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("HealthNote", false);
+        return false;
+    }
+
+
+    public void setFragmentHealthpre(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("HealthPre", isLogin).commit();
+        }
+    }
+
+    public boolean isFragmentHealtpre() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("HealthPre", false);
+        return false;
+    }
+
+    public void setFragmentHealthReprts(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("HealthReprts", isLogin).commit();
+        }
+    }
+
+    public boolean isFragmentHealtReprts() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("HealthReprts", false);
+        return false;
+    }
+
 }
 
 

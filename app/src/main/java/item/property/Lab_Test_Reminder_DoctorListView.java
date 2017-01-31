@@ -20,6 +20,8 @@ public class Lab_Test_Reminder_DoctorListView {
     private int year;
     private int month;
     private int date;
+    private String labName;
+    private String status;
 
     public Lab_Test_Reminder_DoctorListView() {
 
@@ -33,6 +35,8 @@ public class Lab_Test_Reminder_DoctorListView {
             JSONObject jsonObject1 = new JSONObject(json);
             setDoctorName(jsonObject1.getString("doctorName"));
             setRemMedicineName(jsonObject1.getString("testName"));
+            setStatus(jsonObject1.getString("labTestStatus"));
+            setLabName(jsonObject1.getString("labName"));
             setLabTestReminderId(jsonObject1.getString("labTestReminderId"));
             setAfterMeal(jsonObject1.getBoolean("afterMeal"));
             JSONObject jsonObject2 = new JSONObject(jsonObject1.getString("labTestTime"));
@@ -120,5 +124,21 @@ public class Lab_Test_Reminder_DoctorListView {
 
     public void setDate(int date) {
         this.date = date;
+    }
+
+    public String getLabName() {
+        return labName;
+    }
+
+    public void setLabName(String labName) {
+        this.labName = labName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

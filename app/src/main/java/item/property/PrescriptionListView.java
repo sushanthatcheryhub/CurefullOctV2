@@ -24,7 +24,7 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
     private String countOfFiles;
     private String uploadedBy;
     private String dateOfUpload;
-    private ArrayList<PrescriptionImageListView> prescriptionImageListViews;
+    private ArrayList<PrescriptionImageFollowUpListView> prescriptionImageFollowUpListViews;
 
     public PrescriptionListView() {
     }
@@ -37,11 +37,11 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
             setPrescriptionId(jsonObject.getString(MyConstants.JsonUtils.PRESCRIPTION_ID));
             setPrescriptionDate(jsonObject.getString(MyConstants.JsonUtils.PRESCRIPTION_DATE));
             setDoctorName(jsonObject.getString(MyConstants.JsonUtils.DOCTOR_NAME));
-            setDiseaseName(jsonObject.getString(MyConstants.JsonUtils.DISEASE_NAME));
+//            setDiseaseName(jsonObject.getString(MyConstants.JsonUtils.DISEASE_NAME));
             setCountOfFiles(jsonObject.getString(MyConstants.JsonUtils.COUNT_OF_FILES));
             setUploadedBy(jsonObject.getString(MyConstants.JsonUtils.UPLOAD_BY));
-            setDateOfUpload(jsonObject.getString(MyConstants.JsonUtils.DATE_OF_UPLOAD));
-            setPrescriptionImageListViews(jsonObject.getJSONArray(MyConstants.JsonUtils.PRESCRIPTION_RESPONSE_LIST));
+//            setDateOfUpload(jsonObject.getString(MyConstants.JsonUtils.DATE_OF_UPLOAD));
+            setPrescriptionImageFollowUpListViews(jsonObject.getJSONArray("prescriptionFollowupList"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,23 +112,23 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
         this.dateOfUpload = dateOfUpload;
     }
 
-    public ArrayList<PrescriptionImageListView> getPrescriptionImageListViews() {
-        return prescriptionImageListViews;
+    public ArrayList<PrescriptionImageFollowUpListView> getPrescriptionImageFollowUpListViews() {
+        return prescriptionImageFollowUpListViews;
     }
 
-    public void setPrescriptionImageListViews(ArrayList<PrescriptionImageListView> prescriptionImageListViews) {
-        this.prescriptionImageListViews = prescriptionImageListViews;
+    public void setPrescriptionImageFollowUpListViews(ArrayList<PrescriptionImageFollowUpListView> prescriptionImageListViews) {
+        this.prescriptionImageFollowUpListViews = prescriptionImageListViews;
     }
 
-    public void setPrescriptionImageListViews(JSONArray symptomslistArray) {
+    public void setPrescriptionImageFollowUpListViews(JSONArray symptomslistArray) {
         if (symptomslistArray == null)
             return;
-        PrescriptionImageListView card = null;
-        this.prescriptionImageListViews = new ArrayList<PrescriptionImageListView>();
+        PrescriptionImageFollowUpListView card = null;
+        this.prescriptionImageFollowUpListViews = new ArrayList<PrescriptionImageFollowUpListView>();
         for (int i = 0; i < symptomslistArray.length(); i++) {
             try {
-                card = new PrescriptionImageListView(symptomslistArray.getJSONObject(i));
-                this.prescriptionImageListViews.add(card);
+                card = new PrescriptionImageFollowUpListView(symptomslistArray.getJSONObject(i));
+                this.prescriptionImageFollowUpListViews.add(card);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -371,10 +371,10 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                                             if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
                                                 relative_bottom_next.setVisibility(View.GONE);
                                             } else {
-                                                btn_next.setVisibility(View.GONE);
+//                                                btn_next.setVisibility(View.GONE);
                                             }
                                         } else {
-                                            btn_next.setVisibility(View.VISIBLE);
+//                                            btn_next.setVisibility(View.VISIBLE);
                                         }
                                         if (medicineReminderListView.getReminderDoctorNames().size() > 0) {
                                             setDoctorAdpter(medicineReminderListView.getReminderDoctorNames());

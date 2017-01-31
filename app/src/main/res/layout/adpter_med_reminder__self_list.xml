@@ -50,6 +50,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="right"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
                     android:text="Combiflame"
                     android:textColor="@color/health_yellow" />
 

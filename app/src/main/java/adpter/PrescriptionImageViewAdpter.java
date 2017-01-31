@@ -57,17 +57,18 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     Context applicationContext;
     List<PrescriptionImageListView> prescriptionListViews;
     private RequestQueue requestQueue;
-    private String doctorName, id, dieaseName, dates;
+    private String doctorName, id, dieaseName, dates, prescriptionFollowupId;
 
 
     public PrescriptionImageViewAdpter(Context applicationContexts,
-                                       List<PrescriptionImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date) {
+                                       List<PrescriptionImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date, String prescriptionFollowupId) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.doctorName = doctorName;
         this.id = id;
         this.dieaseName = dieaseName;
         this.dates = date;
+        this.prescriptionFollowupId = prescriptionFollowupId;
 
     }
 
@@ -133,7 +134,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("prescriptionId", id);
-                bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptonImageFollowupId());
+                bundle.putString("prescriptionFollowupId", prescriptionFollowupId);
                 bundle.putString("prescriptionPartId", prescriptionListViews.get(position).getPrescriptionImagePartId());
                 bundle.putString("doctorName", doctorName);
                 bundle.putString("dieaseName", dieaseName);
@@ -150,7 +151,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(id, prescriptionListViews.get(pos).getPrescriptonImageFollowupId(), doctorName, pos, prescriptionListViews.get(pos).getPrescriptionImagePartId());
+            getPrescriptionDelete(id, prescriptionFollowupId, doctorName, pos, prescriptionListViews.get(pos).getPrescriptionImagePartId());
         }
 
     }

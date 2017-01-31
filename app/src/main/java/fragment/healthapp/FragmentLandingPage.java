@@ -17,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -136,7 +137,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private EditText edt_deatils, edt_subject;
     List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
     private String firstDate = "", firstTime = "", toFirstTime = "";
-    SharedPreferences preferences;
+    static SharedPreferences preferences;
     private ImageView img_pre, img_minus_icon, img_plus_icon;
     static Messenger mService = null;
     static boolean mIsBound;
@@ -151,8 +152,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
     @Override
     public boolean onBackPressed() {
-        CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
-        return super.onBackPressed();
+        return true;
     }
 
     @Override
@@ -161,8 +161,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
-
-
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
         }
@@ -173,6 +171,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
+
+        AppPreference.getInstance().setFragmentHealthApp(false);
+        AppPreference.getInstance().setFragmentHealthNote(false);
+        AppPreference.getInstance().setFragmentHealthpre(false);
+        AppPreference.getInstance().setFragmentHealthReprts(false);
+
+
         txt_date_times = (TextView) rootView.findViewById(R.id.txt_date_times);
         txt_title = (TextView) rootView.findViewById(R.id.txt_title);
         liner_bottomd = (LinearLayout) rootView.findViewById(R.id.liner_bottomd);
@@ -241,9 +246,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
         txt_water_level.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
         getDailyHealth();
-        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
-        CureFull.getInstanse().getActivityIsntanse().startService(intent);
-        doBindService();
+
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
 
@@ -301,7 +304,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 return false;
             }
         });
-
+        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+        CureFull.getInstanse().getActivityIsntanse().startService(intent);
+        doBindService();
         jsonUploadTarget();
         return rootView;
     }
@@ -356,10 +361,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             case R.id.liner_click:
                 if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentHealthAppNewProgress(), true);
+                            .replace(new FragmentHealthAppNewProgress(), false);
                 } else {
                     CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentEditGoal(), true);
+                            .replace(new FragmentEditGoal(), false);
 
                 }
                 break;
@@ -367,18 +372,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 //                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
 //                dialogFullViewPrescription.show();
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentEditGoal(), true);
+                        .replace(new FragmentEditGoal(), false);
 
 
                 break;
             case R.id.linear_lab_report_click:
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentLabTestReport(), true);
+                        .replace(new FragmentLabTestReport(), false);
                 break;
             case R.id.linear_prescription_click:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_pre);
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionCheck(), true);
+                        .replace(new FragmentPrescriptionCheckNew(), false);
                 break;
 
             case R.id.txt_date_time:
@@ -605,7 +609,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     txt_calories.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
                     AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("###.###").format(i2));
 //                    txt_calories.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1) + " kcal");
-
+                    preferences.edit().putInt("stepsIn", msg.arg1).commit();
                     break;
                 default:
                     super.handleMessage(msg);
@@ -990,7 +994,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     }
 
 
-
     public void jsonUploadTarget() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
@@ -1077,7 +1080,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
     private void getDailyHealth() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
@@ -1096,6 +1098,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
                                         String steps = json1.getString("steps");
                                         String waterIntakeDone = json1.getString("waterIntakeDone");
+                                        boolean goalSet = json1.getBoolean("goalSet");
                                         AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
                                         String waterIntakeLeft1 = "0";
                                         if (json1.getString("waterIntakeLeft").equals(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("0") || json1.getString("waterIntakeLeft").equalsIgnoreCase("0.0") || json1.getString("waterIntakeLeft").equalsIgnoreCase(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
@@ -1107,6 +1110,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                         AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
                                         preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
                                         AppPreference.getInstance().setStepsCount("" + steps);
+                                        if (goalSet) {
+                                            AppPreference.getInstance().setIsEditGoal(true);
+                                            AppPreference.getInstance().setIsEditGoalPage(true);
+                                        }
                                     }
 
                                 } else {

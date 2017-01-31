@@ -351,7 +351,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject setRemMed(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
+    public static JSONObject setRemMedAdd(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
@@ -384,6 +384,32 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         } catch (Exception e) {
 
             e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject setRemMedEdit(String medicineReminderId, String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("medicineReminderId", medicineReminderId);
+            jsonParent.put("startDate", startFrom);
+            jsonParent.put("noOfDays", duration);
+            jsonParent.put("unitOfInterval", "hours");
+            jsonParent.put("interval", interval);
+            jsonParent.put("alramTime", alarmTime);
+            jsonParent.put("noOfDosage", doages);
+            jsonParent.put("noOfDayInWeek", noOfDayInweek);
+            jsonParent.put("medicineType", listCurrent.get(0).getType());
+            jsonParent.put("medicineName", listCurrent.get(0).getMedicineName());
+            jsonParent.put("doctorName", listCurrent.get(0).getDoctorName());
+            jsonParent.put("medicinePotency", "600 mg");
+            jsonParent.put("medicineQuantity", listCurrent.get(0).getInterval());
+            jsonParent.put("isAtferMeal", listCurrent.get(0).isBaMealAfter());
+            jsonParent.put("isBeforeMeal", listCurrent.get(0).isBaMealBefore());
+        } catch (JSONException e1) {
+            e1.printStackTrace();
         }
 
         return jsonParent;
@@ -432,6 +458,53 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("doctorFollowupReminderId", doctorFollowupReminderId);
             jsonParent.put("isNewReminder", isNewReminder);
             jsonParent.put("isSelf", true);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("prescriptionDate", prescriptionDate);
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("disease", disease);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, List<PrescriptionImageList> prescriptionImageList) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("prescriptionId", prescriptionId);
+            jsonParent.put("cfuuhidId", cfuuhidId);
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < prescriptionImageList.size(); i++) {
+                    if (prescriptionImageList.get(i).getImageNumber() != 000) {
+                        JSONObject list1 = new JSONObject();
+                        list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+                        list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
+                        Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
+                        obj1.put(list1);
+                    }
+
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            jsonParent.put("prescriptionImageUploadList", obj1);
+
         } catch (Exception e) {
 
             e.printStackTrace();

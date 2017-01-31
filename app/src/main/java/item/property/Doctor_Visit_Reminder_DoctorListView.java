@@ -17,7 +17,7 @@ public class Doctor_Visit_Reminder_DoctorListView {
     private int month;
     private int date;
     private String doctorFollowupReminderId;
-
+    private String status;
     public Doctor_Visit_Reminder_DoctorListView() {
 
     }
@@ -30,6 +30,7 @@ public class Doctor_Visit_Reminder_DoctorListView {
             JSONObject jsonObject1 = new JSONObject(json);
             setDoctorName(jsonObject1.getString("doctorName"));
             setRemMedicineName(jsonObject1.getString("hospitalName"));
+            setStatus(jsonObject1.getString("status"));
             setDoctorFollowupReminderId(jsonObject1.getString("doctorFollowupReminderId"));
             JSONObject jsonObject3 = new JSONObject(jsonObject1.getString("followupDate"));
             setYear(jsonObject3.getInt("year"));
@@ -107,5 +108,13 @@ public class Doctor_Visit_Reminder_DoctorListView {
 
     public void setDoctorFollowupReminderId(String doctorFollowupReminderId) {
         this.doctorFollowupReminderId = doctorFollowupReminderId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

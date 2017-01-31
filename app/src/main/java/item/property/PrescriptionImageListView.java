@@ -16,7 +16,6 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
 
     private String imageNumber;
     private String prescriptionImage;
-    private String prescriptonImageFollowupId;
     private String prescriptionImagePartId;
 
     public PrescriptionImageListView() {
@@ -29,7 +28,6 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
         try {
             setImageNumber(jsonObject.getString(MyConstants.JsonUtils.IMAGE_NUMBER));
             setPrescriptionImage(jsonObject.getString(MyConstants.JsonUtils.PRESCRIPTION_IMAGE));
-            setPrescriptonImageFollowupId(jsonObject.getString("prescriptonImageFollowupId"));
             setPrescriptionImagePartId(jsonObject.getString("prescriptionImagePartId"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,14 +61,12 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.imageNumber);
         dest.writeString(this.prescriptionImage);
-        dest.writeString(this.prescriptonImageFollowupId);
         dest.writeString(this.prescriptionImagePartId);
     }
 
     public PrescriptionImageListView(Parcel in) {
         this.imageNumber = in.readString();
         this.prescriptionImage = in.readString();
-        this.prescriptonImageFollowupId = in.readString();
         this.prescriptionImagePartId = in.readString();
     }
 
@@ -84,13 +80,6 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
         }
     };
 
-    public String getPrescriptonImageFollowupId() {
-        return prescriptonImageFollowupId;
-    }
-
-    public void setPrescriptonImageFollowupId(String prescriptonImageFollowupId) {
-        this.prescriptonImageFollowupId = prescriptonImageFollowupId;
-    }
 
     public String getPrescriptionImagePartId() {
         return prescriptionImagePartId;

@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
@@ -46,8 +47,10 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -65,6 +68,7 @@ import java.util.Map;
 
 import adpter.Filter_prescription_ListAdpter;
 import adpter.UploadPrescriptionAdpter;
+import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
@@ -196,6 +200,12 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
+
+        AppPreference.getInstance().setFragmentHealthApp(false);
+        AppPreference.getInstance().setFragmentHealthNote(false);
+        AppPreference.getInstance().setFragmentHealthpre(true);
+        AppPreference.getInstance().setFragmentHealthReprts(false);
+
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
         txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
@@ -473,19 +483,19 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                     showAdpter(filterDataPrescription.getDoctorNameList(), "doctor");
                 }
                 break;
-            case R.id.txt_filter_disease:
-                liner_filter_date.setBackgroundResource(R.color.transprent_new);
-                liner_filter_disease.setBackgroundResource(R.color.health_yellow);
-                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
-                if (filterDataPrescription.getDiseaseNameList() != null && filterDataPrescription.getDiseaseNameList().size() > 0) {
-                    showAdpter(filterDataPrescription.getDiseaseNameList(), "disease");
-                }
-                break;
+//            case R.id.txt_filter_disease:
+//                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+//                liner_filter_disease.setBackgroundResource(R.color.health_yellow);
+//                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+//                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+//                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+//                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+//                txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
+//                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+//                if (filterDataPrescription.getDiseaseNameList() != null && filterDataPrescription.getDiseaseNameList().size() > 0) {
+//                    showAdpter(filterDataPrescription.getDiseaseNameList(), "disease");
+//                }
+//                break;
             case R.id.txt_filter_uploadby:
                 liner_filter_date.setBackgroundResource(R.color.transprent_new);
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
@@ -666,6 +676,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         startActivityForResult(intent, REQUEST_CAMERA);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("requestCode", ":- " + requestCode);
@@ -1342,9 +1353,9 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
             if (!clickDoctorName.equalsIgnoreCase("")) {
                 s.append("&doctorName=" + clickDoctorName.replace(" ", "%20"));
             }
-            if (!clickDiseaseName.equalsIgnoreCase("")) {
-                s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
-            }
+//            if (!clickDiseaseName.equalsIgnoreCase("")) {
+//                s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
+//            }
             if (!clickDates.equalsIgnoreCase("")) {
                 s.append("&date=" + clickDates);
             }
@@ -1352,7 +1363,7 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 s.append("&uploadedBy=" + clickUploadBy);
             }
 
-            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+            if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 s.append("");
             }
 
@@ -1448,13 +1459,15 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
 
         } else {
             StringBuilder s = new StringBuilder();
-            s.append("&doctorName=" + clickDoctorName);
-            s.append("&diseaseName=" + clickDiseaseName);
-            s.append("&date=" + clickDates);
-            s.append("&uploadedBy=" + clickUploadBy);
 
-            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+
+            if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 s.append("");
+            } else {
+                s.append("&doctorName=" + clickDoctorName.replace(" ", "%20"));
+//            s.append("&diseaseName=" + clickDiseaseName);
+                s.append("&date=" + clickDates);
+                s.append("&uploadedBy=" + clickUploadBy);
             }
 //            Log.e("offsect", "" + offset);
             offset = +offsets;
@@ -1633,12 +1646,19 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         clickDates = AppPreference.getInstance().getFilterDate();
         clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
         StringBuilder s = new StringBuilder();
-        s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
-        s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
-        s.append("&date=" + clickDates);
-        s.append("&uploadedBy=" + clickUploadBy);
+
+        if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+            s.append("");
+        } else {
+            s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
+//        s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
+            s.append("&date=" + clickDates);
+            s.append("&uploadedBy=" + clickUploadBy);
+        }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+
+        Log.e("kya ja raha h ", " " + MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s);
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s,
                 new Response.Listener<String>() {
                     @Override
@@ -1684,8 +1704,8 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                Log.e("a_t",""+AppPreference.getInstance().getAt());
-                Log.e("cf_uuhid",""+AppPreference.getInstance().getcf_uuhidNeew());
+                Log.e("a_t", "" + AppPreference.getInstance().getAt());
+                Log.e("cf_uuhid", "" + AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
@@ -1986,43 +2006,42 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
         return inSampleSize;
     }
 
-    private void imageUpload(final List<PrescriptionImageList> prescriptionImage) {
-        String removeSyptoms = "";
-        for (int i = 0; i < prescriptionImage.size(); i++) {
-            if (prescriptionImage.get(i).getImageNumber() != 000) {
 
-                if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                    String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
-                    removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
-                    Log.e("check", "" + removeSyptoms);
-                } else {
-                    int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
-                    String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
-                    Log.e("fileName", " " + hello);
-                    removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
-                    Log.e("check", "" + removeSyptoms);
-                }
+    public void jsonSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.toSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, disease);
 
-
-            }
-        }
-        if (removeSyptoms.endsWith(",")) {
-            removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
-        }
-        final String finalRemoveSyptoms = removeSyptoms;
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, MyConstants.WebUrls.UPLOAD_PRESCRIPTION,
-                new Response.Listener<String>() {
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_UPLOAD_PRESCRIPTION_METADATA, data,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.e("Response", response);
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
-
+                    public void onResponse(JSONObject response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            getSaveUploadPrescriptionMetadata();
+                        } else {
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }, new Response.ErrorListener() {
+
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -2033,29 +2052,52 @@ public class FragmentPrescriptionCheck extends BaseBackHandlerFragment implement
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                headers.put("healthRecordDate", prescriptionDate);
-                headers.put("doctorName", doctorName);
-                headers.put("disease", dieaseName);
-                headers.put("imageOrder", finalRemoveSyptoms);
                 return headers;
             }
-
         };
-        HashMap<String, List<File>> fileParams = getFileParam(prescriptionImage);
-        if (fileParams != null && fileParams.size() > 0) {
-            for (Map.Entry<String, List<File>> entry : fileParams.entrySet()) {
-                if (entry.getValue() != null) {
-                    for (int i = 0; i < entry.getValue().size(); i++) {
-                        Log.e("hello ", " " + entry.getKey() + " " + entry.getValue().get(i).toString());
-                        smr.addFile(entry.getKey(), entry.getValue().get(i).toString());
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    private void getSaveUploadPrescriptionMetadata() {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            } else {
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
                 }
-            }
-        }
-        Log.e("smr ", " " + smr.getFilesToUpload());
-        CureFull.getInstanse().getRequestQueue().add(smr);
+        ) {
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
 

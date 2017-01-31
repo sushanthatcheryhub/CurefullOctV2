@@ -187,6 +187,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
+
+        AppPreference.getInstance().setFragmentHealthApp(false);
+        AppPreference.getInstance().setFragmentHealthNote(false);
+        AppPreference.getInstance().setFragmentHealthpre(false);
+        AppPreference.getInstance().setFragmentHealthReprts(true);
+
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
         txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
@@ -788,7 +794,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (flagShort) {
                 isOpenShortBy = true;
                 if (labReportListViews != null) {
-                    txt_total_prescription.setText("Prescription (" + labReportListViews.size() + ")");
+                    txt_total_prescription.setText("Lab Reports (" + labReportListViews.size() + ")");
 
                 }
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
@@ -899,7 +905,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (flagFilter) {
                 isOpenFilter = true;
                 if (labReportListViews != null && labReportListViews.size() > 0) {
-                    txt_pre_total.setText("Prescription (" + labReportListViews.size() + ")");
+                    txt_pre_total.setText("Lab Reports (" + labReportListViews.size() + ")");
                 }
 
                 if (filterDataReports.getDateList() != null) {
@@ -1166,7 +1172,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 s.append("&doctorName=" + clickDoctorName.replace(" ", "%20"));
             }
             if (!clickDiseaseName.equalsIgnoreCase("")) {
-                s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
+                s.append("&testName=" + clickDiseaseName.replace(" ", "%20"));
             }
             if (!clickDates.equalsIgnoreCase("")) {
                 s.append("&date=" + clickDates);
@@ -1175,6 +1181,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
                 s.append("");
             }
+
+            Log.e("getLabReportList", "---- " + s);
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
@@ -1196,7 +1204,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
                                 if (labReportListViewsDummy != null && labReportListViewsDummy.size() > 0) {
-                                    isList=true;
+                                    isList = true;
                                     if (labReportListViewsDummy.size() < 10) {
                                         isloadMore = true;
                                     }
@@ -1208,7 +1216,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     labReportItemView.setAdapter(uploadLabTestReportAdpter);
                                     uploadLabTestReportAdpter.notifyDataSetChanged();
                                 } else {
-                                    isList=false;
+                                    isList = false;
                                     if (labReportListViewsDummy == null) {
                                         isloadMore = true;
                                     }
@@ -1549,12 +1557,15 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
         clickDates = AppPreference.getInstance().getFilterDateReports();
         StringBuilder s = new StringBuilder();
-        s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
-        s.append("&diseaseName=" + clickDiseaseName.replace(" ", "%20"));
-        s.append("&date=" + clickDates);
+
         if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
             s.append("");
+        } else {
+            s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
+            s.append("&testName=" + clickDiseaseName.replace(" ", "%20"));
+            s.append("&date=" + clickDates);
         }
+        Log.e("getAllFilterData", "---- " + s);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,

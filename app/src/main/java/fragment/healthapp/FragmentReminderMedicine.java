@@ -107,6 +107,12 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(false);
         }
+
+        AppPreference.getInstance().setFragmentHealthApp(false);
+        AppPreference.getInstance().setFragmentHealthNote(false);
+        AppPreference.getInstance().setFragmentHealthpre(false);
+        AppPreference.getInstance().setFragmentHealthReprts(false);
+        
         CureFull.getInstanse().getActivityIsntanse().selectedNav(3);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -408,10 +414,10 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                                             if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
                                                 relative_bottom_next.setVisibility(View.GONE);
                                             } else {
-                                                btn_next.setVisibility(View.GONE);
+//                                                btn_next.setVisibility(View.GONE);
                                             }
                                         } else {
-                                            btn_next.setVisibility(View.VISIBLE);
+//                                            btn_next.setVisibility(View.VISIBLE);
                                             btn_history.setVisibility(View.VISIBLE);
                                         }
                                         if (medicineReminderListView.getReminderDoctorNames().size() > 0) {

@@ -166,62 +166,69 @@ public class FragmentHomeScreenAll extends Fragment implements IGlobalIsbackButt
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentReminderLabTest(), false);
                 break;
-
-
             case R.id.txt_bottom_heath_app:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_app);
-                if (AppPreference.getInstance().isEditGoal()) {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentHealthAppNewProgress(), false);
-                } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentEditGoal(), false);
+                if (!AppPreference.getInstance().isFragmentHealthApp()) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_app);
+                    if (AppPreference.getInstance().isEditGoal()) {
+                        CureFull.getInstanse().getFlowInstanseAll()
+                                .replace(new FragmentHealthAppNewProgress(), false);
+                    } else {
+                        CureFull.getInstanse().getFlowInstanseAll()
+                                .replace(new FragmentEditGoal(), false);
 
+                    }
                 }
+
                 break;
             case R.id.txt_bottom_health_note:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_note);
-                if (AppPreference.getInstance().isEditGoalPage()) {
-                    if (AppPreference.getInstance().isEditGoal()) {
+                if (!AppPreference.getInstance().isFragmentHealthNote()) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_note);
+                    if (AppPreference.getInstance().isEditGoalPage()) {
+                        if (AppPreference.getInstance().isEditGoal()) {
+                            CureFull.getInstanse().getFlowInstanseAll()
+                                    .replace(new FragmentHealthNote(), false);
+                        }
+                    } else {
                         CureFull.getInstanse().getFlowInstanseAll()
                                 .replace(new FragmentHealthNote(), false);
                     }
-                } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentHealthNote(), false);
                 }
 
                 break;
             case R.id.txt_bottom_home:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_home);
-                CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
                 CureFull.getInstanse().getFlowInstanseAll()
                         .replace(new FragmentLandingPage(), false);
                 break;
             case R.id.txt_bottom_prescription:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_pre);
-                if (AppPreference.getInstance().isEditGoalPage()) {
-                    if (AppPreference.getInstance().isEditGoal()) {
+                if (!AppPreference.getInstance().isFragmentHealtpre()) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_pre);
+                    if (AppPreference.getInstance().isEditGoalPage()) {
+                        if (AppPreference.getInstance().isEditGoal()) {
+                            CureFull.getInstanse().getFlowInstanseAll()
+                                    .replace(new FragmentPrescriptionCheckNew(), false);
+                        }
+                    } else {
                         CureFull.getInstanse().getFlowInstanseAll()
-                                .replace(new FragmentPrescriptionCheck(), false);
+                                .replace(new FragmentPrescriptionCheckNew(), false);
                     }
-                } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentPrescriptionCheck(), false);
                 }
+
 
                 break;
             case R.id.txt_bottom_reports:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_report);
-                if (AppPreference.getInstance().isEditGoalPage()) {
-                    if (AppPreference.getInstance().isEditGoal()) {
+                if (!AppPreference.getInstance().isFragmentHealtReprts()) {
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_report);
+                    if (AppPreference.getInstance().isEditGoalPage()) {
+                        if (AppPreference.getInstance().isEditGoal()) {
+                            CureFull.getInstanse().getFlowInstanseAll()
+                                    .replace(new FragmentLabTestReport(), false);
+                        }
+                    } else {
                         CureFull.getInstanse().getFlowInstanseAll()
                                 .replace(new FragmentLabTestReport(), false);
                     }
-                } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
-                            .replace(new FragmentLabTestReport(), false);
                 }
+
                 break;
 
         }

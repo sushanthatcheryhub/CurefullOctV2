@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -58,9 +59,12 @@ import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentProfile;
 import fragment.healthapp.FragmentSignUp;
+import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.CircularImageView;
 import utils.HandlePermission;
+import utils.MyConstants;
+import utils.RequestBuilderOkHttp;
 
 public class MainActivity extends BaseMainActivity implements TransferListener {
 
@@ -164,8 +168,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
             @Override
             public void onClick(View view) {
                 iconAnim(img_share);
-                takeScreenShot(view1);
-                shareClick();
+                new LongOperation().execute("");
             }
         });
 
@@ -526,5 +529,34 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     @Override
     public void onError(int id, Exception ex) {
                 Log.e("error",""+ex.getMessage());
+    }
+
+
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            takeScreenShot(view1);
+            shareClick();
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 }

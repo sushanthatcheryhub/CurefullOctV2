@@ -103,7 +103,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
         if (vBundle != null) {
             edt_doctor_name.setText("" + vBundle.getString("doctorName"));
             edt_test_name.setText("" + vBundle.getString("testName"));
-            edt_lab_name.setText("" + vBundle.getString("testName"));
+            edt_lab_name.setText("" + vBundle.getString("labName"));
             txt_date.setText("" + vBundle.getString("date"));
             startFrom = vBundle.getString("date");
             String[] newDate = startFrom.split("/");
