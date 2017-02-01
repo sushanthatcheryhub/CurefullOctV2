@@ -608,8 +608,10 @@
                     </RelativeLayout>
 
                     <LinearLayout
+                        android:id="@+id/liner_avg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="invisible"
                         android:layout_marginLeft="@dimen/_30dp"
                         android:orientation="vertical">
 

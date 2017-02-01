@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -91,6 +92,8 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     private HorizontalAdapterNewProgress horizontalAdapterNew;
     private ArrayList<Month> data;
     private TextView txt_graph_steps, txt_water_inatke_real, txt_change, txt_change_aveg, txt_calories;
+    private LinearLayout liner_avg;
+    private boolean isFirstTime = false;
 
     @Override
     public boolean onBackPressed() {
@@ -105,7 +108,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "Health App");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
@@ -117,6 +120,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         AppPreference.getInstance().setFragmentHealthReprts(false);
 
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
+        liner_avg = (LinearLayout) rootView.findViewById(R.id.liner_avg);
         txt_calories = (TextView) rootView.findViewById(R.id.txt_calories);
         txt_change_aveg = (TextView) rootView.findViewById(R.id.txt_change_aveg);
         txt_change = (TextView) rootView.findViewById(R.id.txt_change);
@@ -279,7 +283,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 break;
 
             case R.id.btn_daily:
-                txt_change_aveg.setText("Average of the daily");
+                isFirstTime = false;
+                AppPreference.getInstance().setGraphDate("");
+                liner_avg.setVisibility(View.GONE);
                 btn_daily.setTextColor(Color.parseColor("#EB4748"));
                 btn_monthy.setTextColor(Color.parseColor("#ffffff"));
                 btn_weekly.setTextColor(Color.parseColor("#ffffff"));
@@ -292,7 +298,8 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 jsonGetGraphDeatils(fromdate, date, frequency, type);
                 break;
             case R.id.btn_weekly:
-                txt_change_aveg.setText("Average of the weekly");
+                isFirstTime = true;
+                AppPreference.getInstance().setGraphDate("");
                 btn_daily.setTextColor(Color.parseColor("#ffffff"));
                 btn_monthy.setTextColor(Color.parseColor("#ffffff"));
                 btn_weekly.setTextColor(Color.parseColor("#EB4748"));
@@ -309,7 +316,8 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 //                mChart.animateXY(3000, 3000);
                 break;
             case R.id.btn_monthy:
-                txt_change_aveg.setText("Average of the monthly");
+                isFirstTime = true;
+                AppPreference.getInstance().setGraphDate("");
                 btn_daily.setTextColor(Color.parseColor("#ffffff"));
                 btn_monthy.setTextColor(Color.parseColor("#EB4748"));
                 btn_weekly.setTextColor(Color.parseColor("#ffffff"));
@@ -472,11 +480,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                                     cv.put("graph_frequecy", frequency);
                                     DbOperations.insertGraphList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid());
                                     setChartGraph();
-
-
                                 }
-
-
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -524,7 +528,47 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     }
 
 
-    public void valueFromGrpah(String stepsValue, String waterTake, String calories) {
+    public void valueFromGrpah(String date, String stepsValue, String waterTake, String calories) {
+        liner_avg.setVisibility(View.VISIBLE);
+        if (frequency.equalsIgnoreCase("daily")) {
+            if (!date.equalsIgnoreCase("")) {
+                Log.e("date", ": " + date);
+                String[] dateFormat = date.split("-");
+                int mYear = Integer.parseInt(dateFormat[0]);
+                int mMonth = Integer.parseInt(dateFormat[1]);
+                int mDay = Integer.parseInt(dateFormat[2]);
+                Log.e("yer", "yer " + mYear);
+                try {
+                    date = mDay + "," + Utils.formatMonth(String.valueOf(mMonth));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                txt_change_aveg.setText("" + date + " " + mYear);
+            }
+        } else if (frequency.equalsIgnoreCase("monthly")) {
+            txt_change_aveg.setText("Average of " + MyConstants.IArrayData.mMonths[Integer.parseInt(date)] + " " + graphViewsList.get(0).getYear());
+        } else {
+            String dateTime = date;
+            String[] dateParts = dateTime.split("to");
+            String day1 = dateParts[0];
+            String day2 = dateParts[1];
+
+            String[] real1 = day1.split("-");
+            String years = real1[0];
+            String months = real1[1];
+            String days1 = real1[2];
+
+            String[] real2 = day2.split("-");
+            String years1 = real2[0];
+            String months1 = real2[1];
+            String days2 = real2[2];
+            try {
+                txt_change_aveg.setText("Average of " + "" + days1.trim() + "-" + (days2.trim()) + " " + Utils.formatMonth(months));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         Log.e("waterTake ", "" + waterTake);
         txt_graph_steps.setText("" + stepsValue);
         txt_water_inatke_real.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(waterTake))) + " ltr");
@@ -534,7 +578,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
     public void setChartGraph() {
         Log.e("graph", "dds");
-        horizontalAdapterNew = new HorizontalAdapterNewProgress(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNewProgress.this, frequency);
+        horizontalAdapterNew = new HorizontalAdapterNewProgress(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNewProgress.this, frequency, isFirstTime);
         horizontal_recycler_view.setAdapter(horizontalAdapterNew);
 //                                horizontal_recycler_view.scrollToPosition(graphViewsList.get(0).getGraphViewDetailses().size() - 1);
         new Handler().postDelayed(new Runnable() {
@@ -543,6 +587,8 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 horizontal_recycler_view.smoothScrollToPosition(graphViewsList.get(0).getGraphViewDetailses().size());
             }
         }, 100);
+
+
         horizontal_recycler_view.setOnLoadMoreListener(new HorizontalRecyclerView.IOnLoadMoreListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {

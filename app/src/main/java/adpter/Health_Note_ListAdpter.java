@@ -329,12 +329,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            CureFull.getInstanse().getActivityIsntanse().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // WORK on UI thread here
-                }
-            });
+
             return null;
         }
 

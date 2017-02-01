@@ -168,7 +168,8 @@
                     android:id="@+id/liner_short_by"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"  android:background="@drawable/my_ripple"
+                    android:layout_weight="1"
+                    android:background="@drawable/my_ripple"
 
                     android:orientation="horizontal"
                     android:padding="@dimen/_10dp">
@@ -422,6 +423,7 @@
                                 android:orientation="horizontal">
 
                                 <LinearLayout
+                                    android:id="@+id/txt_short_cancel"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="left"
@@ -431,7 +433,6 @@
                                     android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
-                                        android:id="@+id/txt_short_cancel"
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -470,6 +471,7 @@
 
 
                                 <LinearLayout
+                                    android:id="@+id/txt_short_apply"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_horizontal"
@@ -479,7 +481,6 @@
                                     android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
-                                        android:id="@+id/txt_short_apply"
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -728,9 +729,9 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_horizontal"
                                         android:gravity="left"
-                                        android:visibility="gone"
                                         android:orientation="horizontal"
-                                        android:padding="@dimen/_10dp">
+                                        android:padding="@dimen/_10dp"
+                                        android:visibility="gone">
 
                                         <customsTextViews.CustomTextViewOpenSanBold
                                             android:id="@+id/txt_diease"

@@ -1,6 +1,7 @@
 package asyns;
 
 import android.content.ContentValues;
+import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -444,6 +445,28 @@ public class ParseJsonData implements MyConstants.JsonUtils {
             }
         }
         return details;
+    }
+
+
+    private class MyAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 
 

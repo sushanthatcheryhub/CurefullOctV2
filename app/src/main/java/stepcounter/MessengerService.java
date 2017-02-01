@@ -21,10 +21,32 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyLog;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import asyns.JsonUtilsObject;
+import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
+import utils.AppPreference;
+import utils.CheckNetworkState;
+import utils.MyConstants;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
     /**
@@ -233,4 +255,85 @@ public class MessengerService extends Service implements StepListener, SensorEve
         }
 
     }
+
+    public void jsonUploadTarget() {
+        if (CheckNetworkState.isNetworkAvailable(this)) {
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+            String steps = "0";
+            String running = "0";
+            String cycling = "0";
+            String waterintake = "0";
+            String caloriesBurnt = "0";
+            String dateTime = getTodayDateTime();
+            String[] dateParts = dateTime.split(" ");
+            String date = dateParts[0];
+            String timeReal = dateParts[1];
+
+            JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
+            Log.e("jsonUploadTarget", ": " + data.toString());
+
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.e("service, URL 3.", response.toString());
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    return headers;
+                }
+            };
+            requestQueue.add(jsonObjectRequest);
+        } else {
+
+        }
+
+    }
+
+    public static String getTodayDateTime() {
+        String formattedDate = null;
+        try {
+            SimpleDateFormat initialformatter = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm", Locale.getDefault());
+            java.util.Date today = Calendar.getInstance().getTime();
+            formattedDate = initialformatter.format(today);
+            Log.e("", "formattedDate" + formattedDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
+    }
+
 }

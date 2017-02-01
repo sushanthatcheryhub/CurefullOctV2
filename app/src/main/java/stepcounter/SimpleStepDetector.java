@@ -23,7 +23,7 @@ public class SimpleStepDetector {
 
   private static final int ACCEL_RING_SIZE = 90;
   private static final int VEL_RING_SIZE = 90;
-  private static final float STEP_THRESHOLD = 12f;
+  private static final float STEP_THRESHOLD = 10f;
   private static final int STEP_DELAY_NS = 350000000;
 
 //    private static final int ACCEL_RING_SIZE = 200;

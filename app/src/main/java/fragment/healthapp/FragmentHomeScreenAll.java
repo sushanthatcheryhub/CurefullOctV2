@@ -110,10 +110,56 @@ public class FragmentHomeScreenAll extends Fragment implements IGlobalIsbackButt
     }
 
     @Override
-    public void isbackButtonVisible(boolean isback) {
+    public void isbackButtonVisible(boolean isback, String check) {
         if (isback) {
             liner_bottom_view.setVisibility(View.GONE);
         } else {
+            if (check.equalsIgnoreCase("Prescription")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_red);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            } else if (check.equalsIgnoreCase("Lab Reports")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendinic_click);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_red);
+            } else if (check.equalsIgnoreCase("Health App")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_red);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            } else if (check.equalsIgnoreCase("Note")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_red);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            }else {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            }
             liner_bottom_view.setVisibility(View.VISIBLE);
         }
     }

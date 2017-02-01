@@ -106,7 +106,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         rootView = inflater.inflate(R.layout.fragment_reminder_doctor_visit,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
         }
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);

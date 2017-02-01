@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public class GraphYearMonthDeatilsList {
     private ArrayList<GraphViewDetails> graphViewDetailses;
+    private String year;
 
     public GraphYearMonthDeatilsList() {
     }
@@ -18,6 +19,7 @@ public class GraphYearMonthDeatilsList {
         if (jsonObject == null)
             return;
         try {
+            setYear(jsonObject.getString("year"));
             setGraphViewDetailses(jsonObject.getJSONArray("graphDetailsList"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,5 +49,13 @@ public class GraphYearMonthDeatilsList {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

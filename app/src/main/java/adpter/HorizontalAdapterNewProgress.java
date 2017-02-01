@@ -2,6 +2,7 @@ package adpter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +35,14 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
     private Context context;
     private FragmentHealthAppNewProgress fragmentHealthAppNews;
     private String frequencys;
+    private boolean isFirstTimes;
 
-    public HorizontalAdapterNewProgress(ArrayList<GraphViewDetails> graphViewDetailses, Context context, FragmentHealthAppNewProgress fragmentHealthAppNew, String frequency) {
+    public HorizontalAdapterNewProgress(ArrayList<GraphViewDetails> graphViewDetailses, Context context, FragmentHealthAppNewProgress fragmentHealthAppNew, String frequency, boolean isFirstTime) {
         this.horizontalList = graphViewDetailses;
         this.context = context;
         this.fragmentHealthAppNews = fragmentHealthAppNew;
         this.frequencys = frequency;
+        this.isFirstTimes=isFirstTime;
     }
 
 
@@ -112,12 +115,23 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
             holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector));
         }
 
+        if(isFirstTimes){
+            Log.e("pos","pos"+position);
+            if ((horizontalList.size()-1)==position){
+                isFirstTimes=false;
+                AppPreference.getInstance().setGraphDate(horizontalList.get(position).getDate());
+                holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector_new));
+                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());
+            }
+
+        }
+
         holder.vprogressbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AppPreference.getInstance().setGraphDate(horizontalList.get(position).getDate());
                 holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector_new));
-                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());
+                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());
                 notifyDataSetChanged();
             }
         });

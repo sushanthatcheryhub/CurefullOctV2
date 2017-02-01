@@ -257,6 +257,18 @@ public class AppPreference implements MyConstants.JsonUtils {
         return "";
     }
 
+
+    public void setUserIDProfile(String className) {
+        if (_prefrence != null)
+            _prefrence.edit().putString("UserIDProfile", className).commit();
+    }
+
+    public String getUserIDProfile() {
+        if (_prefrence != null)
+            return _prefrence.getString("UserIDProfile", "");
+        return "";
+    }
+
     public void setUserName(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString(USER_NAME, className).commit();

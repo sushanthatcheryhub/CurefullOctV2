@@ -63,7 +63,7 @@ public class FragmentUHID extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_uhid,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true,"");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);

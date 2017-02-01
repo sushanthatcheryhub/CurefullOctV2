@@ -35,11 +35,25 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -54,11 +68,13 @@ import java.util.Map;
 
 import adpter.Filter_Reports_ListAdpter;
 import adpter.UploadLabTestReportAdpter;
+import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
+import dialog.DialogLoader;
 import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
@@ -134,8 +150,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
 
-    private TextView txt_short_cancel, txt_short_apply;
+    private LinearLayout txt_short_cancel, txt_short_apply;
     private boolean isList = false;
+    private DialogLoader dialogLoader;
 
     @Override
     public boolean onBackPressed() {
@@ -182,20 +199,23 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"Lab Reports");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
-
+        dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
+        dialogLoader.setCancelable(false);
+        dialogLoader.setCanceledOnTouchOutside(false);
+        dialogLoader.hide();
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
         AppPreference.getInstance().setFragmentHealthReprts(true);
 
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
-        txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
-        txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
+        txt_short_cancel = (LinearLayout) rootView.findViewById(R.id.txt_short_cancel);
+        txt_short_apply = (LinearLayout) rootView.findViewById(R.id.txt_short_apply);
         radioShort = (RadioGroup) rootView.findViewById(R.id.radioShort);
         radioNewtest = (RadioButton) rootView.findViewById(R.id.radioNewtest);
         radioOldest = (RadioButton) rootView.findViewById(R.id.radioOldest);
@@ -218,7 +238,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(CureFull.getInstanse().getActivityIsntanse());
         recyclerView_filter.setLayoutManager(mLayoutManager);
         txt_total_prescription = (TextView) rootView.findViewById(R.id.txt_total_prescription);
-
 
         img_user_name = (ImageView) rootView.findViewById(R.id.img_user_name);
 
@@ -1072,11 +1091,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 @Override
                 public void run() {
                     isUploadClick = false;
-                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     doctorName = doctorNames;
                     dieaseName = dieaseNames;
                     prescriptionDate = prescriptionDates;
-                    new LongOperation().execute(prescriptionImageListss);
+                    dialogLoader.show();
+                    jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
+//                    new LongOperation().execute(prescriptionImageListss);
 //                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
                 }
             });
@@ -1189,6 +1209,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            dialogLoader.hide();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
                             Log.e("Lab Report List, URL 1.", response);
@@ -1234,6 +1255,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            dialogLoader.hide();
                             txt_no_prescr.setText("No Reports Uploaded Yet!");
                             labReportItemView.setVisibility(View.GONE);
                             txt_no_prescr.setVisibility(View.VISIBLE);
@@ -1653,4 +1675,263 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             }
         }
     }
+
+
+    public void jsonSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease, final List<PrescriptionImageList> file) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.toSaveUploadLabReposrtMetadata(prescriptionDate, doctorName, disease);
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_UPLOAD_LAB_REPORTS_METADATA, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                JSONObject json1 = new JSONObject(json.getString("payload"));
+                                String prescriptionId = json1.getString("labReportId");
+                                String cfUuhidId = json1.getString("cfUuhidId");
+                                getSaveUploadPrescriptionMetadata(prescriptionId, cfUuhidId, file);
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialogLoader.hide();
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    private void getSaveUploadPrescriptionMetadata(final String prescriptionId, final String cfUuhidId, final List<PrescriptionImageList> file) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                if (!json.getString("payload").equals(null)) {
+                                    JSONObject json1 = new JSONObject(json.getString("payload"));
+                                    String accessKeyID = json1.getString("accessKeyID");
+                                    String secretAccessKey = json1.getString("secretAccessKey");
+                                    String sessionToken = json1.getString("sessionToken");
+                                    uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file);
+                                }
+
+                            } else {
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dialogLoader.hide();
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    public void uploadFile(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final List<PrescriptionImageList> imageFile) {
+        Log.e("accessKeyID", " " + accessKeyID + " secretAccessKey- " + secretAccessKey);
+
+        String imageUploadUrl = null;
+
+        BasicSessionCredentials credentials =
+                new BasicSessionCredentials(accessKeyID,
+                        secretAccessKey,
+                        sessionToken);
+        final AmazonS3 s3client = new AmazonS3Client(credentials);
+        s3client.setRegion(Region.getRegion(Regions.AP_SOUTH_1));
+        try {
+
+            if (!(s3client.doesBucketExist(bucketName))) {
+                // Note that CreateBucketRequest does not specify region. So bucket is
+                // created in the region specified in the client.
+                s3client.createBucket(new CreateBucketRequest(
+                        bucketName));
+            }
+
+
+        } catch (Exception e) {
+
+        }
+
+        for (int i = 0; i < imageFile.size(); i++) {
+            if (imageFile.get(i).getImageNumber() != 000) {
+                TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+                // Request server-side encryption.
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                try {
+                    File fileUpload = new File(imageFile.get(i).getPrescriptionImage());
+                    String[] spiltName = new File(imageFile.get(i).getPrescriptionImage()).getName().split("\\.");
+                    String getName = spiltName[1];
+                    String name = prescriptionId + "-" + cfUuhidId + "-" + imageFile.get(i).getImageNumber() + "." + getName;
+                    Log.e("imageFile", " " + fileUpload.getAbsolutePath() + "name " + name + " bucketName- " + bucketName);
+                    final TransferObserver observer = transferUtility.upload(
+                            bucketName,
+                            name,
+                            fileUpload, CannedAccessControlList.PublicRead
+                    );
+                    final int finalI = i;
+                    Log.e("i ki value", " " + i);
+                    observer.setTransferListener(new TransferListener() {
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            switch (state.name()) {
+                                case "COMPLETED":
+                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/cure.ehr.lp/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
+                                    Log.e("state", " " + state.name() + " id- " + id + " " + observer.getKey() + " " + finalI + " " + imageFile.size());
+                                    if (finalI == (imageFile.size() - 2)) {
+                                        jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile);
+                                    }
+                                    break;
+
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            Log.e("bytesTotal", " " + bytesCurrent + " id- " + id);
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            Log.e("error", "" + ex.getMessage() + " id- " + id);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+//        TransferObserver observer = transferUtility.download(
+//                "curefull.storage.test/cure.ehr",
+//                "",
+//                imageFile
+//        );
+
+//        for (Bucket bucket : s3client.listBuckets()) {
+//            Log.e("Bucket list - ", bucket.getName());
+//        }
+//            observer.refresh();
+        }
+
+    }
+
+
+    public void jsonSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, final List<PrescriptionImageList> file) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.toSaveUploadedLabReportData(prescriptionId, cfuuhidId, file);
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOADED_LAB_REPORTS_DATA, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("response", " " + response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+
+                                getAllFilterData();
+                                getLabReportList();
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialogLoader.hide();
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
 }

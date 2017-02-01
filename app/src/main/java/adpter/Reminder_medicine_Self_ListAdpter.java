@@ -89,9 +89,11 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         if (checking.equalsIgnoreCase("No")) {
             img_edit_rem.setVisibility(View.VISIBLE);
             img_editm_delete.setVisibility(View.VISIBLE);
+            checkBox.setVisibility(View.VISIBLE);
         } else {
             img_edit_rem.setVisibility(View.GONE);
             img_editm_delete.setVisibility(View.GONE);
+            checkBox.setVisibility(View.GONE);
         }
 
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName().trim());

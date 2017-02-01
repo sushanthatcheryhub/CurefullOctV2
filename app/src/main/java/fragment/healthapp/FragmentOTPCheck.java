@@ -1,9 +1,8 @@
 package fragment.healthapp;
 
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -26,6 +25,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.ParseError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
@@ -37,6 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -65,13 +67,15 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private String health_name, health_email, health_mobile, health_password, realUHID = "";
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false;
-
+    private SharedPreferences sharedPreferencesUserLogin;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_otp_check,
                 container, false);
+        sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
+                .getSharedPreferences("Login", 0);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         inputLayoutPassword = (TextInputLayout) rootView.findViewById(R.id.input_layout_password);
@@ -343,6 +347,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
                                     AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                     AppPreference.getInstance().setUserID(userInfo.getUser_id());
+                                    AppPreference.getInstance().setUserIDProfile(userInfo.getUser_id_profile());
                                     ContentValues contentValues = new ContentValues();
                                     contentValues.put("email_id", userInfo.getUser_id());
                                     DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
@@ -355,6 +360,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());
+
+                                    String token_Id = sharedPreferencesUserLogin.getString("tokenid",
+                                            "123");
+                                    String device_Id = sharedPreferencesUserLogin.getString("android_id",
+                                            "123");
+                                    jsonSaveNotification(token_Id, device_Id);
+
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
                                             .replace(new FragmentHomeScreenAll(), false);
@@ -413,29 +425,86 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
-    private String getAllAccount() {
-        AccountManager am = AccountManager.get(getActivity());
-        Account[] accounts = am.getAccounts();
-        String acname = "";
-        String mobile_no = "";
-        String email = "";
+//    private String getAllAccount() {
+//        AccountManager am = AccountManager.get(getActivity());
+//        Account[] accounts = am.getAccounts();
+//        String acname = "";
+//        String mobile_no = "";
+//        String email = "";
+//
+//        for (Account ac : accounts) {
+//            acname = ac.name;
+//
+////            if (acname.startsWith("91")) {
+////                mobile_no = acname;
+////            } else
+//
+//
+//            if (acname.endsWith("@gmail.com") || acname.endsWith("@yahoo.com") || acname.endsWith("@hotmail.com")) {
+//                email = acname;
+//            }
+//
+//            // Take your time to look at all available accounts
+//            Log.i("Accounts : ", "Accounts : " + acname);
+//        }
+//
+//        return email;
+//    }
 
-        for (Account ac : accounts) {
-            acname = ac.name;
 
-//            if (acname.startsWith("91")) {
-//                mobile_no = acname;
-//            } else
+    public void jsonSaveNotification(String registrationToken, String deviceId) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.toRegisterUserForNotification(registrationToken, deviceId);
 
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.URL_NOTIFICATION, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
 
-            if (acname.endsWith("@gmail.com") || acname.endsWith("@yahoo.com") || acname.endsWith("@hotmail.com")) {
-                email = acname;
+                        Log.e("response", " " + response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
-
-            // Take your time to look at all available accounts
-            Log.i("Accounts : ", "Accounts : " + acname);
-        }
-
-        return email;
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
+
 }

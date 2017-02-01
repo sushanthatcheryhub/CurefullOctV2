@@ -28,7 +28,7 @@ public class FragmentSettingPage extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_setting,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true,"");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);

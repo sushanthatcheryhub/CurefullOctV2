@@ -3,8 +3,6 @@ package curefull.healthapp;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -38,7 +36,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -56,15 +53,12 @@ import awsgcm.MessageReceivingService;
 import fragment.healthapp.FragmentHomeScreenAll;
 import fragment.healthapp.FragmentLabTestReport;
 import fragment.healthapp.FragmentLogin;
-import fragment.healthapp.FragmentPrescriptionCheck;
+import fragment.healthapp.FragmentPrescriptionCheckNew;
 import fragment.healthapp.FragmentProfile;
 import fragment.healthapp.FragmentSignUp;
-import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.CircularImageView;
 import utils.HandlePermission;
-import utils.MyConstants;
-import utils.RequestBuilderOkHttp;
 
 public class MainActivity extends BaseMainActivity implements TransferListener {
 
@@ -133,13 +127,16 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         startService(new Intent(this, MessageReceivingService.class));
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-        Log.e("id "," "+refreshedToken);
+        Log.e("id ", " " + refreshedToken);
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
-            Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentHomeScreenAll(), false);
+//            Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
         } else {
             if (AppPreference.getInstance().isLogin()) {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
@@ -173,17 +170,16 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         });
 
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            String action = intent.getAction();
-            Uri data = intent.getData();
-
-            Log.e("action", "" + action);
-            if (data != null) {
-
-                Log.e("data", "" + data.toString());
-            }
-        }
+//        Intent intent = getIntent();
+//        if (intent != null) {
+//            String action = intent.getAction();
+//            Uri data = intent.getData();
+//
+//            Log.e("action", "" + action);
+//            if (data != null) {
+//                Log.e("data", "" + data.toString());
+//            }
+//        }
     }
 
     @Override
@@ -334,8 +330,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     }
 
 
-
-
     public void changeColorActionBar(String color) {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor(color));
 //        getSupportActionBar().setBackgroundDrawable(colorDrawable);
@@ -368,11 +362,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         String action = intent.getAction();
         Log.e("bundle", "push event :- " + action);
     }
-
-
-
-
-
 
 
     @Override
@@ -415,7 +404,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
                     List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
                     if (list != null) {
                         for (Fragment f : list) {
-                            if (f != null && f instanceof FragmentPrescriptionCheck) {
+                            if (f != null && f instanceof FragmentPrescriptionCheckNew) {
                                 f.onRequestPermissionsResult(requestCode, permissions, grantResults);
                             } else if (f != null && f instanceof FragmentLabTestReport) {
                                 f.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -433,7 +422,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
                     List<Fragment> list = CureFull.getInstanse().getActivityIsntanse().getSupportFragmentManager().getFragments();
                     if (list != null) {
                         for (Fragment f : list) {
-                            if (f != null && f instanceof FragmentPrescriptionCheck) {
+                            if (f != null && f instanceof FragmentPrescriptionCheckNew) {
                                 f.onRequestPermissionsResult(requestCode, permissions, grantResults);
                             } else if (f != null && f instanceof FragmentLabTestReport) {
                                 f.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -518,19 +507,18 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
 
     @Override
     public void onStateChanged(int id, TransferState state) {
-        Log.e("state"," "+state.name());
+        Log.e("state", " " + state.name());
     }
 
     @Override
     public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-        Log.e("bytesTotal"," "+bytesCurrent);
+        Log.e("bytesTotal", " " + bytesCurrent);
     }
 
     @Override
     public void onError(int id, Exception ex) {
-                Log.e("error",""+ex.getMessage());
+        Log.e("error", "" + ex.getMessage());
     }
-
 
 
     private class LongOperation extends AsyncTask<String, Void, String> {

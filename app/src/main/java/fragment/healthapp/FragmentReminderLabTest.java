@@ -102,7 +102,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
         rootView = inflater.inflate(R.layout.fragment_reminder_lab_test,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
         }
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);

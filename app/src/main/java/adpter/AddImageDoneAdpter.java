@@ -126,7 +126,7 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             holder.txt_view.setText("");
             btn_checkbox.setVisibility(View.GONE);
             image_item.setScaleType(ImageView.ScaleType.CENTER);
-            image_item.setImageResource(R.drawable.prescription_red);
+            image_item.setImageResource(R.drawable.plus_red);
         }
 
 

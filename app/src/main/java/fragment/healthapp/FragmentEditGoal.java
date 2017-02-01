@@ -152,7 +152,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         rootView = inflater.inflate(R.layout.fragment_set_goal,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
         }
 
         if (AppPreference.getInstance().isEditGoal()) {
@@ -1325,7 +1325,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                 AppPreference.getInstance().setGlass("" + galssSize);
                                 AppPreference.getInstance().setIsLoginFirst(false);
                                 AppPreference.getInstance().setStepStarts(true);
-                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                                btn_edit_goal.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        launchTwitter(rootView);
+                                    }
+                                });
+//                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
                             } else {
 
                             }

@@ -34,7 +34,6 @@
         android:required="true" />
 
 
-
     <application
         android:name=".CureFull"
         android:allowBackup="true"
@@ -158,9 +157,9 @@
             android:enabled="true" />
 
         <!--<service android:name=".MyFirebaseMessagingService">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-            <!--</intent-filter>-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+        <!--</intent-filter>-->
         <!--</service>-->
 
         <meta-data
@@ -174,7 +173,7 @@
 
         <service
             android:name="awsgcm.MessageReceivingService"
-            android:label="awsgcm.MessageReceivingService" >
+            android:label="awsgcm.MessageReceivingService">
             <intent-filter>
                 <action android:name="curefull.healthapp.ExternalReceiver" />
                 <category android:name="curefull.healthapp" />
@@ -183,7 +182,7 @@
 
         <receiver
             android:name="awsgcm.ExternalReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />

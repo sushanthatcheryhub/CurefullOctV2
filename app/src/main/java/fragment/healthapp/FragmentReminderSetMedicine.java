@@ -149,7 +149,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
                         R.layout.adapter_list_doctor_data, MyConstants.IArrayData.listPopUp));
                 listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_duration));
-                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._25dp));
+                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._35dp));
 //                listPopupWindow.setHeight(400);
                 listPopupWindow.setModal(true);
                 listPopupWindow.setOnItemClickListener(popUpItemClick1);
@@ -164,7 +164,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
                         R.layout.adapter_list_doctor_data, MyConstants.IArrayData.listPopUpDogase));
                 listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_dogaes));
-                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._25dp));
+                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._35dp));
 //                listPopupWindow.setHeight(400);
                 listPopupWindow.setModal(true);
                 listPopupWindow.setOnItemClickListener(popUpItemClick2);

@@ -102,7 +102,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         rootView = inflater.inflate(R.layout.fragment_reminder_medicine,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(false);

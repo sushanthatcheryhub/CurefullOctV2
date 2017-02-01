@@ -52,7 +52,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_toRightOf="@+id/txt_health_text"
-                        android:src="@drawable/notebook" />
+                        android:src="@drawable/landing_health_notes" />
 
                     <ImageView
                         android:id="@+id/img_question_note"
@@ -296,6 +296,7 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
+                                                    android:text="     "
                                                     android:textColor="#282828"
                                                     android:textColorHint="@color/cure_hint_color" />
 
@@ -372,6 +373,7 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
+                                                    android:text="     "
                                                     android:textColor="#282828"
                                                     android:textColorHint="@color/cure_hint_color" />
 

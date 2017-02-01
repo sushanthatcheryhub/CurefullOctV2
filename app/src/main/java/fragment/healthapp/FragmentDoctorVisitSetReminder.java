@@ -94,7 +94,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                 listPopupWindow.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
                         R.layout.adapter_list_doctor_data, MyConstants.IArrayData.listPopUp));
                 listPopupWindow.setAnchorView(rootView.findViewById(R.id.txt_days_every));
-                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._25dp));
+                listPopupWindow.setWidth((int) getResources().getDimension(R.dimen._35dp));
 //                listPopupWindow.setHeight(400);
                 listPopupWindow.setModal(true);
                 listPopupWindow.setOnItemClickListener(popUpItemClick1);

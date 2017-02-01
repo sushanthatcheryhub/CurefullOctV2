@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import fragment.healthapp.FragmentPrescriptionCheck;
+import fragment.healthapp.FragmentPrescriptionCheckNew;
 
 
 public class DialogHintScreenaLandingQution extends Dialog {
@@ -59,7 +59,7 @@ public class DialogHintScreenaLandingQution extends Dialog {
             @Override
             public void onClick(View view) {
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionCheck(), true);
+                        .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(context);
                 dialogHintScreenaPrescriptions.show();
                 dismiss();

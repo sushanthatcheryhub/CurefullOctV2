@@ -503,7 +503,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-            jsonParent.put("prescriptionImageUploadList", obj1);
+            jsonParent.put("imageUploadList", obj1);
 
         } catch (Exception e) {
 
@@ -513,5 +513,66 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
+
+    //Lab Report Upload new
+
+    public static JSONObject toSaveUploadLabReposrtMetadata(String prescriptionDate, String doctorName, String disease) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("labReportDate", prescriptionDate);
+            jsonParent.put("doctorName", doctorName);
+            jsonParent.put("testName", disease);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toSaveUploadedLabReportData(String prescriptionId, String cfuuhidId, List<PrescriptionImageList> prescriptionImageList) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("labReportId", prescriptionId);
+            jsonParent.put("cfuuhidId", cfuuhidId);
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < prescriptionImageList.size(); i++) {
+                    if (prescriptionImageList.get(i).getImageNumber() != 000) {
+                        JSONObject list1 = new JSONObject();
+                        list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+                        list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
+                        Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
+                        obj1.put(list1);
+                    }
+
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+            jsonParent.put("imageUploadList", obj1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject toRegisterUserForNotification(String registrationToken, String deviceId) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("registrationToken", registrationToken);
+            jsonParent.put("deviceId", deviceId);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
 
 }

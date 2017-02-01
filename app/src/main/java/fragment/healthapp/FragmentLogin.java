@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -37,6 +38,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyLog;
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.ParseError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
@@ -57,14 +59,15 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import dialog.DialogProfileFullView;
 import dialog.DialogTCFullView;
 import item.property.EduationDetails;
 import item.property.UserInfo;
@@ -92,6 +95,7 @@ public class FragmentLogin extends Fragment implements
     private EditText edtInputPassword;
     private RequestQueue requestQueue;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+    private SharedPreferences sharedPreferencesUserLogin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,6 +107,8 @@ public class FragmentLogin extends Fragment implements
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         CureFull.getInstanse().getActivityIsntanse().showLogo(true);
         CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(false);
+        sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
+                .getSharedPreferences("Login", 0);
         txt_term_conditions = (TextView) rootView.findViewById(R.id.txt_term_conditions);
         edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
         edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
@@ -469,6 +475,7 @@ public class FragmentLogin extends Fragment implements
                                     AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
                                     AppPreference.getInstance().setHintScreen(userInfo.getHintScreen());
                                     AppPreference.getInstance().setUserName(userInfo.getUser_name());
+                                    AppPreference.getInstance().setUserIDProfile(userInfo.getUser_id_profile());
                                     ContentValues contentValues = new ContentValues();
                                     contentValues.put("email_id", userInfo.getUser_id());
                                     DbOperations.insertEmailList(CureFull.getInstanse().getActivityIsntanse(), contentValues, userInfo.getUser_id());
@@ -481,6 +488,11 @@ public class FragmentLogin extends Fragment implements
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
+                                    String token_Id = sharedPreferencesUserLogin.getString("tokenid",
+                                            "123");
+                                    String device_Id = sharedPreferencesUserLogin.getString("android_id",
+                                            "123");
+                                    jsonSaveNotification(token_Id, device_Id);
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
                                             .replace(new FragmentHomeScreenAll(), false);
@@ -564,13 +576,20 @@ public class FragmentLogin extends Fragment implements
                                 AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                 AppPreference.getInstance().setUserID(userInfo.getUser_id());
                                 AppPreference.getInstance().setcf_uuhid(userInfo.getCf_uuhid());
-
+                                AppPreference.getInstance().setUserIDProfile(userInfo.getUser_id_profile());
+                                Log.e("user", ":- " + userInfo.getUser_id_profile());
                                 AppPreference.getInstance().setcf_uuhidNeew(userInfo.getCf_uuhid());
                                 Log.e("mobile number", ":- " + userInfo.getMobile_number());
                                 AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
                                 CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
                                 AppPreference.getInstance().setAt(userInfo.getA_t());
                                 AppPreference.getInstance().setRt(userInfo.getR_t());
+                                String token_Id = sharedPreferencesUserLogin.getString("tokenid",
+                                        "123");
+                                String device_Id = sharedPreferencesUserLogin.getString("android_id",
+                                        "123");
+                                jsonSaveNotification(token_Id, device_Id);
+
                                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                 CureFull.getInstanse().getFlowInstanse()
                                         .replace(new FragmentHomeScreenAll(), false);
@@ -653,4 +672,57 @@ public class FragmentLogin extends Fragment implements
         }
     }
 
+    public void jsonSaveNotification(String registrationToken, String deviceId) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        JSONObject data = JsonUtilsObject.toRegisterUserForNotification(registrationToken, deviceId);
+        Log.e("jsonSaveNotification ", " " + data.toString());
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.URL_NOTIFICATION, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("response ", "Noti" + response);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+
+                            } else {
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
 }

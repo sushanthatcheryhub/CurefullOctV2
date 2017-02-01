@@ -84,6 +84,7 @@ import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
+import dialog.DialogLoader;
 import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
@@ -154,9 +155,9 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
-    private TextView txt_short_cancel, txt_short_apply;
+    private LinearLayout txt_short_cancel, txt_short_apply;
     private boolean isList = false;
-
+    private DialogLoader dialogLoader;
 
     @Override
     public boolean onBackPressed() {
@@ -202,18 +203,22 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"Prescription");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
         }
+        dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
+        dialogLoader.setCancelable(false);
+        dialogLoader.setCanceledOnTouchOutside(false);
+        dialogLoader.hide();
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(true);
         AppPreference.getInstance().setFragmentHealthReprts(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
-        txt_short_cancel = (TextView) rootView.findViewById(R.id.txt_short_cancel);
-        txt_short_apply = (TextView) rootView.findViewById(R.id.txt_short_apply);
+        txt_short_cancel = (LinearLayout) rootView.findViewById(R.id.txt_short_cancel);
+        txt_short_apply = (LinearLayout) rootView.findViewById(R.id.txt_short_apply);
         radioShort = (RadioGroup) rootView.findViewById(R.id.radioShort);
         radioNewtest = (RadioButton) rootView.findViewById(R.id.radioNewtest);
         radioOldest = (RadioButton) rootView.findViewById(R.id.radioOldest);
@@ -245,8 +250,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
         img_camera = (ImageView) rootView.findViewById(R.id.img_camera);
         img_upload = (ImageView) rootView.findViewById(R.id.img_upload);
         pixelDensity = getResources().getDisplayMetrics().density;
-        realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
+        realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         realtive_notesFilter = (RelativeLayout) rootView.findViewById(R.id.realtive_notesFilter);
         liner_animation_upload = (LinearLayout) rootView.findViewById(R.id.liner_animation_upload);
         liner_upload_new = (RelativeLayout) rootView.findViewById(R.id.liner_upload_new);
@@ -1258,12 +1263,12 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 @Override
                 public void run() {
                     isUploadClick = false;
-                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+//                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     doctorName = doctorNames;
                     dieaseName = dieaseNames;
                     prescriptionDate = prescriptionDates;
 //                    imageUpload(prescriptionImageListss);
-
+                    dialogLoader.show();
                     jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
 //                    new LongOperation().execute(prescriptionImageListss);
 //                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
@@ -1380,7 +1385,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-
+                            dialogLoader.hide();
                             Log.e("prescriptionlist", "" + response);
 
                             int responseStatus = 0;
@@ -1429,6 +1434,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            dialogLoader.hide();
                             prescriptionItemView.setVisibility(View.GONE);
                             txt_no_prescr.setText("No Presciption Uploaded Yet!");
                             txt_no_prescr.setVisibility(View.VISIBLE);
@@ -2050,6 +2056,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                dialogLoader.hide();
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                 VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
@@ -2099,6 +2106,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        dialogLoader.hide();
                         error.printStackTrace();
                     }
                 }
@@ -2218,6 +2226,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+
                         Log.e("response", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
@@ -2248,6 +2257,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                dialogLoader.hide();
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                 VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());

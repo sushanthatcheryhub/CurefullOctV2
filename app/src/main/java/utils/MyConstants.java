@@ -9,7 +9,7 @@ public class MyConstants {
         String HOST_IP = "http://lp.hatcheryhub.com";
         //                String HOST_IP = "http://192.168.0.32:8080";
         //                String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
-        String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
+        String HOST_LOCATION = "/api/v1/";
         //                String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
@@ -74,12 +74,20 @@ public class MyConstants {
 
         String MEDICINCE_HISTORY_API = URL + "enduser/medicineService/historyOfMedicineReminder?cfuuhId=";
 
-        //Upload AWS Image
+        //Upload AWS Image Prescription
         String SAVE_UPLOAD_PRESCRIPTION_METADATA = URL + "endUser/ehr/saveUploadPrescriptionMetadata";
         String TEMPORY_CREDENTIALS = URL + "aws/getTemporaryCredentials";
         String UPLOADED_PRESCRETION_DATA = URL + "endUser/ehr/saveUploadedPrescriptionData";
 
+        //Upload AWS Image LabReport
+        String SAVE_UPLOAD_LAB_REPORTS_METADATA = URL + "endUser/ehr/saveUploadLabReportMetadata";
+        String UPLOADED_LAB_REPORTS_DATA = URL + "endUser/ehr/saveUploadedLabReportData";
 
+        //Upload AWS Image Profile
+        String UPLOADED_PROFILE = URL + "endUser/profile/updateProfileImage?profileImage=";
+
+        //Notification
+        String URL_NOTIFICATION=URL+"aws/registerUserForNotification";
     }
 
     public interface AWSType {

@@ -426,6 +426,7 @@
                                 android:orientation="horizontal">
 
                                 <LinearLayout
+                                    android:id="@+id/txt_short_cancel"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="left"
@@ -435,7 +436,7 @@
                                     android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
-                                        android:id="@+id/txt_short_cancel"
+
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -474,6 +475,7 @@
 
 
                                 <LinearLayout
+                                    android:id="@+id/txt_short_apply"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_horizontal"
@@ -483,7 +485,7 @@
                                     android:padding="@dimen/_10dp">
 
                                     <customsTextViews.CustomTextViewOpenSanBold
-                                        android:id="@+id/txt_short_apply"
+
                                         style="@style/textView_dark_grey_normal_micro"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"

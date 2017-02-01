@@ -51,7 +51,6 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentPrescriptionCheck;
 import fragment.healthapp.FragmentPrescriptionCheckNew;
 import fragment.healthapp.FragmentPrescriptionFollowUpImageView;
 import fragment.healthapp.FragmentPrescriptionImageFullView;

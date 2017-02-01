@@ -73,10 +73,11 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
         final CheckBox checkBox = holder.checkbox;
         if (checking.equalsIgnoreCase("No")) {
             img_edit_rem.setVisibility(View.VISIBLE);
+            checkBox.setVisibility(View.VISIBLE);
         } else {
             img_edit_rem.setVisibility(View.GONE);
+            checkBox.setVisibility(View.GONE);
         }
-
 
         String med = "";
         String[] test = healthNoteItemses.get(position).getTimeToTake().trim().split(",");

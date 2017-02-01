@@ -147,6 +147,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private boolean isSelectFrom = false;
     private int newFirstTime = 0;
     private int secondTime = 0;
+    private int newFirstTimeMintues = 0;
+    private int secondTimeMintues = 0;
     int dbYear = 0;
     private ImageView imgg_question_white, imgg_question_red;
 
@@ -162,7 +164,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true, "");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
@@ -222,7 +224,8 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         liner_click.setOnClickListener(this);
         btn_set_goal.setOnClickListener(this);
         txt_date_time.setOnClickListener(this);
-        liner_date_t.setOnClickListener(this);
+//        liner_date_t.setOnClickListener(this);
+        txt_time.setOnClickListener(this);
         txt_to_time.setOnClickListener(this);
         btn_done.setOnClickListener(this);
         txt_click_here_add.setOnClickListener(this);
@@ -325,13 +328,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             case R.id.imgg_question_red:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_red);
                 CureFull.getInstanse().getFlowInstanseAll()
-                        .replace(new FragmentPrescriptionCheck(), true);
+                        .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaPrescriptions.show();
                 break;
 
 
-            case R.id.liner_date_t:
+            case R.id.txt_time:
                 if (firstDate.equalsIgnoreCase("")) {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select Date First.");
                 } else {
@@ -912,16 +915,18 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         String hrs = dfd[0];
         String mins = dfd[1];
 
-        String date = Utils.getTodayDate();
+        String date = getTodayDate();
         String[] dateFormat = date.split("-");
         int mYear = Integer.parseInt(dateFormat[0]);
         int mMonth = Integer.parseInt(dateFormat[1]);
         int mDay = Integer.parseInt(dateFormat[2]);
         date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
+
         if (isFirstTime) {
             if (firstDate.equalsIgnoreCase("")) {
                 if (hourOfDay > Integer.parseInt(hrs)) {
                     newFirstTime = hourOfDay;
+                    newFirstTimeMintues = mintues;
                     isSelectFrom = true;
                     firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
@@ -931,10 +936,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than Current time.");
                 }
             } else {
-
                 if (date.equalsIgnoreCase(firstDate)) {
                     if (hourOfDay < Integer.parseInt(hrs) + 1 & mintues < Integer.parseInt(mins) + 1) {
                         newFirstTime = hourOfDay;
+                        newFirstTimeMintues = mintues;
                         isSelectFrom = true;
                         firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                         txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
@@ -942,9 +947,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                         toFirstTime = "";
                     } else {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than Current time.");
+
                     }
                 } else {
                     newFirstTime = hourOfDay;
+                    newFirstTimeMintues = mintues;
                     isSelectFrom = true;
                     firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
@@ -952,35 +959,29 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     toFirstTime = "";
                 }
             }
-            if (hourOfDay > Integer.parseInt(hrs)) {
-                newFirstTime = hourOfDay;
-                isSelectFrom = true;
-                firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-                txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                txt_to_time.setText("");
-                toFirstTime = "";
-            } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than Current time.");
-            }
+
+
         } else {
             if (date.equalsIgnoreCase(firstDate)) {
                 if (hourOfDay < Integer.parseInt(hrs) + 1 & mintues < Integer.parseInt(mins) + 1) {
                     secondTime = hourOfDay;
+                    secondTimeMintues = mintues;
                     Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
-                    if (secondTime > newFirstTime) {
+                    if (secondTime >= newFirstTime & secondTimeMintues > newFirstTimeMintues) {
                         toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                         txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
                     } else {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
                     }
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than Current time.");
 
                 }
             } else {
                 secondTime = hourOfDay;
-                Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
-                if (secondTime > newFirstTime) {
+                secondTimeMintues = mintues;
+                Log.e("else ", " " + newFirstTime + " second:- " + secondTime);
+                if (secondTime >= newFirstTime & secondTimeMintues > newFirstTimeMintues) {
                     toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
                 } else {
@@ -1279,6 +1280,20 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_title.setText(sb);
+    }
+
+    public static String getTodayDate() {
+        String formattedDate = null;
+        try {
+            SimpleDateFormat initialformatter = new SimpleDateFormat(
+                    "yyyy-MM-dd", Locale.getDefault());
+            java.util.Date today = Calendar.getInstance().getTime();
+            formattedDate = initialformatter.format(today);
+            Log.e("", "formattedDate" + formattedDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
     }
 
 }

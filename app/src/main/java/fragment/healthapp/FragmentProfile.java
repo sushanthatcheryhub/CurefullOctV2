@@ -36,6 +36,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -55,6 +67,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -121,7 +134,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
 
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true);
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true, "");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
@@ -196,9 +209,10 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         profile_image_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogProfileFullView dialogProfileFullView = new DialogProfileFullView(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getProfileImage());
-                dialogProfileFullView.show();
-
+                if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
+                    DialogProfileFullView dialogProfileFullView = new DialogProfileFullView(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getProfileImage());
+                    dialogProfileFullView.show();
+                }
             }
         });
         btn_click_change.setPaintFlags(btn_click_change.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -494,7 +508,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 //            String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 //            cursor.close();
             if (file.exists())
-                imageUpload(file.getPath());
+                getSaveUploadPrescriptionMetadata(file);
+//                imageUpload(file.getPath());
 //                sentSaveTestingServer(file.getPath());
         }
     }
@@ -995,6 +1010,187 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         smr.addFile("profileImage", imagePath);
         CureFull.getInstanse().getRequestQueue().add(smr);
 
+    }
+
+
+    private void getSaveUploadPrescriptionMetadata(final File file) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("Response", response);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                if (!json.getString("payload").equals(null)) {
+                                    JSONObject json1 = new JSONObject(json.getString("payload"));
+                                    String accessKeyID = json1.getString("accessKeyID");
+                                    String secretAccessKey = json1.getString("secretAccessKey");
+                                    String sessionToken = json1.getString("sessionToken");
+                                    uploadFile(accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_PROFILE_NAME + MyConstants.AWSType.FOLDER_PROFILE_NAME, file);
+                                }
+
+                            } else {
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    public void uploadFile(String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, File fileUpload) {
+        Log.e("accessKeyID", " " + accessKeyID + " secretAccessKey- " + secretAccessKey);
+
+        String imageUploadUrl = null;
+
+        BasicSessionCredentials credentials =
+                new BasicSessionCredentials(accessKeyID,
+                        secretAccessKey,
+                        sessionToken);
+        final AmazonS3 s3client = new AmazonS3Client(credentials);
+        s3client.setRegion(Region.getRegion(Regions.AP_SOUTH_1));
+        try {
+
+            if (!(s3client.doesBucketExist(bucketName))) {
+                // Note that CreateBucketRequest does not specify region. So bucket is
+                // created in the region specified in the client.
+                s3client.createBucket(new CreateBucketRequest(
+                        bucketName));
+            }
+
+
+        } catch (Exception e) {
+
+        }
+
+        TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+        // Request server-side encryption.
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        try {
+            String[] spiltName = fileUpload.getName().split("\\.");
+            String getName = spiltName[1];
+            final String name = "profile-img-" + AppPreference.getInstance().getUserIDProfile() + "." + getName;
+            Log.e("imageFile", " " + fileUpload.getAbsolutePath() + "name " + name + " bucketName- " + bucketName);
+            final TransferObserver observer = transferUtility.upload(
+                    bucketName,
+                    name,
+                    fileUpload, CannedAccessControlList.PublicRead
+            );
+            observer.setTransferListener(new TransferListener() {
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    switch (state.name()) {
+                        case "COMPLETED":
+                            sendImgProfileToServer("https://s3.ap-south-1.amazonaws.com/cure.user.profile.lp/profileImages/" + name);
+                            break;
+
+                    }
+
+
+                }
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    Log.e("bytesTotal", " " + bytesCurrent + " id- " + id);
+                }
+
+                @Override
+                public void onError(int id, Exception ex) {
+                    Log.e("error", "" + ex.getMessage() + " id- " + id);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+//        TransferObserver observer = transferUtility.download(
+//                "curefull.storage.test/cure.ehr",
+//                "",
+//                imageFile
+//        );
+
+//        for (Bucket bucket : s3client.listBuckets()) {
+//            Log.e("Bucket list - ", bucket.getName());
+//        }
+//            observer.refresh();
+
+    }
+
+
+    private void sendImgProfileToServer(final String url) {
+        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.UPLOADED_PROFILE + url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("Response p", response + " " + url);
+                        profile_image_view.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchTwitter(rootView);
+                            }
+                        });
+                        AppPreference.getInstance().setProfileImage(url);
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        CureFull.getInstanse().getSmallImageLoader().clearCache();
+                        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(url, profile_image_view);
+//                                        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
+//                                                .thumbnail(0.5f)
+//                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                                                .skipMemoryCache(true)
+//                                                .into(profile_image_view);
+                        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(url);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
 }

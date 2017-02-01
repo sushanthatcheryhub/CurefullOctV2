@@ -51,10 +51,9 @@ import java.util.Map;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentPrescriptionCheck;
+import fragment.healthapp.FragmentPrescriptionCheckNew;
 import fragment.healthapp.FragmentPrescriptionFollowUpImageView;
 import fragment.healthapp.FragmentPrescriptionImageFullView;
-import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.PrescriptionListView;
 import utils.AppPreference;
@@ -70,13 +69,13 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
     Context applicationContext;
     List<PrescriptionListView> prescriptionListViews;
     private RequestQueue requestQueue;
-    private FragmentPrescriptionCheck prescriptionCheck;
+    private FragmentPrescriptionCheckNew prescriptionCheck;
     private Uri uri;
     ArrayList<Uri> files = null;
     int size = 1;
     int pos;
 
-    public UploadPrescriptionAdpter(FragmentPrescriptionCheck fragmentPrescriptionCheck, Context applicationContexts,
+    public UploadPrescriptionAdpter(FragmentPrescriptionCheckNew fragmentPrescriptionCheck, Context applicationContexts,
                                     List<PrescriptionListView> prescriptionListViews) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;

@@ -332,7 +332,7 @@
                             android:elevation="@dimen/_10dp"
                             android:gravity="center"
                             android:padding="@dimen/_2dp"
-                            android:text="Health Note"
+                            android:text="CureNotes"
                             android:textColor="@color/health_yellow" />
 
                         <ImageView
@@ -644,6 +644,7 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
+                                                    android:text="       "
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -720,6 +721,7 @@
                                                     android:layout_marginRight="@dimen/_3dp"
                                                     android:background="@android:color/transparent"
                                                     android:ellipsize="end"
+                                                    android:text="     "
                                                     android:inputType="textCapWords"
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
@@ -842,14 +844,14 @@
 
                         <customsTextViews.CustomTextViewOpenSanBold
                             android:id="@+id/txt_ehr"
-                            style="@style/textView_dark_grey_normal_medium"
+                            style="@style/textView_medium_grey_bold_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginLeft="@dimen/_10dp"
                             android:gravity="center_vertical"
-                            android:text="EHR"
+                            android:text="CureE-Records"
                             android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 

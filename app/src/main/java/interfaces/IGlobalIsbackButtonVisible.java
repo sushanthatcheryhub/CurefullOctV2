@@ -5,5 +5,5 @@ package interfaces;
  */
 public interface IGlobalIsbackButtonVisible {
 
-    public void isbackButtonVisible(boolean isback);
+    public void isbackButtonVisible(boolean isback,String check);
 }

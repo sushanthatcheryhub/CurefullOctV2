@@ -23,6 +23,7 @@ public class UserInfo implements MyConstants.JsonUtils {
     private String profileImageUrl;
     private String primaryId;
     private String hintScreen;
+    private String user_id_profile;
 
     public UserInfo() {
 
@@ -41,6 +42,7 @@ public class UserInfo implements MyConstants.JsonUtils {
             setR_t(cur.getString(cur.getColumnIndex(R_T)));
             setCf_uuhid(cur.getString(cur.getColumnIndex(CF_UUHID)));
             setHintScreen(cur.getString(cur.getColumnIndex("hint_screen")));
+            setUser_id_profile(cur.getString(cur.getColumnIndex("user_id")));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,6 +63,7 @@ public class UserInfo implements MyConstants.JsonUtils {
             setA_t(jsonResponse.getString(MyConstants.JsonUtils.A_T));
             setR_t(jsonResponse.getString(MyConstants.JsonUtils.R_T));
             setCf_uuhid(jsonResponse.getString(MyConstants.JsonUtils.CF_UUHID));
+            setUser_id_profile(jsonResponse.getString("user_id"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,6 +84,7 @@ public class UserInfo implements MyConstants.JsonUtils {
             values.put(R_T, jsonResponse.getString(R_T));
             setPrimaryId(jsonResponse.getString(CF_UUHID));
             values.put(CF_UUHID, jsonResponse.getString(CF_UUHID));
+            values.put("user_id", jsonResponse.getString("user_id"));
             return values;
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,5 +174,13 @@ public class UserInfo implements MyConstants.JsonUtils {
 
     public void setHintScreen(String hintScreen) {
         this.hintScreen = hintScreen;
+    }
+
+    public String getUser_id_profile() {
+        return user_id_profile;
+    }
+
+    public void setUser_id_profile(String user_id_profile) {
+        this.user_id_profile = user_id_profile;
     }
 }

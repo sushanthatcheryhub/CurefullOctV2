@@ -19,4 +19,17 @@
     <dimen name="pickerWidth">400dp</dimen>
     <dimen name="grid_item_padding">12dp</dimen>
     <dimen name="grid_column_width">100dp</dimen>
+
+
+    <dimen name="text_size_extra_small">10sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_extra_large">20sp</dimen>
+    <dimen name="text_size_super_large">30sp</dimen>
+    <dimen name="text_size_extra_med_large">35sp</dimen>
+    <dimen name="text_size_super_med_large">40sp</dimen>
+    <dimen name="text_size_super_extra_large">70sp</dimen>
+    <dimen name="text_size_extra_large_med">25sp</dimen>
 </resources>

@@ -253,10 +253,8 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             if (cursor.getCount() > 0) {
                 database.update(TABLE_NOTE, cv, ID + "=" + primaryId,
                         null);
-//                Log.e("update", "Qurery Enty number-");
             } else {
                 long id = database.insert(TABLE_NOTE, null, cv);
-//                Log.e("", "Qurery Enty number-" + id);
             }
 
         } catch (Exception e) {

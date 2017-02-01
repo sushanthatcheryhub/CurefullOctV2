@@ -29,10 +29,10 @@
             android:id="@+id/nav_setting"
             android:icon="@drawable/drawer_setting"
             android:title="Setting" />
-        <item
-            android:id="@+id/nav_how_works"
-            android:icon="@drawable/drawer_howitworks"
-            android:title="How it Works?" />
+        <!--<item-->
+            <!--android:id="@+id/nav_how_works"-->
+            <!--android:icon="@drawable/drawer_howitworks"-->
+            <!--android:title="How it Works?" />-->
         <item
             android:id="@+id/nav_contact"
             android:icon="@drawable/drawer_contact"

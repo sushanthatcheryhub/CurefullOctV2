@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:minWidth="200dp"
+    android:orientation="vertical"
+    android:padding="@dimen/_5dp">
+
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="BallTrianglePath"
+        app:indicator_color="@color/health_yellow" />
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="BallGridPulse"
+        app:indicator_color="@color/health_yellow" />
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="BallZigZagDeflect"
+        app:indicator_color="@color/health_yellow" />
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader4"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="LineScale"
+        app:indicator_color="@color/health_yellow" />
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader5"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="BallPulseSync"
+        app:indicator_color="@color/health_yellow" />
+
+
+    <loader.AVLoadingIndicatorView
+        android:id="@+id/loader6"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:indicator="BallSpinFadeLoader"
+        app:indicator_color="@color/health_yellow" />
+
+
+</LinearLayout>
