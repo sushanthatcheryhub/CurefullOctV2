@@ -13,6 +13,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.e("recevice", "recevice");
+        Log.e("recevice", "recevice");
         String action = intent.getAction();
         if ("Water".equalsIgnoreCase(action)) {
             Log.e("shuffTest", "Pressed YES");
