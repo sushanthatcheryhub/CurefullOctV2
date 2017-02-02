@@ -80,7 +80,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private Reminder_Lab_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Lab_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true;
+    boolean flagShort = true, isReset = true;
     private LinearLayout revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
     private ListPopupWindow listPopupWindow4;
@@ -303,17 +303,21 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
-                radioPending.setChecked(false);
-                radioCurefull.setChecked(false);
-                radioDone.setChecked(false);
-                radioSelf.setSelected(false);
-                reminder = "N/A";
-                status = "N/A";
-                doctorName = "N/A";
-                launchTwitterShort(rootView);
-                txt_doctor_name_txt.setText("Doctor Name");
-                date = Utils.getTodayDate();
-                getReminderLabTest();
+                if(isReset){
+                    isReset=false;
+                    radioPending.setChecked(false);
+                    radioCurefull.setChecked(false);
+                    radioDone.setChecked(false);
+                    radioSelf.setSelected(false);
+                    reminder = "N/A";
+                    status = "N/A";
+                    doctorName = "N/A";
+                    launchTwitterShort(rootView);
+                    txt_doctor_name_txt.setText("Doctor Name");
+                    date = Utils.getTodayDate();
+                    getReminderLabTest();
+                }
+
                 break;
             case R.id.btn_apply:
                 date = "N/A";
@@ -353,6 +357,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        isReset=true;
                         Log.e("LabTest", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
@@ -429,6 +434,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        isReset=true;
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         Log.e("error", " " + error.getMessage());
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);

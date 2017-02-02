@@ -84,7 +84,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
     private Reminder_Visit_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Visit_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true;
+    boolean flagShort = true, isReset = true;
     private LinearLayout revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
 
@@ -106,7 +106,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         rootView = inflater.inflate(R.layout.fragment_reminder_doctor_visit,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "");
         }
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -330,17 +330,21 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
-                launchTwitterShort(rootView);
-                radioPending.setChecked(false);
-                radioCurefull.setChecked(false);
-                radioDone.setChecked(false);
-                radioSelf.setSelected(false);
-                reminder = "N/A";
-                status = "N/A";
-                doctorName = "N/A";
-                txt_doctor_name_txt.setText("Doctor Name");
-                date = Utils.getTodayDate();
-                getReminderMedicine();
+                if (isReset) {
+                    isReset = false;
+                    launchTwitterShort(rootView);
+                    radioPending.setChecked(false);
+                    radioCurefull.setChecked(false);
+                    radioDone.setChecked(false);
+                    radioSelf.setSelected(false);
+                    reminder = "N/A";
+                    status = "N/A";
+                    doctorName = "N/A";
+                    txt_doctor_name_txt.setText("Doctor Name");
+                    date = Utils.getTodayDate();
+                    getReminderMedicine();
+                }
+
                 break;
             case R.id.btn_apply:
                 date = "N/A";
@@ -381,6 +385,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        isReset = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
@@ -453,6 +458,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        isReset = true;
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         Log.e("error", " " + error.getMessage());
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);

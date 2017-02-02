@@ -77,7 +77,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
     private Reminder_medicine_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_medicine_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true;
+    boolean flagShort = true, isReset = true;
     private LinearLayout liner_dialog, revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
     private ListPopupWindow listPopupWindow4;
@@ -102,7 +102,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         rootView = inflater.inflate(R.layout.fragment_reminder_medicine,
                 container, false);
         if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
+            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "");
         }
         if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
             CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(false);
@@ -112,7 +112,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
         AppPreference.getInstance().setFragmentHealthReprts(false);
-        
+
         CureFull.getInstanse().getActivityIsntanse().selectedNav(3);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -343,17 +343,21 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
-                launchTwitterShort(rootView);
-                radioPending.setChecked(false);
-                radioCurefull.setChecked(false);
-                radioDone.setChecked(false);
-                radioSelf.setSelected(false);
-                reminder = "N/A";
-                status = "N/A";
-                doctorName = "N/A";
-                txt_doctor_name_txt.setText("Doctor Name");
-                date = Utils.getTodayDate();
-                getReminderMedicine();
+                if (isReset) {
+                    isReset = false;
+                    launchTwitterShort(rootView);
+                    radioPending.setChecked(false);
+                    radioCurefull.setChecked(false);
+                    radioDone.setChecked(false);
+                    radioSelf.setSelected(false);
+                    reminder = "N/A";
+                    status = "N/A";
+                    doctorName = "N/A";
+                    txt_doctor_name_txt.setText("Doctor Name");
+                    date = Utils.getTodayDate();
+                    getReminderMedicine();
+                }
+
                 break;
             case R.id.btn_apply:
                 date = "N/A";
@@ -396,6 +400,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        isReset=true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
@@ -475,6 +480,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        isReset=true;
                         Log.e("error", " " + error.getMessage());
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);

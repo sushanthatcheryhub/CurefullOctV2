@@ -99,21 +99,20 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName().trim());
 
         String med = "";
-        String[] test = healthNoteItemses.get(position).getTimeToTake().trim().split(",");
-        if (test != null && test.length > 0) {
-            for (int i = 0; i < test.length; i++) {
-                String[] dateParts11 = test[i].split(":");
-                String hrs1 = dateParts11[0];
-                String mins1 = dateParts11[1];
-                med += CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)) + " | ";
+        if (healthNoteItemses.get(position).getReminderMedicnceTimes() != null) {
+            for (int i = 0; i < healthNoteItemses.get(position).getReminderMedicnceTimes().size(); i++) {
+                int hrs1 = healthNoteItemses.get(position).getReminderMedicnceTimes().get(i).getHour();
+                int mins1 = healthNoteItemses.get(position).getReminderMedicnceTimes().get(i).getMinute();
+                med += CureFull.getInstanse().getActivityIsntanse().updateTime(hrs1, mins1) + " | ";
             }
-        }
-        if (med.endsWith(" | ")) {
-            Log.e("time", "" + med);
-            med = med.substring(0, med.length() - 2);
+            if (med.endsWith(" | ")) {
+                Log.e("time", "" + med);
+                med = med.substring(0, med.length() - 2);
+            }
+            txt_med_time.setText("" + med);
         }
 
-        txt_med_time.setText("" + med);
+
         if (healthNoteItemses.get(position).isAfterMeal()) {
             txt_meal.setText("After Meal");
         } else {
@@ -142,7 +141,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 bundle.putString("medicineReminderId", healthNoteItemses.get(position).getMedicineReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
                 bundle.putString("medicineName", "" + healthNoteItemses.get(position).getRemMedicineName());
-                bundle.putString("timeToTakeMedicne", "" + healthNoteItemses.get(position).getTimeToTake());
+                bundle.putParcelableArrayList("timeToTakeMedicne", healthNoteItemses.get(position).getReminderMedicnceTimes());
                 bundle.putString("noOfDaysInWeek", "" + healthNoteItemses.get(position).getNoOfDaysInWeek());
                 bundle.putInt("quantity", healthNoteItemses.get(position).getQuantity());
                 bundle.putString("noOfDays", "" + healthNoteItemses.get(position).getNoOfDays());
@@ -263,5 +262,6 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
+
 
 }

@@ -151,7 +151,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private RadioButton radioNewtest, radioOldest;
 
     private LinearLayout txt_short_cancel, txt_short_apply;
-    private boolean isList = false;
+    private boolean isList = false,isRest=true;
     private DialogLoader dialogLoader;
 
     @Override
@@ -482,21 +482,25 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 break;
 
             case R.id.liner_filter_btn_reset:
-                isButtonRest = true;
-                clickDoctorName = "";
-                clickDiseaseName = "";
-                clickDates = "";
-                AppPreference.getInstance().setFilterDateReports("");
-                AppPreference.getInstance().setFilterDoctorReports("");
-                AppPreference.getInstance().setFilterDieseReports("");
-                getAllFilterData();
-                getLabReportList();
-                liner_filter_date.setBackgroundResource(R.color.health_yellow);
-                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
-                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                if(isRest){
+                    isRest=false;
+                    isButtonRest = true;
+                    clickDoctorName = "";
+                    clickDiseaseName = "";
+                    clickDates = "";
+                    AppPreference.getInstance().setFilterDateReports("");
+                    AppPreference.getInstance().setFilterDoctorReports("");
+                    AppPreference.getInstance().setFilterDieseReports("");
+                    getAllFilterData();
+                    getLabReportList();
+                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+
+                }
 
                 break;
             case R.id.liner_short_by:
@@ -1209,6 +1213,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            isRest=true;
                             dialogLoader.hide();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
@@ -1255,6 +1260,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            isRest=true;
                             dialogLoader.hide();
                             txt_no_prescr.setText("No Reports Uploaded Yet!");
                             labReportItemView.setVisibility(View.GONE);
@@ -1279,6 +1285,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+            isRest=true;
             labReportItemView.setVisibility(View.GONE);
             txt_no_prescr.setText("No Internet Connection");
             txt_no_prescr.setVisibility(View.VISIBLE);

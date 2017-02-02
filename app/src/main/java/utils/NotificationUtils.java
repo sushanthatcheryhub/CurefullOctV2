@@ -30,32 +30,31 @@ public class NotificationUtils {
         this._context = context;
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void notificationWaterInTake(String type, String text) {
         // Prepare intent which is triggered if the
         // notification is selected
-        Intent intent = new Intent(_context, MainActivity.class);
+        Intent intent = new Intent();
         intent.setAction("Water");
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pIntent = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent, 0);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+//                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent intent1 = new Intent(_context, MainActivity.class);
+        Intent intent1 = new Intent();
         intent1.setAction("Not");
-        intent1.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pIntent2 = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent1, 0);
+//        intent1.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+//        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+//                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent2 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent intent2 = new Intent(_context, MainActivity.class);
+        Intent intent2 = new Intent();
         intent2.setAction("Skip");
-        intent2.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pIntent3 = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent2, 0);
+//        intent2.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+//        intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+//                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent3 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent2, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Build notification
         // Actions are just fake

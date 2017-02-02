@@ -100,6 +100,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private boolean isloadMore = false, isCallAgain = false;
     int dbYear = 0;
     HealthNoteItems details = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -215,7 +216,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private boolean validateSubject() {
         String email = edt_subject.getText().toString().trim();
         if (email.isEmpty()) {
-            edt_subject.setError("Name cannot be left blank.");
+            edt_subject.setError("Subject cannot be left blank.");
             requestFocus(edt_subject);
             return false;
         } else {
@@ -386,7 +387,7 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                     isSelectFrom = true;
                     firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                    txt_to_time.setText("");
+                    txt_to_time.setText("     ");
                     toFirstTime = "";
                 }
             }
@@ -394,30 +395,67 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
 
         } else {
             if (date.equalsIgnoreCase(firstDate)) {
-                if (hourOfDay < Integer.parseInt(hrs) + 1 & mintues < Integer.parseInt(mins) + 1) {
-                    secondTime = hourOfDay;
-                    secondTimeMintues = mintues;
-                    Log.e("first ", " " + newFirstTime + " second:- " + secondTime);
-                    if (secondTime >= newFirstTime & secondTimeMintues > newFirstTimeMintues) {
+                try {
+                    String string1 = Utils.getTodayTime();
+                    Date time1 = new SimpleDateFormat("HH:mm").parse(string1);
+                    Calendar calendar1 = Calendar.getInstance();
+                    calendar1.setTime(time1);
+                    calendar1.add(Calendar.DATE, 1);
+
+                    String string2 = newFirstTime + ":" + newFirstTimeMintues;
+                    Date time2 = new SimpleDateFormat("HH:mm").parse(string2);
+                    Calendar calendar2 = Calendar.getInstance();
+                    calendar2.setTime(time2);
+                    calendar2.add(Calendar.DATE, 1);
+
+                    String someRandomTime = hourOfDay + ":" + mintues;
+                    Date d = new SimpleDateFormat("HH:mm").parse(someRandomTime);
+                    Calendar calendar3 = Calendar.getInstance();
+                    calendar3.setTime(d);
+                    calendar3.add(Calendar.DATE, 1);
+
+                    Date x = calendar3.getTime();
+
+                    Log.e("value ", "" + " " + calendar3.getTime() + " " + calendar2.getTime() + " " + calendar1.getTime());
+
+                    if (x.before(calendar1.getTime()) && x.after(calendar2.getTime())) {
+                        //checkes whether the current time is between 14:49:00 and 20:11:13.
                         toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                         txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
                     } else {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
-                    }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than Current time.");
 
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
-                secondTime = hourOfDay;
-                secondTimeMintues = mintues;
-                Log.e("else ", " " + newFirstTime + " second:- " + secondTime);
-                if (secondTime >= newFirstTime & secondTimeMintues > newFirstTimeMintues) {
-                    toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
-                    txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+
+
+                try {
+
+
+                    String dateInString = firstDate + " " + newFirstTime + ":" + newFirstTimeMintues;
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date d1 = sdf.parse(dateInString);
+
+                    String someRandomTime = firstDate + " " + hourOfDay + ":" + mintues;
+                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date d = sdf1.parse(someRandomTime);
+
+//                    Log.e("value ", "" + " " + calendar3.getTime() + " " + calendar2.getTime() + " " + calendar1.getTime());
+
+                    if (d1.before(d)) {
+                        toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
+                        txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
             }
 
 
@@ -565,8 +603,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                                 firstDate = "";
                                 offset = 0;
                                 getAllHealthList();
-                                txt_time.setText("");
-                                txt_to_time.setText("");
+                                txt_time.setText("    ");
+                                txt_to_time.setText("   ");
                                 txt_date_time.setText("");
                                 liner_to_time.setVisibility(View.GONE);
                                 liner_date_t.setVisibility(View.GONE);
@@ -662,8 +700,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
             firstTime = "";
             toFirstTime = "";
             firstDate = "";
-            txt_time.setText("");
-            txt_to_time.setText("");
+            txt_time.setText("   ");
+            txt_to_time.setText("   ");
             txt_date_time.setText("");
             liner_to_time.setVisibility(View.GONE);
             liner_date_t.setVisibility(View.GONE);

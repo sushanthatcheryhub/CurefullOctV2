@@ -156,7 +156,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
     private LinearLayout txt_short_cancel, txt_short_apply;
-    private boolean isList = false;
+    private boolean isList = false,isRest=true;
     private DialogLoader dialogLoader;
 
     @Override
@@ -520,25 +520,29 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 }
                 break;
             case R.id.liner_filter_btn_reset:
-                isButtonRest = true;
-                clickDoctorName = "";
-                clickDiseaseName = "";
-                clickDates = "";
-                clickUploadBy = "";
-                AppPreference.getInstance().setFilterDate("");
-                AppPreference.getInstance().setFilterDoctor("");
-                AppPreference.getInstance().setFilterDiese("");
-                AppPreference.getInstance().setFilterUploadBy("");
-                getAllFilterData();
-                getPrescriptionList();
-                liner_filter_date.setBackgroundResource(R.color.health_yellow);
-                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
-                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                if(isRest){
+                    isRest=false;
+                    isButtonRest = true;
+                    clickDoctorName = "";
+                    clickDiseaseName = "";
+                    clickDates = "";
+                    clickUploadBy = "";
+                    AppPreference.getInstance().setFilterDate("");
+                    AppPreference.getInstance().setFilterDoctor("");
+                    AppPreference.getInstance().setFilterDiese("");
+                    AppPreference.getInstance().setFilterUploadBy("");
+                    getAllFilterData();
+                    getPrescriptionList();
+                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                }
+
 
                 break;
 
@@ -1385,6 +1389,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            isRest=true;
                             dialogLoader.hide();
                             Log.e("prescriptionlist", "" + response);
 
@@ -1434,6 +1439,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            isRest=true;
                             dialogLoader.hide();
                             prescriptionItemView.setVisibility(View.GONE);
                             txt_no_prescr.setText("No Presciption Uploaded Yet!");
@@ -1458,6 +1464,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+            isRest=true;
             prescriptionItemView.setVisibility(View.GONE);
             txt_no_prescr.setText("No Internet Connection");
             txt_no_prescr.setVisibility(View.VISIBLE);

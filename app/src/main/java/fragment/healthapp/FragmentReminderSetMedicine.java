@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +60,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import customsTextViews.CustomTextViewOpenSanRegular;
 import item.property.MedicineReminderItem;
+import item.property.ReminderMedicnceTime;
 import toggle.button.MultiSelectToggleGroup;
 import toggle.button.ToggleButtonGroup;
 import utils.AppPreference;
@@ -81,7 +83,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private String startFrom = "";
     private ListPopupWindow listPopupWindow;
     private String duration = "";
-    private String doages = "", timeToTakeMedicne = "";
+    private String doages = "";
+    private ArrayList<ReminderMedicnceTime> reminderMedicnceTimes = null;
     private LinearLayout liner_date_select, linear_page_count, liner_reminder_visible;
     private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
@@ -204,10 +207,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             String year = newDate[2];
             startFrom = year + "-" + month + "-" + day;
             isNewReminder = false;
-            timeToTakeMedicne = vBundle.getString("timeToTakeMedicne");
+            reminderMedicnceTimes = vBundle.getParcelableArrayList("timeToTakeMedicne");
             liner_reminder_visible.setVisibility(View.VISIBLE);
             linear_page_count.removeAllViews();
-            showPage(0, timeToTakeMedicne);
+            showPage(0, reminderMedicnceTimes);
             medicineReminderId = vBundle.getString("medicineReminderId");
             String noOfDaysInWeek = vBundle.getString("noOfDaysInWeek");
             addDays = noOfDaysInWeek;
@@ -284,7 +287,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             linear_page_count.removeAllViews();
             txt_dogaes.setText("" + MyConstants.IArrayData.listPopUp[position]);
             doages = MyConstants.IArrayData.listPopUp[position];
-            showPage(Integer.parseInt(doages), "");
+            showPage(Integer.parseInt(doages), reminderMedicnceTimes);
         }
     };
 
@@ -617,9 +620,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void showPage(final int totalPage, String timeToTakeMedicne) {
+    public void showPage(final int totalPage, ArrayList<ReminderMedicnceTime> timeToTakeMedicne) {
 
-        if (timeToTakeMedicne.equalsIgnoreCase("")) {
+        if (timeToTakeMedicne == null) {
             interval = (14 / totalPage);
             Log.e("value", "" + interval);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -691,8 +694,14 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 linear_page_count.addView(view_text_page[i]);
             }
         } else {
-            String[] timeToMedo = timeToTakeMedicne.split(",");
 
+            String med = "";
+            for (int i = 0; i < timeToTakeMedicne.size(); i++) {
+                int hrs1 = timeToTakeMedicne.get(i).getHour();
+                int mins1 = timeToTakeMedicne.get(i).getMinute();
+                med += CureFull.getInstanse().getActivityIsntanse().updateTime(hrs1, mins1) + ",";
+            }
+            String[] timeToMedo = med.split(",");
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 0, 0, 0);
             view_text_page = new CustomTextViewOpenSanRegular[timeToMedo.length];

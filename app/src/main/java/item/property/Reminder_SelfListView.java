@@ -1,16 +1,21 @@
 package item.property;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class Reminder_SelfListView {
+public class Reminder_SelfListView implements Parcelable {
 
     private String remMedicineName;
     private boolean isBeforeMeal;
     private boolean isAfterMeal;
-    private String timeToTake;
     private String medicineReminderId;
     private String doctorName;
     private String noOfDaysInWeek;
@@ -23,6 +28,7 @@ public class Reminder_SelfListView {
     private int noOfDosage;
     private String type;
     private String status;
+    private ArrayList<ReminderMedicnceTime> reminderMedicnceTimes;
 
     public Reminder_SelfListView() {
 
@@ -44,8 +50,7 @@ public class Reminder_SelfListView {
             setMedicineReminderId(jsonObject.getString("medicineReminderId"));
             setBeforeMeal(jsonObject.getBoolean("beforeMeal"));
             setAfterMeal(jsonObject.getBoolean("afterMeal"));
-            JSONObject jsonObject1 = new JSONObject(jsonObject.getString("medicineReminderAlarmDetailsResponse"));
-            setTimeToTake(jsonObject1.getString("timeToTakeMedicineInDay"));
+            setReminderMedicnceTimes(jsonObject.getJSONArray("medicineReminderAlarmDetailsResponse"));
             JSONObject jsonObject3 = new JSONObject(jsonObject.getString("dateOfMedicineTake"));
             setYear(jsonObject3.getInt("year"));
             setDate(jsonObject3.getInt("dayOfMonth"));
@@ -80,13 +85,6 @@ public class Reminder_SelfListView {
         isAfterMeal = afterMeal;
     }
 
-    public String getTimeToTake() {
-        return timeToTake;
-    }
-
-    public void setTimeToTake(String timeToTake) {
-        this.timeToTake = timeToTake;
-    }
 
     public String getMedicineReminderId() {
         return medicineReminderId;
@@ -184,4 +182,50 @@ public class Reminder_SelfListView {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public ArrayList<ReminderMedicnceTime> getReminderMedicnceTimes() {
+        return reminderMedicnceTimes;
+    }
+
+    public void setReminderMedicnceTimes(ArrayList<ReminderMedicnceTime> reminderMedicnceTimes) {
+        this.reminderMedicnceTimes = reminderMedicnceTimes;
+    }
+
+
+    public void setReminderMedicnceTimes(JSONArray symptomslistArray) {
+        if (symptomslistArray == null)
+            return;
+        ReminderMedicnceTime card = null;
+        this.reminderMedicnceTimes = new ArrayList<ReminderMedicnceTime>();
+        for (int i = 0; i < symptomslistArray.length(); i++) {
+            try {
+                card = new ReminderMedicnceTime(symptomslistArray.getJSONObject(i));
+                this.reminderMedicnceTimes.add(card);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+    }
+
+    public Reminder_SelfListView(Parcel in) {
+    }
+
+    public static final Parcelable.Creator<Reminder_SelfListView> CREATOR = new Parcelable.Creator<Reminder_SelfListView>() {
+        public Reminder_SelfListView createFromParcel(Parcel in) {
+            return new Reminder_SelfListView(in);
+        }
+
+        public Reminder_SelfListView[] newArray(int size) {
+            return new Reminder_SelfListView[size];
+        }
+    };
 }
