@@ -132,13 +132,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
-
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true, "");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);

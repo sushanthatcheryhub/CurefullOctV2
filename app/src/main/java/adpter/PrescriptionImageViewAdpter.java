@@ -140,7 +140,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                 bundle.putString("dieaseName", dieaseName);
                 bundle.putString("date", dates);
                 bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImage());
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionImageFullView(), bundle, true);
             }
         });

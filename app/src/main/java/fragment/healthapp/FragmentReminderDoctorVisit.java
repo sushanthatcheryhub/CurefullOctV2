@@ -105,12 +105,12 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reminder_doctor_visit,
                 container, false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "");
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
-
+        AppPreference.getInstance().setFragmentMedicine(false);
+        AppPreference.getInstance().setFragmentDoctorVisit(true);
+        AppPreference.getInstance().setFragmentLabTst(false);
         text_date = (TextView) rootView.findViewById(R.id.text_date);
         txt_date_dialog = (TextView) rootView.findViewById(R.id.txt_date_dialog);
         btn_history = (TextView) rootView.findViewById(R.id.btn_history);
@@ -371,7 +371,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 break;
             case R.id.rel_set_reminder:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentDoctorVisitSetReminder(), true);
                 break;
         }

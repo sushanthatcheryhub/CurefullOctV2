@@ -60,6 +60,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import customsTextViews.CustomTextViewOpenSanRegular;
 import item.property.MedicineReminderItem;
+import item.property.ReminderMedicnceDoagePer;
 import item.property.ReminderMedicnceTime;
 import toggle.button.MultiSelectToggleGroup;
 import toggle.button.ToggleButtonGroup;
@@ -84,7 +85,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private ListPopupWindow listPopupWindow;
     private String duration = "";
     private String doages = "";
-    private ArrayList<ReminderMedicnceTime> reminderMedicnceTimes = null;
+    private ArrayList<ReminderMedicnceDoagePer> reminderMedicnceTimes = null;
     private LinearLayout liner_date_select, linear_page_count, liner_reminder_visible;
     private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
@@ -620,7 +621,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void showPage(final int totalPage, ArrayList<ReminderMedicnceTime> timeToTakeMedicne) {
+    public void showPage(final int totalPage, ArrayList<ReminderMedicnceDoagePer> timeToTakeMedicne) {
 
         if (timeToTakeMedicne == null) {
             interval = (14 / totalPage);
@@ -696,10 +697,16 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         } else {
 
             String med = "";
+
             for (int i = 0; i < timeToTakeMedicne.size(); i++) {
-                int hrs1 = timeToTakeMedicne.get(i).getHour();
-                int mins1 = timeToTakeMedicne.get(i).getMinute();
-                med += CureFull.getInstanse().getActivityIsntanse().updateTime(hrs1, mins1) + ",";
+                if (timeToTakeMedicne.get(i).getReminderMedicnceTimes() != null) {
+                    for (int j = 0; j < timeToTakeMedicne.get(i).getReminderMedicnceTimes().size(); j++) {
+                        int hrs1 = timeToTakeMedicne.get(i).getReminderMedicnceTimes().get(j).getHour();
+                        int mins1 = timeToTakeMedicne.get(i).getReminderMedicnceTimes().get(j).getMinute();
+                        med += hrs1+":"+mins1 + ",";
+                    }
+                }
+
             }
             String[] timeToMedo = med.split(",");
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);

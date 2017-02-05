@@ -6,11 +6,11 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-//                String HOST_IP = "http://lp.hatcheryhub.com";
-        String HOST_IP = "http://192.168.0.31:8080";
+        String HOST_IP = "http://lp.hatcheryhub.com";
+//                String HOST_IP = "http://192.168.0.26:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
-//        String HOST_LOCATION = "/api/v1/";
-        String HOST_LOCATION = "/CurefullRestService/api/v1/";
+        String HOST_LOCATION = "/api/v1/";
+//                String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -88,6 +88,16 @@ public class MyConstants {
 
         //Notification
         String URL_NOTIFICATION = URL + "aws/registerUserForNotification";
+
+        //Notification Coming
+        String GET_NOTIFICATION_MEDICINE = URL + "enduser/medicineService/updateMedicineStatus";
+
+        String GET_NOTIFICATION_DOCTOR = URL + "enduser/dotorFollowupService/updateDoctorFollowupReminderStatus";
+        String GET_NOTIFICATION_LAB_TEST = URL + "endUser/labTestReminderService/updateLabTestReminderStatus";
+
+
+        //Contact
+            String GET_CONTACT= URL + "endUser/contact/sendMail";
     }
 
     public interface AWSType {

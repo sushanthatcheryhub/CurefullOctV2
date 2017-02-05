@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -33,20 +34,26 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import asyns.JsonUtilsObject;
+import awsgcm.AlarmReceiver;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
+import utils.Utils;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
     /**
@@ -89,7 +96,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
     public static final int STOP_FOREGROUND = 4;
 
     boolean activityRunning;
-
+    private Handler mHandler = new Handler();
 
     /**
      * Handler of incoming messages from clients.
@@ -142,7 +149,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     @Override
     public void onCreate() {
-
+        updateTimeOnEachSecond();
         initSensor();
     }
 
@@ -214,6 +221,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
         simpleStepDetector = new SimpleStepDetector();
         simpleStepDetector.registerListener(this);
         sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+
     }
 
     @Override
@@ -256,84 +264,124 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     }
 
-    public void jsonUploadTarget() {
-        if (CheckNetworkState.isNetworkAvailable(this)) {
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-            String steps = "0";
-            String running = "0";
-            String cycling = "0";
-            String waterintake = "0";
-            String caloriesBurnt = "0";
-            String dateTime = getTodayDateTime();
-            String[] dateParts = dateTime.split(" ");
-            String date = dateParts[0];
-            String timeReal = dateParts[1];
+    public void updateTimeOnEachSecond() {
+        Log.e("Timer", "Timer");
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
 
-            JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
-            Log.e("jsonUploadTarget", ": " + data.toString());
+            @Override
+            public void run() {
+                Calendar c = Calendar.getInstance();
+                final int hrs = c.get(Calendar.HOUR_OF_DAY);
+                final int min = c.get(Calendar.MINUTE);
+                mHandler.post(new Runnable() {
 
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.e("service, URL 3.", response.toString());
-                            int responseStatus = 0;
-                            JSONObject json = null;
-                            try {
-                                json = new JSONObject(response.toString());
-                                responseStatus = json.getInt("responseStatus");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                    @Override
+                    public void run() {
+                        // display toast
+                        if (updateTime(hrs, min).equalsIgnoreCase("12:00 am")) {
+                            double wirght = 0;
+                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+                                wirght = 40;
                             } else {
-                                try {
-                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                                wirght = Double.parseDouble(preferences.getString("kg", ""));
                             }
-
-
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+                            numSteps = 0;
+                            preferences.edit().putInt("stepsIn", 0).commit();
+                            Intent intent = new Intent();
+                            intent.setAction("steps");
+                            intent.putExtra("stepsCount", "" + numSteps);
+                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            sendBroadcast(intent);
+                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 am")) {
+                            double wirght = 0;
+                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+                                wirght = 40;
+                            } else {
+                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+                            }
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+                            Intent intent = new Intent();
+                            intent.setAction("steps");
+                            intent.putExtra("stepsCount", "" + numSteps);
+                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            sendBroadcast(intent);
+                        } else if (updateTime(hrs, min).equalsIgnoreCase("12:00 pm")) {
+                            double wirght = 0;
+                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+                                wirght = 40;
+                            } else {
+                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+                            }
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+                            Intent intent = new Intent();
+                            intent.setAction("steps");
+                            intent.putExtra("stepsCount", "" + numSteps);
+                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            sendBroadcast(intent);
+                        } else if (updateTime(hrs, min).equalsIgnoreCase("7:00 pm")) {
+                            double wirght = 0;
+                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+                                wirght = 40;
+                            } else {
+                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+                            }
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+                            Intent intent = new Intent();
+                            intent.setAction("steps");
+                            intent.putExtra("stepsCount", "" + numSteps);
+                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            sendBroadcast(intent);
                         }
-                    }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> headers = new HashMap<String, String>();
-                    headers.put("a_t", AppPreference.getInstance().getAt());
-                    headers.put("r_t", AppPreference.getInstance().getRt());
-                    headers.put("user_name", AppPreference.getInstance().getUserName());
-                    headers.put("email_id", AppPreference.getInstance().getUserID());
-                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                    return headers;
-                }
-            };
-            requestQueue.add(jsonObjectRequest);
+                    }
+
+                });
+
+            }
+        }, 0, 1000 * 40);
+    }
+
+    private String updateTime(int hours, int mins) {
+
+
+        int selctHour = hours;
+
+        String timeSet = "";
+        if (selctHour > 12) {
+            selctHour -= 12;
+            timeSet = "pm";
+        } else if (selctHour == 0) {
+            selctHour += 12;
+            timeSet = "am";
+        } else if (selctHour == 12) {
+            timeSet = "pm";
         } else {
-
+            timeSet = "am";
         }
 
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        // Append in a StringBuilder
+        String aTime = new StringBuilder().append(selctHour).append(':')
+                .append(minutes).append(" ").append(timeSet).toString();
+
+        return aTime;
     }
 
-    public static String getTodayDateTime() {
-        String formattedDate = null;
-        try {
-            SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "yyyy-MM-dd HH:mm", Locale.getDefault());
-            java.util.Date today = Calendar.getInstance().getTime();
-            formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
+    private String getDateTime() {
+        // get date time in custom format
+        SimpleDateFormat sdf = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
+        return sdf.format(new Date());
     }
-
 }

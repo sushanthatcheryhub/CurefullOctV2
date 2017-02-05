@@ -28,7 +28,7 @@ public class Reminder_SelfListView implements Parcelable {
     private int noOfDosage;
     private String type;
     private String status;
-    private ArrayList<ReminderMedicnceTime> reminderMedicnceTimes;
+    private ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePers;
 
     public Reminder_SelfListView() {
 
@@ -50,7 +50,7 @@ public class Reminder_SelfListView implements Parcelable {
             setMedicineReminderId(jsonObject.getString("medicineReminderId"));
             setBeforeMeal(jsonObject.getBoolean("beforeMeal"));
             setAfterMeal(jsonObject.getBoolean("afterMeal"));
-            setReminderMedicnceTimes(jsonObject.getJSONArray("medicineReminderAlarmDetailsResponse"));
+            setReminderMedicnceTimes(jsonObject.getJSONArray("dosagePerDateResponse"));
             JSONObject jsonObject3 = new JSONObject(jsonObject.getString("dateOfMedicineTake"));
             setYear(jsonObject3.getInt("year"));
             setDate(jsonObject3.getInt("dayOfMonth"));
@@ -183,24 +183,24 @@ public class Reminder_SelfListView implements Parcelable {
         this.status = status;
     }
 
-    public ArrayList<ReminderMedicnceTime> getReminderMedicnceTimes() {
-        return reminderMedicnceTimes;
+
+    public ArrayList<ReminderMedicnceDoagePer> getReminderMedicnceDoagePers() {
+        return reminderMedicnceDoagePers;
     }
 
-    public void setReminderMedicnceTimes(ArrayList<ReminderMedicnceTime> reminderMedicnceTimes) {
-        this.reminderMedicnceTimes = reminderMedicnceTimes;
+    public void setReminderMedicnceDoagePers(ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePers) {
+        this.reminderMedicnceDoagePers = reminderMedicnceDoagePers;
     }
-
 
     public void setReminderMedicnceTimes(JSONArray symptomslistArray) {
         if (symptomslistArray == null)
             return;
-        ReminderMedicnceTime card = null;
-        this.reminderMedicnceTimes = new ArrayList<ReminderMedicnceTime>();
+        ReminderMedicnceDoagePer card = null;
+        this.reminderMedicnceDoagePers = new ArrayList<ReminderMedicnceDoagePer>();
         for (int i = 0; i < symptomslistArray.length(); i++) {
             try {
-                card = new ReminderMedicnceTime(symptomslistArray.getJSONObject(i));
-                this.reminderMedicnceTimes.add(card);
+                card = new ReminderMedicnceDoagePer(symptomslistArray.getJSONObject(i));
+                this.reminderMedicnceDoagePers.add(card);
             } catch (Exception e) {
                 e.printStackTrace();
             }

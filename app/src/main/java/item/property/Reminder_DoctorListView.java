@@ -1,22 +1,26 @@
 package item.property;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class Reminder_DoctorListView {
+public class Reminder_DoctorListView implements Parcelable {
 
     private String remMedicineName;
     private String doctorName;
     private boolean isBeforeMeal;
     private boolean isAfterMeal;
-    private String timeToTake;
     private String medicineReminderId;
     private String noOfDaysInWeek;
     private int year;
@@ -28,6 +32,7 @@ public class Reminder_DoctorListView {
     private int noOfDosage;
     private String type;
     private String status;
+    private ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePers;
 
     public Reminder_DoctorListView() {
 
@@ -52,10 +57,7 @@ public class Reminder_DoctorListView {
             setMedicineReminderId(jsonObject1.getString("medicineReminderId"));
             setBeforeMeal(jsonObject1.getBoolean("beforeMeal"));
             setAfterMeal(jsonObject1.getBoolean("afterMeal"));
-            Log.e("doctor", " " + jsonObject1.getString("doctorName"));
-            JSONObject jsonObject2 = new JSONObject(jsonObject1.getString("medicineReminderAlarmDetailsResponse"));
-            setTimeToTake(jsonObject2.getString("timeToTakeMedicineInDay"));
-
+            setReminderMedicnceTimes(jsonObject1.getJSONArray("dosagePerDateResponse"));
             JSONObject jsonObject3 = new JSONObject(jsonObject1.getString("dateOfMedicineTake"));
             setYear(jsonObject3.getInt("year"));
             setDate(jsonObject3.getInt("dayOfMonth"));
@@ -91,13 +93,6 @@ public class Reminder_DoctorListView {
         isAfterMeal = afterMeal;
     }
 
-    public String getTimeToTake() {
-        return timeToTake;
-    }
-
-    public void setTimeToTake(String timeToTake) {
-        this.timeToTake = timeToTake;
-    }
 
     public String getDoctorName() {
         return doctorName;
@@ -194,4 +189,49 @@ public class Reminder_DoctorListView {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public ArrayList<ReminderMedicnceDoagePer> getReminderMedicnceDoagePers() {
+        return reminderMedicnceDoagePers;
+    }
+
+    public void setReminderMedicnceDoagePers(ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePers) {
+        this.reminderMedicnceDoagePers = reminderMedicnceDoagePers;
+    }
+
+    public void setReminderMedicnceTimes(JSONArray symptomslistArray) {
+        if (symptomslistArray == null)
+            return;
+        ReminderMedicnceDoagePer card = null;
+        this.reminderMedicnceDoagePers = new ArrayList<ReminderMedicnceDoagePer>();
+        for (int i = 0; i < symptomslistArray.length(); i++) {
+            try {
+                card = new ReminderMedicnceDoagePer(symptomslistArray.getJSONObject(i));
+                this.reminderMedicnceDoagePers.add(card);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+    }
+
+    public Reminder_DoctorListView(Parcel in) {
+    }
+
+    public static final Parcelable.Creator<Reminder_DoctorListView> CREATOR = new Parcelable.Creator<Reminder_DoctorListView>() {
+        public Reminder_DoctorListView createFromParcel(Parcel in) {
+            return new Reminder_DoctorListView(in);
+        }
+
+        public Reminder_DoctorListView[] newArray(int size) {
+            return new Reminder_DoctorListView[size];
+        }
+    };
 }

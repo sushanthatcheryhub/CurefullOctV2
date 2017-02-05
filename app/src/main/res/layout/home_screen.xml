@@ -121,14 +121,7 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/framge_child"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/liner_bottom_view"
-        android:layout_below="@+id/top_view">
 
-    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/liner_bottom_view"

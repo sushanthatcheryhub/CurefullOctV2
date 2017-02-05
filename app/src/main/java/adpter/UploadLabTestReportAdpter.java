@@ -185,7 +185,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                     bundle.putString("date", labReportListViews.get(position).getReportDate());
                     bundle.putString("id", labReportListViews.get(position).getReportId());
                     bundle.putParcelableArrayList("imageList", labReportListViews.get(position).getLabReportImageListViews());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentLabReportImageView(), bundle, true);
                 } else {
                     Bundle bundle = new Bundle();
@@ -195,7 +195,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                     bundle.putString("dieaseName", labReportListViews.get(position).getTestName());
                     bundle.putString("date", labReportListViews.get(position).getReportDate());
                     bundle.putString("imageList", labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentLabReportImageFullView(), bundle, true);
                 }
 

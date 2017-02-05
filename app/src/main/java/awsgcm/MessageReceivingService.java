@@ -66,9 +66,11 @@ public class MessageReceivingService extends Service {
         String newString = wow.replace("default=", "");
         Log.e("newString", " " + newString);
         try {
+
+            //typeId type
             JSONObject jsonObject = new JSONObject(newString);
             NotificationUtils notificationUtils = new NotificationUtils(context);
-            notificationUtils.notificationWaterInTake(jsonObject.getString("name"), jsonObject.getString("text"));
+            notificationUtils.allGetNotfication(jsonObject.getString("name"),jsonObject.getString("text"),jsonObject.getString("typeId"),jsonObject.getString("type"));
 
         } catch (JSONException e) {
             e.printStackTrace();

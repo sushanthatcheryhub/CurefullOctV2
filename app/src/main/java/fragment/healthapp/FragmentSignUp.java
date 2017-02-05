@@ -4,9 +4,11 @@ package fragment.healthapp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -70,7 +72,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private TextInputLayout input_layout_name, inputLayoutEmail;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private ArrayList<UHIDItemsCheck> uhidItemsChecks;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

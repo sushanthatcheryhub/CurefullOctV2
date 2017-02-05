@@ -198,12 +198,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         rootView = inflater.inflate(R.layout.fragment_health_lab_report,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"Lab Reports");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false,"Lab Reports");
+            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);

@@ -149,7 +149,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                 bundle.putString("dieaseName", dieaseName);
                 bundle.putString("date", dates);
                 bundle.putString("imageList", prescriptionListViews.get(position).getReportImage());
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabReportImageFullView(), bundle, true);
             }
         });

@@ -90,7 +90,7 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
                 bundle.putBoolean("isAfterMeal", healthNoteItemses.get(position).isAfterMeal());
                 bundle.putString("time", "" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
                 bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestSetReminder(), bundle, true);
             }
         });

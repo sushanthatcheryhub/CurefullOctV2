@@ -19,7 +19,7 @@ import utils.MyConstants;
  * @author mgod
  */
 public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
-    String status;
+    private String status;
     private int hour;
     private int minute;
 

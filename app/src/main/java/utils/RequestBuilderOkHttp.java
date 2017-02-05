@@ -65,7 +65,7 @@ public class RequestBuilderOkHttp {
         return null;
     }
 
-    String post(String url, JSONObject json) throws Exception {
+    public String post(String url, JSONObject json) throws Exception {
         RequestBody body = RequestBody.create(JSON, json.toString());
         Request request = new Request.Builder()
                 .url(url)

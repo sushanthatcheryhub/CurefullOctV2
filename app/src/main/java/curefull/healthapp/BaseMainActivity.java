@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import fragment.healthapp.FragmentContact;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentProfile;
@@ -60,15 +61,15 @@ public class BaseMainActivity extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.nav_home) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentUHID(), true);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             CureFull.getInstanse().cancel();
@@ -80,15 +81,19 @@ public class BaseMainActivity extends AppCompatActivity
             jsonLogout();
         } else if (id == R.id.nav_policy) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentTermCondition(), true);
+        } else if (id == R.id.nav_contact) {
+            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentContact(), true);
         } else if (id == R.id.nav_setting) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentSettingPage(), true);
         } else if (id == R.id.nav_reminder) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanseAll()
+            CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentReminderMedicine(), true);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -281,7 +286,6 @@ public class BaseMainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            CureFull.getInstanse().getFlowInstanseAll().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentLogin(), false);

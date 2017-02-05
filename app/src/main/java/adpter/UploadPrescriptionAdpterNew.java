@@ -186,7 +186,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                     bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
                     bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
                     bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionFollowUpImageView(), bundle, true);
                 } else {
                     if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 1) {
@@ -196,7 +196,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                         bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
                         bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptonImageFollowupId());
                         bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews());
-                        CureFull.getInstanse().getFlowInstanseAll()
+                        CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentPrescriptionImageView(), bundle, true);
                     } else {
                         Bundle bundle = new Bundle();
@@ -206,7 +206,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                         bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
                         bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
                         bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage());
-                        CureFull.getInstanse().getFlowInstanseAll()
+                        CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentPrescriptionImageFullView(), bundle, true);
                     }
 

@@ -575,4 +575,60 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
+    public static JSONObject toNotificationMEdincie(String perDayDosageDetailsId, String status) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("perDayDosageDetailsId", perDayDosageDetailsId);
+            jsonParent.put("status", status);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toNotificationDoctor(String perDayDosageDetailsId, String status) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("doctorFollowupReminderId", perDayDosageDetailsId);
+            jsonParent.put("status", status);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+
+    public static JSONObject toNotificationLabTest(String perDayDosageDetailsId, String status) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("labTestReminderId", perDayDosageDetailsId);
+            jsonParent.put("status", status);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject toCotact(String title, String details) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("title", title.trim());
+            jsonParent.put("details", details.trim());
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
 }

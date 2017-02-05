@@ -101,12 +101,13 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reminder_medicine,
                 container, false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(false);
-        }
+            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
+            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false);
+
+
+        AppPreference.getInstance().setFragmentMedicine(true);
+        AppPreference.getInstance().setFragmentDoctorVisit(false);
+        AppPreference.getInstance().setFragmentLabTst(false);
 
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
@@ -366,7 +367,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 break;
             case R.id.rel_set_reminder:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentReminderSetMedicine(), true);
                 break;
             case R.id.liner_filter_by:
@@ -400,7 +401,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        isReset=true;
+                        isReset = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
@@ -480,7 +481,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isReset=true;
+                        isReset = true;
                         Log.e("error", " " + error.getMessage());
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
@@ -747,7 +748,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                                             if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
                                                 relative_bottom_next.setVisibility(View.GONE);
                                             } else {
-                                                btn_next.setVisibility(View.GONE);
+                                                btn_next.setVisibility(View.VISIBLE);
                                             }
                                         }
                                         if (medicineReminderListView.getReminderDoctorNames().size() > 0) {

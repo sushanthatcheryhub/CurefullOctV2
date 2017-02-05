@@ -188,7 +188,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                     bundle.putString("id", id);
                     bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptonImageFollowupId());
                     bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionImageView(), bundle, true);
                 } else {
                     Bundle bundle = new Bundle();
@@ -198,7 +198,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                     bundle.putString("doctorName", doctorName);
                     bundle.putString("date", date);
                     bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionImageFullView(), bundle, true);
                 }
 

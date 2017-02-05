@@ -185,7 +185,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                     bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
                     bundle.putString("id", prescriptionListViews.get(position).getPrescriptionId());
                     bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionFollowUpImageView(), bundle, true);
                 } else {
                     Bundle bundle = new Bundle();
@@ -195,7 +195,7 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                     bundle.putString("doctorName", prescriptionListViews.get(position).getDoctorName());
                     bundle.putString("date", prescriptionListViews.get(position).getPrescriptionDate());
                     bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage());
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionImageFullView(), bundle, true);
                 }
 

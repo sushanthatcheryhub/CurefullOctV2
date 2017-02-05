@@ -58,7 +58,7 @@ public class DialogHintScreenaLandingQution extends Dialog {
         liner_user_red.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(context);
                 dialogHintScreenaPrescriptions.show();

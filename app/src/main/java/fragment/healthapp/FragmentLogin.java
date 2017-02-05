@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.text.Spannable;
@@ -96,6 +97,7 @@ public class FragmentLogin extends Fragment implements
     private RequestQueue requestQueue;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private SharedPreferences sharedPreferencesUserLogin;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,10 +105,12 @@ public class FragmentLogin extends Fragment implements
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_login,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
         CureFull.getInstanse().getActivityIsntanse().showLogo(true);
         CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(false);
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
                 .getSharedPreferences("Login", 0);
         txt_term_conditions = (TextView) rootView.findViewById(R.id.txt_term_conditions);
@@ -486,6 +490,13 @@ public class FragmentLogin extends Fragment implements
                                     AppPreference.getInstance().setProfileImage(userInfo.getProfileImageUrl());
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(userInfo.getProfileImageUrl());
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name(), userInfo.getUser_id());
+
+                                    preferences.edit().putString("a_t", userInfo.getA_t()).commit();
+                                    preferences.edit().putString("r_t", userInfo.getR_t()).commit();
+                                    preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
+                                    preferences.edit().putString("email_id", userInfo.getUser_id()).commit();
+                                    preferences.edit().putString("cf_uuhid", userInfo.getCf_uuhid()).commit();
+
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
                                     String token_Id = sharedPreferencesUserLogin.getString("tokenid",
@@ -495,7 +506,7 @@ public class FragmentLogin extends Fragment implements
                                     jsonSaveNotification(token_Id, device_Id);
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentHomeScreenAll(), false);
+                                            .replace(new FragmentLandingPage(), false);
                                 } else {
                                     login_button.setEnabled(true);
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
@@ -592,7 +603,7 @@ public class FragmentLogin extends Fragment implements
 
                                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                 CureFull.getInstanse().getFlowInstanse()
-                                        .replace(new FragmentHomeScreenAll(), false);
+                                        .replace(new FragmentLandingPage(), false);
                             }
                         } else {
                             try {

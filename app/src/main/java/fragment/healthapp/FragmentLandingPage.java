@@ -163,12 +163,15 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(true, "");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+
+        AppPreference.getInstance().setIsLogin(true);
+        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
+        CureFull.getInstanse().getActivityIsntanse().activateDrawer();
+        CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(true);
+
+
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
@@ -246,8 +249,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
-        waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
-        txt_water_level.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
+
         getDailyHealth();
 
 
@@ -267,8 +269,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         }
 
 
-        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
-        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
         ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
         seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
@@ -286,13 +286,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 bundle.putString("Date", firstDate);
                 bundle.putString("firstTime", firstTime);
                 bundle.putString("toFirstTime", toFirstTime);
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentHealthNote(), bundle, true);
             }
         });
-        if (waterLevel == 0) {
-            img_minus_icon.setVisibility(View.INVISIBLE);
-        }
+
         if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
 
         }
@@ -307,9 +305,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 return false;
             }
         });
-        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
-        CureFull.getInstanse().getActivityIsntanse().startService(intent);
-        doBindService();
+
         jsonUploadTarget();
         return rootView;
     }
@@ -327,7 +323,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
             case R.id.imgg_question_red:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_red);
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaPrescriptions.show();
@@ -352,21 +348,21 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
 //            case R.id.realtive_click:
 //                if (AppPreference.getInstance().isEditGoal()) {
-//                    CureFull.getInstanse().getFlowInstanseAll()
+//                    CureFull.getInstanse().getFlowInstanse()
 //                            .replace(new FragmentHealthAppNew(), true);
 //
 //                } else {
-//                    CureFull.getInstanse().getFlowInstanseAll()
+//                    CureFull.getInstanse().getFlowInstanse()
 //                            .replace(new FragmentEditGoal(), true);
 //                }
 //
 //                break;
             case R.id.liner_click:
                 if (AppPreference.getInstance().isEditGoal()) {
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentHealthAppNewProgress(), false);
                 } else {
-                    CureFull.getInstanse().getFlowInstanseAll()
+                    CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentEditGoal(), false);
 
                 }
@@ -374,17 +370,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             case R.id.btn_set_goal:
 //                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
 //                dialogFullViewPrescription.show();
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentEditGoal(), false);
 
 
                 break;
             case R.id.linear_lab_report_click:
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestReport(), false);
                 break;
             case R.id.linear_prescription_click:
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), false);
                 break;
 
@@ -449,27 +445,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                 break;
             case R.id.img_plus_icon:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_plus_icon);
-//                if (waterLevel >= Integer.parseInt(AppPreference.getInstance().getWaterInTakeTarget())) {
-//                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Water Intake Target Done");
-//                    return;
-//                }
-                waterLevel += Integer.parseInt(AppPreference.getInstance().getGlass());
-                if (waterLevel > 0) {
-                    img_minus_icon.setVisibility(View.VISIBLE);
-                } else {
-                    return;
-                }
-                txt_water_level.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(waterLevel)) + " L");
                 getIncreseWaterInTake("true");
                 break;
             case R.id.img_minus_icon:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_minus_icon);
-                waterLevel -= Integer.parseInt(AppPreference.getInstance().getGlass());
-                txt_water_level.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(waterLevel)) + " L");
-                if (waterLevel == 0 || waterLevel < 0) {
-                    img_minus_icon.setVisibility(View.INVISIBLE);
-                    return;
-                }
                 getIncreseWaterInTake("false");
                 break;
 
@@ -585,21 +564,13 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MessengerService.MSG_SET_VALUE:
-                    Log.e("", "steps received in activity:" + msg.what);
-                    Log.e("", "steps arg in activity:" + msg.arg1);
-//                    txt_steps_counter.setText("Step Count : " + msg.arg1);
-
                     txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
                     AppPreference.getInstance().setStepsCount("" + msg.arg1);
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
-                    Log.e("percentage", ":- " + percentage);
                     int b = (int) percentage;
-                    Log.e("b", ":- " + b);
                     seekArcComplete.setProgress(b);
-//                    setProgressUpdateAnimation(b);
                     AppPreference.getInstance().setPercentage(b);
                     ticker1.setText(b + "%");
-
                     double wirght = 0;
                     Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
                     if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
@@ -607,12 +578,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     } else {
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
                     }
-
                     double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), msg.arg1);
                     txt_calories.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
                     AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("###.###").format(i2));
 //                    txt_calories.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1) + " kcal");
-                    preferences.edit().putInt("stepsIn", msg.arg1).commit();
                     break;
                 default:
                     super.handleMessage(msg);
@@ -1139,20 +1108,32 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                         String waterIntakeDone = json1.getString("waterIntakeDone");
                                         boolean goalSet = json1.getBoolean("goalSet");
                                         AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
+                                        preferences.edit().putString("waterin", "" + waterIntakeDone).commit();
                                         String waterIntakeLeft1 = "0";
                                         if (json1.getString("waterIntakeLeft").equals(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("0") || json1.getString("waterIntakeLeft").equalsIgnoreCase("0.0") || json1.getString("waterIntakeLeft").equalsIgnoreCase(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
                                             waterIntakeLeft1 = "0";
                                         } else {
                                             waterIntakeLeft1 = json1.getString("waterIntakeLeft");
                                         }
-
+                                        waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
+                                        if (waterLevel == 0) {
+                                            img_minus_icon.setVisibility(View.INVISIBLE);
+                                        }
+                                        txt_water_level.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
                                         AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
                                         preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
                                         AppPreference.getInstance().setStepsCount("" + steps);
+
+                                        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+                                        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
                                         if (goalSet) {
                                             AppPreference.getInstance().setIsEditGoal(true);
                                             AppPreference.getInstance().setIsEditGoalPage(true);
                                         }
+
+                                        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                                        CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                                        doBindService();
                                     }
 
                                 } else {
@@ -1168,6 +1149,9 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                            CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                            doBindService();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -1188,7 +1172,11 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-
+            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+            Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+            CureFull.getInstanse().getActivityIsntanse().startService(intent);
+            doBindService();
         }
 
     }
@@ -1218,9 +1206,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                     } else {
                                         waterIntakeLeft1 = json1.getString("waterIntakeLeft");
                                     }
-
                                     AppPreference.getInstance().setWaterInTake("" + waterIntakeDone1);
+                                    preferences.edit().putString("waterin", "" + waterIntakeDone1).commit();
                                     AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
+                                    waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
+                                    if (waterLevel == 0) {
+                                        img_minus_icon.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        img_minus_icon.setVisibility(View.VISIBLE);
+                                    }
+                                    txt_water_level.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
+
                                 }
 
                             } else {

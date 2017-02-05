@@ -101,12 +101,13 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reminder_lab_test,
                 container, false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
-        }
+            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
+        AppPreference.getInstance().setFragmentMedicine(false);
+        AppPreference.getInstance().setFragmentDoctorVisit(false);
+        AppPreference.getInstance().setFragmentLabTst(true);
         text_date = (TextView) rootView.findViewById(R.id.text_date);
         txt_date_dialog = (TextView) rootView.findViewById(R.id.txt_date_dialog);
         btn_history = (TextView) rootView.findViewById(R.id.btn_history);
@@ -303,8 +304,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
-                if(isReset){
-                    isReset=false;
+                if (isReset) {
+                    isReset = false;
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
                     radioDone.setChecked(false);
@@ -344,7 +345,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 break;
             case R.id.rel_set_reminder:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestSetReminder(), true);
                 break;
         }
@@ -357,7 +358,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        isReset=true;
+                        isReset = true;
                         Log.e("LabTest", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
@@ -434,7 +435,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isReset=true;
+                        isReset = true;
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         Log.e("error", " " + error.getMessage());
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);

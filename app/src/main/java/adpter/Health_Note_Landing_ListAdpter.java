@@ -121,7 +121,7 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentHealthNote(), true);
             }
         });

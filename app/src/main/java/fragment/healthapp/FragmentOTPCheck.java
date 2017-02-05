@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
@@ -68,12 +69,15 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false;
     private SharedPreferences sharedPreferencesUserLogin;
+    private SharedPreferences preferences;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_otp_check,
                 container, false);
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
                 .getSharedPreferences("Login", 0);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
@@ -140,9 +144,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             @Override
             public void messageReceived(String messageText) {
                 edt_otp_password.setText("");
-                String mgs=messageText.replace("Dear User ,\n" + "Your verification code is ","");
-                String again=mgs.replace("\nThanx for using Curefull. Stay Relief.","");
-                edt_otp_password.setText(""+again);
+                String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
+                String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
+                edt_otp_password.setText("" + again);
             }
         });
 
@@ -357,6 +361,13 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     AppPreference.getInstance().setMobileNumber(userInfo.getMobile_number());
                                     AppPreference.getInstance().setIsLoginFirst(true);
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(userInfo.getUser_name() + "-" + userInfo.getCf_uuhid(), userInfo.getUser_id());
+
+                                    preferences.edit().putString("a_t", userInfo.getA_t()).commit();
+                                    preferences.edit().putString("r_t", userInfo.getR_t()).commit();
+                                    preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
+                                    preferences.edit().putString("email_id", userInfo.getUser_id()).commit();
+                                    preferences.edit().putString("cf_uuhid", userInfo.getCf_uuhid()).commit();
+
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());
@@ -369,7 +380,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentHomeScreenAll(), false);
+                                            .replace(new FragmentLandingPage(), false);
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
                                 }

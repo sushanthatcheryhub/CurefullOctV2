@@ -108,12 +108,8 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         rootView = inflater.inflate(R.layout.fragment_health_note,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "Note");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Note");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(true);
         AppPreference.getInstance().setFragmentHealthpre(false);

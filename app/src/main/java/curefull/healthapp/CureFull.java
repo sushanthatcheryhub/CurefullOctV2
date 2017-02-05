@@ -28,7 +28,6 @@ import utils.FlowOrganizer;
 public class CureFull extends Application {
 
     private FlowOrganizer _flow;
-    private FlowOrganizer _flowAll;
     private MainActivity _activity;
     private static CureFull _application;
     private RequestQueue requestQueue;
@@ -52,8 +51,6 @@ public class CureFull extends Application {
 
     private boolean isEditext;
     private int postionGet;
-    private IGlobalIsbackButtonVisible iGlobalIsbackButtonVisible;
-    private IGlobalTopBarButtonVisible iGlobalTopBarButtonVisible;
 
     private static int idss = 0;
 
@@ -101,13 +98,6 @@ public class CureFull extends Application {
     }
 
     //
-    public FlowOrganizer getFlowInstanseAll() {
-        if (_flowAll == null) {
-            _flowAll = new FlowOrganizer(_activity, R.id.framge_child);
-
-        }
-        return _flowAll;
-    }
 
 
     public PhoneSpecificImage getFullImageLoader() {
@@ -198,13 +188,6 @@ public class CureFull extends Application {
         this.postionGet = postionGet;
     }
 
-    public IGlobalIsbackButtonVisible getiGlobalIsbackButtonVisible() {
-        return iGlobalIsbackButtonVisible;
-    }
-
-    public void setiGlobalIsbackButtonVisible(IGlobalIsbackButtonVisible iGlobalIsbackButtonVisible) {
-        this.iGlobalIsbackButtonVisible = iGlobalIsbackButtonVisible;
-    }
 
     public static int getIdss() {
         return idss;
@@ -214,11 +197,4 @@ public class CureFull extends Application {
         CureFull.idss = idss;
     }
 
-    public IGlobalTopBarButtonVisible getiGlobalTopBarButtonVisible() {
-        return iGlobalTopBarButtonVisible;
-    }
-
-    public void setiGlobalTopBarButtonVisible(IGlobalTopBarButtonVisible iGlobalTopBarButtonVisible) {
-        this.iGlobalTopBarButtonVisible = iGlobalTopBarButtonVisible;
-    }
 }

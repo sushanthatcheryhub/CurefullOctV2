@@ -5,9 +5,11 @@ import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
@@ -105,6 +107,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean isUploadClick = false, doubleback = false;
     private int glassInTake = 0, glassNumber = 0;
     private int pos;
+    SharedPreferences preferences;
 
     @Override
     public boolean onBackPressed() {
@@ -151,10 +154,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_set_goal,
                 container, false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"");
-        }
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
+            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         if (AppPreference.getInstance().isEditGoal()) {
             CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         } else {
@@ -629,8 +631,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (value > 500) {
                         value = 500;
                         edt_kgs.setText("" + (int) value);
+                        preferences.edit().putString("kg", "" + (int) value).commit();
                         AppPreference.getInstance().setGoalWeightKg("" + (int) value);
                     } else {
+                        preferences.edit().putString("kg", "" + value).commit();
                         AppPreference.getInstance().setGoalWeightKg("" + value);
                     }
                     getEditTextLength(edt_kgs);
@@ -893,6 +897,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     String kg = dateParts[0];
                     String graam = dateParts[1];
                     AppPreference.getInstance().setGoalWeightKg("" + kg);
+                    preferences.edit().putString("kg", kg).commit();
                     if (graam.length() == 1) {
                         AppPreference.getInstance().setGoalWeightGrams("" + graam + "00");
                     } else {
@@ -901,6 +906,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
                 } else {
                     String kg = dateParts[0];
+                    preferences.edit().putString("kg", kg).commit();
                     AppPreference.getInstance().setGoalWeightKg("" + kg);
                     AppPreference.getInstance().setGoalWeightGrams("");
                 }
@@ -1745,6 +1751,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             if (dateParts.length == 2) {
                 String kg = dateParts[0];
                 String graam = dateParts[1];
+                preferences.edit().putString("kg", "" + kg).commit();
                 AppPreference.getInstance().setGoalWeightKg("" + kg);
                 if (graam.length() == 1) {
                     AppPreference.getInstance().setGoalWeightGrams("" + graam + "00");
@@ -1754,6 +1761,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             } else {
                 String kg = dateParts[0];
+                preferences.edit().putString("kg", "" + kg).commit();
                 AppPreference.getInstance().setGoalWeightKg("" + kg);
                 AppPreference.getInstance().setGoalWeightGrams("");
             }

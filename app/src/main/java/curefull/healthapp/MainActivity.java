@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,17 +51,23 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import awsgcm.MessageReceivingService;
-import fragment.healthapp.FragmentHomeScreenAll;
+import fragment.healthapp.FragmentEditGoal;
+import fragment.healthapp.FragmentHealthAppNewProgress;
+import fragment.healthapp.FragmentHealthNote;
 import fragment.healthapp.FragmentLabTestReport;
+import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentPrescriptionCheckNew;
 import fragment.healthapp.FragmentProfile;
+import fragment.healthapp.FragmentReminderDoctorVisit;
+import fragment.healthapp.FragmentReminderLabTest;
+import fragment.healthapp.FragmentReminderMedicine;
 import fragment.healthapp.FragmentSignUp;
 import utils.AppPreference;
 import utils.CircularImageView;
 import utils.HandlePermission;
 
-public class MainActivity extends BaseMainActivity implements TransferListener {
+public class MainActivity extends BaseMainActivity implements TransferListener, View.OnClickListener {
 
     static {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -84,6 +91,14 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     String encodedImage;
     private View view1;
 
+
+    private RelativeLayout liner_bottom_view;
+    private LinearLayout top_view;
+    private LinearLayout txt_bottom_heath_app, txt_bottom_health_note, txt_bottom_home, txt_bottom_prescription, txt_bottom_reports;
+    private LinearLayout liner_medincine, liner_doctor_visit, liner_lab_test;
+    private TextView txt_med, txt_doctor_visit, txt_lab_test;
+    private ImageView img_medicine, img_doctor_visit, img_lab_test, img_health_app, img_health_note, img_health_home, img_health_pre, img_health_report;
+
     // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +115,46 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
             window.setBackgroundDrawable(background);
         }
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        top_view = (LinearLayout) findViewById(R.id.top_view);
+        liner_bottom_view = (RelativeLayout) findViewById(R.id.liner_bottom_view);
+        img_health_app = (ImageView) findViewById(R.id.img_health_app);
+        img_health_note = (ImageView) findViewById(R.id.img_health_note);
+        img_health_home = (ImageView) findViewById(R.id.img_health_home);
+        img_health_pre = (ImageView) findViewById(R.id.img_health_pre);
+        img_health_report = (ImageView) findViewById(R.id.img_health_report);
+
+
+        txt_bottom_heath_app = (LinearLayout) findViewById(R.id.txt_bottom_heath_app);
+        txt_bottom_health_note = (LinearLayout) findViewById(R.id.txt_bottom_health_note);
+        txt_bottom_home = (LinearLayout) findViewById(R.id.txt_bottom_home);
+        txt_bottom_prescription = (LinearLayout) findViewById(R.id.txt_bottom_prescription);
+        txt_bottom_reports = (LinearLayout) findViewById(R.id.txt_bottom_reports);
+
+        liner_bottom_view = (RelativeLayout) findViewById(R.id.liner_bottom_view);
+        txt_med = (TextView) findViewById(R.id.txt_med);
+        txt_doctor_visit = (TextView) findViewById(R.id.txt_doctor_visit);
+        txt_lab_test = (TextView) findViewById(R.id.txt_lab_test);
+
+        img_medicine = (ImageView) findViewById(R.id.img_medicine);
+        img_doctor_visit = (ImageView) findViewById(R.id.img_doctor_visit);
+        img_lab_test = (ImageView) findViewById(R.id.img_lab_test);
+
+        liner_medincine = (LinearLayout) findViewById(R.id.liner_medincine);
+        liner_doctor_visit = (LinearLayout) findViewById(R.id.liner_doctor_visit);
+        liner_lab_test = (LinearLayout) findViewById(R.id.liner_lab_test);
+        liner_medincine.setOnClickListener(this);
+        liner_doctor_visit.setOnClickListener(this);
+        liner_lab_test.setOnClickListener(this);
+
+        txt_bottom_heath_app.setOnClickListener(this);
+        txt_bottom_health_note.setOnClickListener(this);
+        txt_bottom_home.setOnClickListener(this);
+        txt_bottom_prescription.setOnClickListener(this);
+        txt_bottom_reports.setOnClickListener(this);
+
+
         img_share = (ImageView) findViewById(R.id.img_share);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -133,15 +188,27 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentHomeScreenAll(), false);
+            String type = getIntent().getExtras().getString("type");
+
+            if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderLabTest(), false);
+            } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderDoctorVisit(), false);
+            } else {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderMedicine(), false);
+            }
+//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+//            CureFull.getInstanse().getFlowInstanse()
+//                    .replace(new FragmentHomeScreenAll(), false);
 //            Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
         } else {
             if (AppPreference.getInstance().isLogin()) {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentHomeScreenAll(), false);
+                        .replace(new FragmentLandingPage(), false);
             } else {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
@@ -360,7 +427,21 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         String action = intent.getAction();
-        Log.e("bundle", "push event :- " + action);
+        if (!action.equalsIgnoreCase("steps")) {
+            String type = intent.getExtras().getString("type");
+            if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderLabTest(), false);
+            } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderDoctorVisit(), false);
+            } else {
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentReminderMedicine(), false);
+            }
+
+        }
+
     }
 
 
@@ -520,6 +601,131 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         Log.e("error", "" + ex.getMessage());
     }
 
+    @Override
+    public void onClick(View view) {
+        {
+
+            switch (view.getId()) {
+                case R.id.liner_medincine:
+                    if (!AppPreference.getInstance().isFragmentMedicine()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_medicine);
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_red);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderMedicine(), false);
+                    }
+
+                    break;
+                case R.id.liner_doctor_visit:
+                    if (!AppPreference.getInstance().isFragmentDoctorVisit()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_doctor_visit);
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderDoctorVisit(), false);
+                    }
+
+                    break;
+                case R.id.liner_lab_test:
+                    if (!AppPreference.getInstance().isFragmentLabTs()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_lab_test);
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderLabTest(), false);
+                    }
+
+                    break;
+                case R.id.txt_bottom_heath_app:
+                    if (!AppPreference.getInstance().isFragmentHealthApp()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_app);
+                        if (AppPreference.getInstance().isEditGoal()) {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentHealthAppNewProgress(), false);
+                        } else {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentEditGoal(), false);
+
+                        }
+                    }
+
+                    break;
+                case R.id.txt_bottom_health_note:
+                    if (!AppPreference.getInstance().isFragmentHealthNote()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_note);
+                        if (AppPreference.getInstance().isEditGoalPage()) {
+                            if (AppPreference.getInstance().isEditGoal()) {
+                                CureFull.getInstanse().getFlowInstanse()
+                                        .replace(new FragmentHealthNote(), false);
+                            }
+                        } else {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentHealthNote(), false);
+                        }
+                    }
+
+                    break;
+                case R.id.txt_bottom_home:
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentLandingPage(), false);
+                    break;
+                case R.id.txt_bottom_prescription:
+                    if (!AppPreference.getInstance().isFragmentHealtpre()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_pre);
+                        if (AppPreference.getInstance().isEditGoalPage()) {
+                            if (AppPreference.getInstance().isEditGoal()) {
+                                CureFull.getInstanse().getFlowInstanse()
+                                        .replace(new FragmentPrescriptionCheckNew(), false);
+                            }
+                        } else {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentPrescriptionCheckNew(), false);
+                        }
+                    }
+
+
+                    break;
+                case R.id.txt_bottom_reports:
+                    if (!AppPreference.getInstance().isFragmentHealtReprts()) {
+                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_report);
+                        if (AppPreference.getInstance().isEditGoalPage()) {
+                            if (AppPreference.getInstance().isEditGoal()) {
+                                CureFull.getInstanse().getFlowInstanse()
+                                        .replace(new FragmentLabTestReport(), false);
+                            }
+                        } else {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentLabTestReport(), false);
+                        }
+                    }
+
+                    break;
+
+            }
+        }
+
+    }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
 
@@ -546,5 +752,113 @@ public class MainActivity extends BaseMainActivity implements TransferListener {
         @Override
         protected void onProgressUpdate(Void... values) {
         }
+    }
+
+
+    public void isTobBarButtonVisible(boolean isback) {
+        if (isback) {
+            top_view.setVisibility(View.GONE);
+        } else {
+            liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
+            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+            liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+            img_medicine.setImageResource(R.drawable.medicine_icon_red);
+            txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
+            img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+            img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+            txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+            top_view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void isbackButtonVisible(boolean isback, String check) {
+        if (isback) {
+            liner_bottom_view.setVisibility(View.GONE);
+        } else {
+            if (check.equalsIgnoreCase("Prescription")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_red);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            } else if (check.equalsIgnoreCase("Lab Reports")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendinic_click);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_red);
+            } else if (check.equalsIgnoreCase("Health App")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_red);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            } else if (check.equalsIgnoreCase("Note")) {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_red);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            } else {
+                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
+                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
+                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
+                img_health_report.setImageResource(R.drawable.footer_report_yellow);
+            }
+            liner_bottom_view.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void manageOnChatScreen(String type) {
+        String tag = CureFull.getInstanse().getFlowInstanse().getCurrentFragmentTag();
+        // Check if is no fragment on current screen
+        if (tag == null || tag.trim().length() == 0) {
+            showChatScreen();
+            return;
+        }
+        Fragment f = getSupportFragmentManager().findFragmentByTag(tag);
+        // Check the fragment on tag is null
+        if (f == null) {
+            showChatScreen();
+            return;
+        }
+        // Check that the fragment
+        if (f instanceof FragmentReminderMedicine) {
+            showChatScreen();
+            return;
+        }
+//        else if (f instanceof FragmentChat) {
+//            onBackPressed();
+//            showChatScreen(bundle, false);
+//            return;
+//        } else {
+//            showChatScreen(bundle, true);
+//        }
+    }
+
+
+    private void showChatScreen() {
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentReminderMedicine(), false);
+//        CureFull.getInstanse().getFlowInstanse().replace(new FragmentReminderMedicine(),
+//                false);
     }
 }

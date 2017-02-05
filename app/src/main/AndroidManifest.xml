@@ -142,11 +142,13 @@
 
         <receiver android:name="awsgcm.AlarmReceiver">
             <intent-filter>
-                <action android:name="Water" />
-                <action android:name="Not" />
-                <action android:name="Skip" />
+                <action android:name="complete" />
+                <action android:name="skip" />
+                <action android:name="snooze" />
+                <action android:name="steps" />
             </intent-filter>
         </receiver>
+
 
         <provider
             android:name="android.support.v4.content.FileProvider"

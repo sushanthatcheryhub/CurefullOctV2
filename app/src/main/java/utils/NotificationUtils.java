@@ -30,50 +30,72 @@ public class NotificationUtils {
         this._context = context;
     }
 
+
+    public void allGetNotfication(String name, String text, String typeId, String type) {
+
+        notificationMedicine(name, text, typeId, type);
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    public void notificationWaterInTake(String type, String text) {
+    public void notificationMedicine(String name, String text, String id, String type) {
         // Prepare intent which is triggered if the
         // notification is selected
         Intent intent = new Intent();
-        intent.setAction("Water");
+        intent.setAction("complete");
+        intent.putExtra("perDayDosageDetailsId", id);
+        intent.putExtra("type", type);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
 //                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intent1 = new Intent();
-        intent1.setAction("Not");
+        intent1.setAction("skip");
+        intent1.putExtra("perDayDosageDetailsId", id);
+        intent1.putExtra("type", type);
 //        intent1.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 //        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
 //                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pIntent2 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent intent2 = new Intent();
-        intent2.setAction("Skip");
-//        intent2.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-//        intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-//                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pIntent3 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent11 = new Intent(_context, MainActivity.class);
+        intent11.setAction("open");
+        intent11.putExtra("type", type);
+        intent11.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        intent11.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent1 = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent11, PendingIntent.FLAG_UPDATE_CURRENT);
+
+//        Intent intent2 = new Intent();
+//        intent2.setAction("snooze");
+//        intent2.putExtra("perDayDosageDetailsId", id);
+//        intent.putExtra("type", type);
+////        intent2.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+////        intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+////                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pIntent3 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent2, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Build notification
         // Actions are just fake
         Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
                 R.mipmap.app_icon);
         Notification noti = new Notification.Builder(_context)
-                .setContentTitle(type)
+                .setContentTitle(name)
                 .setContentText(text)
                 .setSmallIcon(R.drawable.cf_notification).setLargeIcon(icon2)
 //                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
                 .setAutoCancel(true)
                 .addAction(R.drawable.done, "Done", pIntent)
-                .addAction(R.drawable.skip, "Skip", pIntent3)
-                .addAction(R.drawable.snooze, "Snooze", pIntent2).build();
+                .addAction(R.drawable.skip, "Skip", pIntent2)
+                .setContentIntent(pIntent1)
+                .build();
         NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
         // hide the notification after its selected
         noti.flags |= Notification.FLAG_AUTO_CANCEL;
         noti.defaults |= Notification.DEFAULT_SOUND;
-        notificationManager.notify(1, noti);
+        notificationManager.notify(Integer.parseInt(id), noti);
 
     }
 

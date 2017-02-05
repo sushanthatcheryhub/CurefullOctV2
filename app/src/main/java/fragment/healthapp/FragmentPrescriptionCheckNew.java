@@ -156,7 +156,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
     private LinearLayout txt_short_cancel, txt_short_apply;
-    private boolean isList = false,isRest=true;
+    private boolean isList = false, isRest = true;
     private DialogLoader dialogLoader;
 
     @Override
@@ -202,12 +202,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
         rootView = inflater.inflate(R.layout.fragment_health_presciption,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false,"Prescription");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Prescription");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);
@@ -520,8 +516,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 }
                 break;
             case R.id.liner_filter_btn_reset:
-                if(isRest){
-                    isRest=false;
+                if (isRest) {
+                    isRest = false;
                     isButtonRest = true;
                     clickDoctorName = "";
                     clickDiseaseName = "";
@@ -1389,7 +1385,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            isRest=true;
+                            isRest = true;
                             dialogLoader.hide();
                             Log.e("prescriptionlist", "" + response);
 
@@ -1439,7 +1435,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            isRest=true;
+                            isRest = true;
                             dialogLoader.hide();
                             prescriptionItemView.setVisibility(View.GONE);
                             txt_no_prescr.setText("No Presciption Uploaded Yet!");
@@ -1464,7 +1460,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            isRest=true;
+            isRest = true;
             prescriptionItemView.setVisibility(View.GONE);
             txt_no_prescr.setText("No Internet Connection");
             txt_no_prescr.setVisibility(View.VISIBLE);

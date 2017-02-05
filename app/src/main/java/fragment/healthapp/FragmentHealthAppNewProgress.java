@@ -107,12 +107,8 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         rootView = inflater.inflate(R.layout.fragment_health_app,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-        if (CureFull.getInstanse().getiGlobalIsbackButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalIsbackButtonVisible().isbackButtonVisible(false, "Health App");
-        }
-        if (CureFull.getInstanse().getiGlobalTopBarButtonVisible() != null) {
-            CureFull.getInstanse().getiGlobalTopBarButtonVisible().isTobBarButtonVisible(true);
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Health App");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
 
         AppPreference.getInstance().setFragmentHealthApp(true);
         AppPreference.getInstance().setFragmentHealthNote(false);
@@ -278,7 +274,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
 
             case R.id.liner_btn_goal:
-                CureFull.getInstanse().getFlowInstanseAll()
+                CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentEditGoal(), true);
                 break;
 
