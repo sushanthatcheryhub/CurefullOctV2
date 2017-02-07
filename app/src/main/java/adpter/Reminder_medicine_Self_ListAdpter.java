@@ -219,6 +219,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        Log.e("id", ": " + id);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
@@ -239,7 +240,6 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                                 healthNoteItemses.remove(pos);
                                 notifyDataSetChanged();
                             }
-
                         } else {
                         }
                     }

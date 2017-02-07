@@ -243,6 +243,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
                 doctorName = LabDoctorName.get(position).getDoctorName();
                 txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
+                date = "N/A";
                 getReminderLabTest();
             }
         }

@@ -79,7 +79,7 @@ public class FragmentLabReportImageView extends Fragment {
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new LabReportImageViewAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), completeDate);
+                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), completeDate, bundle.getString("uploadedBy"));
                 prescriptionItemView.setAdapter(prescriptionImageViewAdpter);
 //                uploadPrescriptionAdpter.notifyDataSetChanged();
             }
@@ -87,7 +87,6 @@ public class FragmentLabReportImageView extends Fragment {
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         return rootView;
     }
-
 
 
 }

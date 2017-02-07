@@ -122,7 +122,7 @@
                             android:layout_marginRight="@dimen/_5dp"
                             android:padding="@dimen/_3dp"
                             android:src="@drawable/delete_icon"
-                            android:visibility="visible" />
+                            android:visibility="invisible" />
 
                         <ImageView
                             android:id="@+id/img_share"

@@ -1,6 +1,7 @@
 package curefull.healthapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -60,39 +61,55 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         if (id == R.id.nav_home) {
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
+
             CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
+
             CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentUHID(), true);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             // ek ye simple method hota hai.
             //
             //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
-            FragmentLandingPage.stopStepService();
+//            FragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
+
             CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentTermCondition(), true);
         } else if (id == R.id.nav_contact) {
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentContact(), true);
-        } else if (id == R.id.nav_setting) {
+        } else if (id == R.id.nav_share) {
             CureFull.getInstanse().cancel();
+            getShareLink();
+        } else if (id == R.id.nav_setting) {
+
+            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentSettingPage(), true);
         } else if (id == R.id.nav_reminder) {
+
             CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentReminderMedicine(), true);
         }
@@ -316,5 +333,17 @@ public class BaseMainActivity extends AppCompatActivity
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
 
-
+    public void getShareLink() {
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "CureFull");
+            String sAux = "\nLet me recommend you this application\n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=curefull.healthapp \n\n";
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "choose one"));
+        } catch (Exception e) {
+            //e.toString();
+        }
+    }
 }

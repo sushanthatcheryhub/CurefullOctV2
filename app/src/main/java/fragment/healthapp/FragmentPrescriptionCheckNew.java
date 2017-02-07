@@ -149,10 +149,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     private FilterDataPrescription filterDataPrescription;
     private LinearLayout liner_filter_date, liner_filter_doctor, liner_filter_disease, liner_filter_uploadby;
     private TextView txt_date, txt_doctor, txt_diease, txt_uploadby, txt_pre_total;
-
     private RecyclerView recyclerView_filter;
     private Filter_prescription_ListAdpterNew filter_prescription_listAdpter;
-
     private RadioGroup radioShort;
     private RadioButton radioNewtest, radioOldest;
     private LinearLayout txt_short_cancel, txt_short_apply;
@@ -698,11 +696,11 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 //            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-            Matrix matrix = new Matrix();
-            matrix.setRotate(90);
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap bitmap_old = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
-            Bitmap bitmap = Bitmap.createBitmap(bitmap_old, 0, 0, bitmap_old.getWidth(), bitmap_old.getHeight(), matrix, true);
+//            Matrix matrix = new Matrix();
+//            matrix.setRotate(90);
+//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//            Bitmap bitmap_old = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
+//            Bitmap bitmap = Bitmap.createBitmap(bitmap_old, 0, 0, bitmap_old.getWidth(), bitmap_old.getHeight(), matrix, true);
 
             PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
             prescriptionImageList.setImageNumber(value + 1);
@@ -1860,124 +1858,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     }
 
 
-    public String compressImage(String imageUri) {
-
-        String filePath = getRealPathFromURI(imageUri);
-        Bitmap scaledBitmap = null;
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-//      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
-//      you try the use the bitmap here, you will get null.
-        options.inJustDecodeBounds = true;
-        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
-
-        int actualHeight = options.outHeight;
-        int actualWidth = options.outWidth;
-
-//      max Height and width values of the compressed image is taken as 816x612
-
-        float maxHeight = 816.0f;
-        float maxWidth = 612.0f;
-        float imgRatio = actualWidth / actualHeight;
-        float maxRatio = maxWidth / maxHeight;
-
-//      width and height values are set maintaining the aspect ratio of the image
-
-        if (actualHeight > maxHeight || actualWidth > maxWidth) {
-            if (imgRatio < maxRatio) {
-                imgRatio = maxHeight / actualHeight;
-                actualWidth = (int) (imgRatio * actualWidth);
-                actualHeight = (int) maxHeight;
-            } else if (imgRatio > maxRatio) {
-                imgRatio = maxWidth / actualWidth;
-                actualHeight = (int) (imgRatio * actualHeight);
-                actualWidth = (int) maxWidth;
-            } else {
-                actualHeight = (int) maxHeight;
-                actualWidth = (int) maxWidth;
-
-            }
-        }
-
-//      setting inSampleSize value allows to load a scaled down version of the original image
-
-        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
-
-//      inJustDecodeBounds set to false to load the actual bitmap
-        options.inJustDecodeBounds = false;
-
-//      this options allow android to claim the bitmap memory if it runs low on memory
-        options.inPurgeable = true;
-        options.inInputShareable = true;
-        options.inTempStorage = new byte[16 * 1024];
-
-        try {
-//          load the bitmap from its path
-            bmp = BitmapFactory.decodeFile(filePath, options);
-        } catch (OutOfMemoryError exception) {
-            exception.printStackTrace();
-
-        }
-        try {
-            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
-        } catch (OutOfMemoryError exception) {
-            exception.printStackTrace();
-        }
-
-        float ratioX = actualWidth / (float) options.outWidth;
-        float ratioY = actualHeight / (float) options.outHeight;
-        float middleX = actualWidth / 2.0f;
-        float middleY = actualHeight / 2.0f;
-
-        Matrix scaleMatrix = new Matrix();
-        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-
-        Canvas canvas = new Canvas(scaledBitmap);
-        canvas.setMatrix(scaleMatrix);
-        canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-
-//      check the rotation of the image and display it properly
-        ExifInterface exif;
-        try {
-            exif = new ExifInterface(filePath);
-
-            int orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION, 0);
-            Log.d("EXIF", "Exif: " + orientation);
-            Matrix matrix = new Matrix();
-            if (orientation == 6) {
-                matrix.postRotate(90);
-                Log.d("EXIF", "Exif: " + orientation);
-            } else if (orientation == 3) {
-                matrix.postRotate(180);
-                Log.d("EXIF", "Exif: " + orientation);
-            } else if (orientation == 8) {
-                matrix.postRotate(270);
-                Log.d("EXIF", "Exif: " + orientation);
-            }
-            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
-                    true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        FileOutputStream out = null;
-        String filename = getFilename();
-        try {
-            out = new FileOutputStream(filename);
-
-//          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return filename;
-
-    }
 
 
     public String getFilename() {

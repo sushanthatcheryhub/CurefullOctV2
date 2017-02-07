@@ -59,22 +59,28 @@ public class MessageReceivingService extends Service {
             String line = String.format("%s=%s", key, extras.getString(key));
             message += (line + "\n");
         }
-        Log.e("message", " " + message);
-        String[] newMeassage = message.split("\n");
-        String wow = newMeassage[3];
-        Log.e("wow", " " + wow);
-        String newString = wow.replace("default=", "");
-        Log.e("newString", " " + newString);
-        try {
+        Log.e("aws message", " " + message);
+        if(!message.contains("registration_id=")){
+            String[] newMeassage = message.split("\n");
+            if(newMeassage.length>0){
+                String wow = newMeassage[3];
+                Log.e("wow", " " + wow);
+                String newString = wow.replace("default=", "");
+                Log.e("newString", " " + newString);
+                try {
 
-            //typeId type
-            JSONObject jsonObject = new JSONObject(newString);
-            NotificationUtils notificationUtils = new NotificationUtils(context);
-            notificationUtils.allGetNotfication(jsonObject.getString("name"),jsonObject.getString("text"),jsonObject.getString("typeId"),jsonObject.getString("type"));
+                    //typeId type
+                    JSONObject jsonObject = new JSONObject(newString);
+                    NotificationUtils notificationUtils = new NotificationUtils(context);
+                    notificationUtils.allGetNotfication(jsonObject.getString("name"),jsonObject.getString("text"),jsonObject.getString("typeId"),jsonObject.getString("type"));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+
 
 
 //        postNotification(new Intent(context, MainActivity.class), context);

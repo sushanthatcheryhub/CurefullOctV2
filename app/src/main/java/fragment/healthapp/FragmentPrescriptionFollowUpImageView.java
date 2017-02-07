@@ -39,6 +39,7 @@ public class FragmentPrescriptionFollowUpImageView extends BaseBackHandlerFragme
     private TextView txt_doctor_name, txt_diease_name, txt_date;
 
 
+
     @Override
     public boolean onBackPressed() {
 
@@ -94,7 +95,7 @@ public class FragmentPrescriptionFollowUpImageView extends BaseBackHandlerFragme
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new UploadFollowUpPrescriptionAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), completeDate);
+                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), completeDate,bundle.getString("uploadedBy"));
                 prescriptionItemView.setAdapter(prescriptionImageViewAdpter);
             }
         }

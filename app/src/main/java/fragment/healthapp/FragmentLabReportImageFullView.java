@@ -57,7 +57,7 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView image_item;
-    private String doctoreName, prescriptionId, iPrescriptionId, date;
+    private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy;
     private RequestQueue requestQueue;
     private String images;
 
@@ -86,6 +86,12 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
+            uploadedBy = bundle.getString("uploadedBy");
+            if (uploadedBy.equalsIgnoreCase("curefull")) {
+                img_delete.setVisibility(View.INVISIBLE);
+            } else {
+                img_delete.setVisibility(View.VISIBLE);
+            }
             images = bundle.getString("imageList");
 //            Glide.with(this).load(images)
 //                    .crossFade()

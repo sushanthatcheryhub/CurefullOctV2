@@ -21,6 +21,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -322,6 +324,15 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
                 String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
                 edt_otp.setText("" + again);
+            }
+        });
+        input_new_pass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    jsonUpdateProfile();
+                }
+                return false;
             }
         });
 
@@ -1009,6 +1020,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
 
 
     private void getSaveUploadPrescriptionMetadata(final File file) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
                 new Response.Listener<String>() {
@@ -1107,8 +1119,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                             break;
 
                     }
-
-
                 }
 
                 @Override

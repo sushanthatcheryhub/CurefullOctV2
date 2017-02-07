@@ -241,6 +241,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
                 doctorName = LabDoctorName.get(position).getDoctorName();
                 txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
+                date = "N/A";
                 getReminderMedicine();
             }
         }

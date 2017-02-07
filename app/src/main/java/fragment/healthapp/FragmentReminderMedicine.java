@@ -83,7 +83,6 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
     private ListPopupWindow listPopupWindow4;
     private RadioGroup radioReminder;
     private RadioButton radioCurefull, radioSelf;
-
     private String startFrom = "";
     private RadioGroup radioStatus;
     private RadioButton radioPending, radioDone;
@@ -101,8 +100,8 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reminder_medicine,
                 container, false);
-            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
-            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false);
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false);
 
 
         AppPreference.getInstance().setFragmentMedicine(true);
@@ -249,6 +248,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
                 doctorName = LabDoctorName.get(position).getDoctorName();
                 txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
+                date = "N/A";
                 getReminderMedicine();
             }
         }
@@ -397,6 +397,8 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
         realtive_today.setVisibility(View.VISIBLE);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        Log.e("reminder", " " + reminder);
+        Log.e("date", " " + date);
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_OF_MED + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,
                 new Response.Listener<String>() {
                     @Override

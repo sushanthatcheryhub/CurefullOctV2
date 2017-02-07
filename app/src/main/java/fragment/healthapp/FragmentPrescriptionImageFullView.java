@@ -60,7 +60,7 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView gestureImageView;
-    private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date;
+    private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date, uploadedBy;
     private RequestQueue requestQueue;
     private Bundle bundle;
     private String images;
@@ -97,6 +97,12 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
                 }
             }
             doctoreName = bundle.getString("doctorName");
+            uploadedBy = bundle.getString("uploadedBy");
+            if (uploadedBy.equalsIgnoreCase("curefull")) {
+                img_delete.setVisibility(View.INVISIBLE);
+            } else {
+                img_delete.setVisibility(View.VISIBLE);
+            }
             txt_doctor_name.setText("" + doctoreName);
 //            txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionId = bundle.getString("prescriptionId");

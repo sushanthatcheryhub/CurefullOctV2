@@ -115,6 +115,7 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
                 bundle.putString("medicineName", "" + healthNoteItemses.get(position).getRemMedicineName());
                 bundle.putParcelableArrayList("timeToTakeMedicne", healthNoteItemses.get(position).getReminderMedicnceDoagePers());
+
                 bundle.putString("noOfDaysInWeek", "" + healthNoteItemses.get(position).getNoOfDaysInWeek());
                 bundle.putInt("quantity", healthNoteItemses.get(position).getQuantity());
                 bundle.putString("noOfDays", "" + healthNoteItemses.get(position).getNoOfDays());

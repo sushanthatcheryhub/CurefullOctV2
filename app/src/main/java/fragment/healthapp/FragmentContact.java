@@ -53,8 +53,12 @@ public class FragmentContact extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_contact,
                 container, false);
-        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
-        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(6);
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
+        CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         edt_deatils = (EditText) rootView.findViewById(R.id.edt_deatils);
         edt_subject = (EditText) rootView.findViewById(R.id.edt_subject);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);

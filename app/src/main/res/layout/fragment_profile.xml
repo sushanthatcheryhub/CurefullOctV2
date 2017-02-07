@@ -235,6 +235,7 @@
                             android:drawablePadding="@dimen/_5dp"
                             android:drawableRight="@drawable/password_hide"
                             android:hint="New Password"
+                            android:imeOptions="actionDone"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
                             android:textColor="@color/white"

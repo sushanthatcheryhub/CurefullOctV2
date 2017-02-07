@@ -35,6 +35,7 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
     private PrescriptionImageViewAdpter prescriptionImageViewAdpter;
     private List<PrescriptionImageListView> prescriptionImageListViews;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
+    private String uploadedBy;
 
 
     @Override
@@ -86,6 +87,7 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
                     e.printStackTrace();
                 }
             }
+            uploadedBy=bundle.getString("uploadedBy");
             txt_doctor_name.setText("" + bundle.getString("doctorName"));
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionImageListViews = bundle.getParcelableArrayList("imageList");
@@ -93,7 +95,7 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new PrescriptionImageViewAdpter(CureFull.getInstanse().getActivityIsntanse(),
-                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), bundle.getString("date"), bundle.getString("prescriptionFollowupId"));
+                        prescriptionImageListViews, bundle.getString("doctorName"), bundle.getString("id"), bundle.getString("dieaseName"), bundle.getString("date"), bundle.getString("prescriptionFollowupId"),uploadedBy);
                 prescriptionItemView.setAdapter(prescriptionImageViewAdpter);
 //                uploadPrescriptionAdpter.notifyDataSetChanged();
             }

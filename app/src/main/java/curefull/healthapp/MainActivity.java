@@ -178,16 +178,16 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         showActionBarToggle(false);
         disableDrawer();
         changeTitle("cureFull");
-
         startService(new Intent(this, MessageReceivingService.class));
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-
-        Log.e("id ", " " + refreshedToken);
+//        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//
+//        Log.e("id ", " " + refreshedToken);
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
+            showLogo(false);
             String type = getIntent().getExtras().getString("type");
 
             if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
@@ -428,6 +428,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         super.onNewIntent(intent);
         String action = intent.getAction();
         if (!action.equalsIgnoreCase("steps")) {
+            showLogo(false);
             String type = intent.getExtras().getString("type");
             if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
                 CureFull.getInstanse().getFlowInstanse()
@@ -687,6 +688,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_home:
+                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentLandingPage(), false);
                     break;
@@ -861,4 +863,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        CureFull.getInstanse().getFlowInstanse().replace(new FragmentReminderMedicine(),
 //                false);
     }
+
+
+
+
 }

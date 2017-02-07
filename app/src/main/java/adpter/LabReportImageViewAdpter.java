@@ -61,17 +61,18 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
     Context applicationContext;
     List<LabReportImageListView> prescriptionListViews;
     private RequestQueue requestQueue;
-    private String doctorName, id, dieaseName, dates;
+    private String doctorName, id, dieaseName, dates, uploadedBys;
 
 
     public LabReportImageViewAdpter(Context applicationContexts,
-                                    List<LabReportImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date) {
+                                    List<LabReportImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date, String uploadedBy) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.doctorName = doctorName;
         this.id = id;
         this.dieaseName = dieaseName;
         this.dates = date;
+        this.uploadedBys = uploadedBy;
 
     }
 
@@ -148,6 +149,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                 bundle.putString("doctorName", doctorName);
                 bundle.putString("dieaseName", dieaseName);
                 bundle.putString("date", dates);
+                bundle.putString("uploadedBy", uploadedBys);
                 bundle.putString("imageList", prescriptionListViews.get(position).getReportImage());
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabReportImageFullView(), bundle, true);

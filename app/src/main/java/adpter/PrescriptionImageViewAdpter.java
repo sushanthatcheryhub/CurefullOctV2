@@ -57,11 +57,11 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     Context applicationContext;
     List<PrescriptionImageListView> prescriptionListViews;
     private RequestQueue requestQueue;
-    private String doctorName, id, dieaseName, dates, prescriptionFollowupId;
+    private String doctorName, id, dieaseName, dates, prescriptionFollowupId, uploadedBys;
 
 
     public PrescriptionImageViewAdpter(Context applicationContexts,
-                                       List<PrescriptionImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date, String prescriptionFollowupId) {
+                                       List<PrescriptionImageListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date, String prescriptionFollowupId, String uploadedBy) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.doctorName = doctorName;
@@ -69,6 +69,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
         this.dieaseName = dieaseName;
         this.dates = date;
         this.prescriptionFollowupId = prescriptionFollowupId;
+        this.uploadedBys = uploadedBy;
 
     }
 
@@ -138,6 +139,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                 bundle.putString("prescriptionPartId", prescriptionListViews.get(position).getPrescriptionImagePartId());
                 bundle.putString("doctorName", doctorName);
                 bundle.putString("dieaseName", dieaseName);
+                bundle.putString("uploadedBy", uploadedBys);
                 bundle.putString("date", dates);
                 bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImage());
                 CureFull.getInstanse().getFlowInstanse()

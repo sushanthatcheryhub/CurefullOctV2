@@ -72,16 +72,17 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
     ArrayList<Uri> files = null;
     int size = 1;
     int pos;
-    private String doctorName, id, dieaseName, dates;
+    private String doctorName, id, dieaseName, dates, uploadedBys;
 
     public UploadFollowUpPrescriptionAdpter(Context applicationContexts,
-                                            List<PrescriptionImageFollowUpListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date) {
+                                            List<PrescriptionImageFollowUpListView> prescriptionListViews, String doctorName, String id, String dieaseName, String date, String uploadedBy) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.doctorName = doctorName;
         this.id = id;
         this.dieaseName = dieaseName;
         this.dates = date;
+        this.uploadedBys = uploadedBy;
     }
 
     @Override
@@ -186,6 +187,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                     bundle.putString("doctorName", doctorName);
                     bundle.putString("date", date);
                     bundle.putString("id", id);
+                    bundle.putString("uploadedBy", uploadedBys);
                     bundle.putString("prescriptionFollowupId", prescriptionListViews.get(position).getPrescriptonImageFollowupId());
                     bundle.putParcelableArrayList("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews());
                     CureFull.getInstanse().getFlowInstanse()
@@ -197,6 +199,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                     bundle.putString("prescriptionPartId", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImagePartId());
                     bundle.putString("doctorName", doctorName);
                     bundle.putString("date", date);
+                    bundle.putString("uploadedBy", uploadedBys);
                     bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage());
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentPrescriptionImageFullView(), bundle, true);
