@@ -26,10 +26,10 @@
             android:id="@+id/nav_share"
             android:icon="@drawable/drawer_share"
             android:title="Share" />
-        <item
-            android:id="@+id/nav_setting"
-            android:icon="@drawable/drawer_setting"
-            android:title="Setting" />
+        <!--<item-->
+            <!--android:id="@+id/nav_setting"-->
+            <!--android:icon="@drawable/drawer_setting"-->
+            <!--android:title="Setting" />-->
         <!--<item-->
             <!--android:id="@+id/nav_how_works"-->
             <!--android:icon="@drawable/drawer_howitworks"-->

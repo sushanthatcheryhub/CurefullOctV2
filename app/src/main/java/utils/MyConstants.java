@@ -6,11 +6,11 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
-//        String HOST_IP = "http://lp.hatcheryhub.com";
-                String HOST_IP = "http://192.168.0.38:8080";
+        String HOST_IP = "http://lp.hatcheryhub.com";
+//                        String HOST_IP = "http://192.168.0.26:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
-//        String HOST_LOCATION = "/api/v1/";
-                String HOST_LOCATION = "/CurefullRestService/api/v1/";
+        String HOST_LOCATION = "/api/v1/";
+//                        String HOST_LOCATION = "/CurefullRestService/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -21,12 +21,12 @@ public class MyConstants {
         String FORGOT_SEND = URL + "forgotPassword/endUser/resetPassword";
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
-        String HEALTH_NOTE_ADD = URL + "healthNote/addhealthNote";
+        String HEALTH_NOTE_ADD = URL + "endUser/healthNote/addhealthNote";
         String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
         String OTP_LAST = "&route=2";
-        String HEALTH_LIST_NOTE = URL + "healthNote/listOfhealthNotes?";
-        String HEALTH_LIST_DELETE = URL + "healthNote/deleteHealthNote?id=";
+        String HEALTH_LIST_NOTE = URL + "endUser/healthNote/listOfhealthNotes?";
+        String HEALTH_LIST_DELETE = URL + "endUser/healthNote/deleteHealthNote?id=";
         String SET_GOALS = URL + "endUser/healthapp/updateRecommendedTarget";
         String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetailsAndgetRecommendedTarget";
         String GET_SET_GOALS_DEATILS = URL + "endUser/healthapp/getgoal";
@@ -97,7 +97,7 @@ public class MyConstants {
 
 
         //Contact
-            String GET_CONTACT= URL + "endUser/contact/sendMail";
+        String GET_CONTACT = URL + "endUser/contact/sendMail";
     }
 
     public interface AWSType {
@@ -208,6 +208,7 @@ public class MyConstants {
         String TABLE_EDIT_GOAL = "tbl_edit_goal";
         String TABLE_GRAPH = "tbl_graph";
         String TABLE_OFFLINE_NOTE = "offline_note_master";
+        String TABLE_STEPS = "tbl_steps";
     }
 
 

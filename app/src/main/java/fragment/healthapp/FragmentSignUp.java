@@ -72,6 +72,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private TextInputLayout input_layout_name, inputLayoutEmail;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private ArrayList<UHIDItemsCheck> uhidItemsChecks;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -121,6 +122,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_signup:
+                btn_signup.setEnabled(false);
                 submitForm();
 //                CureFull.getInstanse().getFlowInstanse()
 //                        .replaceWithleftrightAnimation(new FragmentAuthorizationInformation(),null, true);
@@ -245,17 +247,20 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private void submitForm() {
 
         if (!validateName()) {
+            btn_signup.setEnabled(true);
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Name cannot be left blank.");
             return;
         }
 
         if (!validateEmail()) {
+            btn_signup.setEnabled(true);
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id cannot be left blank.");
             return;
         }
 
 
         if (!validateMobileNo()) {
+            btn_signup.setEnabled(true);
             return;
         }
 
@@ -264,6 +269,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
             jsonUHIDCheck();
 //            sendOTPService();
         } else {
+            btn_signup.setEnabled(true);
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
         }
@@ -298,7 +304,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                         bundle.putInt("otp", n);
                         bundle.putString("UHID", "");
                         CureFull.getInstanse().getFlowInstanse()
-                                .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
+                                .replaceWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
                     }
                 },
                 new Response.ErrorListener() {
@@ -416,6 +422,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btn_signup.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                 VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());

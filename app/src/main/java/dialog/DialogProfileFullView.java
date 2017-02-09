@@ -36,6 +36,7 @@ public class DialogProfileFullView extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
+        CureFull.getInstanse().getFullImageLoader().clearCache();
         CureFull.getInstanse().getFullImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), img_full_view);
 
 //        Glide.with(context).load(AppPreference.getInstance().getProfileImage())

@@ -54,33 +54,24 @@ public class MessageReceivingService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     protected static void saveToLog(Bundle extras, Context context) {
-        String message = "";
-        for (String key : extras.keySet()) {
-            String line = String.format("%s=%s", key, extras.getString(key));
-            message += (line + "\n");
-        }
+        String message = getMessage(extras);
+//        for (String key : extras.keySet()) {
+//
+//            String line = String.format("%s=%s", key, extras.getString(key));
+//            message += (line + "\n");
+//            Log.e("key"," "+key);
+//        }
         Log.e("aws message", " " + message);
-        if(!message.contains("registration_id=")){
-            String[] newMeassage = message.split("\n");
-            if(newMeassage.length>0){
-                String wow = newMeassage[3];
-                Log.e("wow", " " + wow);
-                String newString = wow.replace("default=", "");
-                Log.e("newString", " " + newString);
-                try {
+        if (!message.equalsIgnoreCase("")) {
+            try {
+                JSONObject jsonObject = new JSONObject(message);
+                NotificationUtils notificationUtils = new NotificationUtils(context);
+                notificationUtils.allGetNotfication(jsonObject.getString("name"), jsonObject.getString("text"), jsonObject.getString("typeId"), jsonObject.getString("type"));
 
-                    //typeId type
-                    JSONObject jsonObject = new JSONObject(newString);
-                    NotificationUtils notificationUtils = new NotificationUtils(context);
-                    notificationUtils.allGetNotfication(jsonObject.getString("name"),jsonObject.getString("text"),jsonObject.getString("typeId"),jsonObject.getString("type"));
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
-
-
 
 
 //        postNotification(new Intent(context, MainActivity.class), context);
@@ -125,6 +116,14 @@ public class MessageReceivingService extends Service {
 
     public IBinder onBind(Intent arg0) {
         return null;
+    }
+
+
+    public static String getMessage(Bundle data) {
+        // If a push notification is sent as plain text, then the message appears in "default".
+        // Otherwise it's in the "message" for JSON format.
+        return data.containsKey("default") ? data.getString("default") : data.getString(
+                "message", "");
     }
 
 

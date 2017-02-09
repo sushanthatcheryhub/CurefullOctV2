@@ -207,6 +207,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                 submitForm();
                 break;
             case R.id.btn_click_resend_otp:
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 sendOTPService();
                 break;
         }

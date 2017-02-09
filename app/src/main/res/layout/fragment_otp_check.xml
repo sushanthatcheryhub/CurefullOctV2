@@ -1,18 +1,15 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+  >
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         android:nestedScrollingEnabled="true">
 
         <LinearLayout
@@ -83,10 +80,9 @@
                         android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
                         android:drawablePadding="@dimen/_5dp"
-                        android:nextFocusDown="@+id/edt_password"
+                        android:imeOptions="actionNext"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Password"
-                        android:imeOptions="actionNext"
                         android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"

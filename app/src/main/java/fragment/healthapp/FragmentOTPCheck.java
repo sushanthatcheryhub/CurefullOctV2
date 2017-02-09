@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Handler;
 
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -70,7 +71,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private boolean showPwd = false;
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
-
+    private boolean isSending=false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -218,7 +219,17 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 submitForm();
                 break;
             case R.id.btn_click_resend_otp:
-                sendOTPService();
+
+                if(isSending){
+
+                }else {
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    sendOTPService();
+                    isSending=true;
+
+                }
+
+
                 break;
         }
     }

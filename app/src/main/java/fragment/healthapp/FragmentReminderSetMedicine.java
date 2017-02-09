@@ -29,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -257,6 +260,17 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 new ToggleButtonGroup.OnCheckedPositionChangeListener() {
                     @Override
                     public void onCheckedPositionChange(Set<Integer> checkedPositions) {
+
+                        if (duration.equalsIgnoreCase("")) {
+                            multiSelect.uncheckAll();
+                            return;
+                        }
+                        if (checkedPositions.size() > Integer.parseInt(duration)) {
+                            addDays = "";
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView,"Please don't select more than duration");
+                            multiSelect.uncheckAll();
+                            return;
+                        }
                         addDays = "";
                         for (int value : checkedPositions) {
                             addDays += MyConstants.IArrayData.listDays[value] + ",";
@@ -264,6 +278,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                         if (addDays.endsWith(",")) {
                             addDays = addDays.substring(0, addDays.length() - 1);
                         }
+
+
                     }
                 });
 
@@ -277,6 +293,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             listPopupWindow.dismiss();
             txt_duration.setText("" + MyConstants.IArrayData.listPopUp[position]);
             duration = MyConstants.IArrayData.listPopUp[position];
+            multiSelect.uncheckAll();
         }
     };
 
@@ -433,6 +450,28 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             }
 
         }
+
+        for (int i = 0; i < listCurrent.size(); i++) {
+            if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
+                return;
+            } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
+                return;
+            } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
+                return;
+            } else if (listCurrent.get(i).getInterval() == 0) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
+                return;
+            } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
+                return;
+            }
+
+        }
+
+
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.setRemMedAdd(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
@@ -579,6 +618,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
+        Log.e("state", " " + "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         startFrom = "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" + (mnt < 10 ? "0" + mnt : mnt) + "/" + year);
     }
@@ -625,7 +665,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         if (timeToTakeMedicne == null) {
             interval = (14 / totalPage);
-            Log.e("value", "" + interval);
+            Log.e("value", "" + interval + " " + (14 / totalPage));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 0, 0, 0);
             view_text_page = new CustomTextViewOpenSanRegular[totalPage];
@@ -703,7 +743,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     for (int j = 0; j < timeToTakeMedicne.get(i).getReminderMedicnceTimes().size(); j++) {
                         int hrs1 = timeToTakeMedicne.get(i).getReminderMedicnceTimes().get(j).getHour();
                         int mins1 = timeToTakeMedicne.get(i).getReminderMedicnceTimes().get(j).getMinute();
-                        med += hrs1+":"+mins1 + ",";
+                        med += hrs1 + ":" + mins1 + ",";
                     }
                 }
 
@@ -783,7 +823,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
     public String get24hrsFormat(String time) {
         String timeNew = "";
-        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+        DateFormat displayFormat = new SimpleDateFormat("HH:mm");
         SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
         Date date = null;
         try {

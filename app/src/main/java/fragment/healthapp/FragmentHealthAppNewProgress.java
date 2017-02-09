@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,6 +96,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     private TextView txt_graph_steps, txt_water_inatke_real, txt_change, txt_change_aveg, txt_calories;
     private LinearLayout liner_avg;
     private boolean isFirstTime = false;
+    SharedPreferences preferences;
 
     @Override
     public boolean onBackPressed() {
@@ -109,7 +112,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Health App");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         AppPreference.getInstance().setFragmentHealthApp(true);
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
@@ -184,8 +187,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         });
 
 
-        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
-        tickerTotal.setText("" + AppPreference.getInstance().getStepsCount());
+        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+        tickerTotal.setText("" + preferences.getInt("stepsIn", 0));
         text_calories_count.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
         ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
         seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
@@ -336,7 +340,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         CureFull.getInstanse().getActivityIsntanse().bindService(new Intent(CureFull.getInstanse().getActivityIsntanse(),
                 MessengerService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
-        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//        preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
     }
 
     final Messenger mMessenger = new Messenger(new FragmentHealthAppNewProgress.IncomingHandler());
@@ -345,7 +351,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mService = new Messenger(service);
-            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
 
             try {
                 Message msg = Message.obtain(null,
@@ -368,7 +376,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
-            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
 
 //            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), R.string.remote_service_disconnected,
 //                    Toast.LENGTH_SHORT).show();
@@ -402,7 +412,9 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
             // Detach our existing connection.
             CureFull.getInstanse().getActivityIsntanse().unbindService(mConnection);
             mIsBound = false;
-            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         }
     }
 
@@ -412,11 +424,10 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MessengerService.MSG_SET_VALUE:
-                    Log.e("", "steps received in activity:" + msg.what);
-                    Log.e("", "steps arg in activity:" + msg.arg1);
-//                    txt_steps_counter.setText("Step Count : " + msg.arg1);
                     txt_steps_counter.setText("" + msg.arg1);
-                    AppPreference.getInstance().setStepsCount("" + msg.arg1);
+                    preferences.edit().putInt("stepsIn", msg.arg1).commit();
+//                    txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//                    AppPreference.getInstance().setStepsCount("" + msg.arg1);
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
                     Log.e("percentage", ":- " + percentage);
                     int b = (int) percentage;

@@ -2,6 +2,7 @@ package operations;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -12,6 +13,7 @@ import java.util.List;
 import curefull.healthapp.CureFull;
 import item.property.GoalInfo;
 import item.property.HealthNoteItems;
+import item.property.StepsCountsItems;
 import item.property.UserInfo;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -21,7 +23,6 @@ import utils.MyConstants;
  */
 public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstants.IDataBaseTableKeys, MyConstants.JsonUtils {
     static Cursor cursor = null;
-
 
     public static List<HealthNoteItems> getNoteList(Context context) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
@@ -39,6 +40,37 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 cursor.moveToFirst();
                 for (int i = 0; i < cursor.getCount(); i++) {
                     HealthNoteItems content = new HealthNoteItems(cursor);
+                    listApps.add(content);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
+    public static List<StepsCountsItems> getOfflineSteps(Context context, String cfhuid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<StepsCountsItems>();
+        List<StepsCountsItems> listApps = new ArrayList<StepsCountsItems>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+// LIMIT 0,10
+            String query = "SELECT P.* FROM " + TABLE_STEPS
+                    + " P WHERE P.cf_uuhid = '" + cfhuid + "'";
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    StepsCountsItems content = new StepsCountsItems(cursor);
                     listApps.add(content);
                     cursor.moveToNext();
                 }
@@ -307,7 +339,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             cursor = database.rawQuery(query, null);
             AppPreference.getInstance().setcf_uuhid(primaryId);
             if (cursor.getCount() > 0) {
-
                 cv.put("hint_screen", 1);
                 database.update(TABLE_LOGIN, cv, CF_UUHID + "='" + primaryId + "'",
                         null);
@@ -316,6 +347,33 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 long id = database.insert(TABLE_LOGIN, null, cv);
 //                Log.e("insertLoginList", "Qurery Enty number-" + id);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+    public static void insertStepsCounts(Context context, ContentValues cv) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+//            String query = "SELECT * FROM " + TABLE_STEPS + " Where cf_uuhid ='" + cf_uuhid + "'";
+//
+//            cursor = database.rawQuery(query, null);
+
+            long id = database.insert(TABLE_STEPS, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -497,6 +555,20 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
             database.delete(TABLE_NOTE, "healthNoteId" + "=?",
                     new String[]{String.valueOf(healthNoteId)});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.close();
+        }
+    }
+
+    public static void deleteSteps(String date) {
+        SQLiteDatabase database = null;
+
+        try {
+            database = DatabaseHelper.openDataBase();
+            database.delete(TABLE_STEPS, "dateTime" + "=?",
+                    new String[]{String.valueOf(date)});
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

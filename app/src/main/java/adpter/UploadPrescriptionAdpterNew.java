@@ -161,12 +161,14 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
             @Override
             public void onClick(View view) {
                 size = 1;
-                if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().size() > 0) {
+                if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
                     CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                     pos = position;
-                    for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().size(); i++) {
-                        new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+                    Log.e("size new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size());
+                    for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size(); i++) {
+                        Log.e("check new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+                        new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
                     }
                 }
 
@@ -323,7 +325,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     private void prepareShareIntent(ArrayList<Uri> files) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Lab Report");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Prescription ");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "Name:- " + AppPreference.getInstance().getUserName() + "\n" + "Mobile No:- " + AppPreference.getInstance().getMobileNumber() + "\n" + "Email Id:- " + AppPreference.getInstance().getUserID());
         shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         shareIntent.setType("image/*");
@@ -349,11 +351,11 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
-        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpeg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 50, out);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 50, out);
             try {
                 out.close();
             } catch (IOException e) {
@@ -373,7 +375,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         @Override
         protected Bitmap doInBackground(String... params) {
 
-            Log.e("url", " " + params[0]);
+            Log.e("url new", " " + params[0]);
             try {
                 URL url = new URL(params[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -393,7 +395,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         protected void onPostExecute(Bitmap result) {
             uri = getLocalBitmapUri(result);
             files.add(uri);
-            if (size == prescriptionListViews.get(pos).getPrescriptionImageFollowUpListViews().get(pos).getPrescriptionImageListViews().size()) {
+            if (size == prescriptionListViews.get(pos).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size()) {
                 prepareShareIntent(files);
             }
             size += 1;

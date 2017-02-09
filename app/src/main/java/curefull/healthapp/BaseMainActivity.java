@@ -100,13 +100,17 @@ public class BaseMainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             CureFull.getInstanse().cancel();
             getShareLink();
-        } else if (id == R.id.nav_setting) {
+        }
 
-            CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentSettingPage(), true);
-        } else if (id == R.id.nav_reminder) {
+//        else if (id == R.id.nav_setting) {
+//
+//            CureFull.getInstanse().cancel();
+//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+//            CureFull.getInstanse().getFlowInstanse()
+//                    .replace(new FragmentSettingPage(), true);
+//        }
+
+        else if (id == R.id.nav_reminder) {
 
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();

@@ -239,9 +239,12 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
+//                realtive_today.setVisibility(View.GONE);
                 doctorName = LabDoctorName.get(position).getDoctorName();
                 txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
                 date = "N/A";
+                reminder = "N/A";
+                status = "N/A";
                 getReminderMedicine();
             }
         }
@@ -333,6 +336,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             case R.id.btn_reset:
                 if (isReset) {
                     isReset = false;
+                    realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
@@ -348,6 +352,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
                 break;
             case R.id.btn_apply:
+//                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
                 launchTwitterShort(rootView);
                 getReminderMedicine();

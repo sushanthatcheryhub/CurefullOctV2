@@ -100,8 +100,8 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
                         public void onItemClick(View view, int position) {
                             Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(position).getPrescriptionImage())))
                                     .thumbnail(0.5f)
-                                    .crossFade()
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
                                     .into(img_vew);
 //                            BitmapFactory.Options options = new BitmapFactory.Options();
 //                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;

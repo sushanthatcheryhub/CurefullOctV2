@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -50,6 +51,7 @@ import awsgcm.AlarmReceiver;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
@@ -279,6 +281,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
                     @Override
                     public void run() {
+//                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
                         // display toast
                         if (updateTime(hrs, min).equalsIgnoreCase("12:00 am")) {
                             double wirght = 0;
@@ -287,8 +290,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             } else {
                                 wirght = Double.parseDouble(preferences.getString("kg", ""));
                             }
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
                             numSteps = 0;
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
                             preferences.edit().putInt("stepsIn", 0).commit();
                             Intent intent = new Intent();
                             intent.setAction("steps");
@@ -324,7 +327,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
                             intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
                             sendBroadcast(intent);
-                        } else if (updateTime(hrs, min).equalsIgnoreCase("7:00 pm")) {
+                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 pm")) {
                             double wirght = 0;
                             if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
                                 wirght = 40;
@@ -338,6 +341,34 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
                             intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
                             sendBroadcast(intent);
+                        } else if (updateTime(hrs, min).equalsIgnoreCase("11:59 pm")) {
+                            double wirght = 0;
+                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+                                wirght = 40;
+                            } else {
+                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+                            }
+                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+                            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                Intent intent = new Intent();
+                                intent.setAction("steps");
+                                intent.putExtra("stepsCount", "" + numSteps);
+                                intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                                intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                                sendBroadcast(intent);
+                            } else {
+                                ContentValues cv = new ContentValues();
+                                cv.put("steps_count", numSteps);
+                                cv.put("runing", 0);
+                                cv.put("cycling", 0);
+                                cv.put("calories", "" + new DecimalFormat("###.###").format(i2));
+                                cv.put("dateTime", "" + getTodayDateTime());
+                                cv.put("waterTake", preferences.getString("waterin", ""));
+                                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                                DbOperations operations = new DbOperations();
+                                operations.insertStepsCounts(MessengerService.this, cv);
+                            }
+
                         }
 
                     }
@@ -346,6 +377,20 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
             }
         }, 0, 1000 * 40);
+    }
+
+    public static String getTodayDateTime() {
+        String formattedDate = null;
+        try {
+            SimpleDateFormat initialformatter = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm", Locale.getDefault());
+            java.util.Date today = Calendar.getInstance().getTime();
+            formattedDate = initialformatter.format(today);
+            Log.e("sds", "formattedDate" + formattedDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
     }
 
     private String updateTime(int hours, int mins) {

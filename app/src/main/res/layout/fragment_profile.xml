@@ -6,8 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+   >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -203,7 +202,7 @@
                         android:textColorHint="@color/white"
                         android:theme="@style/TextLabel">
 
-                        <customsTextViews.CustomEditTextViewMontserratHairLine
+                        <customsTextViews.CustomEditTextViewOpenSanRegular
                             android:id="@+id/input_old_pass"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="match_parent"
@@ -226,7 +225,7 @@
                         android:textColorHint="@color/white"
                         android:theme="@style/TextLabel">
 
-                        <customsTextViews.CustomEditTextViewMontserratHairLine
+                        <customsTextViews.CustomEditTextViewOpenSanRegular
                             android:id="@+id/input_new_pass"
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="match_parent"

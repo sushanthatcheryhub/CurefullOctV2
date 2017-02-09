@@ -6,8 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@color/health_yellow"
     android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    >
 
 
     <ScrollView

@@ -6,6 +6,8 @@
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:clickable="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
    >
 
     <RelativeLayout

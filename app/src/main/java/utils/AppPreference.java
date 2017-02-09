@@ -164,6 +164,18 @@ public class AppPreference implements MyConstants.JsonUtils {
         return false;
     }
 
+    public void setIsFirstTimeSteps(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("screen1Steps", isLogin).commit();
+        }
+    }
+
+    public boolean isFirstTimeSteps() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("screen1Steps", false);
+        return false;
+    }
+
     public void setcf_uuhid(String className) {
         if (_prefrence != null)
             _prefrence.edit().putString("cf_uuhid", className).commit();
@@ -396,16 +408,16 @@ public class AppPreference implements MyConstants.JsonUtils {
         return "";
     }
 
-    public void setStepsCount(String className) {
-        if (_prefrence != null)
-            _prefrence.edit().putString("stepsCount", className).commit();
-    }
-
-    public String getStepsCount() {
-        if (_prefrence != null)
-            return _prefrence.getString("stepsCount", "0");
-        return "";
-    }
+//    public void setStepsCount(String className) {
+//        if (_prefrence != null)
+//            _prefrence.edit().putString("stepsCount", className).commit();
+//    }
+//
+//    public String getStepsCount() {
+//        if (_prefrence != null)
+//            return _prefrence.getString("stepsCount", "0");
+//        return "";
+//    }
 
 
     public void setCaloriesCount(String className) {

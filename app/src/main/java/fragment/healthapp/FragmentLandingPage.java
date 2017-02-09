@@ -78,6 +78,7 @@ import dialog.DialogHintScreenaLanding;
 import dialog.DialogHintScreenaLandingQution;
 import dialog.DialogHintScreenaPrescriptions;
 import item.property.HealthNoteItems;
+import item.property.StepsCountsItems;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
@@ -151,6 +152,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private int secondTimeMintues = 0;
     int dbYear = 0;
     private ImageView imgg_question_white, imgg_question_red;
+    private List<StepsCountsItems> stepsCountsItemses;
 
     @Override
     public boolean onBackPressed() {
@@ -250,15 +252,27 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
 
-        getDailyHealth();
 
+        if (AppPreference.getInstance().isFirstTimeSteps()) {
+            stepsCountsItemses = DbOperations.getOfflineSteps(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid());
+            if (stepsCountsItemses != null && stepsCountsItemses.size() > 0) {
+                Log.e("db", "db");
+                for (int i = 0; i < stepsCountsItemses.size(); i++) {
+                    jsonUploadTargetSteps(CureFull.getInstanse().getActivityIsntanse(), stepsCountsItemses.get(i).getSteps_count(), stepsCountsItemses.get(i).getCalories(), stepsCountsItemses.get(i).getWaterTake(), stepsCountsItemses.get(i).getDateTime(), i, stepsCountsItemses.size());
+                }
+            } else {
+                jsonUploadTarget();
+            }
+
+        } else {
+            getDailyHealth();
+            AppPreference.getInstance().setIsFirstTimeSteps(true);
+        }
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
-
         } else {
             Log.e("hello", ":- " + " hello");
             if (AppPreference.getInstance().getHintScreen().equalsIgnoreCase("1")) {
-
             } else {
                 AppPreference.getInstance().setIsFirstTimeScreen1(true);
                 DialogHintScreenaLandingQution dialogHintScreenaLandingQution = new DialogHintScreenaLandingQution(CureFull.getInstanse().getActivityIsntanse());
@@ -306,7 +320,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             }
         });
 
-        jsonUploadTarget();
+
         return rootView;
     }
 
@@ -463,7 +477,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         CureFull.getInstanse().getActivityIsntanse().bindService(new Intent(CureFull.getInstanse().getActivityIsntanse(),
                 MessengerService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
-        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//        preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
     }
 
@@ -473,7 +490,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mService = new Messenger(service);
-            txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
             txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
             try {
                 Message msg = Message.obtain(null,
@@ -496,7 +516,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
-            txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText(AppPreference.getInstance().getStepsCount());
             txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
 //            Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), R.string.remote_service_disconnected,
 //                    Toast.LENGTH_SHORT).show();
@@ -542,7 +565,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             // Detach our existing connection.
             CureFull.getInstanse().getActivityIsntanse().unbindService(mConnection);
             mIsBound = false;
-            text_steps_count.setText(AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            text_steps_count.setText(AppPreference.getInstance().getStepsCount());
         }
     }
 
@@ -564,8 +590,12 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MessengerService.MSG_SET_VALUE:
-                    txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
-                    AppPreference.getInstance().setStepsCount("" + msg.arg1);
+
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+                    txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//                    txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//                    AppPreference.getInstance().setStepsCount("" + msg.arg1);
+                    preferences.edit().putInt("stepsIn", msg.arg1).commit();
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
                     int b = (int) percentage;
                     seekArcComplete.setProgress(b);
@@ -1006,7 +1036,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 
-            String steps = AppPreference.getInstance().getStepsCount();
+            String steps = "" + preferences.getInt("stepsIn", 0);
             String running = "0";
             String cycling = "0";
             String waterintake = AppPreference.getInstance().getWaterInTake();
@@ -1033,6 +1063,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                 e.printStackTrace();
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                getDailyHealth();
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -1089,6 +1120,7 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private void getDailyHealth() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            Log.e("date ", "date " + CureFull.getInstanse().getActivityIsntanse().getTodayDate());
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
                     new Response.Listener<String>() {
@@ -1104,16 +1136,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                 if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                     if (!json.getString("payload").equals(null)) {
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
-                                        String steps = json1.getString("steps");
-                                        String waterIntakeDone = json1.getString("waterIntakeDone");
-                                        boolean goalSet = json1.getBoolean("goalSet");
+                                        JSONObject json2 = new JSONObject(json1.getString("dailyDetails"));
+                                        String steps = json2.getString("steps");
+                                        String waterIntakeDone = json2.getString("waterIntakeDone");
+//                                        boolean goalSet = json2.getBoolean("goalSet");
                                         AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
                                         preferences.edit().putString("waterin", "" + waterIntakeDone).commit();
                                         String waterIntakeLeft1 = "0";
-                                        if (json1.getString("waterIntakeLeft").equals(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("0") || json1.getString("waterIntakeLeft").equalsIgnoreCase("0.0") || json1.getString("waterIntakeLeft").equalsIgnoreCase(null) || json1.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
+                                        if (json2.getString("waterIntakeLeft").equals(null) || json2.getString("waterIntakeLeft").equalsIgnoreCase("0") || json2.getString("waterIntakeLeft").equalsIgnoreCase("0.0") || json2.getString("waterIntakeLeft").equalsIgnoreCase(null) || json2.getString("waterIntakeLeft").equalsIgnoreCase("null")) {
                                             waterIntakeLeft1 = "0";
                                         } else {
-                                            waterIntakeLeft1 = json1.getString("waterIntakeLeft");
+                                            waterIntakeLeft1 = json2.getString("waterIntakeLeft");
                                         }
                                         waterLevel = Integer.parseInt(AppPreference.getInstance().getWaterInTake());
                                         if (waterLevel == 0) {
@@ -1122,14 +1155,19 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                         txt_water_level.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
                                         AppPreference.getInstance().setWaterInTakeLeft("" + waterIntakeLeft1);
                                         preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
-                                        AppPreference.getInstance().setStepsCount("" + steps);
-
-                                        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+                                        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//                                        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
                                         txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
-                                        if (goalSet) {
+
+                                        if (!json1.getString("targetAndProfileDetails").equalsIgnoreCase("null")) {
                                             AppPreference.getInstance().setIsEditGoal(true);
                                             AppPreference.getInstance().setIsEditGoalPage(true);
+                                            JSONObject json3 = new JSONObject(json1.getString("targetAndProfileDetails"));
+                                            AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(json3.getString("targetStepCount")));
+                                            AppPreference.getInstance().setWaterInTakeTarget(json3.getString("targetWaterInTake"));
                                         }
+
 
                                         Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
                                         CureFull.getInstanse().getActivityIsntanse().startService(intent);
@@ -1137,12 +1175,17 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
                                     }
 
                                 } else {
-
+                                    Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                                    CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                                    doBindService();
 
                                 }
+
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
 
                         }
                     },
@@ -1172,7 +1215,10 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
+//            preferences.edit().putInt("stepsIn", Integer.parseInt(steps)).commit();
+//                                        AppPreference.getInstance().setStepsCount("" + steps);
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+//            txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
             txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
             Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
             CureFull.getInstanse().getActivityIsntanse().startService(intent);
@@ -1328,6 +1374,75 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
             e.printStackTrace();
         }
         return formattedDate;
+    }
+
+
+    public void jsonUploadTargetSteps(Context context, int stepsCount, String caloriesBurnts, String waterin, final String dateTimes, final int i, final int size) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        requestQueue = Volley.newRequestQueue(context);
+        String steps = "" + stepsCount;
+        String running = "0";
+        String cycling = "0";
+        String waterintake = waterin;
+        String caloriesBurnt = caloriesBurnts;
+        String dateTime = dateTimes;
+        String[] dateParts = dateTime.split(" ");
+        String date = dateParts[0];
+        String timeReal = dateParts[1];
+
+        JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
+        Log.e("jsonUploadTarget", ": " + data.toString());
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        Log.e("Target, URL 3.", response.toString());
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            DbOperations.deleteSteps(dateTimes);
+                            if (i == (size - 1)) {
+                                getDailyHealth();
+                            }
+                        } else {
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                return headers;
+            }
+        };
+        requestQueue.add(jsonObjectRequest);
     }
 
 }

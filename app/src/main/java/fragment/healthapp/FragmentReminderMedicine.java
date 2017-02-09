@@ -246,9 +246,12 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
+//                realtive_today.setVisibility(View.GONE);
                 doctorName = LabDoctorName.get(position).getDoctorName();
                 txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
                 date = "N/A";
+                reminder = "N/A";
+                status = "N/A";
                 getReminderMedicine();
             }
         }
@@ -345,7 +348,9 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 break;
             case R.id.btn_reset:
                 if (isReset) {
+
                     isReset = false;
+                    realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
@@ -361,6 +366,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
 
                 break;
             case R.id.btn_apply:
+//                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
                 launchTwitterShort(rootView);
                 getReminderMedicine();
@@ -420,7 +426,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                                         if (medicineReminderListView.getReminderDoctorNames().size() == 0 && medicineReminderListView.getReminder_selfListViews().size() == 0) {
                                             txt_no_medicine.setVisibility(View.VISIBLE);
                                             if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                                relative_bottom_next.setVisibility(View.GONE);
+                                                relative_bottom_next.setVisibility(View.VISIBLE);
                                             } else {
 //                                                btn_next.setVisibility(View.GONE);
                                             }
@@ -447,7 +453,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                                         }
                                     } else {
                                         if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                            relative_bottom_next.setVisibility(View.GONE);
+                                            relative_bottom_next.setVisibility(View.VISIBLE);
                                         }
                                         txt_no_medicine.setVisibility(View.VISIBLE);
                                     }

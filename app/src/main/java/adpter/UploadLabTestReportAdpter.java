@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -74,6 +75,10 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     List<LabReportListView> labReportListViews;
     private RequestQueue requestQueue;
     private FragmentLabTestReport fragmentLabTestReports;
+    private Uri uri;
+    ArrayList<Uri> files = null;
+    int size = 1;
+    int pos;
 
     public UploadLabTestReportAdpter(FragmentLabTestReport fragmentLabTestReport, Context applicationContexts,
                                      List<LabReportListView> labReportListViews) {
@@ -163,12 +168,13 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
             @Override
             public void onClick(View view) {
                 if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
-                    final ArrayList<Uri> files = new ArrayList<Uri>();
+                    files = new ArrayList<Uri>();
+                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    pos = position;
                     CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                     for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
-                        files.add(getLocalBitmapUri(getBitmapFromURL(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage())));
+                        new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
                     }
-                    prepareShareIntent(files);
                 }
 
             }
@@ -312,27 +318,15 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         applicationContext.startActivity(Intent.createChooser(shareIntent, "Share Opportunity"));
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            return null;
-        }
-    }
+
 
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
-        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_lab_" + System.currentTimeMillis() + ".jpeg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 50, out);
             try {
                 out.close();
             } catch (IOException e) {
@@ -344,6 +338,42 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         }
         return bmpUri;
     }
+
+
+    private class LongOperation extends AsyncTask<String, Void, Bitmap> {
+
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+
+            Log.e("url new", " " + params[0]);
+            try {
+                URL url = new URL(params[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            uri = getLocalBitmapUri(result);
+            files.add(uri);
+            if (size == labReportListViews.get(pos).getLabReportImageListViews().size()) {
+                prepareShareIntent(files);
+            }
+            size += 1;
+        }
+    }
+
+
 
 
 }

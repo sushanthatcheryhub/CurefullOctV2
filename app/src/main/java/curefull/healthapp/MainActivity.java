@@ -23,6 +23,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Base64;
@@ -187,19 +188,27 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null) {
-            showLogo(false);
-            String type = getIntent().getExtras().getString("type");
 
-            if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+            if (AppPreference.getInstance().isLogin()) {
+                showLogo(false);
+                String type = getIntent().getExtras().getString("type");
+
+                if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderLabTest(), false);
+                } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderDoctorVisit(), false);
+                } else {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderMedicine(), false);
+                }
+            }else{
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderLabTest(), false);
-            } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderDoctorVisit(), false);
-            } else {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderMedicine(), false);
+                        .replace(new FragmentLogin(), false);
             }
+
 //            CureFull.getInstanse().getFlowInstanse().clearBackStack();
 //            CureFull.getInstanse().getFlowInstanse()
 //                    .replace(new FragmentHomeScreenAll(), false);
@@ -233,6 +242,18 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             public void onClick(View view) {
                 iconAnim(img_share);
                 new LongOperation().execute("");
+            }
+        });
+
+        circularImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                CureFull.getInstanse().cancel();
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentProfile(), true);
             }
         });
 
@@ -428,18 +449,23 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         super.onNewIntent(intent);
         String action = intent.getAction();
         if (!action.equalsIgnoreCase("steps")) {
-            showLogo(false);
-            String type = intent.getExtras().getString("type");
-            if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderLabTest(), false);
-            } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderDoctorVisit(), false);
-            } else {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentReminderMedicine(), false);
+            if (AppPreference.getInstance().isLogin()) {
+                showLogo(false);
+                String type = intent.getExtras().getString("type");
+                if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderLabTest(), false);
+                } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderDoctorVisit(), false);
+                } else {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentReminderMedicine(), false);
+                }
+            }else{
+
             }
+
 
         }
 

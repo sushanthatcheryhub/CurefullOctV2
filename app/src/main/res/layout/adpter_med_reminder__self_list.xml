@@ -91,8 +91,6 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@+id/img_edit_rem"
-                        android:ellipsize="marquee"
-                        android:marqueeRepeatLimit="marquee_forever"
                         android:text="Health"
                         android:textColor="@color/health_yellow" />
 
