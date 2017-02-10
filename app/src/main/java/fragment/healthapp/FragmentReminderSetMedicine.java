@@ -305,6 +305,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             liner_reminder_visible.setVisibility(View.VISIBLE);
             linear_page_count.removeAllViews();
             txt_dogaes.setText("" + MyConstants.IArrayData.listPopUp[position]);
+            reminderMedicnceTimes = null;
             doages = MyConstants.IArrayData.listPopUp[position];
             showPage(Integer.parseInt(doages), reminderMedicnceTimes);
         }
@@ -863,12 +864,20 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     public String get24hrsFormat(String time) {
+        String[] times = time.split(" ");
+        String tme = times[0];
+        String ampm = times[1];
+        if (ampm.trim().equalsIgnoreCase("am")) {
+            tme = tme + " a.m.";
+        } else {
+            tme = tme + " p.m.";
+        }
         String timeNew = "";
         SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a", Locale.UK);
+        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm aa", Locale.UK);
         Date date = null;
         try {
-            date = parseFormat.parse(time);
+            date = parseFormat.parse(tme);
             timeNew = displayFormat.format(date);
         } catch (Exception e) {
             e.printStackTrace();

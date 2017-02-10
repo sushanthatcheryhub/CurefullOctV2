@@ -60,7 +60,7 @@ public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemView
 //        image_item.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
         Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
                 .thumbnail(0.5f)
-                .crossFade()
+
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(image_item);
 
@@ -122,6 +122,9 @@ public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemView
 //                    .findViewById(R.id.check_box);
         }
     }
+
+
+
 
 
 }

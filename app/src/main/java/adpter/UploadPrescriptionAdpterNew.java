@@ -170,6 +170,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                         Log.e("check new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
                         new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
                     }
+
                 }
 
 

@@ -81,6 +81,7 @@ import java.util.Map;
 import java.util.Random;
 
 import asyns.JsonUtilsObject;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
@@ -102,7 +103,7 @@ import static utils.CheckNetworkState.context;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentProfile extends Fragment implements View.OnClickListener {
+public class FragmentProfile extends BaseBackHandlerFragment implements View.OnClickListener {
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
@@ -130,6 +131,14 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     private boolean isOtp = false;
     private boolean showPwd = false;
     private LinearLayout linearView;
+
+    @Override
+    public boolean onBackPressed() {
+        CureFull.getInstanse().cancel();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(), false);
+        return super.onBackPressed();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -527,7 +536,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 if (file.exists()) {
                     Log.e("file", " " + file.getPath());
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                    getSaveUploadPrescriptionMetadata(new File(compressImage(file.getPath())));
+                    getSaveUploadPrescriptionMetadata(new File(compressImage(file.getAbsolutePath())));
 //                imageUpload(file.getPath());
 //                sentSaveTestingServer(file.getPath());
                 }
@@ -1325,7 +1334,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         try {
             out = new FileOutputStream(filename);
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -1372,7 +1381,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
             inSampleSize++;
         }
-
         return inSampleSize;
     }
 

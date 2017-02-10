@@ -12,6 +12,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 
@@ -19,11 +20,19 @@ import curefull.healthapp.R;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentTermCondition extends Fragment {
+public class FragmentTermCondition extends BaseBackHandlerFragment {
 
 
     private View rootView;
     WebView webView;
+
+    @Override
+    public boolean onBackPressed() {
+        CureFull.getInstanse().cancel();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(), false);
+        return super.onBackPressed();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,7 +42,7 @@ public class FragmentTermCondition extends Fragment {
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(7);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(6);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);

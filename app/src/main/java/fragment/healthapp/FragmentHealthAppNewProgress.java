@@ -47,14 +47,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import adpter.HorizontalAdapter;
 import adpter.HorizontalAdapterNewProgress;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import curefull.healthapp.models.Month;
 import item.property.GraphYearMonthDeatilsList;
 import operations.DbOperations;
 import stepcounter.MessengerService;
@@ -90,9 +88,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     private TextView btn_set_goal_target;
     private LinearLayout liner_steps, liner_btn_goal;
     private HorizontalRecyclerView horizontal_recycler_view;
-    private HorizontalAdapter horizontalAdapter;
     private HorizontalAdapterNewProgress horizontalAdapterNew;
-    private ArrayList<Month> data;
     private TextView txt_graph_steps, txt_water_inatke_real, txt_change, txt_change_aveg, txt_calories;
     private LinearLayout liner_avg;
     private boolean isFirstTime = false;
@@ -196,7 +192,6 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
         horizontal_recycler_view = (HorizontalRecyclerView) rootView.findViewById(R.id.horizontal_recycler_view);
-        data = createSampleYear();
 
 //        horizontalAdapter = new HorizontalAdapter(data, CureFull.getInstanse().getActivityIsntanse());
 //
@@ -223,13 +218,13 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     }
 
 
-    private ArrayList<Month> createSampleYear() {
-        ArrayList<Month> months = new ArrayList<>();
-        for (int day : MyConstants.IArrayData.YEAR_2016) {
-            months.add(new Month(day));
-        }
-        return months;
-    }
+//    private ArrayList<Month> createSampleYear() {
+//        ArrayList<Month> months = new ArrayList<>();
+//        for (int day : MyConstants.IArrayData.YEAR_2016) {
+//            months.add(new Month(day));
+//        }
+//        return months;
+//    }
 
     public static String getTodayDate() {
         String formattedDate = null;

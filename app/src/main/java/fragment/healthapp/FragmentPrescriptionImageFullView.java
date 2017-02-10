@@ -38,8 +38,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
-
-import adpter.UploadPrescriptionAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;

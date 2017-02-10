@@ -61,20 +61,17 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentProfile(), true);
+                    .replace(new FragmentProfile(), false);
         } else if (id == R.id.nav_uhid) {
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentUHID(), true);
+                    .replace(new FragmentUHID(), false);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
@@ -85,16 +82,13 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
-
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentTermCondition(), true);
+                    .replace(new FragmentTermCondition(), false);
         } else if (id == R.id.nav_contact) {
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentContact(), true);
+                    .replace(new FragmentContact(), false);
         } else if (id == R.id.nav_share) {
             CureFull.getInstanse().cancel();
             getShareLink();
@@ -109,11 +103,9 @@ public class BaseMainActivity extends AppCompatActivity
 //        }
 
         else if (id == R.id.nav_reminder) {
-
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentReminderMedicine(), true);
+                    .replace(new FragmentReminderMedicine(), false);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -158,14 +150,14 @@ public class BaseMainActivity extends AppCompatActivity
                 super.onBackPressed();
             else {
                 _backBtnCount++;
-                if (_backBtnCount == 2) {
+                if (_backBtnCount == 3) {
                     preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     preferences.edit().putBoolean("destroy", true).commit();
 //                    CureFull.getInstanse().getActivityIsntanse().startFitService();
                     System.exit(0);
                     finish();
                     return;
-                } else {
+                } else if (_backBtnCount == 2) {
                     String first = "Press back twice to exit";
                     String meassgeTxt = first;
                     Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), meassgeTxt, Toast.LENGTH_SHORT).show();

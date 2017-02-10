@@ -173,8 +173,10 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
                     pos = position;
                     CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
                     for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
+                        Log.e("check new", "" + labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
                         new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
                     }
+
                 }
 
             }
@@ -319,7 +321,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     }
 
 
-
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
         File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_lab_" + System.currentTimeMillis() + ".jpeg");
@@ -372,8 +373,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
             size += 1;
         }
     }
-
-
 
 
 }

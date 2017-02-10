@@ -51,6 +51,7 @@ import java.util.Map;
 import adpter.Reminder_medicine_Docotr_child_ListAdpter;
 import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.LabDoctorName;
@@ -67,7 +68,7 @@ import utils.Utils;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentReminderMedicine extends Fragment implements View.OnClickListener, PopupWindow.OnDismissListener, DatePickerDialog.OnDateSetListener {
+public class FragmentReminderMedicine extends BaseBackHandlerFragment implements View.OnClickListener, PopupWindow.OnDismissListener, DatePickerDialog.OnDateSetListener {
 
 
     private View rootView;
@@ -77,7 +78,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
     private Reminder_medicine_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_medicine_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true, isReset = true;
+    boolean flagShort = true, isReset = true, isChecked = true;
     private LinearLayout liner_dialog, revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
     private ListPopupWindow listPopupWindow4;
@@ -93,6 +94,14 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
 
     private TextView btn_history, btn_next;
     private int pageNo = 0;
+
+    @Override
+    public boolean onBackPressed() {
+        CureFull.getInstanse().cancel();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(), false);
+        return super.onBackPressed();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -177,26 +186,42 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 launchTwitterShort(rootView);
             }
         });
+        layoutButtonsShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
         radioReminder.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioCurefull) {
-                    reminder = "curefull";
-                } else if (checkedId == R.id.radioSelf) {
-                    reminder = "self";
+                if (isChecked) {
+                    Log.e("wow", "wow");
+                    if (checkedId == R.id.radioCurefull) {
+                        reminder = "curefull";
+                        radioCurefull.setChecked(true);
+                        radioSelf.setChecked(false);
+                    } else if (checkedId == R.id.radioSelf) {
+                        reminder = "self";
+                        radioCurefull.setChecked(false);
+                        radioSelf.setChecked(true);
+                    }
                 }
+
             }
         });
         radioStatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioPending) {
-                    status = "pending";
-                } else if (checkedId == R.id.radioDone) {
-                    status = "complete";
+                if (isChecked) {
+                    if (checkedId == R.id.radioPending) {
+                        status = "pending";
+                    } else if (checkedId == R.id.radioDone) {
+                        status = "complete";
+                    }
                 }
+
             }
         });
         txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
@@ -348,14 +373,14 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
                 break;
             case R.id.btn_reset:
                 if (isReset) {
-
+                    isChecked = false;
                     isReset = false;
                     realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
                     radioDone.setChecked(false);
-                    radioSelf.setSelected(false);
+                    radioSelf.setChecked(false);
                     reminder = "N/A";
                     status = "N/A";
                     doctorName = "N/A";
@@ -399,6 +424,7 @@ public class FragmentReminderMedicine extends Fragment implements View.OnClickLi
 
 
     private void getReminderMedicine() {
+        isChecked = true;
         liner_dialog.setVisibility(View.VISIBLE);
         realtive_today.setVisibility(View.VISIBLE);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);

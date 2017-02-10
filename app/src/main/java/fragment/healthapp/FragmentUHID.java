@@ -34,6 +34,7 @@ import java.util.Map;
 import adpter.UHID_ListAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.UHIDItems;
@@ -44,7 +45,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentUHID extends Fragment {
+public class FragmentUHID extends BaseBackHandlerFragment {
 
 
     private View rootView;
@@ -55,6 +56,15 @@ public class FragmentUHID extends Fragment {
     private LinearLayout liner_add_new, login_liner;
     private EditText input_name, edt_phone;
     private TextView btn_add;
+
+
+    @Override
+    public boolean onBackPressed() {
+        CureFull.getInstanse().cancel();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(), false);
+        return super.onBackPressed();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

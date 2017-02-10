@@ -55,6 +55,7 @@ import adpter.Reminder_Visit_Self_ListAdpter;
 import adpter.Reminder_medicine_Docotr_child_ListAdpter;
 import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.DoctorVisitReminderDoctorName;
@@ -84,7 +85,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
     private Reminder_Visit_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Visit_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true, isReset = true;
+    boolean flagShort = true, isReset = true, isChecked = true;
     private LinearLayout revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
 
@@ -170,25 +171,36 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             }
         });
 
+        layoutButtonsShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
         radioReminder.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioCurefull) {
-                    reminder = "curefull";
-                } else if (checkedId == R.id.radioSelf) {
-                    reminder = "self";
+                if (isChecked) {
+                    if (checkedId == R.id.radioCurefull) {
+                        reminder = "curefull";
+                    } else if (checkedId == R.id.radioSelf) {
+                        reminder = "self";
+                    }
                 }
+
             }
         });
         radioStatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioPending) {
-                    status = "pending";
-                } else if (checkedId == R.id.radioDone) {
-                    status = "complete";
+                if (isChecked) {
+                    if (checkedId == R.id.radioPending) {
+                        status = "pending";
+                    } else if (checkedId == R.id.radioDone) {
+                        status = "complete";
+                    }
                 }
+
             }
         });
         txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
@@ -335,6 +347,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 break;
             case R.id.btn_reset:
                 if (isReset) {
+                    isChecked = false;
                     isReset = false;
                     realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
@@ -385,6 +398,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
 
     private void getReminderMedicine() {
+        isChecked = true;
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_VISIT_REM + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,

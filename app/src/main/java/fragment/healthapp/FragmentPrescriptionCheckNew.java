@@ -297,7 +297,24 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 launchTwitterShort(rootView);
             }
         });
+        layoutButtons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
+        layoutButtonsShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        layoutButtonsFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         revealView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

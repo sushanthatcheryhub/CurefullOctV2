@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import utils.AppPreference;
@@ -39,7 +40,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentContact extends Fragment implements View.OnClickListener {
+public class FragmentContact extends BaseBackHandlerFragment implements View.OnClickListener {
 
 
     private View rootView;
@@ -48,12 +49,20 @@ public class FragmentContact extends Fragment implements View.OnClickListener {
     private RequestQueue requestQueue;
 
     @Override
+    public boolean onBackPressed() {
+        CureFull.getInstanse().cancel();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(), false);
+        return super.onBackPressed();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_contact,
                 container, false);
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(6);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);

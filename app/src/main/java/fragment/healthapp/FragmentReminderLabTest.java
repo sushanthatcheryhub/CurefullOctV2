@@ -51,6 +51,7 @@ import adpter.Reminder_Lab_Self_ListAdpter;
 import adpter.Reminder_medicine_Docotr_child_ListAdpter;
 import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.LabDoctorName;
@@ -80,7 +81,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private Reminder_Lab_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Lab_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
-    boolean flagShort = true, isReset = true;
+    boolean flagShort = true, isReset = true, isChecked = true;
     private LinearLayout revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
     private float pixelDensity;
     private ListPopupWindow listPopupWindow4;
@@ -95,13 +96,14 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private TextView btn_history, btn_next;
     private String startFrom = "";
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_reminder_lab_test,
                 container, false);
-            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
@@ -169,26 +171,37 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 launchTwitterShort(rootView);
             }
         });
+        layoutButtonsShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
         radioReminder.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioCurefull) {
-                    reminder = "curefull";
-                } else if (checkedId == R.id.radioSelf) {
-                    reminder = "self";
+                if (isChecked) {
+                    if (checkedId == R.id.radioCurefull) {
+                        reminder = "curefull";
+                    } else if (checkedId == R.id.radioSelf) {
+                        reminder = "self";
+                    }
                 }
+
             }
         });
         radioStatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioPending) {
-                    status = "pending";
-                } else if (checkedId == R.id.radioDone) {
-                    status = "complete";
+                if (isChecked) {
+                    if (checkedId == R.id.radioPending) {
+                        status = "pending";
+                    } else if (checkedId == R.id.radioDone) {
+                        status = "complete";
+                    }
                 }
+
             }
         });
         txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
@@ -310,6 +323,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             case R.id.btn_reset:
                 if (isReset) {
                     isReset = false;
+                    isChecked = false;
                     realtive_today.setVisibility(View.VISIBLE);
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
@@ -358,6 +372,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     }
 
     private void getReminderLabTest() {
+        isChecked = true;
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_OF_LAB_TEST + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,

@@ -306,6 +306,24 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             }
         });
 
+        layoutButtons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        layoutButtonsShort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        layoutButtonsFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         revealView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ import item.property.GraphViewDetails;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.Utils;
-import widgets.MyCombinedChart;
 
 /**
  * Created by Sushant Hatcheryhub on 18-12-2016.
@@ -42,7 +39,7 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
         this.context = context;
         this.fragmentHealthAppNews = fragmentHealthAppNew;
         this.frequencys = frequency;
-        this.isFirstTimes=isFirstTime;
+        this.isFirstTimes = isFirstTime;
     }
 
 
@@ -115,10 +112,10 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
             holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector));
         }
 
-        if(isFirstTimes){
-            Log.e("pos","pos"+position);
-            if ((horizontalList.size()-1)==position){
-                isFirstTimes=false;
+        if (isFirstTimes) {
+            Log.e("pos", "pos" + position);
+            if ((horizontalList.size() - 1) == position) {
+                isFirstTimes = false;
                 AppPreference.getInstance().setGraphDate(horizontalList.get(position).getDate());
                 holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector_new));
                 fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());

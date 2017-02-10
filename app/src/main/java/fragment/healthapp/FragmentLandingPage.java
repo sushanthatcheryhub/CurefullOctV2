@@ -95,7 +95,7 @@ import utils.Utils;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLandingPage extends BaseBackHandlerFragment implements MyConstants.JsonUtils, View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+public class FragmentLandingPage extends Fragment implements MyConstants.JsonUtils, View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     private View rootView;
     private static TextView txt_calories;
@@ -154,10 +154,6 @@ public class FragmentLandingPage extends BaseBackHandlerFragment implements MyCo
     private ImageView imgg_question_white, imgg_question_red;
     private List<StepsCountsItems> stepsCountsItemses;
 
-    @Override
-    public boolean onBackPressed() {
-        return true;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
