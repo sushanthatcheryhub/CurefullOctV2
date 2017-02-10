@@ -67,7 +67,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
         edt_deatils = (EditText) rootView.findViewById(R.id.edt_deatils);
         edt_subject = (EditText) rootView.findViewById(R.id.edt_subject);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);

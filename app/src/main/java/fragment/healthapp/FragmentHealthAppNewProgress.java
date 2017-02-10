@@ -107,7 +107,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Health App");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         AppPreference.getInstance().setFragmentHealthApp(true);
         AppPreference.getInstance().setFragmentHealthNote(false);

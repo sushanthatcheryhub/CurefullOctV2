@@ -28,7 +28,7 @@ public class FragmentSettingPage extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_setting,
                 container, false);
             CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true,"");
-            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
         CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);

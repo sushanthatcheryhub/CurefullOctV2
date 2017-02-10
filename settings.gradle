@@ -1,1 +1,1 @@
-include ':app', ':supportDifferentScreen', ':library', ':MPChartLib'
+include ':app', ':supportDifferentScreen', ':wildCameraLib'

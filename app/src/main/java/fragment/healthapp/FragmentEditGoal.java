@@ -1522,7 +1522,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         }
         String dateOfBirth = AppPreference.getInstance().getGoalAge();
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(totalHeight), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
+        JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(new DecimalFormat("###.###").format(totalHeight)), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
         Log.e("jsonUploadPrescription", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,

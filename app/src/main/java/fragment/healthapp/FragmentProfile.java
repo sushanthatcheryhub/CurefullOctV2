@@ -67,6 +67,8 @@ import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.wildcoder.camera.lib.CameraFragment;
+import com.wildcoder.camera.lib.ICameraListnerCropListner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,7 +105,7 @@ import static utils.CheckNetworkState.context;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentProfile extends BaseBackHandlerFragment implements View.OnClickListener {
+public class FragmentProfile extends CameraFragment implements View.OnClickListener, ICameraListnerCropListner {
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
@@ -132,13 +134,13 @@ public class FragmentProfile extends BaseBackHandlerFragment implements View.OnC
     private boolean showPwd = false;
     private LinearLayout linearView;
 
-    @Override
-    public boolean onBackPressed() {
-        CureFull.getInstanse().cancel();
-        CureFull.getInstanse().getFlowInstanse()
-                .replace(new FragmentLandingPage(), false);
-        return super.onBackPressed();
-    }
+//    @Override
+//    public boolean onBackPressed() {
+//        CureFull.getInstanse().cancel();
+//        CureFull.getInstanse().getFlowInstanse()
+//                .replace(new FragmentLandingPage(), false);
+//        return super.onBackPressed();
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,12 +148,15 @@ public class FragmentProfile extends BaseBackHandlerFragment implements View.OnC
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile,
                 container, false);
+
+        setFixedHeightWidth(true, 300);
+        registerCameraListner(this);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(1);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
         linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
@@ -401,20 +406,33 @@ public class FragmentProfile extends BaseBackHandlerFragment implements View.OnC
                 }
                 break;
             case R.id.liner_camera:
+
+
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
                     CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        startCapture();
+                    }
+
+
                 }
 
                 break;
             case R.id.liner_gallery:
                 CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                } else {
+                    pickFromGallery();
+                }
+
                 break;
 
             case R.id.liner_remove:
@@ -1334,12 +1352,10 @@ public class FragmentProfile extends BaseBackHandlerFragment implements View.OnC
         try {
             out = new FileOutputStream(filename);
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         return filename;
 
     }
@@ -1384,4 +1400,14 @@ public class FragmentProfile extends BaseBackHandlerFragment implements View.OnC
         return inSampleSize;
     }
 
+    @Override
+    public void onCropComplete(boolean isSucces, String path) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        getSaveUploadPrescriptionMetadata(new File(compressImage(path)));
+    }
+
+    @Override
+    public void onPickImageComplete(int status, Uri imageUri) {
+
+    }
 }

@@ -162,7 +162,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
 
         AppPreference.getInstance().setIsLogin(true);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);

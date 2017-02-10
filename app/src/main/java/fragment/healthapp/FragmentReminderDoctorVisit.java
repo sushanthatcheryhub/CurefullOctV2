@@ -108,6 +108,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false,"doctor");
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
         AppPreference.getInstance().setFragmentMedicine(false);
         AppPreference.getInstance().setFragmentDoctorVisit(true);

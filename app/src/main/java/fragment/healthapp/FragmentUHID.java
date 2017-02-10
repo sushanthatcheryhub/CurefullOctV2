@@ -73,7 +73,7 @@ public class FragmentUHID extends BaseBackHandlerFragment {
         rootView = inflater.inflate(R.layout.fragment_uhid,
                 container, false);
             CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true,"");
-            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
         CureFull.getInstanse().getActivityIsntanse().selectedNav(2);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);

@@ -110,7 +110,7 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
         rootView = inflater.inflate(R.layout.fragment_reminder_medicine,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false,"");
 
 
         AppPreference.getInstance().setFragmentMedicine(true);

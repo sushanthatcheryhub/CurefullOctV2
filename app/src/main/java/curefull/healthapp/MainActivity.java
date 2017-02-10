@@ -106,7 +106,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
         setContentView(R.layout.activity_main);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             Drawable background = this.getResources().getDrawable(R.drawable.login_gradient);
@@ -116,8 +115,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             window.setBackgroundDrawable(background);
         }
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-
         top_view = (LinearLayout) findViewById(R.id.top_view);
         liner_bottom_view = (RelativeLayout) findViewById(R.id.liner_bottom_view);
         img_health_app = (ImageView) findViewById(R.id.img_health_app);
@@ -187,16 +184,32 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
 
-        if (getIntent().getAction() != null) {
-
+        if (getIntent().getAction() != null && !getIntent().getAction().equalsIgnoreCase("")) {
             if (AppPreference.getInstance().isLogin()) {
                 showLogo(false);
                 String type = getIntent().getExtras().getString("type");
-
                 if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderLabTest(), false);
                 } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                    liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderDoctorVisit(), false);
                 } else {
@@ -454,9 +467,27 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                 showLogo(false);
                 String type = intent.getExtras().getString("type");
                 if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderLabTest(), false);
                 } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                    liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderDoctorVisit(), false);
                 } else {
@@ -784,20 +815,45 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
     }
 
 
-    public void isTobBarButtonVisible(boolean isback) {
+    public void isTobBarButtonVisible(boolean isback, String name) {
         if (isback) {
             top_view.setVisibility(View.GONE);
         } else {
-            liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
-            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-            liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
-            img_medicine.setImageResource(R.drawable.medicine_icon_red);
-            txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
-            img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
-            img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-            txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
-            top_view.setVisibility(View.VISIBLE);
+            if (name.equalsIgnoreCase("doctor")) {
+                liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                top_view.setVisibility(View.VISIBLE);
+            } else if (name.equalsIgnoreCase("lab")) {
+                liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                top_view.setVisibility(View.VISIBLE);
+            } else {
+                liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
+                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_medicine.setImageResource(R.drawable.medicine_icon_red);
+                txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                top_view.setVisibility(View.VISIBLE);
+            }
+
         }
     }
 

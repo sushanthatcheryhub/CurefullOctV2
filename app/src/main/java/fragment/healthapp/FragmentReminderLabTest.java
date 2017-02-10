@@ -105,6 +105,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(false,"lab");
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
         AppPreference.getInstance().setFragmentMedicine(false);

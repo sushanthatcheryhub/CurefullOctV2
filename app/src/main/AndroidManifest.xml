@@ -27,7 +27,7 @@
 
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -81,7 +81,10 @@
             </intent-filter>
 
         </activity>
-
+        <!-- Camera -->
+        <activity
+            android:name="com.wildcoder.camera.lib.KitkatCameraBinderActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         <receiver android:name=".InstallReferrerBroadcastReceiver">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
