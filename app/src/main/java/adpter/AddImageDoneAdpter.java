@@ -66,23 +66,20 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
         ImageView image_item = holder.image_item;
         final CheckBox btn_checkbox = holder.btn_checkbox;
         final TextView txt_view = holder.txt_view;
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
-        image_item.setImageBitmap(bitmap);
+//
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//        Bitmap bitmap = BitmapFactory.decodeFile(prescriptionImageLists.get(position).getPrescriptionImage(), options);
+//        image_item.setImageBitmap(bitmap);
 
 //        Log.e("pics"," "+prescriptionImageLists.get(position).getPrescriptionImage());
 //
-//        if(!prescriptionImageLists.get(position).getPrescriptionImage().equals("null")){
-//            Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
-//                    .thumbnail(0.5f)
-//                    .crossFade()
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(image_item);
+        if (prescriptionImageLists.get(position).getImageNumber() != 000) {
+            Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
+                    .dontAnimate()
+                    .into(image_item);
 //
-//        }
-
+        }
 
 
         if (isDelete) {

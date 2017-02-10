@@ -351,7 +351,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject setRemMedAdd(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
+    public static JSONObject setRemMedAdd(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
@@ -390,7 +390,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
     }
 
 
-    public static JSONObject setRemMedEdit(String medicineReminderId, String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, int interval) {
+    public static JSONObject setRemMedEdit(String medicineReminderId, String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("medicineReminderId", medicineReminderId);

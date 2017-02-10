@@ -37,7 +37,6 @@ public class CureFull extends Application {
     private Typeface opensansTypefaceLine;
     private Typeface opensansTypefaceBold;
     private Typeface opensansTypefaceSemiBold;
-
     public boolean isEditext() {
         return isEditext;
     }

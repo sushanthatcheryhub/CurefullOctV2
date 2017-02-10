@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 
 import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
@@ -41,6 +42,10 @@ public class NotificationUtils {
     public void notificationMedicine(String name, String text, String id, String type) {
         // Prepare intent which is triggered if the
         // notification is selected
+
+        if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+            name = "Dr." + name;
+        }
         Intent intent = new Intent();
         intent.setAction("complete");
         intent.putExtra("perDayDosageDetailsId", id);
@@ -79,12 +84,15 @@ public class NotificationUtils {
 
         // Build notification
         // Actions are just fake
+        int color = ContextCompat.getColor(_context, R.color.health_red_drawer);
         Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
                 R.mipmap.app_icon);
         Notification noti = new Notification.Builder(_context)
                 .setContentTitle(name)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.cf_notification).setLargeIcon(icon2)
+                .setSmallIcon(R.drawable.notification_small)
+                .setColor(color)
+                .setLargeIcon(icon2)
 //                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
                 .setAutoCancel(true)
                 .addAction(R.drawable.done, "Done", pIntent)

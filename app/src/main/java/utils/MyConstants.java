@@ -22,9 +22,10 @@ public class MyConstants {
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String HEALTH_NOTE_ADD = URL + "endUser/healthNote/addhealthNote";
-        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
+
+        String OTP_WEB_SERVICE = "http://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
-        String OTP_LAST = "&route=2";
+        String OTP_LAST = "&route=11";
         String HEALTH_LIST_NOTE = URL + "endUser/healthNote/listOfhealthNotes?";
         String HEALTH_LIST_DELETE = URL + "endUser/healthNote/deleteHealthNote?id=";
         String SET_GOALS = URL + "endUser/healthapp/updateRecommendedTarget";

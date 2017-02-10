@@ -203,7 +203,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderMedicine(), false);
                 }
-            }else{
+            } else {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
@@ -307,6 +307,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
     }
 
     public void setActionDrawerProfilePic(String name) {
+        CureFull.getInstanse().getSmallImageLoader().clearCache();
         CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
 //        Glide.with(this).load(name)
 //                .thumbnail(0.5f)
@@ -462,7 +463,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentReminderMedicine(), false);
                 }
-            }else{
+            } else {
 
             }
 
@@ -889,8 +890,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        CureFull.getInstanse().getFlowInstanse().replace(new FragmentReminderMedicine(),
 //                false);
     }
-
-
 
 
 }

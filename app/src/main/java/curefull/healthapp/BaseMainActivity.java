@@ -66,13 +66,11 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
-
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentProfile(), true);
         } else if (id == R.id.nav_uhid) {
-
             CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()

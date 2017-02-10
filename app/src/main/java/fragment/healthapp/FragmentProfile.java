@@ -352,7 +352,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.btn_save_changes:
                 jsonUpdateProfile();
-
                 break;
             case R.id.btn_click_change:
                 if (isclick) {
@@ -453,10 +452,10 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode"," "+requestCode);
-        Log.e("resultCode"," "+resultCode);
+        Log.e("requestCode", " " + requestCode);
+        Log.e("resultCode", " " + resultCode);
 
-        if(resultCode!=0){
+        if (resultCode != 0) {
             if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
                 //Get our saved file into a bitmap object:
                 File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
@@ -478,7 +477,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                 // retrieve data on return
                 cropIntent.putExtra("return-data", false);
                 File f = createNewFile();
-                Log.e("f"," "+f.getPath());
+                Log.e("f", " " + f.getPath());
 
                 Uri mCropImagedUri = Uri.fromFile(f);
                 cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
@@ -508,7 +507,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                         // retrieve data on return
                         cropIntent.putExtra("return-data", false);
                         File f = createNewFile();
-                        Log.e("f"," "+f.getPath());
+                        Log.e("f", " " + f.getPath());
                         Uri mCropImagedUri = Uri.fromFile(f);
                         cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
                         // start the activity - we handle returning in onActivityResult
@@ -517,25 +516,24 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
                     }
                 }
 
-            }else   if (requestCode == PICK_FROM_CROP) {
+            } else if (requestCode == PICK_FROM_CROP) {
 //            Uri selectedImageUri= data.getData();
 //            String[] filePath = {MediaStore.Images.Media.DATA};
 //            Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(selectedImageUri, filePath, null, null, null);
 //            cursor.moveToFirst();
 //            String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 //            cursor.close();
-                Log.e("file.exists "," " +file.exists()+" "+file.getPath());
+                Log.e("file.exists ", " " + file.exists() + " " + file.getPath());
                 if (file.exists()) {
                     Log.e("file", " " + file.getPath());
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                    getSaveUploadPrescriptionMetadata(new File(file.getPath()));
+                    getSaveUploadPrescriptionMetadata(new File(compressImage(file.getPath())));
 //                imageUpload(file.getPath());
 //                sentSaveTestingServer(file.getPath());
                 }
             }
 
         }
-
 
 
     }
@@ -1326,7 +1324,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener {
         String filename = getFilename();
         try {
             out = new FileOutputStream(filename);
-
 //          write the compressed bitmap at the destination specified by filename.
             scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
 

@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private LinearLayout liner_date_select, linear_page_count, liner_reminder_visible;
     private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
-    private int interval;
+    private double interval;
     private boolean isNewReminder = true, isVisible = false, isEdit = false;
     private String medicineReminderId = "";
     private MultiSelectToggleGroup multiSelect;
@@ -267,7 +268,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                         }
                         if (checkedPositions.size() > Integer.parseInt(duration)) {
                             addDays = "";
-                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView,"Please don't select more than duration");
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please don't select more than duration");
                             multiSelect.uncheckAll();
                             return;
                         }
@@ -421,7 +422,25 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     public void setMedReminderDetails() {
+        for (int i = 0; i < listCurrent.size(); i++) {
+            if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
+                return;
+            } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
+                return;
+            } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
+                return;
+            } else if (listCurrent.get(i).getInterval() == 0) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
+                return;
+            } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
+                return;
+            }
 
+        }
         if (!validateDate()) {
             return;
         }
@@ -447,26 +466,6 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 } else if (hello.endsWith(" pm, ")) {
                     newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
                 }
-            }
-
-        }
-
-        for (int i = 0; i < listCurrent.size(); i++) {
-            if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
-                return;
-            } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
-                return;
-            } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
-                return;
-            } else if (listCurrent.get(i).getInterval() == 0) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
-                return;
-            } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
-                return;
             }
 
         }
@@ -531,6 +530,25 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
     public void setMedReminderDetailsEdit() {
 
+        for (int i = 0; i < listCurrent.size(); i++) {
+            if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
+                return;
+            } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
+                return;
+            } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
+                return;
+            } else if (listCurrent.get(i).getInterval() == 0) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
+                return;
+            } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
+                return;
+            }
+
+        }
         if (!validateDate()) {
             return;
         }
@@ -664,18 +682,22 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     public void showPage(final int totalPage, ArrayList<ReminderMedicnceDoagePer> timeToTakeMedicne) {
 
         if (timeToTakeMedicne == null) {
-            interval = (14 / totalPage);
-            Log.e("value", "" + interval + " " + (14 / totalPage));
+            interval = (Double.parseDouble("" + 14) / Double.parseDouble("" + totalPage));
+            Log.e("value", "" + new DecimalFormat("##.#").format(interval) + " " + (14 / totalPage));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 0, 0, 0);
             view_text_page = new CustomTextViewOpenSanRegular[totalPage];
-            int text = 0;
+            double text = 0;
             for (int i = 0; i < totalPage; i++) {
                 if (i == 0) {
                     text = 9;
                 } else {
-                    text = text + interval;
+                    double value = Double.parseDouble(new DecimalFormat("#.#").format(interval));
+                    Log.e("value ", " " + value);
+                    text = text + value;
                 }
+
+                text = Double.parseDouble(new DecimalFormat("#.#").format(text));
 
                 view_text_page[i] = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
 //            CustomTextViewOpenSanRegular view_text_page = new CustomTextViewOpenSanRegular(CureFull.getInstanse().getActivityIsntanse());
@@ -686,9 +708,28 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 view_text_page[i].setLayoutParams(params);
                 Log.e("i ", " " + i);
                 if (i == (totalPage - 1)) {
-                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(text, 0) + ".");
+                    String[] time = String.valueOf(text).split("\\.");
+                    String hrs = time[0];
+                    String min = "0";
+                    if (time.length > 1) {
+                        min = time[1] + "0";
+                        if (Integer.parseInt(min) >= 50) {
+                            min = "" + 30;
+                        }
+                    }
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + ".");
                 } else {
-                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(text, 0) + ", ");
+                    Log.e("new ", " " + text);
+                    String[] time = String.valueOf(text).split("\\.");
+                    String hrs = time[0];
+                    String min = "0";
+                    if (time.length > 1) {
+                        min = time[1] + "0";
+                        if (Integer.parseInt(min) >= 50) {
+                            min = "" + 30;
+                        }
+                    }
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + ", ");
                 }
                 view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
                 view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -823,8 +864,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
     public String get24hrsFormat(String time) {
         String timeNew = "";
-        DateFormat displayFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a", Locale.UK);
         Date date = null;
         try {
             date = parseFormat.parse(time);

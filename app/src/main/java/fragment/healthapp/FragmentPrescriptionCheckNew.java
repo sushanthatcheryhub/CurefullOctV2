@@ -1215,8 +1215,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
             dialogFullViewClickImage.show();
         } else if (messsage.equalsIgnoreCase("retry")) {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
-                value = 0;
+                prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
+                value = prescriptionImageLists.size() - 1;
                 imageName = "" + System.currentTimeMillis();
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
@@ -1224,7 +1224,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
             } else {
-                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
+                prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
+                value = prescriptionImageLists.size() - 1;
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 //                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
@@ -2062,7 +2063,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     public void jsonSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, final List<PrescriptionImageList> file) {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSaveUploadedPrescriptionData(prescriptionId, cfuuhidId, file);
-
+        Log.e("data upload", "" + data);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOADED_PRESCRETION_DATA, data,
                 new Response.Listener<JSONObject>() {
                     @Override

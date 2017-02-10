@@ -71,7 +71,8 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private boolean showPwd = false;
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
-    private boolean isSending=false;
+    private boolean isSending = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -220,12 +221,12 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 break;
             case R.id.btn_click_resend_otp:
 
-                if(isSending){
+                if (isSending) {
 
-                }else {
+                } else {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     sendOTPService();
-                    isSending=true;
+                    isSending = true;
 
                 }
 

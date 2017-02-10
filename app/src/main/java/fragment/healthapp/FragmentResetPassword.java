@@ -211,7 +211,7 @@ public class FragmentResetPassword extends Fragment {
                         Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
-                        bundle.putString("otp", String.valueOf(n));
+                        bundle.putInt("otp", n);
                         bundle.putString("MOBILE", input_mobile_number.getText().toString().trim());
                         CureFull.getInstanse().getFlowInstanse()
                                 .addWithBottomTopAnimation(new FragmentOTPCheckForgot(), bundle, true);

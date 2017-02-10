@@ -139,8 +139,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private TextView txt_no_prescr;
     private List<UHIDItems> uhidItemses;
     private TextView txt_sort_user_name, txt_total_prescription;
-    ;
-    private int imageName = 0;
+    private String imageName = "" + System.currentTimeMillis();
     private String fileName = "";
     private LinearLayout liner_layout_recyler;
     private String newMessage = "";
@@ -160,7 +159,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private RadioButton radioNewtest, radioOldest;
 
     private LinearLayout txt_short_cancel, txt_short_apply;
-    private boolean isList = false,isRest=true;
+    private boolean isList = false, isRest = true;
     private DialogLoader dialogLoader;
 
     @Override
@@ -207,8 +206,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         rootView = inflater.inflate(R.layout.fragment_health_lab_report,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false,"Lab Reports");
-            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Lab Reports");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true);
         dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);
@@ -297,9 +296,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         revealViewFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 launchTwitterFilterBy(rootView);
-
             }
         });
         revealViewShort.setOnClickListener(new View.OnClickListener() {
@@ -322,7 +319,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         AppPreference.getInstance().setFilterDoctorReports("");
         AppPreference.getInstance().setFilterDieseReports("");
         getAllHealthUserList();
-
 
         (rootView.findViewById(R.id.liner_user_name_click)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -487,8 +483,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 break;
 
             case R.id.liner_filter_btn_reset:
-                if(isRest){
-                    isRest=false;
+                if (isRest) {
+                    isRest = false;
                     isButtonRest = true;
                     clickDoctorName = "";
                     clickDiseaseName = "";
@@ -573,7 +569,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
                     value = 0;
-                    imageName = 0;
+                    imageName = "" + System.currentTimeMillis();
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                     isUploadClick = false;
                     liner_upload_new.post(new Runnable() {
@@ -612,7 +608,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode!=0){
+        if (resultCode != 0) {
             if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
                 //Get our saved file into a bitmap object:
                 fileName = Environment.getExternalStorageDirectory() + File.separator;
@@ -620,7 +616,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
                 prescriptionImageList.setImageNumber(value + 1);
                 value = value + 1;
-                imageName = imageName + 1;
+                imageName = "" + System.currentTimeMillis();
                 Log.e("parent", " " + Environment.getExternalStorageDirectory());
                 prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
                 prescriptionImageList.setChecked(false);
@@ -1051,14 +1047,17 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             dialogFullViewClickImage.show();
         } else if (messsage.equalsIgnoreCase("retry")) {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
+                prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
+                value = prescriptionImageLists.size() - 1;
+                imageName = "" + System.currentTimeMillis();
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
             } else {
-                prescriptionImageLists = new ArrayList<PrescriptionImageList>();
+                prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
+                value = prescriptionImageLists.size() - 1;
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 //                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 photoPickerIntent.setType("image/*");
@@ -1221,7 +1220,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            isRest=true;
+                            isRest = true;
                             dialogLoader.hide();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
@@ -1268,7 +1267,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            isRest=true;
+                            isRest = true;
                             dialogLoader.hide();
                             txt_no_prescr.setText("No Reports Uploaded Yet!");
                             labReportItemView.setVisibility(View.GONE);
@@ -1293,7 +1292,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            isRest=true;
+            isRest = true;
             labReportItemView.setVisibility(View.GONE);
             txt_no_prescr.setText("No Internet Connection");
             txt_no_prescr.setVisibility(View.VISIBLE);
@@ -1539,7 +1538,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             case HandlePermission.MY_PERMISSIONS_REQUEST_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     value = 0;
-                    imageName = 0;
+                    imageName = "" + System.currentTimeMillis();
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
                     isUploadClick = true;
                     liner_upload_new.post(new Runnable() {

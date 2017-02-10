@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
@@ -78,10 +79,8 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
         selectUploadPrescriptions = selectUploadPrescription;
         prescriptionImageListss = prescriptionImageLists;
         if (prescriptionImageListss.size() > 0) {
-            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(0).getPrescriptionImage())))
-                    .thumbnail(0.5f)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(prescriptionImageListss.size() - 1).getPrescriptionImage())))
+                    .dontAnimate()
                     .into(img_vew);
             liner_mid.setVisibility(View.VISIBLE);
             recyclerViewAddImage = (RecyclerView) findViewById(R.id.grid_list_symptom);
@@ -99,9 +98,7 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
                         @Override
                         public void onItemClick(View view, int position) {
                             Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(Uri.fromFile(new File(prescriptionImageListss.get(position).getPrescriptionImage())))
-                                    .thumbnail(0.5f)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .skipMemoryCache(true)
+                                    .dontAnimate()
                                     .into(img_vew);
 //                            BitmapFactory.Options options = new BitmapFactory.Options();
 //                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;

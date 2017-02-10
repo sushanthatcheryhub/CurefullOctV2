@@ -102,16 +102,21 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         });
 
         if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
-            Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-            c.moveToFirst();
-            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-            edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-            if (tMgr.getLine1Number() != null) {
-                edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
-            }
-            addAdapterToViews();
+            try {
+                Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                c.moveToFirst();
+                TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+                if (tMgr.getLine1Number() != null) {
+                    edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+                }
+                addAdapterToViews();
 //        edtInputEmail.setText("" + getAllAccount());
-            c.close();
+                c.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
 
         return rootView;
