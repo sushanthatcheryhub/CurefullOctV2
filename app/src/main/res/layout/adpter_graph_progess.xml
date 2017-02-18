@@ -53,7 +53,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:text="Jan 1"
-            android:textColor="@color/white" />
+            android:textColor="@color/health_yellow" />
 
 
     </RelativeLayout>

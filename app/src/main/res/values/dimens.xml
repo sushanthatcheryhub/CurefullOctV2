@@ -32,4 +32,8 @@
     <dimen name="text_size_super_med_large">40sp</dimen>
     <dimen name="text_size_super_extra_large">70sp</dimen>
     <dimen name="text_size_extra_large_med">25sp</dimen>
+
+    <integer name="anim_duration_very_long">1500</integer>
+    <integer name="anim_duration_long">500</integer>
+    <integer name="anim_duration_medium">300</integer>
 </resources>

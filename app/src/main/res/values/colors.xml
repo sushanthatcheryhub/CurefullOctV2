@@ -112,7 +112,7 @@
     <color name="health_yellow">#fdb832</color>
     <color name="health_yellow_bottom">#fecc1c</color>
     <color name="health_yellow_drawer">#fecc1d</color>
-    <color name="health_red_drawer">#cd2c35</color>
+    <color name="health_red_drawer">#CC2C34</color>
     <color name="progress_gray">#FFD8D8D8</color>
     <color name="progress_gray_dark">#FF383838</color>
     <color name="default_blue_light">#ff33b5e5</color>

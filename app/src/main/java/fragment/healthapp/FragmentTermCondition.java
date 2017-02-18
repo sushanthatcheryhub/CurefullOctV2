@@ -58,6 +58,9 @@ public class FragmentTermCondition extends BaseBackHandlerFragment {
             // older android version, disable hardware acceleration
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
+        webView.setLongClickable(false);
+        webView.setHapticFeedbackEnabled(false);
+        webView.setFocusableInTouchMode(false);
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setWebViewClient(new WebViewClient());

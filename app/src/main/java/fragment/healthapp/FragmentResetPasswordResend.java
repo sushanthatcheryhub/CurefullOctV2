@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.Random;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import interfaces.SmsListener;
@@ -83,6 +85,8 @@ public class FragmentResetPasswordResend extends Fragment {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 Bundle bundle = new Bundle();
                 bundle.putString("email", "no");
                 CureFull.getInstanse().getFlowInstanse()

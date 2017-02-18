@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ListPopupWindow;
@@ -39,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -144,13 +146,11 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                 final int year, day;
                 int month1;
                 final Calendar c1 = Calendar.getInstance();
-                Log.e("Age ", ":- " + AppPreference.getInstance().getGoalAge());
                 if (startFrom.equalsIgnoreCase("")) {
                     year = c1.get(Calendar.YEAR);
                     month1 = c1.get(Calendar.MONTH);
                     day = c1.get(Calendar.DAY_OF_MONTH);
                 } else {
-                    Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = startFrom.split("-");
                     year = Integer.parseInt(dateFormat[0]);
                     month1 = Integer.parseInt(dateFormat[1]);
@@ -176,6 +176,8 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
 
                 break;
             case R.id.btn_set_reminder:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 setMedReminderDetails();
                 break;
         }
@@ -254,6 +256,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSetDoctorVisitReminder(edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder);
+        if(MyConstants.WebUrls.isLogCheck)
         Log.e("jsonUploadLabRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM, data,
@@ -261,7 +264,6 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                     @Override
                     public void onResponse(JSONObject response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("MedRemDetails, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {

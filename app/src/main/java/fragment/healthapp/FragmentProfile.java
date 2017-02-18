@@ -20,11 +20,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.text.Editable;
+import android.support.v4.content.FileProvider;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,7 +39,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -65,8 +62,7 @@ import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
 import com.wildcoder.camera.lib.CameraFragment;
 import com.wildcoder.camera.lib.ICameraListnerCropListner;
 
@@ -78,17 +74,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
-import curefull.healthapp.BaseBackHandlerFragment;
+import curefull.healthapp.BuildConfig;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
 import interfaces.SmsListener;
-import item.property.PrescriptionImageList;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CircularImageView;
@@ -96,10 +91,6 @@ import utils.HandlePermission;
 import utils.IncomingSms;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
-import utils.Utils;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-import static utils.CheckNetworkState.context;
 
 
 /**
@@ -109,6 +100,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
+    public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
     public static final int SELECT_PHOTO = 12345;
     public static final int PICK_FROM_CROP = 203;
     private RelativeLayout realtive_notes;
@@ -133,7 +125,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private boolean isOtp = false;
     private boolean showPwd = false;
     private LinearLayout linearView;
-
+    private String imageName = "" + System.currentTimeMillis();
 //    @Override
 //    public boolean onBackPressed() {
 //        CureFull.getInstanse().cancel();
@@ -156,7 +148,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
@@ -203,7 +195,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         linearView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_upload_animation, 400, 0.9f, 0.9f);
                 profile_image_view.post(new Runnable() {
                     @Override
                     public void run() {
@@ -306,36 +299,27 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 return false;
             }
         });
-
-        edt_phone.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 9) {
-
-                    if (!AppPreference.getInstance().getMobileNumber().equalsIgnoreCase(edt_phone.getText().toString().trim())) {
-                        isOtp = true;
-                        sendOTPService();
-                        CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
-                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Otp Sent Please check your mobile");
-                        input_layout_otp.setVisibility(View.VISIBLE);
-                    } else {
-                        isOtp = false;
-                        input_layout_otp.setVisibility(View.GONE);
-                    }
-
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+//
+//        edt_phone.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                if (s.length() > 9) {
+//
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        });
 
         IncomingSms.bindListener(new SmsListener() {
             @Override
@@ -365,6 +349,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_save_changes:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 jsonUpdateProfile();
                 break;
             case R.id.btn_click_change:
@@ -382,7 +368,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 break;
             case R.id.liner_animation_upload:
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_upload_animation, 400, 0.9f, 0.9f);
                     profile_image_view.post(new Runnable() {
                         @Override
                         public void run() {
@@ -396,7 +383,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 break;
             case R.id.liner_upload_new:
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_upload, 400, 0.9f, 0.9f);
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -409,14 +397,21 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
 
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                file);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
                     } else {
-                        startCapture();
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
                     }
 
 
@@ -424,7 +419,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
                 break;
             case R.id.liner_gallery:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_gallery, 400, 0.9f, 0.9f);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                     photoPickerIntent.setType("image/*");
@@ -479,9 +475,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode", " " + requestCode);
-        Log.e("resultCode", " " + resultCode);
-
         if (resultCode != 0) {
             if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
                 //Get our saved file into a bitmap object:
@@ -501,6 +494,34 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 cropIntent.putExtra("outputY", 300);
                 cropIntent.putExtra("scale", true);
 
+                // retrieve data on return
+                cropIntent.putExtra("return-data", false);
+                File f = createNewFile();
+                Log.e("f", " " + f.getPath());
+
+                Uri mCropImagedUri = Uri.fromFile(f);
+                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+                // start the activity - we handle returning in onActivityResult
+                startActivityForResult(cropIntent, PICK_FROM_CROP);
+
+//            sentSaveTestingServer(file.getAbsolutePath());
+            } else if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT) {
+                //Get our saved file into a bitmap object:
+                File file1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "image.jpg");
+//                Utils.uploadFile("", "", "", file1);
+                Uri pickedImage = Uri.fromFile(file1);
+                // Let's read picked image path using content resolver
+                Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                // indicate image type and Uri
+                cropIntent.setDataAndType(pickedImage, "image/*");
+                // set crop properties
+                cropIntent.putExtra("crop", "true");
+                // indicate aspect of desired crop
+                cropIntent.putExtra("aspectX", 1);
+                cropIntent.putExtra("aspectY", 1);
+                cropIntent.putExtra("outputX", 300);
+                cropIntent.putExtra("outputY", 300);
+                cropIntent.putExtra("scale", true);
                 // retrieve data on return
                 cropIntent.putExtra("return-data", false);
                 File f = createNewFile();
@@ -566,7 +587,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
     public File createNewFile() {
-        dir = new File(Environment.getExternalStorageDirectory(), "/App_Pics/");
+        dir = new File(Environment.getExternalStorageDirectory().getPath(), "/AppPics/");
         if (!dir.exists())
             dir.mkdir();
         if (file == null)
@@ -736,7 +757,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     public static HashMap<String, File> getFileParam(String image) {
         HashMap<String, File> param = new HashMap<>();
         param.put("profileImage", new File(image));
-        Log.e("file ", " " + new File(image).canRead());
         return param;
     }
 
@@ -745,16 +765,29 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         switch (requestCode) {
             case HandlePermission.MY_PERMISSIONS_REQUEST_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                file);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                    }
+
                 }
                 break;
             case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_upload, 400, 0.9f, 0.9f);
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -781,6 +814,22 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             return;
         }
 
+        if (!isOtp) {
+            if (!AppPreference.getInstance().getMobileNumber().equalsIgnoreCase(edt_phone.getText().toString().trim())) {
+                isOtp = true;
+                sendOTPService();
+                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Otp Sent Please check your mobile");
+                input_layout_otp.setVisibility(View.VISIBLE);
+                return;
+            } else {
+                isOtp = false;
+                input_layout_otp.setVisibility(View.GONE);
+            }
+
+        }
+
+
         if (isOtp) {
             if (!validateOtp()) {
                 return;
@@ -794,8 +843,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         final String mobNo;
         final String emailId;
 
-        Log.e("mobile", " " + AppPreference.getInstance().getMobileNumber());
-        Log.e("email", " " + AppPreference.getInstance().getUserID());
         if (input_name.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserName().trim())) {
             name = "";
         } else {
@@ -843,14 +890,12 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         JSONObject data = JsonUtilsObject.getProfileDeatils(name, mobNo, emailId, oldPassowrd, newPasswrod);
-        Log.e("jsonUpdateProfile", ": " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.PROFILE_UPDATE, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Target, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -860,9 +905,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                                 if (json.getString("payload").equals(null) || json.getString("payload").equalsIgnoreCase("No Data")) {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Changed");
                                 } else {
+                                    isOtp = false;
                                     img_password_icon.setImageResource(R.drawable.password_icon);
                                     btn_click_change.setText("Change password");
-                                    isclick = false;
                                     liner_password.setVisibility(View.GONE);
                                     input_layout_otp.setVisibility(View.GONE);
                                     edt_otp.setText("");
@@ -870,9 +915,13 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                                     AppPreference.getInstance().setUserName(input_name.getText().toString().trim());
                                     AppPreference.getInstance().setMobileNumber(edt_phone.getText().toString().trim());
                                     AppPreference.getInstance().setUserID(input_email.getText().toString().trim());
-                                    AppPreference.getInstance().setPassword("" + input_new_pass.getText().toString().trim());
-                                    input_old_pass.setText("");
-                                    input_new_pass.setText("");
+                                    if (isclick) {
+                                        AppPreference.getInstance().setPassword("" + input_new_pass.getText().toString().trim());
+                                        input_old_pass.setText("");
+                                        input_new_pass.setText("");
+                                        isclick = false;
+                                    }
+
                                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName(), AppPreference.getInstance().getcf_uuhid());
                                 }
 
@@ -1006,7 +1055,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("Response", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         profile_image_view.post(new Runnable() {
                             @Override
@@ -1044,7 +1092,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
@@ -1071,7 +1118,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("Response", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1117,7 +1163,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
     public void uploadFile(String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, File fileUpload) {
-        Log.e("accessKeyID", " " + accessKeyID + " secretAccessKey- " + secretAccessKey);
 
         String imageUploadUrl = null;
 
@@ -1149,7 +1194,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             String[] spiltName = fileUpload.getName().split("\\.");
             String getName = spiltName[1];
             final String name = "profile-img-" + AppPreference.getInstance().getUserIDProfile() + "." + getName;
-            Log.e("imageFile", " " + fileUpload.getPath() + "name " + name + " bucketName- " + bucketName);
             final TransferObserver observer = transferUtility.upload(
                     bucketName,
                     name,
@@ -1160,7 +1204,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 public void onStateChanged(int id, TransferState state) {
                     switch (state.name()) {
                         case "COMPLETED":
-                            sendImgProfileToServer("https://s3.ap-south-1.amazonaws.com/cure.user.profile.lp/profileImages/" + name);
+                            sendImgProfileToServer("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_PROFILE_NAME + "/" + "profileImages/" + name);
                             break;
 
                     }
@@ -1168,12 +1212,10 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
                 @Override
                 public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                    Log.e("bytesTotal", " " + bytesCurrent + " id- " + id);
                 }
 
                 @Override
                 public void onError(int id, Exception ex) {
-                    Log.e("error", "" + ex.getMessage() + " id- " + id);
                 }
             });
         } catch (Exception e) {
@@ -1201,7 +1243,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("Response p", response + " " + url);
                         profile_image_view.post(new Runnable() {
                             @Override
                             public void run() {
@@ -1352,7 +1393,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         try {
             out = new FileOutputStream(filename);
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -1361,7 +1402,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
     public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "CureFull/Profile");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -1410,4 +1451,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     public void onPickImageComplete(int status, Uri imageUri) {
 
     }
+
+
 }

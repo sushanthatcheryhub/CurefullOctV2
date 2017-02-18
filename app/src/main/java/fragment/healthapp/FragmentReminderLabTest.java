@@ -46,21 +46,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.Reminder_Lab_Docotr_child_ListAdpter;
 import adpter.Reminder_Lab_Self_ListAdpter;
-import adpter.Reminder_medicine_Docotr_child_ListAdpter;
-import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
-import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.LabDoctorName;
 import item.property.LabTestReminderDoctorName;
 import item.property.LabTestReminderListView;
 import item.property.Lab_Test_Reminder_SelfListView;
-import item.property.MedicineReminderListView;
-import item.property.ReminderDoctorName;
-import item.property.Reminder_SelfListView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
@@ -270,6 +265,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_next:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 btn_history.setVisibility(View.VISIBLE);
                 text_date.setVisibility(View.INVISIBLE);
                 btn_history.setText("Previous");
@@ -322,6 +319,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isReset) {
                     isReset = false;
                     isChecked = false;
@@ -347,7 +346,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 getReminderLabTest();
                 break;
             case R.id.liner_filter_by:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_filter);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_filter, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         txt_no_medicine.post(new Runnable() {
@@ -365,7 +365,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
 
                 break;
             case R.id.rel_set_reminder:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_calender, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestSetReminder(), true);
                 break;
@@ -381,7 +382,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                     @Override
                     public void onResponse(String response) {
                         isReset = true;
-                        Log.e("LabTest", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -459,7 +459,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                     public void onErrorResponse(VolleyError error) {
                         isReset = true;
                         txt_no_medicine.setVisibility(View.VISIBLE);
-                        Log.e("error", " " + error.getMessage());
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                     }
                 }
@@ -599,7 +598,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;

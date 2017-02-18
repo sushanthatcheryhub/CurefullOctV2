@@ -2,7 +2,9 @@ package dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
@@ -38,6 +40,7 @@ public class DialogTCFullView extends Dialog {
         WebSettings webSetting = webView.getSettings();
         webSetting.setSupportZoom(true);
         webSetting.setJavaScriptEnabled(true);
+
         webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // chromium, enable hardware acceleration
@@ -46,6 +49,9 @@ public class DialogTCFullView extends Dialog {
             // older android version, disable hardware acceleration
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
+        webView.setLongClickable(false);
+        webView.setHapticFeedbackEnabled(false);
+        webView.setFocusableInTouchMode(false);
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.setWebViewClient(new DialogTCFullView.WebViewClient());

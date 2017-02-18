@@ -49,12 +49,12 @@ public class FlowOrganizer {
 
     public void clearBackStack() {
         List<Fragment> framentList = _fragmnet_manager.getFragments();
-//        if (framentList != null) {
-//            for (Fragment f : framentList) {
-//                if (f != null)
-//                    Log.e("ss", "f name:" + f.getClass().getName());
-//            }
-//        }
+        if (framentList != null) {
+            for (Fragment f : framentList) {
+                if (f != null)
+                    Log.e("ss", "f name:" + f.getClass().getName());
+            }
+        }
         if (_fragmnet_manager.getBackStackEntryCount() > 0) {
             _fragmnet_manager.popBackStack(null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -63,9 +63,7 @@ public class FlowOrganizer {
                 _list_instant_state.clear();
             if (_list_back_state != null)
                 _list_back_state.clear();
-            Log.e("Count",
-                    "Count back entitty"
-                            + _fragmnet_manager.getBackStackEntryCount());
+
         }
 
     }

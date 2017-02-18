@@ -2,10 +2,13 @@ package dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.R;
 import interfaces.IOnOtpDoneDelete;
 
@@ -39,6 +42,8 @@ public class DialogDeleteAll extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
 
         if (v.getId() == R.id.btn_done) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            ElasticAction.doAction(v, 400, 0.9f, 0.9f);
             if (iOnOtpDoneDelete != null) {
                 iOnOtpDoneDelete.optDoneDelete("OK", dialogName, pos);
                 dismiss();
@@ -46,6 +51,8 @@ public class DialogDeleteAll extends Dialog implements View.OnClickListener {
             }
         }
         if (v.getId() == R.id.btn_no) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            ElasticAction.doAction(v, 400, 0.9f, 0.9f);
             if (iOnOtpDoneDelete != null) {
                 iOnOtpDoneDelete.optDoneDelete("NO", dialogName, pos);
                 dismiss();

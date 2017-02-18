@@ -41,9 +41,7 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
     @Override
     public boolean onBackPressed() {
 
-        Log.e("hi", "hi");
         if (AppPreference.getInstance().getDelete()) {
-            Log.e("getDelete", "getDelete");
             AppPreference.getInstance().setDelete(false);
             CureFull.getInstanse().getActivityIsntanse().onBackPressed();
             return true;
@@ -91,7 +89,6 @@ public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
             txt_doctor_name.setText("" + bundle.getString("doctorName"));
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionImageListViews = bundle.getParcelableArrayList("imageList");
-            Log.e("size", ":- " + prescriptionImageListViews.size());
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new PrescriptionImageViewAdpter(CureFull.getInstanse().getActivityIsntanse(),

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -22,19 +21,15 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentHealthNote;
 import fragment.healthapp.FragmentUHID;
 import interfaces.IOnOtpDoneDelete;
-import item.property.HealthNoteItems;
 import item.property.UHIDItems;
 import utils.AppPreference;
 import utils.MyConstants;

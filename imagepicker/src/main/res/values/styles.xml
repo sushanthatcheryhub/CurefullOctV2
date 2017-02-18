@@ -1,0 +1,13 @@
+<resources>
+
+
+    <style name="CustomActionModeStyle" parent="Base.Widget.AppCompat.ActionMode">
+        <item name="background">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomToolbarTheme" parent="Base.ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="actionMenuTextColor">@color/colorTextPrimary</item>
+    </style>
+
+</resources>

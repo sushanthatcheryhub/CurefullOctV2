@@ -281,7 +281,7 @@
                             android:nextFocusRight="@+id/edt_medicine_name"
                             android:padding="@dimen/_4dp"
                             android:singleLine="true"
-                            android:textColor="#282828"
+                            android:textColor="@color/health_yellow"
                             android:textColorHint="@color/health_yellow" />
 
                     </LinearLayout>
@@ -343,7 +343,7 @@
                             android:maxLength="35"
                             android:padding="@dimen/_4dp"
                             android:singleLine="true"
-                            android:textColor="#282828"
+                            android:textColor="@color/health_yellow"
                             android:textColorHint="@color/health_yellow" />
 
                     </LinearLayout>

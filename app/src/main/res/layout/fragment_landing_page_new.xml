@@ -55,7 +55,7 @@
                         android:layout_marginRight="@dimen/_5dp"
                         android:layout_marginTop="@dimen/_5dp"
                         android:background="@drawable/set_goal_button_selector"
-                        android:elevation="@dimen/_10dp"
+                        android:elevation="@dimen/_5dp"
                         android:gravity="center"
                         android:paddingBottom="@dimen/_2dp"
                         android:paddingLeft="@dimen/_5dp"
@@ -217,7 +217,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:text="Calories burnt"
+                            android:text="Calories Burnt"
                             android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 
@@ -292,7 +292,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:text=" Ltr."
+                            android:text="0 Ltr."
                             android:textColor="@color/health_red_drawer" />
                     </LinearLayout>
 
@@ -411,7 +411,7 @@
                                         android:orientation="horizontal"
                                         android:padding="@dimen/_5dp">
 
-                                        <customsTextViews.CustomTextViewMontserratHairLine
+                                        <customsTextViews.CustomTextViewOpenSanRegular
                                             android:id="@+id/txt_title"
                                             style="@style/textView_dark_grey_normal_micro"
                                             android:layout_width="wrap_content"
@@ -798,12 +798,13 @@
                                                 style="@style/textView_dark_grey_normal_micro"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:layout_gravity="bottom"
+                                                android:layout_gravity="center"
                                                 android:layout_marginLeft="@dimen/_10dp"
                                                 android:background="@drawable/yellow_button_selector"
-                                                android:elevation="@dimen/_10dp"
+                                                android:elevation="@dimen/_5dp"
                                                 android:gravity="center_vertical"
                                                 android:paddingBottom="@dimen/_2dp"
+                                                android:layout_marginTop="@dimen/_15dp"
                                                 android:paddingLeft="@dimen/_15dp"
                                                 android:paddingRight="@dimen/_15dp"
                                                 android:paddingTop="@dimen/_2dp"
@@ -974,7 +975,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/_5dp"
                                 android:gravity="center_horizontal"
-                                android:text="LAB test report"
+                                android:text="LAB test reports"
                                 android:textAllCaps="true"
                                 android:textColor="@color/health_red_drawer"
                                 android:textStyle="bold" />

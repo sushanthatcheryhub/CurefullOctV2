@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Curefull.iml" filepath="$PROJECT_DIR$/Curefull.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imagepicker/imagepicker.iml" filepath="$PROJECT_DIR$/imagepicker/imagepicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/supportDifferentScreen/supportDifferentScreen.iml" filepath="$PROJECT_DIR$/supportDifferentScreen/supportDifferentScreen.iml" />
       <module fileurl="file://$PROJECT_DIR$/wildCameraLib/wildCameraLib.iml" filepath="$PROJECT_DIR$/wildCameraLib/wildCameraLib.iml" />
     </modules>

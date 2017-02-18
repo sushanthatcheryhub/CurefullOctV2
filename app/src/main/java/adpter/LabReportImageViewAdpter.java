@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.CardView;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -101,7 +103,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
 //                .diskCacheStrategy(DiskCacheStrategy.ALL)
 //                .into(image_item);
 
-        Glide.with(applicationContext).load(prescriptionListViews.get(position).getReportImage()).asBitmap().priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.ALL)
+        Glide.with(applicationContext).load(prescriptionListViews.get(position).getReportImage()).asBitmap().priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.ALL).override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
                 .dontAnimate().into(new BitmapImageViewTarget(image_item) {
             @Override
             public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
@@ -109,7 +111,8 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                 img_share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                         prepareShareIntent(bmp);
                     }
                 });
@@ -125,7 +128,8 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Lab Report ?", "Lab Report", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(LabReportImageViewAdpter.this);
                 dialogDeleteAll.show();

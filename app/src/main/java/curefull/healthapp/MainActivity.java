@@ -1,8 +1,5 @@
 package curefull.healthapp;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -41,7 +38,6 @@ import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,6 +47,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import ElasticVIews.ElasticAction;
 import awsgcm.MessageReceivingService;
 import fragment.healthapp.FragmentEditGoal;
 import fragment.healthapp.FragmentHealthAppNewProgress;
@@ -179,13 +176,16 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         startService(new Intent(this, MessageReceivingService.class));
 //        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 //
-//        Log.e("id ", " " + refreshedToken);
+        Log.e("Intent ", " " + getIntent().getAction());
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null && !getIntent().getAction().equalsIgnoreCase("")) {
+            Log.e("sdsd", "dssds");
             if (AppPreference.getInstance().isLogin()) {
+                CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
+                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
                 showLogo(false);
                 String type = getIntent().getExtras().getString("type");
                 if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
@@ -232,6 +232,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLandingPage(), false);
             } else {
+
+
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
@@ -253,7 +255,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iconAnim(img_share);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 new LongOperation().execute("");
             }
         });
@@ -263,7 +266,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             public void onClick(View v) {
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
-                CureFull.getInstanse().cancel();
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentProfile(), true);
@@ -283,13 +285,13 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        }
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         System.exit(0);
         finish();
         preferences.edit().putBoolean("isDestroy", true).commit();
-        Log.e("onDestroy", "onDestroy");
     }
 
     public void selectedNav(int i) {
@@ -461,45 +463,48 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String action = intent.getAction();
-        if (!action.equalsIgnoreCase("steps")) {
-            if (AppPreference.getInstance().isLogin()) {
-                showLogo(false);
-                String type = intent.getExtras().getString("type");
-                if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
-                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderLabTest(), false);
-                } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                    liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderDoctorVisit(), false);
+        if (intent.getAction() != null) {
+            String action = intent.getAction();
+            if (!action.equalsIgnoreCase("steps")) {
+                if (AppPreference.getInstance().isLogin()) {
+                    showLogo(false);
+                    String type = intent.getExtras().getString("type");
+                    if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderLabTest(), false);
+                    } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderDoctorVisit(), false);
+                    } else {
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderMedicine(), false);
+                    }
                 } else {
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderMedicine(), false);
+
                 }
-            } else {
+
 
             }
-
-
         }
+
 
     }
 
@@ -577,13 +582,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
         }
 
-    }
-
-    public void iconAnim(View icon) {
-        Animator iconAnim = ObjectAnimator.ofPropertyValuesHolder(icon,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.5f, 1f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.5f, 1f));
-        iconAnim.start();
     }
 
 
@@ -667,7 +665,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             switch (view.getId()) {
                 case R.id.liner_medincine:
                     if (!AppPreference.getInstance().isFragmentMedicine()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_medicine);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
@@ -684,7 +683,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     break;
                 case R.id.liner_doctor_visit:
                     if (!AppPreference.getInstance().isFragmentDoctorVisit()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_doctor_visit);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
@@ -701,7 +701,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     break;
                 case R.id.liner_lab_test:
                     if (!AppPreference.getInstance().isFragmentLabTs()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_lab_test);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
@@ -718,7 +719,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     break;
                 case R.id.txt_bottom_heath_app:
                     if (!AppPreference.getInstance().isFragmentHealthApp()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_app);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoal()) {
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentHealthAppNewProgress(), false);
@@ -732,7 +734,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     break;
                 case R.id.txt_bottom_health_note:
                     if (!AppPreference.getInstance().isFragmentHealthNote()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_note);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -746,13 +749,16 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_home:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentLandingPage(), false);
                     break;
                 case R.id.txt_bottom_prescription:
                     if (!AppPreference.getInstance().isFragmentHealtpre()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_pre);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -768,7 +774,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                     break;
                 case R.id.txt_bottom_reports:
                     if (!AppPreference.getInstance().isFragmentHealtReprts()) {
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_health_report);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -946,6 +953,8 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //        CureFull.getInstanse().getFlowInstanse().replace(new FragmentReminderMedicine(),
 //                false);
     }
+
+
 
 
 }

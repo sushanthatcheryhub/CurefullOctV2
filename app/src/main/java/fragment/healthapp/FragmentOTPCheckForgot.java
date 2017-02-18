@@ -3,8 +3,8 @@ package fragment.healthapp;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentValues;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -38,14 +38,11 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
-import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import interfaces.SmsListener;
-import item.property.UserInfo;
-import operations.DbOperations;
-import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.IncomingSms;
 import utils.MyConstants;
@@ -89,7 +86,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
             OTP = bundle.getInt("otp");
         }
 
-        Log.e("OTP", ":- " + OTP);
 //        btn_click_resend_otp.setText("" + OTP);
         btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
@@ -204,6 +200,8 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_done:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 submitForm();
                 break;
             case R.id.btn_click_resend_otp:
@@ -296,7 +294,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getSymptomsList, URL 1.", response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -316,14 +313,12 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toForgotPassword(health_mobile, edtInputPassword.getText().toString().trim());
-        Log.e("data sign", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_SEND, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         btn_done.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -333,7 +328,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 if (json.getBoolean("payload")) {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Password Changed Successfully");
-                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
                                             .replace(new FragmentLogin(), false);
                                 }

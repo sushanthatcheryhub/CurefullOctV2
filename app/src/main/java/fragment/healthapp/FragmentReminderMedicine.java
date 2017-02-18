@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.Reminder_medicine_Docotr_child_ListAdpter;
 import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
@@ -197,7 +198,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (isChecked) {
-                    Log.e("wow", "wow");
                     if (checkedId == R.id.radioCurefull) {
                         reminder = "curefull";
                         radioCurefull.setChecked(true);
@@ -267,7 +267,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.e("yes user", "yes user");
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
@@ -312,6 +311,8 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
 //
 //                break;
             case R.id.btn_next:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (btn_next.getText().toString().equalsIgnoreCase("Next ")) {
                     btn_next.setText("Next");
                     getReminderMedicine();
@@ -330,6 +331,8 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                 break;
 
             case R.id.btn_history:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (btn_history.getText().toString().equalsIgnoreCase("Previous")) {
                     date = getNextPrevious(startFrom);
                     startFrom = date;
@@ -372,6 +375,8 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isReset) {
                     isChecked = false;
                     isReset = false;
@@ -391,18 +396,22 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
 
                 break;
             case R.id.btn_apply:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
 //                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
                 launchTwitterShort(rootView);
                 getReminderMedicine();
                 break;
             case R.id.rel_set_reminder:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_calender, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentReminderSetMedicine(), true);
                 break;
             case R.id.liner_filter_by:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_filter);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_filter, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         txt_no_medicine.post(new Runnable() {
@@ -429,15 +438,12 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
         realtive_today.setVisibility(View.VISIBLE);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        Log.e("reminder", " " + reminder);
-        Log.e("date", " " + date);
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_OF_MED + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         isReset = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -516,7 +522,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         isReset = true;
-                        Log.e("error", " " + error.getMessage());
                         txt_no_medicine.setVisibility(View.VISIBLE);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                     }
@@ -658,7 +663,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -765,7 +769,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {

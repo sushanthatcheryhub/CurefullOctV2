@@ -24,6 +24,7 @@ public class DialogHintScreenaLanding extends Dialog {
     Context context;
     private TextView txt_health_text;
     private RelativeLayout realtive_hint;
+
     public DialogHintScreenaLanding(Context _activiyt) {
         super(_activiyt, R.style.MyTheme);
 
@@ -41,7 +42,7 @@ public class DialogHintScreenaLanding extends Dialog {
         txt_health_text = (TextView) findViewById(R.id.txt_health_text);
 
 
-        String you = "Health Diary";
+        String you = "CureNotes";
         String termCondtiions = " to store signs of any health issue.";
 
         String meassgeNew = you + termCondtiions;
@@ -57,9 +58,9 @@ public class DialogHintScreenaLanding extends Dialog {
                         .getColor(R.color.health_yellow)), meassgeNew.indexOf(termCondtiions),
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb1.setSpan(new RelativeSizeSpan(1.4f), 0, 12, 0);
+        sb1.setSpan(new RelativeSizeSpan(1.4f), 0, 9, 0);
         txt_health_text.setText(sb1);
-        realtive_hint=(RelativeLayout)findViewById(R.id.realtive_hint);
+        realtive_hint = (RelativeLayout) findViewById(R.id.realtive_hint);
 
         realtive_hint.setOnClickListener(new View.OnClickListener() {
             @Override

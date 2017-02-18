@@ -2,7 +2,6 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,11 +18,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -62,6 +61,9 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
+import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
+import com.nguyenhoanglam.imagepicker.model.Image;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,11 +77,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.Filter_Reports_ListAdpter;
 import adpter.UploadLabTestReportAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
+import curefull.healthapp.BuildConfig;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
@@ -100,6 +104,8 @@ import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
 import utils.SpacesItemDecoration;
 
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -109,6 +115,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
+    public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
     public static final int SELECT_PHOTO = 12345;
     private RelativeLayout realtive_notes;
     private RelativeLayout realtive_notesShort, liner_short_by, txt_filter_by, liner_upload_new;
@@ -161,6 +168,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private LinearLayout txt_short_cancel, txt_short_apply;
     private boolean isList = false, isRest = true;
     private DialogLoader dialogLoader;
+    private ArrayList<Image> images = null;
+    private int REQUEST_CODE_PICKER = 2000;
 
     @Override
     public boolean onBackPressed() {
@@ -207,7 +216,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Lab Reports");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);
@@ -523,6 +532,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
                 break;
             case R.id.liner_short_by:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (isList) {
                     if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                         if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
@@ -542,6 +553,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 break;
 
             case R.id.txt_filter_by:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (isList) {
                     if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                         if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
@@ -561,7 +574,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             case R.id.liner_animation_upload:
                 isUploadClick = false;
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                }
                 liner_upload_new.post(new Runnable() {
                     @Override
                     public void run() {
@@ -570,6 +585,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 });
                 break;
             case R.id.liner_upload_new:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         isUploadClick = true;
@@ -597,11 +614,24 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         }
                     });
                     selectUploadPrescription = "camera";
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                file);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                    }
+
                 }
 
                 break;
@@ -615,11 +645,15 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     }
                 });
                 selectUploadPrescription = "gallery";
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                }
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
                 break;
         }
     }
@@ -627,6 +661,35 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != 0) {
+
+            if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+                images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+                for (int i = 0, l = images.size(); i < l; i++) {
+                    PrescriptionImageList labReportImageList = new PrescriptionImageList();
+                    labReportImageList.setImageNumber(value + 1);
+                    value = value + 1;
+                    labReportImageList.setPrescriptionImage(images.get(i).getPath());
+                    labReportImageList.setChecked(false);
+                    prescriptionImageLists.add(labReportImageList);
+                }
+
+                if (newMessage.equalsIgnoreCase("yes")) {
+                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                    prescriptionImageList1.setImageNumber(000);
+                    prescriptionImageList1.setPrescriptionImage(null);
+                    prescriptionImageList1.setChecked(false);
+                    prescriptionImageLists.add(prescriptionImageList1);
+                    DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                    dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                    dialogFullViewClickImage.show();
+                } else {
+                    DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
+                    dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                    dialogUploadNewPrescription.show();
+                }
+
+
+            }
             if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
                 //Get our saved file into a bitmap object:
                 fileName = Environment.getExternalStorageDirectory() + File.separator;
@@ -635,7 +698,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 prescriptionImageList.setImageNumber(value + 1);
                 value = value + 1;
                 imageName = "" + System.currentTimeMillis();
-                Log.e("parent", " " + Environment.getExternalStorageDirectory());
                 prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
                 prescriptionImageList.setChecked(false);
                 prescriptionImageLists.add(prescriptionImageList);
@@ -653,28 +715,37 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     dialogUploadNewPrescription.setiOnAddMoreImage(this);
                     dialogUploadNewPrescription.show();
                 }
+            } else if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT) {
+                //Get our saved file into a bitmap object:
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+                prescriptionImageList.setImageNumber(value + 1);
+                value = value + 1;
+                imageName = "" + System.currentTimeMillis();
+                prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
+
+
+                prescriptionImageList.setChecked(false);
+                prescriptionImageLists.add(prescriptionImageList);
+                if (newMessage.equalsIgnoreCase("yes")) {
+                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                    prescriptionImageList1.setImageNumber(000);
+                    prescriptionImageList1.setPrescriptionImage(null);
+                    prescriptionImageList1.setChecked(false);
+                    prescriptionImageLists.add(prescriptionImageList1);
+                    DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                    dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                    dialogFullViewClickImage.show();
+                } else {
+                    DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), file.getAbsolutePath(), selectUploadPrescription, prescriptionImageLists);
+                    dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                    dialogUploadNewPrescription.show();
+                }
+
+//            img_vew.setImageBitmap(bitmap);
             } else {
                 if (data != null) {
                     if (requestCode == SELECT_PHOTO) {
-
-//                    if (data != null) {
-//                        ClipData clipData = data.getClipData();
-//                        if (clipData != null) {
-//                            for (int i = 0; i < clipData.getItemCount(); i++) {
-//                                ClipData.Item item = clipData.getItemAt(i);
-//                                Uri uri = item.getUri();
-//                                //In case you need image's absolute path
-//                                String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
-//                                Log.e("path", "-" + path + "-" + clipData.getItemCount());
-//                                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-//                                prescriptionImageList.setImageNumber(value + 1);
-//                                value = value + 1;
-//                                prescriptionImageList.setPrescriptionImage(path);
-//                                prescriptionImageList.setChecked(false);
-//                                prescriptionImageLists.add(prescriptionImageList);
-//                            }
-//                        }
-//                    }
                         // Let's read picked image data - its URI
                         Uri pickedImage = data.getData();
                         // Let's read picked image path using content resolver
@@ -1068,31 +1139,71 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
                 value = prescriptionImageLists.size() - 1;
                 imageName = "" + System.currentTimeMillis();
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
             } else {
                 prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
                 value = prescriptionImageLists.size() - 1;
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         } else {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
 
             } else {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         }
     }
@@ -1104,15 +1215,34 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             prescriptionImageListss.remove(prescriptionImageListss.size() - 1);
             newMessage = mesaage;
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
             } else {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         } else {
             CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
@@ -1140,7 +1270,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         List<File> files = new ArrayList<>();
         for (int i = 0; i < image.size(); i++) {
             if (image.get(i).getImageNumber() != 000) {
-                Log.e("run", " " + i);
                 files.add(new File(image.get(i).getPrescriptionImage()));
             }
             param.put("reportFile", files);
@@ -1166,13 +1295,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         if (selectUploadPrescription.equalsIgnoreCase("camera")) {
                             String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
                             removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
-                            Log.e("check", "" + removeSyptoms);
                         } else {
                             int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
                             String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
-                            Log.e("fileName", " " + hello);
                             removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
-                            Log.e("check", "" + removeSyptoms);
                         }
 
 
@@ -1186,8 +1312,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.e("response :- ", "" + response);
-
             return response;
         }
 
@@ -1231,7 +1355,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 s.append("");
             }
 
-            Log.e("getLabReportList", "---- " + s);
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
@@ -1242,7 +1365,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             dialogLoader.hide();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
-                            Log.e("Lab Report List, URL 1.", response);
 
                             int responseStatus = 0;
                             JSONObject json = null;
@@ -1347,7 +1469,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("Lab Report List, URL 1.", response);
 
                             int responseStatus = 0;
                             JSONObject json = null;
@@ -1436,7 +1557,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getCfUuhidList, URL 1.", response);
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1506,7 +1626,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1566,17 +1685,40 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         }
                     });
                     selectUploadPrescription = "camera";
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                file);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                file);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                    }
+
                 }
                 break;
             case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     isUploadClick = true;
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_upload, 400, 0.9f, 0.9f);
                     liner_upload_new.post(new Runnable() {
                         @Override
                         public void run() {
@@ -1619,7 +1761,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             s.append("&testName=" + clickDiseaseName.replace(" ", "%20"));
             s.append("&date=" + clickDates);
         }
-        Log.e("getAllFilterData", "---- " + s);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,
@@ -1627,7 +1768,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getFilterData, URL 1. ", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1817,7 +1957,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
     public void uploadFile(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final List<PrescriptionImageList> imageFile) {
-        Log.e("accessKeyID", " " + accessKeyID + " secretAccessKey- " + secretAccessKey);
 
         String imageUploadUrl = null;
 
@@ -1852,21 +1991,18 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     String[] spiltName = new File(imageFile.get(i).getPrescriptionImage()).getName().split("\\.");
                     String getName = spiltName[1];
                     String name = prescriptionId + "-" + cfUuhidId + "-" + imageFile.get(i).getImageNumber() + "." + getName;
-                    Log.e("imageFile", " " + fileUpload.getAbsolutePath() + "name " + name + " bucketName- " + bucketName);
                     final TransferObserver observer = transferUtility.upload(
                             bucketName,
                             name,
                             fileUpload, CannedAccessControlList.PublicRead
                     );
                     final int finalI = i;
-                    Log.e("i ki value", " " + i);
                     observer.setTransferListener(new TransferListener() {
                         @Override
                         public void onStateChanged(int id, TransferState state) {
                             switch (state.name()) {
                                 case "COMPLETED":
-                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/cure.ehr.lp/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
-                                    Log.e("state", " " + state.name() + " id- " + id + " " + observer.getKey() + " " + finalI + " " + imageFile.size());
+                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
                                     if (finalI == (imageFile.size() - 2)) {
                                         jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile);
                                     }
@@ -1879,12 +2015,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
                         @Override
                         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                            Log.e("bytesTotal", " " + bytesCurrent + " id- " + id);
                         }
 
                         @Override
                         public void onError(int id, Exception ex) {
-                            Log.e("error", "" + ex.getMessage() + " id- " + id);
                         }
                     });
                 } catch (Exception e) {
@@ -1916,7 +2050,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("response", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -2050,17 +2183,13 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, 0);
-            Log.d("EXIF", "Exif: " + orientation);
             Matrix matrix = new Matrix();
             if (orientation == 6) {
                 matrix.postRotate(90);
-                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 3) {
                 matrix.postRotate(180);
-                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 8) {
                 matrix.postRotate(270);
-                Log.d("EXIF", "Exif: " + orientation);
             }
             scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
                     scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
@@ -2086,7 +2215,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
     public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "CureFull/Images");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -2124,6 +2253,22 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         }
 
         return inSampleSize;
+    }
+
+
+    // Recomended builder
+    public void start() {
+        ImagePicker.create(this)
+                .folderMode(true) // set folder mode (false by default)
+                .folderTitle("CureFull") // folder selection title
+                .imageTitle("Tap to select") // image selection title
+                .single() // single mode
+                .multi() // multi mode (default mode)
+                .limit(10) // max images can be selected (999 by default)
+                .showCamera(false) // show camera or not (true by default)
+                .imageDirectory("Camera")   // captured image directory name ("Camera" folder by default)
+                .origin(images) // original selected images, used in multi mode
+                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
     }
 
 }

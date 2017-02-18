@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
@@ -67,7 +69,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         edt_deatils = (EditText) rootView.findViewById(R.id.edt_deatils);
         edt_subject = (EditText) rootView.findViewById(R.id.edt_subject);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);
@@ -91,6 +93,8 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_done:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (!validateSubject()) {
                     return;
                 }
@@ -142,14 +146,15 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
             JSONObject data = JsonUtilsObject.toCotact(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim());
-            Log.e("data", ":- " + data.toString());
+            if (MyConstants.WebUrls.isLogCheck)
+                Log.e("data", ":- " + data.toString());
+
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_CONTACT, data,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             btn_done.setEnabled(true);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("Cntact, URL 3.", response.toString());
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -158,7 +163,6 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            Log.e("responseStatus :- ", String.valueOf(responseStatus));
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 edt_subject.setText("");
                                 edt_deatils.setText("");

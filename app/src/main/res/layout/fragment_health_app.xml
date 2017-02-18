@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="#E9E9E9"
+    android:background="@color/health_yellow"
     android:clickable="true"
-    android:focusableInTouchMode="false"
     android:focusable="false"
-   >
+    android:focusableInTouchMode="false">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -41,7 +40,7 @@
                     android:gravity="center"
                     android:padding="@dimen/_2dp"
                     android:text="Today"
-                    android:textColor="@color/health_login_text" />
+                    android:textColor="@color/health_red_drawer" />
 
                 <LinearLayout
                     android:id="@+id/liner_btn_goal"
@@ -65,7 +64,7 @@
                         android:elevation="@dimen/_10dp"
                         android:gravity="center_vertical"
                         android:text="Goals - 10000 steps"
-                        android:textColor="@color/white"
+                        android:textColor="@color/health_yellow"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -82,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_5dp"
-                android:background="#E9E9E9"
+                android:background="@color/health_yellow"
                 android:orientation="horizontal">
 
 
@@ -111,7 +110,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
-                                android:textAppearance="@style/TickerTextAppearance3"
+                                android:textAppearance="@style/TickerTextAppearance2"
                                 app:ticker_animationDuration="100" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -121,7 +120,7 @@
                                 android:layout_below="@id/ticker1"
                                 android:gravity="center_horizontal"
                                 android:text="Completed"
-                                android:textColor="@color/health_app_progress"
+                                android:textColor="@color/health_red_drawer"
                                 android:textStyle="bold" />
 
                         </LinearLayout>
@@ -136,13 +135,13 @@
                             android:layout_alignParentTop="true"
                             android:elevation="@dimen/_10dp"
                             android:padding="@dimen/_5dp"
-                            app:arcColor="#ADD5BB"
+                            app:arcColor="@color/health_edit_line"
                             app:arcWidth="@dimen/_6dp"
                             app:clockwise="true"
                             app:enabled="false"
                             app:max="100"
                             app:progress="0"
-                            app:progressColor="@color/health_app_progress"
+                            app:progressColor="@color/health_red_drawer"
                             app:progressWidth="@dimen/_6dp"
                             app:rotation="0"
                             app:roundEdges="true"
@@ -174,20 +173,20 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:layout_weight=".5"
-                            android:gravity="center_horizontal"
+                            android:gravity="right"
                             android:orientation="horizontal">
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:src="@drawable/step_count_icon" />
+                                android:src="@drawable/step_count_red" />
 
                             <View
-                                android:layout_width="@dimen/_4dp"
+                                android:layout_width="@dimen/_2dp"
                                 android:layout_height="match_parent"
                                 android:layout_marginLeft="@dimen/_5dp"
-                                android:background="@color/health_app_text" />
+                                android:background="@color/health_red_drawer" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -203,7 +202,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
                                 android:text="Total Steps"
-                                android:textColor="#036F79"
+                                android:textColor="@color/health_red_drawer"
                                 android:textStyle="bold" />
 
                             <customsTextViews.CustomTextViewOpenSanBold
@@ -216,7 +215,7 @@
                                 android:gravity="left"
                                 android:text="0"
                                 android:textAllCaps="true"
-                                android:textColor="@color/health_app_text" />
+                                android:textColor="@color/health_red_drawer" />
 
                         </LinearLayout>
                     </LinearLayout>
@@ -234,20 +233,20 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:layout_weight=".5"
-                            android:gravity="center_horizontal"
+                            android:gravity="right"
                             android:orientation="horizontal">
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:src="@drawable/calory_burnt_icon" />
+                                android:src="@drawable/calories_burn_red" />
 
                             <View
-                                android:layout_width="@dimen/_4dp"
+                                android:layout_width="@dimen/_2dp"
                                 android:layout_height="match_parent"
                                 android:layout_marginLeft="@dimen/_5dp"
-                                android:background="@color/health_app_text" />
+                                android:background="@color/health_red_drawer" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -265,7 +264,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
                                 android:text="Calories Burnt"
-                                android:textColor="#036F79"
+                                android:textColor="@color/health_red_drawer"
                                 android:textStyle="bold" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -278,7 +277,7 @@
                                 android:gravity="left"
                                 android:text="0"
                                 android:textAllCaps="true"
-                                android:textColor="@color/health_app_text" />
+                                android:textColor="@color/health_red_drawer" />
 
 
                         </LinearLayout>
@@ -316,7 +315,7 @@
                         android:gravity="center_horizontal"
                         android:text="0"
                         android:textAllCaps="true"
-                        android:textColor="@color/health_login_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
                     <customsTextViews.CustomTextViewOpenSanRegular
@@ -324,7 +323,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:textColor="@color/health_login_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -332,7 +331,7 @@
                 <View
                     android:layout_width="@dimen/_1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/cure_hint_color" />
+                    android:background="@color/health_red_drawer" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -354,7 +353,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:text="0"
-                        android:textColor="@color/health_login_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
 
@@ -364,7 +363,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:text="Converted"
-                        android:textColor="@color/health_login_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
 
@@ -373,7 +372,7 @@
                 <View
                     android:layout_width="@dimen/_1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/cure_hint_color" />
+                    android:background="@color/health_red_drawer" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -396,7 +395,7 @@
                         android:gravity="center_horizontal"
                         android:text="0"
                         android:textAllCaps="true"
-                        android:textColor="@color/health_login_text"
+                        android:textColor="@color/health_red_drawer"
                         android:textStyle="bold" />
 
 
@@ -418,7 +417,7 @@
                     android:layout_width="@dimen/_1dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:background="@color/cure_hint_color" />
+                    android:background="@color/health_red_drawer" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -451,7 +450,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="0 ml"
-                            android:textColor="@color/health_login_text"
+                            android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 
 
@@ -462,7 +461,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="0 ml"
-                            android:textColor="@color/health_login_text"
+                            android:textColor="@color/health_red_drawer"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -509,7 +508,7 @@
                                 android:paddingRight="@dimen/_5dp"
                                 android:paddingTop="@dimen/_2dp"
                                 android:text="Daily"
-                                android:textColor="@color/health_login_text" />
+                                android:textColor="@color/health_red_drawer" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 android:id="@+id/btn_weekly"
@@ -522,7 +521,7 @@
                                 android:gravity="center"
                                 android:padding="@dimen/_2dp"
                                 android:text="Weekly"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/health_yellow" />
 
 
                             <customsTextViews.CustomTextViewOpenSanRegular
@@ -536,7 +535,7 @@
                                 android:gravity="center"
                                 android:padding="@dimen/_2dp"
                                 android:text="Monthy"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/health_yellow" />
 
 
                         </LinearLayout>
@@ -564,7 +563,7 @@
                                 android:paddingRight="@dimen/_5dp"
                                 android:paddingTop="@dimen/_2dp"
                                 android:text="Steps"
-                                android:textColor="@color/health_login_text"
+                                android:textColor="@color/health_red_drawer"
                                 android:textStyle="bold" />
 
                             <ImageView
@@ -595,9 +594,8 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/_35dp"
                             android:layout_alignParentBottom="true"
-                          >
+                            android:layout_marginBottom="@dimen/_35dp">
 
                             <View
                                 android:id="@+id/view_line"
@@ -612,9 +610,9 @@
                         android:id="@+id/liner_avg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="invisible"
                         android:layout_marginLeft="@dimen/_30dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="invisible">
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             android:id="@+id/txt_change_aveg"
@@ -705,8 +703,8 @@
                             </LinearLayout>
 
                             <customsTextViews.CustomTextViewOpenSanRegular
-                                style="@style/textView_dark_grey_normal_micro"
                                 android:id="@+id/txt_calories"
+                                style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_20dp"

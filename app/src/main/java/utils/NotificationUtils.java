@@ -43,9 +43,9 @@ public class NotificationUtils {
         // Prepare intent which is triggered if the
         // notification is selected
 
-        if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-            name = "Dr." + name;
-        }
+//        if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+//            name = "Dr." + name;
+//        }
         Intent intent = new Intent();
         intent.setAction("complete");
         intent.putExtra("perDayDosageDetailsId", id);

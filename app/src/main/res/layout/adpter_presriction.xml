@@ -100,7 +100,7 @@
                         android:layout_gravity="center_vertical"
                         android:padding="@dimen/_3dp"
                         android:src="@drawable/delete_icon"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <ImageView
                         android:id="@+id/img_share"

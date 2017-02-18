@@ -49,7 +49,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewMontserratHairLine
+                <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_title"
                     style="@style/textView_dark_grey_normal_micro"
                     android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/white" />
+            android:background="@color/health_yellow" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

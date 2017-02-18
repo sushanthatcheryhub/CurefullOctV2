@@ -6,7 +6,11 @@ package utils;
 public class MyConstants {
 
     public interface WebUrls {
+
+        boolean isLogCheck = false;
+
         String HOST_IP = "http://lp.hatcheryhub.com";
+        //        String HOST_IP = "http://hatcheryhub.com";
         //                        String HOST_IP = "http://192.168.0.26:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/api/v1/";
@@ -22,10 +26,9 @@ public class MyConstants {
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String HEALTH_NOTE_ADD = URL + "endUser/healthNote/addhealthNote";
-
-        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
+        String OTP_WEB_SERVICE = "http://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
-        String OTP_LAST = "&route=11";
+        String OTP_LAST = "&route=14";
         String HEALTH_LIST_NOTE = URL + "endUser/healthNote/listOfhealthNotes?";
         String HEALTH_LIST_DELETE = URL + "endUser/healthNote/deleteHealthNote?id=";
         String SET_GOALS = URL + "endUser/healthapp/updateRecommendedTarget";
@@ -100,6 +103,15 @@ public class MyConstants {
         //Contact
         String GET_CONTACT = URL + "endUser/contact/sendMail";
     }
+//
+//    public interface AWSType {
+//        String BUCKET_NAME = "cure.ehr";
+//        String BUCKET_PROFILE_NAME = "cure.user.profile";
+//        String FOLDER_PRECREPTION_NAME = "/prescription";
+//        String FOLDER_LAB_REPORT_NAME = "/labReport";
+//        String FOLDER_PROFILE_NAME = "/profileImages";
+//
+//    }
 
     public interface AWSType {
         String BUCKET_NAME = "cure.ehr.lp";
@@ -111,11 +123,11 @@ public class MyConstants {
     }
 
     public interface CustomMessages {
-        String No_INTERNET_USAGE = "No Internet Connection";
+        String No_INTERNET_USAGE = "No Internet Connection!!";
         String ISSUE_WITH_DATA = "Issue with data";
         String No_DATA = "No data";
-        String ISSUES_WITH_SERVER = "Issue with sever error";
-        String OFFLINE_MODE = "Your in Offline Mode";
+        String ISSUES_WITH_SERVER = "Response not found!!";
+        String OFFLINE_MODE = "You are in Offline Mode!!";
     }
 
 

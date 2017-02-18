@@ -4,14 +4,12 @@ package fragment.healthapp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
@@ -46,8 +43,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
+import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.UHIDItemsCheck;
@@ -60,7 +59,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentSignUp extends Fragment implements View.OnClickListener {
+public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnClickListener {
 
 
     private View rootView;
@@ -72,6 +71,16 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     private TextInputLayout input_layout_name, inputLayoutEmail;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private ArrayList<UHIDItemsCheck> uhidItemsChecks;
+
+
+    @Override
+    public boolean onBackPressed() {
+        edtInputEmail.setFocusableInTouchMode(true);
+        edtInputEmail.setFocusable(true);
+
+
+        return super.onBackPressed();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,6 +136,8 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_signup:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 btn_signup.setEnabled(false);
                 submitForm();
 //                CureFull.getInstanse().getFlowInstanse()
@@ -191,7 +202,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
         String mthS = ageMnt.toString();
         int m;
         if (mthS.length() == 2) {
-            Log.e("length", ":- " + mthS.length());
             String[] dateParts = mthS.split("-");
             m = (Integer.parseInt(dateParts[1]) + 1);
 
@@ -299,8 +309,12 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.e("otp"," "+n);
                         btn_signup.setEnabled(true);
-                        Log.e("getSymptomsList, URL 1.", response);
+                        edtInputEmail.clearFocus();
+                        edt_phone.clearFocus();
+                        edtInputEmail.setFocusableInTouchMode(false);
+                        edtInputEmail.setFocusable(false);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
                         bundle.putString("NAME", edtInput_name.getText().toString().trim());
@@ -309,7 +323,7 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                         bundle.putInt("otp", n);
                         bundle.putString("UHID", "");
                         CureFull.getInstanse().getFlowInstanse()
-                                .replaceWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
+                                .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
                     }
                 },
                 new Response.ErrorListener() {
@@ -367,7 +381,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
             }
 
             // Take your time to look at all available accounts
-            Log.i("Accounts : ", "Accounts : " + acname);
         }
 
         return email;
@@ -385,7 +398,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                     public void onResponse(JSONObject response) {
                         btn_signup.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -396,7 +408,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                                 if (payload.equalsIgnoreCase("null")) {
                                     sendOTPService();
                                 } else {
-                                    Log.e("payload", "payload");
                                     uhidItemsChecks = ParseJsonData.getInstance().getUHIDCheck(response.toString());
 
                                     Bundle bundle = new Bundle();
@@ -430,7 +441,6 @@ public class FragmentSignUp extends Fragment implements View.OnClickListener {
                 btn_signup.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
 

@@ -260,6 +260,19 @@
 
                                 </LinearLayout>
                             </LinearLayout>
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/txt_days"
+                                style="@style/textView_dark_grey_normal_micro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="@dimen/_2dp"
+                                android:gravity="center_vertical"
+                                android:singleLine="true"
+                                android:text="Days"
+                                android:textColor="@color/health_yellow"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
 
@@ -287,7 +300,7 @@
                                         android:paddingBottom="@dimen/_5dp"
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
-                                        android:text="Reminder repeat from Mon to Sat Every Week."
+                                        android:text="Select the days for reminder in a week"
                                         android:textColor="@color/health_yellow"
                                         android:textStyle="bold" />
 

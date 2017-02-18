@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -226,7 +227,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         revealView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                btn_edit_goal.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        isUploadClick = false;
+                        launchTwitter(rootView);
+                    }
+                });
             }
         });
 
@@ -249,9 +256,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         if (!validateHeightFeetBMI()) {
                             return;
                         }
-                        if (!validateHeightinchBMI()) {
-                            return;
-                        }
+//                        if (!validateHeightinchBMI()) {
+//                            return;
+//                        }
                         if (heightfeet == 5) {
                             txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(heightInch)) + " kg");
                         } else {
@@ -262,9 +269,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         if (!validateHeightFeetBMI()) {
                             return;
                         }
-                        if (!validateHeightinchBMI()) {
-                            return;
-                        }
+//                        if (!validateHeightinchBMI()) {
+//                            return;
+//                        }
                         txt_ideal_weight.setText("" + "50 kg");
                     }
                 } else if (checkedId == R.id.radioFemale) {
@@ -277,9 +284,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         if (!validateHeightFeetBMI()) {
                             return;
                         }
-                        if (!validateHeightinchBMI()) {
-                            return;
-                        }
+//                        if (!validateHeightinchBMI()) {
+//                            return;
+//                        }
                         if (heightfeet == 5) {
                             txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(heightInch)) + " kg");
                         } else {
@@ -290,9 +297,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         if (!validateHeightFeetBMI()) {
                             return;
                         }
-                        if (!validateHeightinchBMI()) {
-                            return;
-                        }
+//                        if (!validateHeightinchBMI()) {
+//                            return;
+//                        }
                         txt_ideal_weight.setText("" + "45 kg");
                     }
                 }
@@ -308,13 +315,11 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 final int year, day;
                 int month1;
                 final Calendar c1 = Calendar.getInstance();
-                Log.e("Age ", ":- " + AppPreference.getInstance().getGoalAge());
                 if (AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
                     year = c1.get(Calendar.YEAR);
                     month1 = c1.get(Calendar.MONTH);
                     day = c1.get(Calendar.DAY_OF_MONTH);
                 } else {
-                    Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = AppPreference.getInstance().getGoalAge().split("-");
                     year = Integer.parseInt(dateFormat[0]);
                     month1 = Integer.parseInt(dateFormat[1]);
@@ -369,7 +374,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
 
                 if (s.length() > 0) {
                     int value = Integer.parseInt(s.toString());
@@ -401,7 +405,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
                 if (s.length() > 0) {
                     double value = Double.parseDouble(s.toString());
                     if (value > 274.32) {
@@ -434,7 +437,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length());
                 if (s.length() > 0) {
 
                     double value = Double.parseDouble(s.toString());
@@ -464,10 +466,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("onTextChanged", ":- " + "onTextChanged" + count + ":- " + s.length() + " " + s.toString());
-//                if (s.toString().equalsIgnoreCase("0")) {
-//                    edt_inchs.setText("");
-//                }
+                if (s.toString().equalsIgnoreCase("")) {
+                    AppPreference.getInstance().setGoalHeightInch("");
+                    heightInch = 0;
+                }
                 if (s.length() > 0) {
                     double value = Double.parseDouble(s.toString());
                     if (value > 11) {
@@ -481,7 +483,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         AppPreference.getInstance().setGoalHeightInch("" + value);
                     }
                     getEditTextLength(edt_inchs);
-                    Log.e("less", ":- " + " " + s.toString());
 
                 }
 
@@ -563,10 +564,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             AppPreference.getInstance().setpound(true);
             isPounds = true;
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                Log.e("gram", "gram");
                 edt_pounds.setText("" + Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams())));
             } else {
-                Log.e("kg", "kg");
                 edt_pounds.setText("" + Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg())));
             }
         }
@@ -750,10 +749,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 edt_pounds.setVisibility(View.VISIBLE);
 
                 if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                    Log.e("gram", "gram");
                     edt_pounds.setText("" + Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams())));
                 } else {
-                    Log.e("kg", "kg");
                     edt_pounds.setText("" + Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg())));
                 }
                 isPounds = true;
@@ -813,9 +810,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             h = inches * 0.0254;
         }
 
-        Log.e("real hero", " " + heightfeet + " " + heightInch);
-
-
         double w = weightkg + (weightGrm / 1000);
         double bmi = w / (h * h);
         txt_BMI.setText("" + new DecimalFormat("##.##").format(bmi) + " " + interpretBMI(bmi));
@@ -847,13 +841,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         return true;
     }
 
-    private boolean validateHeightinchBMI() {
-        String email = edt_inchs.getText().toString().trim();
-        if (email.equalsIgnoreCase("")) {
-            return false;
-        }
-        return true;
-    }
+//    private boolean validateHeightinchBMI() {
+//        String email = edt_inchs.getText().toString().trim();
+//        if (email.equalsIgnoreCase("")) {
+//            return false;
+//        }
+//        return true;
+//    }
 
 
     private boolean validateWeightKgsBMI() {
@@ -898,13 +892,11 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         heightInch = Double.parseDouble(valueInches);
         AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);
         AppPreference.getInstance().setGoalHeightInch("" + heightInch);
-        Log.e("There are ", (int) feet + " feet and " + new DecimalFormat("###.#").format(inches) + " inches in " + cm + "cm");
     }
 
     public void poundToKgs(double pounds) {
         double kilograms = pounds * 0.454;
         weightkg = kilograms;
-        Log.e("hello ", pounds + " pounds is " + kilograms + " killograms");
     }
 
     public void getBmrForMale() {
@@ -931,7 +923,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         } else {
             if (!validateWeightKgsBMI()) {
-                Log.e("failed", "failed");
                 return;
             }
         }
@@ -961,16 +952,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
         } else {
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                Log.e("gram", "gram");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
             } else {
-                Log.e("kg", "kg");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
             }
         }
 
         int bmr = (int) ((10 * totalWeight) + (6.25 * totalHeight) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5));
-        Log.e("BMR", ":- " + bmr);
         txt_BMR.setText("" + bmr + " Calories/day");
     }
 
@@ -995,7 +983,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         } else {
             if (!validateWeightKgsBMI()) {
-                Log.e("failed", "failed");
                 return;
             }
         }
@@ -1023,10 +1010,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
         } else {
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                Log.e("gram", "gram");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
             } else {
-                Log.e("kg", "kg");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
             }
         }
@@ -1045,7 +1030,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("jsonUpload, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1146,7 +1130,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1206,6 +1189,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         switch (view.getId()) {
 
             case R.id.liner_100ml:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 glassNumber = 1;
                 img_100ml.setVisibility(View.VISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
@@ -1213,6 +1198,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_300ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_200ml:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 glassNumber = 2;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.VISIBLE);
@@ -1220,6 +1207,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_300ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_300ml:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 glassNumber = 3;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
@@ -1227,6 +1216,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_500ml.setVisibility(View.INVISIBLE);
                 break;
             case R.id.liner_500ml:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 glassNumber = 4;
                 img_100ml.setVisibility(View.INVISIBLE);
                 img_200ml.setVisibility(View.INVISIBLE);
@@ -1234,6 +1225,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_500ml.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_done:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     String gender = "";
                     if (AppPreference.getInstance().getMale() == true) {
@@ -1256,6 +1249,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 break;
 
             case R.id.btn_edit_goal:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     edt_water.setEnabled(true);
                     edt_water.setFocusable(true);
@@ -1292,7 +1287,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 break;
 
             case R.id.btn_edit_done:
-
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 bmiCalculator();
                 if (isFemale) {
                     getBmrForFeMale();
@@ -1369,7 +1365,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getAllDetails, URL 1.", response);
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1503,10 +1498,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
         } else {
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                Log.e("gram", "gram");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
             } else {
-                Log.e("kg", "kg");
                 totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
             }
         }
@@ -1523,13 +1516,11 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         String dateOfBirth = AppPreference.getInstance().getGoalAge();
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(new DecimalFormat("###.###").format(totalHeight)), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
-        Log.e("jsonUploadPrescription", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("GenderDetails, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1594,13 +1585,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     public void setGoals(GoalInfo userInfo) {
         AppPreference.getInstance().setIsEditGoal(true);
 
-        Log.e("getHeight cm", ": -" + userInfo.getHeight());
         if (!"null".equals(userInfo.getHeight())) {
             c2f(Double.parseDouble(userInfo.getHeight()), "minus");
             AppPreference.getInstance().setGoalHeightFeet("" + heightfeet);
             AppPreference.getInstance().setGoalHeightInch("" + heightInch);
-            Log.e("heightfeet", ": -" + heightfeet);
-            Log.e("heightInch", ": -" + heightInch);
         }
         String age = userInfo.getDateOfBirth();
         if (!age.equalsIgnoreCase("null")) {
@@ -1612,14 +1600,11 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(mYear, mMonth, mDay));
             AppPreference.getInstance().setGoalAge(userInfo.getDateOfBirth());
         }
-        Log.e("getWeight", ": -" + userInfo.getWeight());
         if (!userInfo.getWeight().equalsIgnoreCase("null")) {
             AppPreference.getInstance().setGoalWeightPound("" + userInfo.getWeight());
             edt_pounds.setText("" + userInfo.getWeight());
             String kilogram = "" + new DecimalFormat("###.###").format(Utils.getConvertingPoundsIntoKilograms(Double.parseDouble(userInfo.getWeight())));
-            Log.e("kilogram", " " + kilogram + " " + Utils.getConvertingPoundsIntoKilograms(Double.parseDouble(userInfo.getWeight())));
             String[] dateParts = kilogram.split("\\.");
-            Log.e("lenth", "lenth " + dateParts.length);
             if (dateParts.length == 2) {
                 String kg = dateParts[0];
                 String graam = dateParts[1];
@@ -1681,9 +1666,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (!validateHeightFeetBMI()) {
                         return;
                     }
-                    if (!validateHeightinchBMI()) {
-                        return;
-                    }
+//                    if (!validateHeightinchBMI()) {
+//                        return;
+//                    }
                     if (heightfeet == 5) {
                         txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(heightInch)) + " kg");
                     } else {
@@ -1694,9 +1679,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (!validateHeightFeetBMI()) {
                         return;
                     }
-                    if (!validateHeightinchBMI()) {
-                        return;
-                    }
+//                    if (!validateHeightinchBMI()) {
+//                        return;
+//                    }
                     txt_ideal_weight.setText("" + "50 kg");
                 }
             } else {
@@ -1710,9 +1695,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (!validateHeightFeetBMI()) {
                         return;
                     }
-                    if (!validateHeightinchBMI()) {
-                        return;
-                    }
+//                    if (!validateHeightinchBMI()) {
+//                        return;
+//                    }
                     if (heightfeet == 5) {
                         txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(heightInch)) + " kg");
                     } else {
@@ -1723,9 +1708,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (!validateHeightFeetBMI()) {
                         return;
                     }
-                    if (!validateHeightinchBMI()) {
-                        return;
-                    }
+
                     txt_ideal_weight.setText("" + "45 kg");
                 }
             }

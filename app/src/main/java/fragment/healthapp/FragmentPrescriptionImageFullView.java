@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -119,7 +122,8 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
                     img_share.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                            ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                             prepareShareIntent(bmp);
                         }
                     });
@@ -136,7 +140,8 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", 0);
                 dialogDeleteAll.setiOnOtpDoneDelete(FragmentPrescriptionImageFullView.this);
                 dialogDeleteAll.show();
@@ -178,7 +183,6 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor List, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;

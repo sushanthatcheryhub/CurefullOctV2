@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
-    android:clickable="true"
-  >
+    android:clickable="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -80,9 +79,9 @@
                         android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
                         android:drawablePadding="@dimen/_5dp"
-                        android:imeOptions="actionNext"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Password"
+                        android:imeOptions="actionNext"
                         android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
@@ -111,8 +110,8 @@
                         android:drawablePadding="@dimen/_5dp"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Confirm Password"
-                        android:inputType="textPassword"
                         android:imeOptions="actionDone"
+                        android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white" />

@@ -134,6 +134,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("subject", subject.trim());
             jsonParent.put("details", details.trim());
             jsonParent.put("date", date.trim());
+            Log.e("date t", " " + date.trim());
             jsonParent.put("fromTime", fromTime.trim());
             jsonParent.put("toTime", toTime.trim());
 

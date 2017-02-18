@@ -43,9 +43,7 @@ public class FragmentPrescriptionFollowUpImageView extends BaseBackHandlerFragme
     @Override
     public boolean onBackPressed() {
 
-        Log.e("hi", "hi");
         if (AppPreference.getInstance().getDelete()) {
-            Log.e("getDelete", "getDelete");
             AppPreference.getInstance().setDelete(false);
             CureFull.getInstanse().getActivityIsntanse().onBackPressed();
             return true;

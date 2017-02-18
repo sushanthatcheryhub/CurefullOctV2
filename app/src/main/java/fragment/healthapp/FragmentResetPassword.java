@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -29,6 +30,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import utils.HandlePermission;
@@ -62,6 +64,8 @@ public class FragmentResetPassword extends Fragment {
         btn_reset_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
 //                if (!isValidEmail(input_mobile_number.getText().toString().trim()) || !isValidPhoneNumber(input_mobile_number.getText().toString().trim())) {
 //                    return;
 //                }

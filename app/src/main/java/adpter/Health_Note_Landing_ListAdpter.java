@@ -69,11 +69,9 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
         String hrs = dateParts1[0];
         String mins = dateParts1[1];
 
-        Log.e("new value", "" + healthNoteItemses.get(position).getNote_to_time());
 
-        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null")||healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
+        if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
             try {
-                Log.e("time", "" + hrs + ":- " + mins);
                 txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -83,8 +81,6 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
             String[] dateParts11 = times1.split(":");
             String hrs1 = dateParts11[0];
             String mins1 = dateParts11[1];
-
-            Log.e("hi", "hi" + times1);
             try {
                 txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             } catch (ParseException e) {
@@ -118,13 +114,13 @@ public class Health_Note_Landing_ListAdpter extends RecyclerView.Adapter<Health_
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_title.setText(sb);
-        linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentHealthNote(), true);
-            }
-        });
+//        linearLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                CureFull.getInstanse().getFlowInstanse()
+//                        .replace(new FragmentHealthNote(), true);
+//            }
+//        });
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

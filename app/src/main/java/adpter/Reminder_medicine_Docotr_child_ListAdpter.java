@@ -1,32 +1,17 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.ParseException;
 import java.util.List;
 
-import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
-import fragment.healthapp.FragmentHealthNote;
-import item.property.HealthNoteItems;
 import item.property.ReminderDoctorName;
-import item.property.Reminder_DoctorListView;
-import utils.CustomTypefaceSpan;
-import utils.Utils;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.

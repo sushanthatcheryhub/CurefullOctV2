@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.UploadLabTestReportAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -106,7 +108,8 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
                     img_share.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                             prepareShareIntent(bmp);
                         }
                     });
@@ -123,7 +126,8 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", 0);
                 dialogDeleteAll.setiOnOtpDoneDelete(FragmentLabReportImageFullView.this);
                 dialogDeleteAll.show();
@@ -143,8 +147,6 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor List, URL 1.", response);
-
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {

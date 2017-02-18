@@ -29,7 +29,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -42,9 +41,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,11 +50,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import ElasticVIews.ElasticAction;
 import adpter.AdapterAddMedicine;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
@@ -65,12 +62,10 @@ import curefull.healthapp.R;
 import customsTextViews.CustomTextViewOpenSanRegular;
 import item.property.MedicineReminderItem;
 import item.property.ReminderMedicnceDoagePer;
-import item.property.ReminderMedicnceTime;
 import toggle.button.MultiSelectToggleGroup;
 import toggle.button.ToggleButtonGroup;
 import utils.AppPreference;
 import utils.MyConstants;
-import utils.Utils;
 
 
 /**
@@ -83,7 +78,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private TextView txt_set_reminder, edt_years, txt_duration, txt_dogaes, txt_duration_txt;
     private RequestQueue requestQueue;
     private ListView list_view_current_visit;
-    private static int APPEND_HEIGHT_TO_LIST = 5;
+    private static int APPEND_HEIGHT_TO_LIST = 2;
     private ArrayList<MedicineReminderItem> listCurrent = new ArrayList<>();
     private String startFrom = "";
     private ListPopupWindow listPopupWindow;
@@ -126,6 +121,28 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         liner_date_select = (LinearLayout) rootView.findViewById(R.id.liner_date_select);
         list_view_current_visit = (ListView) rootView.findViewById(R.id.list_view_current_visit);
         img_rotate = (ImageView) rootView.findViewById(R.id.img_rotate);
+
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
+            }
+        });
         list_view_current_visit.setOnTouchListener(new ListView.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -187,6 +204,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         Bundle vBundle = getArguments();
         if (vBundle != null) {
+            rotatePhoneClockwise(img_rotate);
+            isVisible = true;
+            relative_bottom_area.setVisibility(View.VISIBLE);
             isEdit = true;
             MedicineReminderItem reminderItem = new MedicineReminderItem();
             reminderItem.setId(1);
@@ -315,6 +335,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.relative_schedule:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isVisible) {
                     rotatePhoneAntiClockwise(img_rotate);
                     isVisible = false;
@@ -331,6 +353,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 }
                 break;
             case R.id.txt_set_reminder:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isEdit) {
                     setMedReminderDetailsEdit();
                 } else {
@@ -342,13 +366,11 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 final int year, day;
                 int month1;
                 final Calendar c1 = Calendar.getInstance();
-                Log.e("Age ", ":- " + AppPreference.getInstance().getGoalAge());
                 if (startFrom.equalsIgnoreCase("")) {
                     year = c1.get(Calendar.YEAR);
                     month1 = c1.get(Calendar.MONTH);
                     day = c1.get(Calendar.DAY_OF_MONTH);
                 } else {
-                    Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = startFrom.split("-");
                     year = Integer.parseInt(dateFormat[0]);
                     month1 = Integer.parseInt(dateFormat[1]);
@@ -462,9 +484,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             if (i == (view_text_page.length - 1)) {
                 newTime += get24hrsFormat(hello.substring(0, hello.length() - 1));
             } else {
-                if (hello.endsWith(" am, ")) {
+                if (hello.endsWith(" am | ")) {
                     newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
-                } else if (hello.endsWith(" pm, ")) {
+                } else if (hello.endsWith(" pm | ")) {
                     newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
                 }
             }
@@ -570,9 +592,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             if (i == (view_text_page.length - 1)) {
                 newTime += get24hrsFormat(hello.substring(0, hello.length() - 1));
             } else {
-                if (hello.endsWith(" am, ")) {
+                if (hello.endsWith(" am | ")) {
                     newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
-                } else if (hello.endsWith(" pm, ")) {
+                } else if (hello.endsWith(" pm | ")) {
                     newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
                 }
             }
@@ -730,7 +752,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                             min = "" + 30;
                         }
                     }
-                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + ", ");
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + " | ");
                 }
                 view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
                 view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -741,10 +763,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
                         String time = "" + view_text_page[finalI].getText();
                         Log.e("time", " " + time);
-                        if (time.endsWith(" am, ")) {
-                            time = time.substring(0, time.length() - 5);
-                        } else if (time.endsWith(" pm, ")) {
-                            time = time.substring(0, time.length() - 5);
+                        if (time.endsWith(" am | ")) {
+                            time = time.substring(0, time.length() - 6);
+                        } else if (time.endsWith(" pm | ")) {
+                            time = time.substring(0, time.length() - 6);
                         } else if (time.endsWith(" am.")) {
                             time = time.substring(0, time.length() - 4);
                         } else if (time.endsWith(" pm.")) {
@@ -764,7 +786,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                                 if (finalI == (totalPage - 1)) {
                                     view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ".");
                                 } else {
-                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ", ");
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + " | ");
 
                                 }
                             }
@@ -809,7 +831,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + ".");
                 } else {
                     String[] text = timeToMedo[i].split(":");
-                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + ", ");
+                    view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + " | ");
                 }
                 view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
                 view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -820,9 +842,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
                         String time = "" + view_text_page[finalI].getText();
                         Log.e("time", " " + time);
-                        if (time.endsWith(" am, ")) {
+                        if (time.endsWith(" am | ")) {
                             time = time.substring(0, time.length() - 5);
-                        } else if (time.endsWith(" pm, ")) {
+                        } else if (time.endsWith(" pm | ")) {
                             time = time.substring(0, time.length() - 5);
                         } else if (time.endsWith(" am.")) {
                             time = time.substring(0, time.length() - 4);
@@ -843,7 +865,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                                 if (finalI == (totalPage - 1)) {
                                     view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ".");
                                 } else {
-                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + ", ");
+                                    view_text_page[finalI].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hourOfDay, minute) + " | ");
 
                                 }
                             }
@@ -864,26 +886,41 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
     public String get24hrsFormat(String time) {
-        String[] times = time.split(" ");
-        String tme = times[0];
-        String ampm = times[1];
-        if (ampm.trim().equalsIgnoreCase("am")) {
-            tme = tme + " a.m.";
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            String[] times = time.split(" ");
+            String tme = times[0];
+            String ampm = times[1];
+            if (ampm.trim().equalsIgnoreCase("am")) {
+                tme = tme + " a.m.";
+            } else {
+                tme = tme + " p.m.";
+            }
+            String timeNew = "";
+            SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm aa", Locale.UK);
+            Date date = null;
+            try {
+                date = parseFormat.parse(tme);
+                timeNew = displayFormat.format(date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return timeNew;
         } else {
-            tme = tme + " p.m.";
-        }
-        String timeNew = "";
-        SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm aa", Locale.UK);
-        Date date = null;
-        try {
-            date = parseFormat.parse(tme);
-            timeNew = displayFormat.format(date);
-        } catch (Exception e) {
-            e.printStackTrace();
+            SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+            Date date = null;
+            try {
+                date = parseFormat.parse(time);
+                Log.e("format ", parseFormat.format(date) + " = " + displayFormat.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return displayFormat.format(date);
         }
 
-        return timeNew;
+
     }
 
     private void rotatePhoneClockwise(ImageView imageView) {

@@ -12,11 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import adpter.LabReportImageViewAdpter;
-import adpter.PrescriptionImageViewAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.LabReportImageListView;

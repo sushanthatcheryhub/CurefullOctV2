@@ -8,16 +8,11 @@ import android.graphics.Typeface;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 
 import java.io.IOException;
-import java.util.List;
 
 import LazyLoaderLibs.ImageType;
 import LazyLoaderLibs.PhoneSpecificImage;
-import interfaces.IGlobalIsbackButtonVisible;
-import interfaces.IGlobalTopBarButtonVisible;
 import operations.DatabaseHelper;
 import utils.FlowOrganizer;
 
@@ -37,6 +32,7 @@ public class CureFull extends Application {
     private Typeface opensansTypefaceLine;
     private Typeface opensansTypefaceBold;
     private Typeface opensansTypefaceSemiBold;
+
     public boolean isEditext() {
         return isEditext;
     }
@@ -58,8 +54,6 @@ public class CureFull extends Application {
         super.onCreate();
         _application = this;
         requestQueue = Volley.newRequestQueue(getApplicationContext());
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
         _db_configuration = new DatabaseHelper.Builder(getApplicationContext())
                 .setName("curefull_offline.sqlite").build();
         try {

@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -68,7 +70,8 @@ public class FragmentResetNewPassword extends Fragment {
         btn_reset_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (emailCheck.equalsIgnoreCase("yes")) {
                     if (isValidEmail(input_email.getText().toString().trim())) {
                         if (!validatePassword()) {

@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     android:clickable="true">
 
     <RelativeLayout
@@ -39,7 +41,7 @@
                         android:elevation="@dimen/_10dp"
                         android:gravity="center"
                         android:text="CureNotes"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/health_yellow" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -159,7 +161,7 @@
                                                     android:nextFocusDown="@id/edt_deatils"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:textColor="#282828"
+                                                    android:textColor="@color/health_yellow"
                                                     android:textColorHint="@color/cure_hint_color" />
 
                                             </LinearLayout>
@@ -424,7 +426,7 @@
                                                 android:marqueeRepeatLimit="marquee_forever"
                                                 android:padding="@dimen/_4dp"
                                                 android:singleLine="true"
-                                                android:textColor="#282828"
+                                                android:textColor="@color/health_yellow"
                                                 android:textColorHint="@color/cure_hint_color" />
 
 
@@ -435,12 +437,13 @@
                                             style="@style/textView_dark_grey_normal_micro"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_gravity="bottom"
+                                            android:layout_gravity="center"
                                             android:layout_marginLeft="@dimen/_10dp"
                                             android:background="@drawable/yellow_button_selector"
-                                            android:elevation="@dimen/_10dp"
+                                            android:elevation="@dimen/_5dp"
                                             android:gravity="center_vertical"
                                             android:paddingBottom="@dimen/_2dp"
+                                            android:layout_marginTop="@dimen/_15dp"
                                             android:paddingLeft="@dimen/_15dp"
                                             android:paddingRight="@dimen/_15dp"
                                             android:paddingTop="@dimen/_2dp"
@@ -498,7 +501,6 @@
                 android:drawSelectorOnTop="true"
                 android:fastScrollEnabled="true"
                 android:overScrollMode="never"
-                android:padding="10dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:visibility="gone" />
 

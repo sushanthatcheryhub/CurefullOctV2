@@ -162,7 +162,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
         Spannable sb = new SpannableString(meassgeTxt);
         Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(name),
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(name),
                 meassgeTxt.indexOf(name) + name.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -171,7 +171,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                 meassgeTxt.indexOf(name) + name.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(comma),
+                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(comma),
                 meassgeTxt.indexOf(comma) + comma.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()

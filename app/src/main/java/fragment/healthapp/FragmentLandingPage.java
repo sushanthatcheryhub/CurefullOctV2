@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -69,6 +71,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -162,7 +165,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         rootView = inflater.inflate(R.layout.fragment_landing_page_new,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
 
         AppPreference.getInstance().setIsLogin(true);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -174,7 +177,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
         CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
-
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
@@ -234,7 +236,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         img_minus_icon.setOnClickListener(this);
         imgg_question_white.setOnClickListener(this);
         imgg_question_red.setOnClickListener(this);
-        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
+
 //        if (AppPreference.getInstance().getStepStarts()) {
 
 
@@ -244,6 +246,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         rotate_forward = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(CureFull.getInstanse().getActivityIsntanse(), R.anim.rotate_backward);
         // Construct SwitchDateTimePicker
+        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
@@ -252,7 +255,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         if (AppPreference.getInstance().isFirstTimeSteps()) {
             stepsCountsItemses = DbOperations.getOfflineSteps(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid());
             if (stepsCountsItemses != null && stepsCountsItemses.size() > 0) {
-                Log.e("db", "db");
                 for (int i = 0; i < stepsCountsItemses.size(); i++) {
                     jsonUploadTargetSteps(CureFull.getInstanse().getActivityIsntanse(), stepsCountsItemses.get(i).getSteps_count(), stepsCountsItemses.get(i).getCalories(), stepsCountsItemses.get(i).getWaterTake(), stepsCountsItemses.get(i).getDateTime(), i, stepsCountsItemses.size());
                 }
@@ -267,7 +269,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
         if (AppPreference.getInstance().isFirstTimeScreen1()) {
         } else {
-            Log.e("hello", ":- " + " hello");
             if (AppPreference.getInstance().getHintScreen().equalsIgnoreCase("1")) {
             } else {
                 AppPreference.getInstance().setIsFirstTimeScreen1(true);
@@ -277,7 +278,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             }
 
         }
-
 
         ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
         seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
@@ -289,15 +289,14 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             public void onClick(View view) {
 
                 Bundle bundle = new Bundle();
-                Log.e("yes", "yes");
-                Log.e("subject", "yes" + edt_subject.getText().toString().trim());
                 bundle.putString("subject", edt_subject.getText().toString().trim());
                 bundle.putString("details", edt_deatils.getText().toString().trim());
                 bundle.putString("Date", firstDate);
                 bundle.putString("firstTime", firstTime);
                 bundle.putString("toFirstTime", toFirstTime);
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentHealthNote(), bundle, true);
+                        .replace(new FragmentHealthNote(), bundle, false);
             }
         });
 
@@ -315,7 +314,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 return false;
             }
         });
-
+        txt_click_here_add.setPaintFlags(txt_click_here_add.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         return rootView;
     }
@@ -326,13 +325,15 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         switch (view.getId()) {
 
             case R.id.imgg_question_white:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_white);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(imgg_question_white, 400, 0.9f, 0.9f);
                 DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaLanding.show();
                 break;
 
             case R.id.imgg_question_red:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(imgg_question_red);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(imgg_question_red, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
@@ -378,6 +379,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 }
                 break;
             case R.id.btn_set_goal:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
 //                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
 //                dialogFullViewPrescription.show();
                 CureFull.getInstanse().getFlowInstanse()
@@ -386,10 +389,14 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
                 break;
             case R.id.linear_lab_report_click:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestReport(), false);
                 break;
             case R.id.linear_prescription_click:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), false);
                 break;
@@ -403,7 +410,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     month1 = c2.get(Calendar.MONTH);
                     day = c2.get(Calendar.DAY_OF_MONTH);
                 } else {
-                    Log.e("ye wala ", " ye wlal");
                     String[] dateFormat = firstDate.split("-");
                     year = Integer.parseInt(dateFormat[0]);
                     month1 = Integer.parseInt(dateFormat[1]);
@@ -436,6 +442,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 }
                 break;
             case R.id.btn_done:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (!validateSubject()) {
                     return;
                 }
@@ -454,12 +462,26 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 liner_to_time.setVisibility(View.VISIBLE);
                 break;
             case R.id.img_plus_icon:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_plus_icon);
-                getIncreseWaterInTake("true");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_plus_icon, 400, 0.9f, 0.9f);
+                if (AppPreference.getInstance().isEditGoal()) {
+                    getIncreseWaterInTake("true");
+                } else {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentEditGoal(), false);
+
+                }
+
                 break;
             case R.id.img_minus_icon:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_minus_icon);
-                getIncreseWaterInTake("false");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_minus_icon, 400, 0.9f, 0.9f);
+                if (AppPreference.getInstance().isEditGoal()) {
+                    getIncreseWaterInTake("false");
+                } else {
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentEditGoal(), false);
+                }
                 break;
 
         }
@@ -598,7 +620,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     AppPreference.getInstance().setPercentage(b);
                     ticker1.setText(b + "%");
                     double wirght = 0;
-                    Log.e("sdsd", "sdsd " + AppPreference.getInstance().getGoalWeightKg());
                     if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase(null) || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
                         wirght = 40;
                     } else {
@@ -606,7 +627,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     }
                     double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), msg.arg1);
                     txt_calories.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
-                    AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("###.###").format(i2));
+                    AppPreference.getInstance().setCaloriesCount("" + new DecimalFormat("###.##").format(i2));
 //                    txt_calories.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1) + " kcal");
                     break;
                 default:
@@ -619,7 +640,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private boolean validateSubject() {
         String email = edt_subject.getText().toString().trim();
         if (email.isEmpty()) {
-            edt_subject.setError("Name cannot be left blank.");
+            edt_subject.setError("Subject cannot be left blank.");
             requestFocus(edt_subject);
             return false;
         } else {
@@ -631,7 +652,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private boolean validateDeatils() {
         String email = edt_deatils.getText().toString().trim();
         if (email.isEmpty()) {
-            edt_deatils.setError("Deatils cannot be left blank.");
+            edt_deatils.setError("Details cannot be left blank.");
             requestFocus(edt_deatils);
             return false;
         } else {
@@ -647,9 +668,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     }
 
     public void jsonHealthNoteCheck() {
-        Log.e("aacce tok", ":- " + AppPreference.getInstance().getAt());
-        Log.e("a_t ", ":- " + AppPreference.getInstance().getAt());
-        Log.e("r_t ", ":- " + AppPreference.getInstance().getRt());
 
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         String date = "";
@@ -662,7 +680,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             dbYear = mYear;
             date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         } else {
-            Log.e("firstDate", ":- " + firstDate);
             date = firstDate;
         }
         String time = "";
@@ -677,16 +694,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         } else {
             toTime = toFirstTime;
         }
+
+        Log.e("date", " " + date);
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             JSONObject data = JsonUtilsObject.toAddHealthNote(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim(), date, time, toTime);
-            Log.e("data", ":- " + data.toString());
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.HEALTH_NOTE_ADD, data,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Log.e("response", " " + response);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("FragmentLogin, URL 3.", response.toString());
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -695,20 +713,18 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            Log.e("responseStatus :- ", String.valueOf(responseStatus));
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                getAllHealthList();
                                 isFabOpen = true;
-                                txt_time.setText("   ");
-                                txt_to_time.setText("   ");
-                                txt_date_time.setText("");
+                                txt_time.setText("     ");
+                                txt_to_time.setText("     ");
+                                txt_date_time.setText("     ");
                                 liner_to_time.setVisibility(View.GONE);
                                 liner_date_t.setVisibility(View.GONE);
                                 date_time_picker.setVisibility(View.GONE);
                                 txt_click_here_add.setVisibility(View.VISIBLE);
                                 edt_subject.setText("");
                                 edt_deatils.setText("");
-
+                                getAllHealthList();
 
                             } else {
                                 try {
@@ -794,9 +810,9 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             firstTime = "";
             toFirstTime = "";
             firstDate = "";
-            txt_time.setText("  ");
-            txt_to_time.setText("  ");
-            txt_date_time.setText("");
+            txt_time.setText("     ");
+            txt_to_time.setText("     ");
+            txt_date_time.setText("     ");
             liner_to_time.setVisibility(View.GONE);
             liner_date_t.setVisibility(View.GONE);
             date_time_picker.setVisibility(View.GONE);
@@ -817,9 +833,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            Log.e("HealthList", " " + response);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getAllHealth, URL 1.", response);
-
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -829,7 +844,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 e.printStackTrace();
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                Log.e("in", " :-" + " in");
                                 healthNoteItemses = ParseJsonData.getInstance().getHealthNoteListItem(response);
                                 if (healthNoteItemses == null || healthNoteItemses.size() == 0) {
                                     healthNoteItemses = DbOperations.getNoteList(CureFull.getInstanse().getActivityIsntanse());
@@ -925,7 +939,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     isSelectFrom = true;
                     firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                    txt_to_time.setText("");
+                    txt_to_time.setText("     ");
                     toFirstTime = "";
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than Current time.");
@@ -938,7 +952,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                         isSelectFrom = true;
                         firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                         txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                        txt_to_time.setText("");
+                        txt_to_time.setText("    ");
                         toFirstTime = "";
                     } else {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than Current time.");
@@ -950,7 +964,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     isSelectFrom = true;
                     firstTime = (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                     txt_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                    txt_to_time.setText("  ");
+                    txt_to_time.setText("     ");
                     toFirstTime = "";
                 }
             }
@@ -985,8 +999,11 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                         //checkes whether the current time is between 14:49:00 and 20:11:13.
                         toFirstTime = "" + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (mintues < 10 ? "0" + mintues : mintues) + ":" + "00";
                         txt_to_time.setText("" + Utils.updateTime(hourOfDay, mintues));
-                    } else {
+                    } else if (x.before(calendar2.getTime())) {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select greater than first time.");
+
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please select less than current time.");
 
                     }
                 } catch (Exception e) {
@@ -996,8 +1013,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
 
                 try {
-
-
                     String dateInString = firstDate + " " + newFirstTime + ":" + newFirstTimeMintues;
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     Date d1 = sdf.parse(dateInString);
@@ -1043,13 +1058,11 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             String timeReal = dateParts[1];
 
             JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
-            Log.e("jsonUploadTarget", ": " + data.toString());
 
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.e("Target, URL 3.", response.toString());
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1116,14 +1129,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private void getDailyHealth() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            Log.e("date ", "date " + CureFull.getInstanse().getActivityIsntanse().getTodayDate());
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getDailyHealth, URL 1.", response);
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1131,6 +1142,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 responseStatus = json.getInt("responseStatus");
                                 if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                     if (!json.getString("payload").equals(null)) {
+                                        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                                        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+                                        Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                                        CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                                        doBindService();
+
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
                                         JSONObject json2 = new JSONObject(json1.getString("dailyDetails"));
                                         String steps = json2.getString("steps");
@@ -1164,13 +1181,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                             AppPreference.getInstance().setWaterInTakeTarget(json3.getString("targetWaterInTake"));
                                         }
 
-
+                                    } else {
+                                        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                                        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
                                         Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
                                         CureFull.getInstanse().getActivityIsntanse().startService(intent);
                                         doBindService();
                                     }
 
                                 } else {
+                                    txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                                    txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
                                     Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
                                     CureFull.getInstanse().getActivityIsntanse().startService(intent);
                                     doBindService();
@@ -1232,7 +1253,6 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getIncres, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1307,11 +1327,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         String hrs = dateParts1[0];
         String mins = dateParts1[1];
 
-        Log.e("new value", "" + healthNoteItemses.get(0).getNote_to_time());
-
         if (healthNoteItemses.get(0).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(0).getNote_to_time().equalsIgnoreCase("")) {
             try {
-                Log.e("time", "" + hrs + ":- " + mins);
                 txt_date_times.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -1322,14 +1339,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             String hrs1 = dateParts11[0];
             String mins1 = dateParts11[1];
 
-            Log.e("hi", "hi" + times1);
             try {
                 txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)) + " to " + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs1), Integer.parseInt(mins1)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-
         String name = healthNoteItemses.get(0).getNote_heading();
         String comma = " : ";
         String gameName = healthNoteItemses.get(0).getDeatils();
@@ -1352,7 +1367,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 meassgeTxt.indexOf(comma) + comma.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
-                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(gameName),
+                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_title.setText(sb);
@@ -1387,14 +1402,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         String timeReal = dateParts[1];
 
         JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
-        Log.e("jsonUploadTarget", ": " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Target, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {

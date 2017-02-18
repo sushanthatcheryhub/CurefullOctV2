@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +32,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -150,7 +151,8 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpter.this);
                 dialogDeleteAll.show();
@@ -162,7 +164,8 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                 size = 1;
                 if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                     pos = position;
                     for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().size(); i++) {
                         new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(position).getPrescriptionImageListViews().get(i).getPrescriptionImage());

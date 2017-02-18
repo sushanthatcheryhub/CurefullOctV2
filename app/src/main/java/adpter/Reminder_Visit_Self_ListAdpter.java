@@ -1,6 +1,7 @@
 package adpter;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -80,7 +82,8 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_edit_rem);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
                 Bundle bundle = new Bundle();
                 bundle.putString("doctorFollowupReminderId", healthNoteItemses.get(position).getDoctorFollowupReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
@@ -95,7 +98,8 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         img_editm_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_editm_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab doctor visit ?", "Doctor Visit", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Visit_Self_ListAdpter.this);
                 dialogDeleteAll.show();

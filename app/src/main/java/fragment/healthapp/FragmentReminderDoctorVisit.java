@@ -2,7 +2,6 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.graphics.Paint;
 import android.os.Build;
@@ -45,26 +44,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.Reminder_Visit_Docotr_child_ListAdpter;
 import adpter.Reminder_Visit_Self_ListAdpter;
-import adpter.Reminder_medicine_Docotr_child_ListAdpter;
-import adpter.Reminder_medicine_Self_ListAdpter;
 import asyns.ParseJsonData;
-import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.DoctorVisitReminderDoctorName;
 import item.property.DoctorVistReminderListView;
 import item.property.Doctor_Visit_Reminder_SelfListView;
 import item.property.LabDoctorName;
-import item.property.MedicineReminderListView;
-import item.property.ReminderDoctorName;
-import item.property.Reminder_SelfListView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
@@ -248,7 +241,6 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.e("yes user", "yes user");
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
@@ -294,6 +286,8 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 //
 //                break;
             case R.id.btn_next:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 btn_history.setVisibility(View.VISIBLE);
                 text_date.setVisibility(View.INVISIBLE);
                 btn_history.setText("Previous");
@@ -347,6 +341,8 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_reset:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isReset) {
                     isChecked = false;
                     isReset = false;
@@ -366,13 +362,16 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
                 break;
             case R.id.btn_apply:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
 //                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
                 launchTwitterShort(rootView);
                 getReminderMedicine();
                 break;
             case R.id.liner_filter_by:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_filter);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_filter, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         txt_no_medicine.post(new Runnable() {
@@ -390,7 +389,8 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
                 break;
             case R.id.rel_set_reminder:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_calender);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_calender, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentDoctorVisitSetReminder(), true);
                 break;
@@ -408,7 +408,6 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                     public void onResponse(String response) {
                         isReset = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("rem, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -622,7 +621,6 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;

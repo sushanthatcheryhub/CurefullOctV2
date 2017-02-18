@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -106,6 +108,13 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
+
+        if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
+            img_delete.setVisibility(View.GONE);
+        } else {
+            img_delete.setVisibility(View.VISIBLE);
+        }
+
         String date = prescriptionListViews.get(position).getPrescriptionDate();
         if (!date.equalsIgnoreCase("")) {
             String[] dateFormat = date.split("-");
@@ -125,6 +134,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
             Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage())
                     .thumbnail(0.1f)
                     .crossFade()
+                    .override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
                     .priority(Priority.HIGH)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
@@ -151,7 +161,8 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
                 dialogDeleteAll.show();
@@ -163,7 +174,8 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                 size = 1;
                 if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                     pos = position;
                     Log.e("size new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size());
                     for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size(); i++) {
@@ -352,7 +364,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
-        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpeg");
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/CureFull/" + System.currentTimeMillis() + ".jpeg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);

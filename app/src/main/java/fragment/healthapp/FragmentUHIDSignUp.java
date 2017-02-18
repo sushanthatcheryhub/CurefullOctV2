@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.List;
 import java.util.Random;
 
+import ElasticVIews.ElasticAction;
 import adpter.UHID_Sign_ListAdpter;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -42,8 +44,8 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
     private TextView btn_contiune, btn_skip, txt_we;
     private List<UHIDItemsCheck> uhidItemsChecks;
     private String health_name, health_email, health_mobile;
-    private String realUHID;
-    private String blankName;
+    private String realUHID = "";
+    private String blankName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,6 +77,10 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
             showAdpter();
         }
         AppPreference.getInstance().setcf_uuhidSignUp("");
+
+
+
+
         return rootView;
     }
 
@@ -98,6 +104,8 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_contiune:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (realUHID.equalsIgnoreCase("")) {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select UHID to Continue");
                 } else {
@@ -108,6 +116,8 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
 
                 break;
             case R.id.btn_skip:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 btn_contiune.setEnabled(false);
                 btn_skip.setEnabled(false);
                 sendOTPService("");
@@ -120,7 +130,7 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "OTP_IS" + n + MyConstants.WebUrls.OTP_LAST,
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

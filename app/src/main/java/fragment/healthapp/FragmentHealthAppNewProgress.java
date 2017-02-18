@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,6 +16,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,17 +42,16 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.HorizontalAdapterNewProgress;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
-import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.GraphYearMonthDeatilsList;
@@ -70,7 +71,7 @@ import widgets.HorizontalRecyclerView;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implements View.OnClickListener {
+public class FragmentHealthAppNewProgress extends Fragment implements View.OnClickListener {
 
 
     private View rootView;
@@ -94,10 +95,6 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     private boolean isFirstTime = false;
     SharedPreferences preferences;
 
-    @Override
-    public boolean onBackPressed() {
-        return super.onBackPressed();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,7 +104,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Health App");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         AppPreference.getInstance().setFragmentHealthApp(true);
         AppPreference.getInstance().setFragmentHealthNote(false);
@@ -273,17 +270,21 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
 
             case R.id.liner_btn_goal:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentEditGoal(), true);
                 break;
 
             case R.id.btn_daily:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 isFirstTime = false;
                 AppPreference.getInstance().setGraphDate("");
                 liner_avg.setVisibility(View.GONE);
-                btn_daily.setTextColor(Color.parseColor("#EB4748"));
-                btn_monthy.setTextColor(Color.parseColor("#ffffff"));
-                btn_weekly.setTextColor(Color.parseColor("#ffffff"));
+                btn_daily.setTextColor(Color.parseColor("#CC2C34"));
+                btn_monthy.setTextColor(Color.parseColor("#fdb832"));
+                btn_weekly.setTextColor(Color.parseColor("#fdb832"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
@@ -293,11 +294,13 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 jsonGetGraphDeatils(fromdate, date, frequency, type);
                 break;
             case R.id.btn_weekly:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 isFirstTime = true;
                 AppPreference.getInstance().setGraphDate("");
-                btn_daily.setTextColor(Color.parseColor("#ffffff"));
-                btn_monthy.setTextColor(Color.parseColor("#ffffff"));
-                btn_weekly.setTextColor(Color.parseColor("#EB4748"));
+                btn_daily.setTextColor(Color.parseColor("#fdb832"));
+                btn_monthy.setTextColor(Color.parseColor("#fdb832"));
+                btn_weekly.setTextColor(Color.parseColor("#CC2C34"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded);
@@ -311,11 +314,13 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 //                mChart.animateXY(3000, 3000);
                 break;
             case R.id.btn_monthy:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 isFirstTime = true;
                 AppPreference.getInstance().setGraphDate("");
-                btn_daily.setTextColor(Color.parseColor("#ffffff"));
-                btn_monthy.setTextColor(Color.parseColor("#EB4748"));
-                btn_weekly.setTextColor(Color.parseColor("#ffffff"));
+                btn_daily.setTextColor(Color.parseColor("#fdb832"));
+                btn_monthy.setTextColor(Color.parseColor("#CC2C34"));
+                btn_weekly.setTextColor(Color.parseColor("#fdb832"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
@@ -424,9 +429,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 //                    txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
 //                    AppPreference.getInstance().setStepsCount("" + msg.arg1);
                     float percentage = Utils.getPercentage(msg.arg1, AppPreference.getInstance().getStepsCountTarget());
-                    Log.e("percentage", ":- " + percentage);
                     int b = (int) percentage;
-                    Log.e("b", ":- " + b);
                     seekArcComplete.setProgress(b);
 ////                    setProgressUpdateAnimation(b);
                     ticker1.setText(b + "%");
@@ -440,7 +443,7 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                         wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
                     }
                     double i2 = Utils.getCaloriesBurnt((wirght * 2.2), msg.arg1);
-                    text_calories_count.setText("" + new DecimalFormat("##.##").format(i2) + " kcal");
+                    text_calories_count.setText("" + new DecimalFormat("###.##").format(i2) + " kcal");
 //                    text_calories_count.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1)+"kcal");
                     break;
                 default:
@@ -450,20 +453,17 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
     }
 
     public void jsonGetGraphDeatils(String fromDate, String date, final String frequency, final String type) {
-        Log.e("wifi ", " " + CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse()));
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
             JSONObject data1 = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
 
-            Log.e("para ", " " + data1.toString());
 
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_GRAPH, data1,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("GraphDeatils , URL 3.", response.toString());
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -518,7 +518,6 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
             CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
         } else {
             String response = DbOperations.getGraphList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), type, frequency);
-            Log.e("response", "response " + response);
             if (!response.equalsIgnoreCase("")) {
                 graphViewsList = ParseJsonData.getInstance().getGraphViewList(response.toString());
                 if (graphViewsList != null)
@@ -534,12 +533,10 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
         liner_avg.setVisibility(View.VISIBLE);
         if (frequency.equalsIgnoreCase("daily")) {
             if (!date.equalsIgnoreCase("")) {
-                Log.e("date", ": " + date);
                 String[] dateFormat = date.split("-");
                 int mYear = Integer.parseInt(dateFormat[0]);
                 int mMonth = Integer.parseInt(dateFormat[1]);
                 int mDay = Integer.parseInt(dateFormat[2]);
-                Log.e("yer", "yer " + mYear);
                 try {
                     date = mDay + "," + Utils.formatMonth(String.valueOf(mMonth));
 
@@ -571,7 +568,6 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
                 e.printStackTrace();
             }
         }
-        Log.e("waterTake ", "" + waterTake);
         txt_graph_steps.setText("" + stepsValue);
         txt_water_inatke_real.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(waterTake))) + " ltr");
         txt_calories.setText("" + calories + " Kcl");
@@ -579,7 +575,6 @@ public class FragmentHealthAppNewProgress extends BaseBackHandlerFragment implem
 
 
     public void setChartGraph() {
-        Log.e("graph", "dds");
         horizontalAdapterNew = new HorizontalAdapterNewProgress(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNewProgress.this, frequency, isFirstTime);
         horizontal_recycler_view.setAdapter(horizontalAdapterNew);
 //                                horizontal_recycler_view.scrollToPosition(graphViewsList.get(0).getGraphViewDetailses().size() - 1);

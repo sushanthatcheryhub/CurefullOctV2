@@ -2,8 +2,6 @@ package fragment.healthapp;
 
 
 import android.animation.Animator;
-import android.content.ClipData;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,12 +13,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
@@ -64,6 +62,9 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
+import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
+import com.nguyenhoanglam.imagepicker.model.Image;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,11 +78,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.Filter_prescription_ListAdpterNew;
 import adpter.UploadPrescriptionAdpterNew;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
+import curefull.healthapp.BuildConfig;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
@@ -97,8 +100,9 @@ import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
 import utils.MyConstants;
-import utils.RequestBuilderOkHttp;
 import utils.SpacesItemDecoration;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -108,9 +112,10 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
 
     private View rootView;
+    private int REQUEST_CODE_PICKER = 2000;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
+    public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
     public static final int SELECT_PHOTO = 12345;
-    public static final int SELECT_PHOTO_MULTIPLE = 5432;
     private RelativeLayout realtive_notes;
     private RelativeLayout realtive_notesShort, liner_short_by, txt_filter_by, liner_upload_new;
     private RelativeLayout realtive_notesFilter;
@@ -139,7 +144,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     private String path;
     private String imageName = "" + System.currentTimeMillis();
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1, attectPosittion;
-    private String fileName = "";
     private ImageView btn_reset, img_doctor_name, img_disease_name, img_upload_by, img_date;
     private String newMessage = "";
     private String clickDoctorName = "", clickDiseaseName = "", clickUploadBy = "", clickDates = "", clickShortBy = "DESC";
@@ -157,6 +161,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     private LinearLayout txt_short_cancel, txt_short_apply;
     private boolean isList = false, isRest = true;
     private DialogLoader dialogLoader;
+    private ArrayList<Image> images = null;
 
     @Override
     public boolean onBackPressed() {
@@ -202,7 +207,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Prescription");
-        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         dialogLoader = new DialogLoader(CureFull.getInstanse().getActivityIsntanse());
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);
@@ -341,7 +346,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
             @Override
             public void onClick(View v) {
                 if (uhidItemses != null && uhidItemses.size() > 0) {
-                    Log.e("no user", "no user");
                     checkDialog = "img_user_name";
                     rotatePhoneClockwise(img_user_name);
                     listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
@@ -361,8 +365,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
         txt_sort_user_name.setSelected(true);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
-        Log.e("a_t", AppPreference.getInstance().getAt() + " r_t " + AppPreference.getInstance().getRt());
-
 
         radioShort.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -383,7 +385,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.e("yes user", "yes user");
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (uhidItemses != null && uhidItemses.size() > 0) {
@@ -560,7 +561,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
 
             case R.id.liner_animation_upload:
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload_animation);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_upload_animation, 400, 0.9f, 0.9f);
                 isUploadClick = false;
                 liner_upload_new.post(new Runnable() {
                     @Override
@@ -644,11 +646,23 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                             }
                         });
                         selectUploadPrescription = "camera";
-                        CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                            File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                            Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                    BuildConfig.APPLICATION_ID + ".provider",
+                                    file);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                            startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                        } else {
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                            startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                        }
+
                     }
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
@@ -657,6 +671,8 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
                 break;
             case R.id.liner_gallery:
+
+
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     value = 0;
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
@@ -668,18 +684,21 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                         }
                     });
                     selectUploadPrescription = "gallery";
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_gallery);
-                    Log.e("sdk", " " + Build.VERSION.SDK_INT);
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        Intent intent = new Intent(Intent.ACTION_PICK);
-//                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                        intent.setType("image/*");
-                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PHOTO);
-                    } else {
-                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                        photoPickerIntent.setType("image/*");
-                        startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_gallery, 400, 0.9f, 0.9f);
+                    images = new ArrayList<>();
+                    start();
+//                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+//                        Intent intent = new Intent(Intent.ACTION_PICK);
+////                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+////                        intent.setAction(Intent.ACTION_GET_CONTENT);
+//                        intent.setType("image/*");
+//                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PHOTO);
+//                    } else {
+//                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                        photoPickerIntent.setType("image/*");
+//                        startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+//                    }
 
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
@@ -689,46 +708,74 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
         }
     }
 
-    Uri imageUri;
-
-    private void cameraIntent() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-        imageUri = CureFull.getInstanse().getActivityIsntanse().getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intent, REQUEST_CAMERA);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("requestCode", ":- " + requestCode);
-        Log.e("resultCode", ":- " + resultCode);
         if (resultCode != 0) {
+
+            if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+                images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+                for (int i = 0, l = images.size(); i < l; i++) {
+                    PrescriptionImageList labReportImageList = new PrescriptionImageList();
+                    labReportImageList.setImageNumber(value + 1);
+                    value = value + 1;
+                    labReportImageList.setPrescriptionImage(images.get(i).getPath());
+                    labReportImageList.setChecked(false);
+                    prescriptionImageLists.add(labReportImageList);
+                }
+
+                if (newMessage.equalsIgnoreCase("yes")) {
+                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                    prescriptionImageList1.setImageNumber(000);
+                    prescriptionImageList1.setPrescriptionImage(null);
+                    prescriptionImageList1.setChecked(false);
+                    prescriptionImageLists.add(prescriptionImageList1);
+                    DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
+                    dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                    dialogFullViewClickImage.show();
+                } else {
+                    DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
+                    dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                    dialogUploadNewPrescription.show();
+                }
+
+
+            }
             if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
                 //Get our saved file into a bitmap object:
-                fileName = Environment.getExternalStorageDirectory() + File.separator;
-                Log.e("fileName", " " + fileName);
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-//            Matrix matrix = new Matrix();
-//            matrix.setRotate(90);
-//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//            Bitmap bitmap_old = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
-//            Bitmap bitmap = Bitmap.createBitmap(bitmap_old, 0, 0, bitmap_old.getWidth(), bitmap_old.getHeight(), matrix, true);
-
                 PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
                 prescriptionImageList.setImageNumber(value + 1);
                 value = value + 1;
                 imageName = "" + System.currentTimeMillis();
-                Log.e("parent", " " + Environment.getExternalStorageDirectory());
                 prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
+                prescriptionImageList.setChecked(false);
+                prescriptionImageLists.add(prescriptionImageList);
+                if (newMessage.equalsIgnoreCase("yes")) {
+                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
+                    prescriptionImageList1.setImageNumber(000);
+                    prescriptionImageList1.setPrescriptionImage(null);
+                    prescriptionImageList1.setChecked(false);
+                    prescriptionImageLists.add(prescriptionImageList1);
+                    DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
+                    dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                    dialogFullViewClickImage.show();
+                } else {
+                    DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), file.getAbsolutePath(), selectUploadPrescription, prescriptionImageLists);
+                    dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                    dialogUploadNewPrescription.show();
+                }
 
+//            img_vew.setImageBitmap(bitmap);
+            } else if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT) {
+                //Get our saved file into a bitmap object:
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+                prescriptionImageList.setImageNumber(value + 1);
+                value = value + 1;
+                imageName = "" + System.currentTimeMillis();
+                prescriptionImageList.setPrescriptionImage(file.getAbsolutePath());
 
                 prescriptionImageList.setChecked(false);
                 prescriptionImageLists.add(prescriptionImageList);
@@ -750,74 +797,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 //            img_vew.setImageBitmap(bitmap);
             } else {
                 if (data != null) {
-                    if (requestCode == SELECT_PHOTO_MULTIPLE) {
-                        // Let's read picked image data - its URI
-                        if (data != null) {
-                            ClipData clipData = data.getClipData();
-                            if (clipData != null) {
-                                for (int i = 0; i < clipData.getItemCount(); i++) {
-                                    ClipData.Item item = clipData.getItemAt(i);
-                                    Uri uri = item.getUri();
-                                    //In case you need image's absolute path
-                                    String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
-                                    Log.e("path", "-" + path + "-" + clipData.getItemCount());
-                                    PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-                                    prescriptionImageList.setImageNumber(value + 1);
-                                    value = value + 1;
-                                    prescriptionImageList.setPrescriptionImage(path);
-                                    prescriptionImageList.setChecked(false);
-                                    prescriptionImageLists.add(prescriptionImageList);
-                                }
-                            }
-                        }
-//                    Uri pickedImage = data.getData();
-//                    // Let's read picked image path using content resolver
-//                    String[] filePath = {MediaStore.Images.Media.DATA};
-//
-//                    Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(pickedImage, filePath, null, null, null);
-//                    cursor.moveToFirst();
-//                    String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
-
-
-                        if (newMessage.equalsIgnoreCase("yes")) {
-                            PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
-                            prescriptionImageList1.setImageNumber(000);
-                            prescriptionImageList1.setPrescriptionImage(null);
-                            prescriptionImageList1.setChecked(false);
-                            prescriptionImageLists.add(prescriptionImageList1);
-                            DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "Prescription");
-                            dialogFullViewClickImage.setiOnDoneMoreImage(this);
-                            dialogFullViewClickImage.show();
-                        } else {
-                            DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
-                            dialogUploadNewPrescription.setiOnAddMoreImage(this);
-                            dialogUploadNewPrescription.show();
-                        }
-
-//                img_vew.setImageBitmap(bitmap);
-                        // Do something with the bitmap
-                        // At the end remember to close the cursor or you will end with the RuntimeException!
-                    } else if (requestCode == SELECT_PHOTO) {
-                        if (data != null) {
-//                        ClipData clipData = data.getClipData();
-//                        if (clipData != null) {
-//                            for (int i = 0; i < clipData.getItemCount(); i++) {
-//                                ClipData.Item item = clipData.getItemAt(i);
-//                                Uri uri = item.getUri();
-//                                //In case you need image's absolute path
-//                                String path = getRealPathFromURI(CureFull.getInstanse().getActivityIsntanse(), uri);
-//                                Log.e("path", "-" + path + "-" + clipData.getItemCount());
-//                                PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-//                                prescriptionImageList.setImageNumber(value + 1);
-//                                value = value + 1;
-//                                prescriptionImageList.setPrescriptionImage(path);
-//                                prescriptionImageList.setChecked(false);
-//                                prescriptionImageLists.add(prescriptionImageList);
-//                            }
-//                        }
-                        }
-                        //                    Uri pickedImage = data.getData();
-//                    // Let's read picked image path using content resolver
+                    if (requestCode == SELECT_PHOTO) {
                         if (data != null) {
                             Uri pickedImage = data.getData();
                             String[] filePath = {MediaStore.Images.Media.DATA};
@@ -1235,31 +1215,72 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
                 value = prescriptionImageLists.size() - 1;
                 imageName = "" + System.currentTimeMillis();
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
 
             } else {
                 prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
                 value = prescriptionImageLists.size() - 1;
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         } else {
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
 
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
             } else {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         }
     }
@@ -1271,15 +1292,35 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
             prescriptionImageListss.remove(prescriptionImageListss.size() - 1);
             newMessage = mesaage;
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        BuildConfig.APPLICATION_ID + ".provider",
+//                        file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                }
             } else {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-//                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                images = new ArrayList<>();
+                start();
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.setType("image/*");
+////                photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             }
         } else {
             CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
@@ -1313,67 +1354,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
             param.put("prescriptionFile", files);
         }
         return param;
-    }
-
-
-    private class LongOperation extends AsyncTask<List<PrescriptionImageList>, Void, String> {
-
-
-        @Override
-        protected String doInBackground(List<PrescriptionImageList>... params) {
-
-            List<PrescriptionImageList> prescriptionImage = params[0];
-            String response = "";
-            RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-            String removeSyptoms = "";
-            try {
-                for (int i = 0; i < prescriptionImage.size(); i++) {
-                    if (prescriptionImage.get(i).getImageNumber() != 000) {
-
-                        if (selectUploadPrescription.equalsIgnoreCase("camera")) {
-                            String imageName = prescriptionImage.get(i).getPrescriptionImage().replace(fileName, "");
-                            removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + imageName + ",";
-                            Log.e("check", "" + removeSyptoms);
-                        } else {
-                            int file = prescriptionImage.get(i).getPrescriptionImage().lastIndexOf("/");
-                            String hello = prescriptionImage.get(i).getPrescriptionImage().substring(file + 1);
-                            Log.e("fileName", " " + hello);
-                            removeSyptoms += prescriptionImage.get(i).getImageNumber() + "/" + hello + ",";
-                            Log.e("check", "" + removeSyptoms);
-                        }
-
-
-                    }
-                }
-                if (removeSyptoms.endsWith(",")) {
-                    removeSyptoms = removeSyptoms.substring(0, removeSyptoms.length() - 1);
-                }
-//            Log.e("request", " " + MyConstants.WebUrls.FILE_UPLOAD + "First:- "  + "Second:- " + getFileParam(myPath.getPath()));
-                response = builderOkHttp.post(MyConstants.WebUrls.UPLOAD_PRESCRIPTION, null, getFileParam(prescriptionImage), doctorName, dieaseName, prescriptionDate, removeSyptoms);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.e("response :- ", "" + response);
-
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            getPrescriptionList();
-            getAllFilterData();
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
     }
 
 
@@ -1411,8 +1391,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                         public void onResponse(String response) {
                             isRest = true;
                             dialogLoader.hide();
-                            Log.e("prescriptionlist", "" + response);
-
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1617,7 +1595,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                         @Override
                         public void onResponse(String response) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            Log.e("getUserList, URL 1.", response);
                             int responseStatus = 0;
                             JSONObject json = null;
                             try {
@@ -1697,13 +1674,11 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
 
-        Log.e("kya ja raha h ", " " + MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s);
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.PRESCRIPTION_FILTER_DATA + s,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getFilterData, URL 1. ", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1743,8 +1718,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                Log.e("a_t", "" + AppPreference.getInstance().getAt());
-                Log.e("cf_uuhid", "" + AppPreference.getInstance().getcf_uuhidNeew());
                 return headers;
             }
         };
@@ -1760,7 +1733,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1820,16 +1792,28 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                         }
                     });
                     selectUploadPrescription = "camera";
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_camera);
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                file);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+                    } else {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+                    }
                 }
                 break;
             case HandlePermission.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_upload);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_upload, 400, 0.9f, 0.9f);
                     isUploadClick = true;
                     liner_upload_new.post(new Runnable() {
                         @Override
@@ -1986,8 +1970,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     }
 
     public void uploadFile(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final List<PrescriptionImageList> imageFile) {
-        Log.e("accessKeyID", " " + accessKeyID + " secretAccessKey- " + secretAccessKey);
-
         String imageUploadUrl = null;
 
         BasicSessionCredentials credentials =
@@ -2021,21 +2003,18 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     String[] spiltName = new File(imageFile.get(i).getPrescriptionImage()).getName().split("\\.");
                     String getName = spiltName[1];
                     String name = prescriptionId + "-" + cfUuhidId + "-" + imageFile.get(i).getImageNumber() + "." + getName;
-                    Log.e("imageFile", " " + fileUpload.getAbsolutePath() + "name " + name + " bucketName- " + bucketName);
                     final TransferObserver observer = transferUtility.upload(
                             bucketName,
                             name,
                             fileUpload, CannedAccessControlList.PublicRead
                     );
                     final int finalI = i;
-                    Log.e("i ki value", " " + i);
                     observer.setTransferListener(new TransferListener() {
                         @Override
                         public void onStateChanged(int id, TransferState state) {
                             switch (state.name()) {
                                 case "COMPLETED":
-                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/cure.ehr.lp/" + AppPreference.getInstance().getcf_uuhidNeew() + "/prescription/" + observer.getKey());
-                                    Log.e("state", " " + state.name() + " id- " + id + " " + observer.getKey() + " " + finalI + " " + imageFile.size());
+                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/prescription/" + observer.getKey());
                                     if (finalI == (imageFile.size() - 2)) {
                                         jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile);
                                     }
@@ -2048,12 +2027,10 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
                         @Override
                         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                            Log.e("bytesTotal", " " + bytesCurrent + " id- " + id);
                         }
 
                         @Override
                         public void onError(int id, Exception ex) {
-                            Log.e("error", "" + ex.getMessage() + " id- " + id);
                         }
                     });
                 } catch (Exception e) {
@@ -2080,13 +2057,11 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     public void jsonSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, final List<PrescriptionImageList> file) {
         requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         JSONObject data = JsonUtilsObject.toSaveUploadedPrescriptionData(prescriptionId, cfuuhidId, file);
-        Log.e("data upload", "" + data);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOADED_PRESCRETION_DATA, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        Log.e("response", " " + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -2221,17 +2196,13 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, 0);
-            Log.d("EXIF", "Exif: " + orientation);
             Matrix matrix = new Matrix();
             if (orientation == 6) {
                 matrix.postRotate(90);
-                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 3) {
                 matrix.postRotate(180);
-                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 8) {
                 matrix.postRotate(270);
-                Log.d("EXIF", "Exif: " + orientation);
             }
             scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
                     scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
@@ -2257,7 +2228,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
     }
 
     public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "CureFull/Prescription");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -2295,6 +2266,22 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
         }
 
         return inSampleSize;
+    }
+
+
+    // Recomended builder
+    public void start() {
+        ImagePicker.create(this)
+                .folderMode(true) // set folder mode (false by default)
+                .folderTitle("CureFull") // folder selection title
+                .imageTitle("Tap to select") // image selection title
+                .single() // single mode
+                .multi() // multi mode (default mode)
+                .limit(10) // max images can be selected (999 by default)
+                .showCamera(false) // show camera or not (true by default)
+                .imageDirectory("Camera")   // captured image directory name ("Camera" folder by default)
+                .origin(images) // original selected images, used in multi mode
+                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
     }
 
 }

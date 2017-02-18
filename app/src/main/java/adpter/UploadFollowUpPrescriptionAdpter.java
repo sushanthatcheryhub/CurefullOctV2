@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
@@ -108,6 +110,11 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
+        if (uploadedBys.equalsIgnoreCase("curefull")) {
+            img_delete.setVisibility(View.GONE);
+        } else {
+            img_delete.setVisibility(View.VISIBLE);
+        }
         final String date = prescriptionListViews.get(position).getPrescriptionDate();
         if (!date.equalsIgnoreCase("")) {
             String[] dateFormat = date.split("-");
@@ -127,6 +134,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
             Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage())
                     .thumbnail(0.1f)
                     .crossFade()
+                    .override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
                     .priority(Priority.HIGH)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
@@ -153,7 +161,8 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadFollowUpPrescriptionAdpter.this);
                 dialogDeleteAll.show();
@@ -165,7 +174,8 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                 size = 1;
                 if (prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
-                    CureFull.getInstanse().getActivityIsntanse().iconAnim(img_share);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                     pos = position;
                     for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageListViews().size(); i++) {
                         new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageListViews().get(i).getPrescriptionImage());

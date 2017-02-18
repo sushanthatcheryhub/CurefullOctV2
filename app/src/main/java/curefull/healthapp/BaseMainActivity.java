@@ -61,20 +61,19 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentProfile(), false);
         } else if (id == R.id.nav_uhid) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentUHID(), false);
         } else if (id == R.id.nav_logout) {  //yaha se band krna h usko
             CureFull.getInstanse().cancel();
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             // ek ye simple method hota hai.
             //
             //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
@@ -82,15 +81,14 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentTermCondition(), false);
         } else if (id == R.id.nav_contact) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentContact(), false);
         } else if (id == R.id.nav_share) {
-            CureFull.getInstanse().cancel();
             getShareLink();
         }
 
@@ -103,7 +101,7 @@ public class BaseMainActivity extends AppCompatActivity
 //        }
 
         else if (id == R.id.nav_reminder) {
-            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentReminderMedicine(), false);
         }
@@ -158,7 +156,7 @@ public class BaseMainActivity extends AppCompatActivity
                     finish();
                     return;
                 } else if (_backBtnCount == 2) {
-                    String first = "Press back twice to exit";
+                    String first = "Press back thrice to exit";
                     String meassgeTxt = first;
                     Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), meassgeTxt, Toast.LENGTH_SHORT).show();
                     new Handler().postDelayed(new Runnable() {
@@ -300,11 +298,7 @@ public class BaseMainActivity extends AppCompatActivity
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentLogin(), false);
-
-
                         }
-
-
                     }
                 }, new Response.ErrorListener() {
 
@@ -332,8 +326,8 @@ public class BaseMainActivity extends AppCompatActivity
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, "CureFull");
-            String sAux = "\nLet me recommend you this application\n\n";
-            sAux = sAux + "https://play.google.com/store/apps/details?id=curefull.healthapp \n\n";
+            String sAux = "\nCurefull has made 24*7 personalized mobile health monitoring a reality\nWant to track your Daily physical activity? Keep record of Daily health issues ? Manage Digital\n\nJust a click away! ";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=com.curefull \n\n";
             i.putExtra(Intent.EXTRA_TEXT, sAux);
             startActivity(Intent.createChooser(i, "choose one"));
         } catch (Exception e) {

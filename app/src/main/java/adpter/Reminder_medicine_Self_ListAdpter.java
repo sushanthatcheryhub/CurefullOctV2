@@ -1,21 +1,15 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -29,24 +23,19 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentDoctorVisitSetReminder;
-import fragment.healthapp.FragmentHealthNote;
 import fragment.healthapp.FragmentReminderSetMedicine;
 import interfaces.IOnOtpDoneDelete;
-import item.property.HealthNoteItems;
 import item.property.Reminder_SelfListView;
 import utils.AppPreference;
-import utils.CustomTypefaceSpan;
 import utils.MyConstants;
-import utils.Utils;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -128,8 +117,8 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         img_editm_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_editm_delete);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected medicine reminder ?", "Medicine", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(Reminder_medicine_Self_ListAdpter.this);
                 dialogDeleteAll.show();
@@ -141,7 +130,8 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CureFull.getInstanse().getActivityIsntanse().iconAnim(img_edit_rem);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
                 Bundle bundle = new Bundle();
                 bundle.putString("medicineReminderId", healthNoteItemses.get(position).getMedicineReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());

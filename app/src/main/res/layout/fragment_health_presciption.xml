@@ -4,10 +4,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
-    android:clickable="true"
-    android:focusableInTouchMode="false"
-    android:focusable="false"
-    >
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -171,7 +168,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/my_ripple"
-
                     android:orientation="horizontal"
                     android:padding="@dimen/_10dp">
 

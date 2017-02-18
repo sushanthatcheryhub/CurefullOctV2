@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import adpter.UHID_ListAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
@@ -100,6 +102,8 @@ public class FragmentUHID extends BaseBackHandlerFragment {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (!validateName()) {
                     return;
                 }
@@ -175,7 +179,6 @@ public class FragmentUHID extends BaseBackHandlerFragment {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
