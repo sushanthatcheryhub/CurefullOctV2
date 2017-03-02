@@ -274,22 +274,23 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
                     @Override
                     public void run() {
-                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
                         // display toast
                         if (updateTime(hrs, min).equalsIgnoreCase("12:00 am")) {
+                            preferences.edit().putInt("stepsIn", 0).commit();
+                            numSteps = 0;
                             double wirght = 0;
                             if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
                                 wirght = 40;
                             } else {
                                 wirght = Double.parseDouble(preferences.getString("kg", ""));
                             }
-                            numSteps = 0;
+
                             double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            preferences.edit().putInt("stepsIn", 0).commit();
                             Intent intent = new Intent();
                             intent.setAction("steps");
                             intent.putExtra("stepsCount", "" + 0);
-                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.##").format(i2));
                             intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
                             intent.putExtra("newTime", "11:00 pm");
                             sendBroadcast(intent);
@@ -341,7 +342,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 //                            intent.putExtra("newTime", "11:00 pm");
 //                            sendBroadcast(intent);
 //                        }
-                        else if (updateTime(hrs, min).equalsIgnoreCase("11:59 +")) {
+                        else if (updateTime(hrs, min).equalsIgnoreCase("11:59 pm")) {
                             double wirght = 0;
                             if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
                                 wirght = 40;

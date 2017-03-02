@@ -85,10 +85,7 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <!-- Camera -->
-        <activity
-            android:name="com.wildcoder.camera.lib.KitkatCameraBinderActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+
 
 
         <!--<receiver android:name=".InstallReferrerBroadcastReceiver">-->

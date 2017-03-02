@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/imagepicker" />
             <option value="$PROJECT_DIR$/sandriosCamera" />
             <option value="$PROJECT_DIR$/supportDifferentScreen" />
-            <option value="$PROJECT_DIR$/wildCameraLib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

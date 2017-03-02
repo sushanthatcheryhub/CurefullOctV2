@@ -436,6 +436,8 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
                                     preferences.edit().putString("email_id", userInfo.getUser_id()).commit();
                                     preferences.edit().putString("cf_uuhid", userInfo.getCf_uuhid()).commit();
+                                    preferences.edit().putString("user_id",userInfo.getUser_id_profile()).commit();
+
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());

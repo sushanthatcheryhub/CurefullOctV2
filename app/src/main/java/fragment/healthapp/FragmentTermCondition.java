@@ -45,7 +45,7 @@ public class FragmentTermCondition extends BaseBackHandlerFragment {
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(6);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);

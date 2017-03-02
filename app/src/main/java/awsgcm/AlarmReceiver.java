@@ -44,6 +44,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class AlarmReceiver extends BroadcastReceiver {
 
     SharedPreferences preferences;
+    RequestQueue requestQueue;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -88,7 +89,10 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     public void jsonUploadMedicine(final Context context, final String id, String action) {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context);
+        }
+
         JSONObject data = JsonUtilsObject.toNotificationMEdincie(id, action);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_MEDICINE, data,
                 new Response.Listener<JSONObject>() {
@@ -130,6 +134,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 headers.put("user_name", preferences.getString("user_name", ""));
                 headers.put("email_id", preferences.getString("email_id", ""));
                 headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
                 return headers;
             }
         };
@@ -139,7 +144,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     public void jsonUploadDoctorVist(final Context context, final String id, String action) {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context);
+        }
         JSONObject data = JsonUtilsObject.toNotificationDoctor(id, action);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_DOCTOR, data,
                 new Response.Listener<JSONObject>() {
@@ -181,6 +188,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 headers.put("user_name", preferences.getString("user_name", ""));
                 headers.put("email_id", preferences.getString("email_id", ""));
                 headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
                 return headers;
             }
         };
@@ -190,7 +198,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     public void jsonUploadLabTest(final Context context, final String id, String action) {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context);
+        }
         JSONObject data = JsonUtilsObject.toNotificationLabTest(id, action);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_LAB_TEST, data,
                 new Response.Listener<JSONObject>() {
@@ -232,6 +242,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 headers.put("user_name", preferences.getString("user_name", ""));
                 headers.put("email_id", preferences.getString("email_id", ""));
                 headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
                 return headers;
             }
         };
@@ -241,7 +252,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
     public void jsonUploadTargetSteps(Context context, String stepsCount, String caloriesBurnts, String waterin) {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context);
+        }
         String steps = stepsCount;
         String running = "0";
         String cycling = "0";
@@ -292,6 +305,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 headers.put("user_name", preferences.getString("user_name", ""));
                 headers.put("email_id", preferences.getString("email_id", ""));
                 headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
                 return headers;
             }
         };

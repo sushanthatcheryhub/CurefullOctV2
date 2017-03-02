@@ -65,7 +65,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         rootView = inflater.inflate(R.layout.fragment_contact,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(false);
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(4);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);

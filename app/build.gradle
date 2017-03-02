@@ -7,8 +7,8 @@ android {
         applicationId "com.curefull"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 9
-        versionName "1.0.3"
+        versionCode 10
+        versionName "1.0.4"
     }
     lintOptions {
         abortOnError true
@@ -29,7 +29,6 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':supportDifferentScreen')
-    compile project(':wildCameraLib')
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'

@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/imagepicker/imagepicker.iml" filepath="$PROJECT_DIR$/imagepicker/imagepicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandriosCamera/sandriosCamera.iml" filepath="$PROJECT_DIR$/sandriosCamera/sandriosCamera.iml" />
       <module fileurl="file://$PROJECT_DIR$/supportDifferentScreen/supportDifferentScreen.iml" filepath="$PROJECT_DIR$/supportDifferentScreen/supportDifferentScreen.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wildCameraLib/wildCameraLib.iml" filepath="$PROJECT_DIR$/wildCameraLib/wildCameraLib.iml" />
     </modules>
   </component>
 </project>

@@ -20,10 +20,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -56,11 +56,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
@@ -74,8 +72,6 @@ import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
 import com.nguyenhoanglam.imagepicker.model.Image;
 import com.sandrios.sandriosCamera.internal.SandriosCamera;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
-import com.wildcoder.camera.lib.CameraFragment;
-import com.wildcoder.camera.lib.ICameraListnerCropListner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,7 +100,6 @@ import utils.CircularImageView;
 import utils.HandlePermission;
 import utils.IncomingSms;
 import utils.MyConstants;
-import utils.RequestBuilderOkHttp;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -112,7 +107,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentProfile extends CameraFragment implements View.OnClickListener, ICameraListnerCropListner, IOnOtpDonePath, IOnEmailUpdate {
+public class FragmentProfile extends Fragment implements View.OnClickListener, IOnOtpDonePath, IOnEmailUpdate {
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
@@ -160,8 +155,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile,
                 container, false);
-        setFixedHeightWidth(true, 300);
-        registerCameraListner(this);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(1);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -1573,16 +1566,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         return inSampleSize;
     }
 
-    @Override
-    public void onCropComplete(boolean isSucces, String path) {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        getSaveUploadPrescriptionMetadata(new File(compressImage(path)));
-    }
-
-    @Override
-    public void onPickImageComplete(int status, Uri imageUri) {
-
-    }
 
 
     // Recomended builder
