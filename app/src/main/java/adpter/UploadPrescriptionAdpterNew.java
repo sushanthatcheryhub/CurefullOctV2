@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
-
         if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
             img_delete.setVisibility(View.GONE);
         } else {
@@ -131,6 +131,8 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         txt_count_file.setText(prescriptionListViews.get(position).getCountOfFiles());
         text_doctor_name.setText("" + prescriptionListViews.get(position).getDoctorName());
         if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews() != null && prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
+
+            Collections.sort(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews());
             Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage())
                     .thumbnail(0.1f)
                     .crossFade()
@@ -162,7 +164,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
                 dialogDeleteAll.show();
@@ -171,16 +173,24 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 size = 1;
                 if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
+                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                     pos = position;
-                    Log.e("size new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size());
                     for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size(); i++) {
-                        Log.e("check new", "" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
-                        new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+                        if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
+                            new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+
+                        } else {
+                            files.add(Uri.fromFile(new File("" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage())));
+                            if (size == prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size()) {
+                                prepareShareIntent(files);
+                            }
+                            size += 1;
+                        }
                     }
 
                 }
@@ -238,7 +248,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 //            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
 //        }
         if (position == prescriptionListViews.size() - 1) {
-            Log.e("list zise", " " + prescriptionListViews.size());
             prescriptionCheck.callWebServiceAgain(prescriptionListViews.size());
         }
 
@@ -281,15 +290,15 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     }
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
-        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name,
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor Delete, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -302,7 +311,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews.remove(pos);
                             notifyDataSetChanged();
-                            Log.e("size after delete", ":- " + prescriptionListViews.size());
                             if (prescriptionListViews.size() == 0) {
                                 prescriptionCheck.checkList();
                             }
@@ -336,6 +344,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
 
     private void prepareShareIntent(ArrayList<Uri> files) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Prescription ");
@@ -364,7 +373,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
-        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/CureFull/" + System.currentTimeMillis() + ".jpeg");
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpeg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
@@ -388,7 +397,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         @Override
         protected Bitmap doInBackground(String... params) {
 
-            Log.e("url new", " " + params[0]);
             try {
                 URL url = new URL(params[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();

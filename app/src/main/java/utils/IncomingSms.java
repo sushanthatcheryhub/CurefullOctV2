@@ -31,10 +31,10 @@ public class IncomingSms extends BroadcastReceiver {
                             .createFromPdu((byte[]) pdusObj[i]);
                     String phoneNumber = currentMessage
                             .getDisplayOriginatingAddress();
-                    Log.e("phoneNumber", "- " + phoneNumber);
+//                    Log.e("phoneNumber", "- " + phoneNumber);
                     senderNum = phoneNumber;
                     message = currentMessage.getDisplayMessageBody();
-                    Log.e("message", "- " + message);
+//                    Log.e("message", "- " + message);
 //                    SharedPreferences.Editor editor = sharedpreferences.edit();
 //                    editor.putString("Phone", senderNum);
 //                    editor.putString("Message", message);
@@ -47,7 +47,7 @@ public class IncomingSms extends BroadcastReceiver {
             }
 //			checkToSend(context, senderNum, message);
         } catch (Exception e) {
-            Log.e("SmsReceiver", "Exception smsReceiver" + e);
+//            Log.e("SmsReceiver", "Exception smsReceiver" + e);
         }
     }
 

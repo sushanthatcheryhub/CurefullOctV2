@@ -17,10 +17,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
-    <uses-permission android:name="curefull.healthapp.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.curefull.permission.C2D_MESSAGE" />
 
     <permission
-        android:name="curefull.healthapp.permission.C2D_MESSAGE"
+        android:name="com.curefull.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-feature android:name="android.hardware.location.gps" />
@@ -30,6 +30,14 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
 
     <application
@@ -62,16 +70,41 @@
             android:configChanges="keyboardHidden|orientation|screenLayout|touchscreen"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified|adjustPan"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified|adjustPan">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="com.curefull" />
+
+                <data
+                    android:host="lp.ehr.curefull.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
         <!-- Camera -->
         <activity
             android:name="com.wildcoder.camera.lib.KitkatCameraBinderActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
-        <receiver android:name=".InstallReferrerBroadcastReceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
+
+
+        <!--<receiver android:name=".InstallReferrerBroadcastReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.VIEW" />-->
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--<category android:name="android.intent.category.BROWSABLE" />-->
+        <!--<category android:name="curefull.healthapp" />-->
+        <!--<data-->
+        <!--android:host="ehr.curefull.com"-->
+        <!--android:pathPrefix="curefull"-->
+        <!--android:scheme="http"-->
+
+        <!--/>-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <activity
             android:name=".PopupActivity"
@@ -86,11 +119,11 @@
         </receiver>
 
 
-        <intent-filter>
-            <action android:name="android.intent.action.SEND" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="image/*" />
-        </intent-filter>
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.SEND" />-->
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--<data android:mimeType="image/*" />-->
+        <!--</intent-filter>-->
 
 
         <meta-data
@@ -161,8 +194,8 @@
             android:name="awsgcm.MessageReceivingService"
             android:label="awsgcm.MessageReceivingService">
             <intent-filter>
-                <action android:name="curefull.healthapp.ExternalReceiver" />
-                <category android:name="curefull.healthapp" />
+                <action android:name="com.curefull.ExternalReceiver" />
+                <category android:name="com.curefull" />
             </intent-filter>
         </service>
 
@@ -174,7 +207,7 @@
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <action android:name="com.google.android.c2dm.intent.REGISTER" />
 
-                <category android:name="curefull.healthapp" />
+                <category android:name="com.curefull" />
             </intent-filter>
         </receiver>
 

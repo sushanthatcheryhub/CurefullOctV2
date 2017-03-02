@@ -2,10 +2,12 @@ package fragment.healthapp;
 
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -41,11 +43,13 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Handler;
 
 import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
+import awsgcm.MessageReceivingService;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import interfaces.SmsListener;
@@ -73,7 +77,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private boolean showPwd = false;
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
-    private boolean isSending = false;
+    private boolean isSending = false, isCancel = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,6 +150,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         IncomingSms.bindListener(new SmsListener() {
             @Override
             public void messageReceived(String messageText) {
+                isCancel = true;
                 edt_otp_password.setText("");
                 String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
                 String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
@@ -210,6 +215,28 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         });
 
 
+        new CountDownTimer(30000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                if (isCancel) {
+                    onFinish();
+                    cancel();
+                } else {
+                    isSending = true;
+                    btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                }
+                //here you can have your logic to set text to edittext
+            }
+
+            public void onFinish() {
+                btn_click_resend_otp.setText("Resend OTP");
+                isCancel = false;
+                isSending = false;
+            }
+
+        }.start();
+
+
         return rootView;
     }
 
@@ -219,7 +246,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.btn_done:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 submitForm();
                 break;
             case R.id.btn_click_resend_otp:
@@ -229,7 +256,25 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     sendOTPService();
-                    isSending = true;
+                    new CountDownTimer(30000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            if (isCancel) {
+                                onFinish();
+                                cancel();
+                            } else {
+                                isSending = true;
+                                btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                            }
+                        }
+
+                        public void onFinish() {
+
+                            btn_click_resend_otp.setText("Resend OTP");
+                            isCancel = false;
+                            isSending = false;
+                        }
+                    }.start();
+
 
                 }
 
@@ -315,13 +360,19 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     }
 
     private void sendOTPService() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(OTP) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
+        Random rnd = new Random();
+        final int n = 100000 + rnd.nextInt(900000);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        OTP = n;
+                        isSending = false;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -338,7 +389,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
 
     public void jsonLoginCheck() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile, realUHID);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
@@ -377,6 +430,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     if (userInfo.getA_t().equalsIgnoreCase("") || userInfo.getA_t().equalsIgnoreCase("null")) {
                                         return;
                                     }
+                                    AppPreference.getInstance().setIsFirstTimeSteps(false);
                                     preferences.edit().putString("a_t", userInfo.getA_t()).commit();
                                     preferences.edit().putString("r_t", userInfo.getR_t()).commit();
                                     preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
@@ -386,14 +440,22 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());
 
-                                    String token_Id = sharedPreferencesUserLogin.getString("tokenid",
-                                            "123");
-                                    String device_Id = sharedPreferencesUserLogin.getString("android_id",
-                                            "123");
-                                    jsonSaveNotification(token_Id, device_Id);
-                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                    CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentLandingPage(), false);
+                                    if (sharedPreferencesUserLogin.getString("tokenid",
+                                            "123").equalsIgnoreCase("123")) {
+                                        sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
+                                        CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+
+                                    } else {
+                                        String token_Id = sharedPreferencesUserLogin.getString("tokenid",
+                                                "123");
+                                        String device_Id = sharedPreferencesUserLogin.getString("android_id",
+                                                "123");
+                                        jsonSaveNotification(token_Id, device_Id);
+                                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                        CureFull.getInstanse().getFlowInstanse()
+                                                .replace(new FragmentLandingPage(), false);
+                                    }
 
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
@@ -419,7 +481,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
 
@@ -478,7 +540,9 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
 
     public void jsonSaveNotification(String registrationToken, String deviceId) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toRegisterUserForNotification(registrationToken, deviceId);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.URL_NOTIFICATION, data,
@@ -514,7 +578,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             @Override
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -525,6 +589,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

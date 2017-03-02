@@ -7,7 +7,6 @@
     android:background="@drawable/login_gradient"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    android:focusable="true"
   >
 
     <ScrollView

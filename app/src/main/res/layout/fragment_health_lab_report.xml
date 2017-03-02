@@ -5,6 +5,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:clickable="true"
+    android:focusableInTouchMode="true"
     >
 
     <RelativeLayout
@@ -210,7 +211,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:layout_marginLeft="@dimen/_5dp"
                         android:gravity="right"
                         android:text="Filter"
                         android:textColor="@color/health_yellow_bottom"
@@ -365,6 +365,18 @@
                     android:layout_height="match_parent"
                     android:visibility="visible">
 
+
+                    <ImageView
+                        android:id="@+id/img_btn_refresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_above="@+id/txt_no_prescr"
+                        android:layout_centerHorizontal="true"
+                        android:visibility="gone"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/refresh" />
+
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_no_prescr"
                         style="@style/textView_dark_grey_normal_micro"
@@ -441,7 +453,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
-                                        android:text="Cancel"
+                                        android:text="Reset"
                                         android:textColor="@color/health_yellow_bottom" />
 
                                 </LinearLayout>
@@ -745,7 +757,30 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
-                                            android:text="Disease"
+                                            android:text="Test Name"
+                                            android:textColor="@color/health_yellow_bottom"
+                                        android:textStyle="bold" />
+
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/txt_filter_uploadby"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:gravity="left"
+                                        android:orientation="horizontal"
+                                        android:padding="@dimen/_10dp">
+
+                                        <customsTextViews.CustomTextViewOpenSanBold
+                                            android:id="@+id/txt_uploadby"
+                                            style="@style/textView_dark_grey_normal_small"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_vertical"
+                                            android:gravity="center_vertical"
+                                            android:text="Upload by"
                                             android:textColor="@color/health_yellow_bottom"
                                             android:textStyle="bold" />
 
@@ -775,7 +810,7 @@
                                         <android.support.v7.widget.RecyclerView
                                             android:id="@+id/recyclerView_filter"
                                             android:layout_width="match_parent"
-                                            android:layout_height="@dimen/_100dp"
+                                            android:layout_height="@dimen/_130dp"
                                             android:nestedScrollingEnabled="true"
                                             android:scrollbarStyle="outsideOverlay"
                                             android:scrollbars="vertical" />

@@ -11,15 +11,10 @@ import java.util.HashMap;
  * Created by Sushant Hatcheryhub on 12-01-2017.
  */
 
-public class InstallReferrerBroadcastReceiver extends BroadcastReceiver
-{
+public class InstallReferrerBroadcastReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
-        if(intent != null)
-        {
-
-            Log.e("aaya "," aaaya");
+    public void onReceive(Context context, Intent intent) {
+        Log.e("aaya ", " aaaya");
 //            String referrerString = intent.getStringExtra(AppConstant.KEY_REFERRER);
 //            HashMap<String, String> resolvedReferrerData = AppUtil.resolveReferrerString(referrerString);
 //
@@ -34,6 +29,5 @@ public class InstallReferrerBroadcastReceiver extends BroadcastReceiver
 //                    PersistentManager.persistReferrerType(referrerType);
 //                }
 //            }
-        }
     }
 }

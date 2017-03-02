@@ -13,6 +13,7 @@ public class MedicineReminderItem implements MyConstants.JsonUtils {
     private int id;
     private String doctorName = "";
     private String medicineName = "";
+    private String quantityType="";
     private boolean baMealAfter;
     private boolean baMealBefore;
     private String type = "";
@@ -82,5 +83,13 @@ public class MedicineReminderItem implements MyConstants.JsonUtils {
 
     public void setShow(boolean show) {
         isShow = show;
+    }
+
+    public String getQuantityType() {
+        return quantityType;
+    }
+
+    public void setQuantityType(String quantityType) {
+        this.quantityType = quantityType;
     }
 }

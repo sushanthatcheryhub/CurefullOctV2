@@ -9,8 +9,8 @@ public class MyConstants {
 
         boolean isLogCheck = false;
 
-        String HOST_IP = "http://lp.hatcheryhub.com";
-        //        String HOST_IP = "http://hatcheryhub.com";
+//        String HOST_IP = "http://lp.hatcheryhub.com";
+                String HOST_IP = "http://hatcheryhub.com";
         //                        String HOST_IP = "http://192.168.0.26:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/api/v1/";
@@ -26,7 +26,7 @@ public class MyConstants {
         String SIGN_UP = URL + "signup/endUser";
         String FACEBOOK_SIGNUP = URL + "signup/endUserThroughFb";
         String HEALTH_NOTE_ADD = URL + "endUser/healthNote/addhealthNote";
-        String OTP_WEB_SERVICE = "http://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
+        String OTP_WEB_SERVICE = "https://admagister.net/api/mt/SendSMS?user=curefull2016&password=123456&senderid=CURFUL&channel=trans&DCS=0&flashsms=0&number=";
         String OTP_MESSAGE = "&text=";
         String OTP_LAST = "&route=14";
         String HEALTH_LIST_NOTE = URL + "endUser/healthNote/listOfhealthNotes?";
@@ -60,7 +60,7 @@ public class MyConstants {
         String PRESCRIPTION_FILTER_DATA = URL + "endUser/ehr/getPrescriptionFilterDataList?";
         String REPORTS_FILTER_DATA = URL + "endUser/ehr/getLabReportFilterDataList?";
         String INCRESE_WATER_INTAKE = URL + "endUser/healthapp/addWaterIntake?isWaterIntakeAdd=";
-        String ADD_LIST_OF_HEALTH_NOTE = URL + "healthNote/addListOfHealthNote";
+        String ADD_LIST_OF_HEALTH_NOTE = URL + "endUser/healthNote/addListOfHealthNote";
         String ADD_MEDICINE_REM = URL + "enduser/medicineService/addMedicineReminder";
         String EDIT_MEDICINE_REM = URL + "enduser/medicineService/editMedicineReminder";
         String GET_LIST_OF_MED = URL + "enduser/medicineService/getListOfMedicineDosageByDate?";
@@ -102,31 +102,35 @@ public class MyConstants {
 
         //Contact
         String GET_CONTACT = URL + "endUser/contact/sendMail";
+
+        //Email Id Update
+        String EMAIL_ID_UPDATE = URL +"endUser/profile/processResetLink?id=";
+    }
+
+    //
+    public interface AWSType {
+        String BUCKET_NAME = "cure.ehr";
+        String BUCKET_PROFILE_NAME = "cure.user.profile";
+        String FOLDER_PRECREPTION_NAME = "/prescription";
+        String FOLDER_LAB_REPORT_NAME = "/labReport";
+        String FOLDER_PROFILE_NAME = "/profileImages";
+
     }
 //
 //    public interface AWSType {
-//        String BUCKET_NAME = "cure.ehr";
-//        String BUCKET_PROFILE_NAME = "cure.user.profile";
+//        String BUCKET_NAME = "cure.ehr.lp";
+//        String BUCKET_PROFILE_NAME = "cure.user.profile.lp";
 //        String FOLDER_PRECREPTION_NAME = "/prescription";
 //        String FOLDER_LAB_REPORT_NAME = "/labReport";
 //        String FOLDER_PROFILE_NAME = "/profileImages";
 //
 //    }
 
-    public interface AWSType {
-        String BUCKET_NAME = "cure.ehr.lp";
-        String BUCKET_PROFILE_NAME = "cure.user.profile.lp";
-        String FOLDER_PRECREPTION_NAME = "/prescription";
-        String FOLDER_LAB_REPORT_NAME = "/labReport";
-        String FOLDER_PROFILE_NAME = "/profileImages";
-
-    }
-
     public interface CustomMessages {
-        String No_INTERNET_USAGE = "No Internet Connection!!";
+        String No_INTERNET_USAGE = "The internet seems Unhealthy! Check connections";
         String ISSUE_WITH_DATA = "Issue with data";
-        String No_DATA = "No data";
-        String ISSUES_WITH_SERVER = "Response not found!!";
+        String No_DATA = "No data in server";
+        String ISSUES_WITH_SERVER = "Server Not reachable.Try again in a moment.";
         String OFFLINE_MODE = "You are in Offline Mode!!";
     }
 
@@ -226,7 +230,7 @@ public class MyConstants {
 
 
     public interface IArrayData {
-        String[] listPopUpDogase = {"1", "2", "3", "4", "5", "6"};
+        String[] listPopUpDogase = {"1", "2", "3", "4", "5"};
         String[] listPopUp = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
         String[] listPopUpWeightKgs = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109"};
         String[] listPopUpWeightGms = {"100", "200", "300", "400", "500", "600", "700", "800", "900"};
@@ -234,7 +238,7 @@ public class MyConstants {
         String[] listPopUpHeight = {"Ft & In", "Cm"};
         String[] listPopUpWeight = {"Kgs", "Pounds"};
         String[] listUploadBy = {"Self", "CureFull"};
-        String[] listStepsName = {"Steps", "Running", "Cycling"};
+        String[] listStepsName = {"Steps"};
         String[] listDays = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
         String[] mMonths = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
         String[] listDaily = {"011", "111", "222", "332", "344", "345", "634", "7343", "3438", "3439", "1340", "3411", "3412", "1343", "1344", "1345", "3416", "3417", "1348", "1349", "2340", "2341", "2234", "3423", "3424", "3425", "2643", "2734", "2834", "29343", "3340"};

@@ -162,7 +162,9 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DOCTOR_VIsit_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
@@ -204,6 +206,7 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

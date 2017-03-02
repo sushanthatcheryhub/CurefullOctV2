@@ -100,7 +100,6 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
 
             }
             if (med.endsWith(" | ")) {
-                Log.e("time", "" + med);
                 med = med.substring(0, med.length() - 2);
             }
             txt_med_time.setText("" + med);
@@ -210,7 +209,9 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         Log.e("id", ": " + id);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
@@ -251,6 +252,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

@@ -10,7 +10,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class LabReportImageListView implements Parcelable {
+public class LabReportImageListView implements Parcelable ,Comparable<LabReportImageListView>{
 
     private String imageNumber;
     private String reportImage;
@@ -83,4 +83,9 @@ public class LabReportImageListView implements Parcelable {
             return new LabReportImageListView[size];
         }
     };
+
+    @Override
+    public int compareTo(LabReportImageListView o) {
+        return imageNumber.compareTo(o.getImageNumber());
+    }
 }

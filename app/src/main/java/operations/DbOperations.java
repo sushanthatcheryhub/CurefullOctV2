@@ -311,7 +311,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
 
             long id = database.insert(TABLE_OFFLINE_NOTE, null, cv);
-            Log.e("", "Qurery Enty number-" + id);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -435,10 +434,8 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             if (cursor.getCount() > 0) {
                 database.update(TABLE_EDIT_GOAL, cv, "edit_id" + "='" + primaryId + "'",
                         null);
-                Log.e("updateLoginList", "Qurery Enty number-");
             } else {
                 long id = database.insert(TABLE_EDIT_GOAL, null, cv);
-                Log.e("insertLoginList", "Qurery Enty number-" + id);
             }
 
         } catch (Exception e) {

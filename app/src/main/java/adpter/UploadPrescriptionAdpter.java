@@ -211,7 +211,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
 //            getPrescriptionDelete(prescriptionListViews.get(position).getPrescriptionId(), prescriptionListViews.get(position).getDoctorName(), position);
 //        }
         if (position == prescriptionListViews.size() - 1) {
-            Log.e("list zise", " " + prescriptionListViews.size());
             prescriptionCheck.callWebServiceAgain(prescriptionListViews.size());
         }
 
@@ -254,15 +253,15 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
     }
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
-        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name,
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor Delete, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -275,7 +274,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews.remove(pos);
                             notifyDataSetChanged();
-                            Log.e("size after delete", ":- " + prescriptionListViews.size());
                             if (prescriptionListViews.size() == 0) {
                                 prescriptionCheck.checkList();
                             }
@@ -361,7 +359,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
         @Override
         protected Bitmap doInBackground(String... params) {
 
-            Log.e("url", " " + params[0]);
             try {
                 URL url = new URL(params[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();

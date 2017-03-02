@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-
 import java.text.ParseException;
 import java.util.List;
 
@@ -27,7 +25,6 @@ public class Filter_prescription_ListAdpterNew extends RecyclerView.Adapter<Filt
 
     Context applicationContext;
     List<String> healthNoteItemses;
-    private RequestQueue requestQueue;
     private String filterNames;
     private FragmentPrescriptionCheckNew prescriptionCheck;
 
@@ -110,9 +107,9 @@ public class Filter_prescription_ListAdpterNew extends RecyclerView.Adapter<Filt
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("check", ":- right");
+//                Log.e("check", ":- right");
                 if (!checkBox.isChecked()) {
-                    Log.e("check", ":- isChecked");
+//                    Log.e("check", ":- isChecked");
 //                    AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
 
                     if (filterNames.equalsIgnoreCase("date")) {

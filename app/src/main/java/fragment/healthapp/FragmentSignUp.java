@@ -208,7 +208,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
         } else {
             m = Integer.parseInt(mthS);
         }
-        Log.e("mth", ":- " + m);
+//        Log.e("mth", ":- " + m);
 
         return String.valueOf(m);
     }
@@ -295,7 +295,9 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 //        String firstName = "";
 //        String LastName = "";
 //        String[] name = edtInput_name.getText().toString().split(" ");
@@ -309,7 +311,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("otp"," "+n);
+//                        Log.e("otp"," "+n);
                         btn_signup.setEnabled(true);
                         edtInputEmail.clearFocus();
                         edt_phone.clearFocus();
@@ -388,10 +390,12 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
 
     public void jsonUHIDCheck() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toUHID(edtInput_name.getText().toString().trim(), edt_phone.getText().toString().trim(), edtInputEmail.getText().toString().trim());
-        Log.e("data", ":- " + data.toString() + ":- " + MyConstants.WebUrls.UHID_SIGN_UP);
+//        Log.e("data", ":- " + data.toString() + ":- " + MyConstants.WebUrls.UHID_SIGN_UP);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UHID_SIGN_UP, data,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -409,7 +413,6 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                                     sendOTPService();
                                 } else {
                                     uhidItemsChecks = ParseJsonData.getInstance().getUHIDCheck(response.toString());
-
                                     Bundle bundle = new Bundle();
                                     bundle.putString("NAME", edtInput_name.getText().toString().trim());
                                     bundle.putString("EMAIL", edtInputEmail.getText().toString().trim());
@@ -451,7 +454,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.e("signup", "signup");
+//        Log.e("signup", "signup");
         switch (requestCode) {
             case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

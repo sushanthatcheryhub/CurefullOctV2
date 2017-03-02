@@ -12,7 +12,7 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUtils {
+public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUtils, Comparable<PrescriptionImageListView> {
 
     private String imageNumber;
     private String prescriptionImage;
@@ -87,5 +87,11 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
 
     public void setPrescriptionImagePartId(String prescriptionImagePartId) {
         this.prescriptionImagePartId = prescriptionImagePartId;
+    }
+
+
+    @Override
+    public int compareTo(PrescriptionImageListView o) {
+        return imageNumber.compareTo(o.getImageNumber());
     }
 }

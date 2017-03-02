@@ -107,7 +107,8 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
 //                .diskCacheStrategy(DiskCacheStrategy.ALL)
 //                .into(image_item);
 
-        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage()).asBitmap().priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.ALL).override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
+        Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImage()).asBitmap().priority(Priority.HIGH)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
                 .dontAnimate().into(new BitmapImageViewTarget(image_item) {
             @Override
             public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
@@ -116,7 +117,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                     @Override
                     public void onClick(View view) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                         prepareShareIntent(bmp);
                     }
                 });
@@ -133,7 +134,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(PrescriptionImageViewAdpter.this);
                 dialogDeleteAll.show();
@@ -187,15 +188,17 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     }
 
     private void getPrescriptionDelete(String id, String prescriptionFollowupId, String name, final int pos, String prescriptionPartId) {
-        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
+//        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + name,
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor List, URL 1.", response);
+//                        Log.e("Doctor List, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -232,6 +235,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

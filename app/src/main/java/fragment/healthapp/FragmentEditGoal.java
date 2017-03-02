@@ -118,7 +118,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 return true;
             } else {
                 if (isUploadClick) {
-                    Log.e("isclick", " " + isUploadClick);
                     isUploadClick = false;
                     btn_edit_goal.post(new Runnable() {
                         @Override
@@ -128,7 +127,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     });
                     return false;
                 } else {
-                    Log.e("isclick", " else");
                     if (AppPreference.getInstance().getMale() == false && AppPreference.getInstance().getFeMale() == false) {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Gender");
                         return false;
@@ -157,12 +155,14 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 container, false);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
-        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
-        if (AppPreference.getInstance().isEditGoal()) {
-            CureFull.getInstanse().getActivityIsntanse().activateDrawer();
-        } else {
-            CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        }
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
+//        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
+//        if (AppPreference.getInstance().isEditGoal()) {
+        CureFull.getInstanse().getActivityIsntanse().activateDrawer();
+//        } else {
+//            CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+//        }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
@@ -377,8 +377,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
                 if (s.length() > 0) {
                     int value = Integer.parseInt(s.toString());
-                    if (value > 9) {
-                        value = 9;
+                    if (value > 10) {
+                        value = 10;
                         edt_feet.setText("" + value);
                         AppPreference.getInstance().setGoalHeightFeet("" + value);
                     } else {
@@ -407,8 +407,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
                     double value = Double.parseDouble(s.toString());
-                    if (value > 274.32) {
-                        value = 274.32;
+                    if (value > 332.74) {
+                        value = 332.74;
                         edt_cm.setText("" + value);
                         AppPreference.getInstance().setGoalHeightCm("" + value);
                     } else {
@@ -417,7 +417,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     getEditTextLength(edt_cm);
                     if (!s.toString().equalsIgnoreCase("0.0")) {
                         c2f(Double.parseDouble(s.toString()), "plus");
-
                     }
 
                 }
@@ -504,8 +503,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
                     int value = Integer.parseInt(s.toString());
-                    if (value > 500) {
-                        value = 500;
+                    if (value > 800) {
+                        value = 800;
                         edt_kgs.setText("" + (int) value);
                         preferences.edit().putString("kg", "" + (int) value).commit();
                         AppPreference.getInstance().setGoalWeightKg("" + (int) value);
@@ -790,15 +789,24 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         } else {
             heightInch = Double.parseDouble(new DecimalFormat("###.#").format(heightInch));
         }
-
-        if (!isPounds) {
-            weightkg = Double.parseDouble(edt_kgs.getText().toString().trim());
+        double totalWeight;
+        if (isPounds) {
+            totalWeight = Double.parseDouble(new DecimalFormat("###.#").format(Utils.getConvertingPoundsIntoKilograms(Double.parseDouble(edt_pounds.getText().toString().trim()))));
+        } else {
+            if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams());
+            } else {
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
+            }
         }
-
-        int weightGrm = 0;
-        if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-            weightGrm = Integer.parseInt(edt_grams.getText().toString().trim());
-        }
+//        if (!isPounds) {
+//            weightkg = Double.parseDouble(edt_kgs.getText().toString().trim());
+//        }
+//
+//        int weightGrm = 0;
+//        if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
+//            weightGrm = Integer.parseInt(edt_grams.getText().toString().trim());
+//        }
 
 
         double h = 0;
@@ -810,7 +818,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             h = inches * 0.0254;
         }
 
-        double w = weightkg + (weightGrm / 1000);
+        double w = totalWeight;
         double bmi = w / (h * h);
         txt_BMI.setText("" + new DecimalFormat("##.##").format(bmi) + " " + interpretBMI(bmi));
     }
@@ -949,16 +957,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         double totalWeight;
 
         if (isPounds) {
-            totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
+            totalWeight = Double.parseDouble(new DecimalFormat("###.#").format(Utils.getConvertingPoundsIntoKilograms(Double.parseDouble(edt_pounds.getText().toString().trim()))));
         } else {
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams());
             } else {
-                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
             }
         }
 
-        int bmr = (int) ((10 * totalWeight) + (6.25 * totalHeight) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5));
+        int bmr = (int) ((10 * totalWeight) + (6.25 * totalHeight) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew())) + 5);
+
+//        Log.e("bmr ", "we "+(10 * totalWeight)+"height "+(6.25 * totalHeight)+" age"+(5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5)+""+" "+((10 * totalWeight) + (6.25 * totalHeight) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()) + 5) + " totalWeight- " + totalWeight + "totalHeight- " + totalHeight + " age- " + Integer.parseInt(AppPreference.getInstance().getGoalAgeNew())));
+
         txt_BMR.setText("" + bmr + " Calories/day");
     }
 
@@ -1007,23 +1018,28 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         double totalWeight;
 
         if (isPounds) {
-            totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
+            totalWeight = Double.parseDouble(new DecimalFormat("###.#").format(Utils.getConvertingPoundsIntoKilograms(Double.parseDouble(edt_pounds.getText().toString().trim()))));
         } else {
             if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
-                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams());
             } else {
-                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
+                totalWeight = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
             }
         }
 
 
         int bmr = (int) ((10 * totalWeight) + (6.25 * totalHeight) - (5 * Integer.parseInt(AppPreference.getInstance().getGoalAgeNew())) - 161);
+
+//        Log.e("bmr ", " " + "totalWeight- " + totalWeight + "totalHeight- " + totalHeight + " age- " + Integer.parseInt(AppPreference.getInstance().getGoalAgeNew()));
+
         txt_BMR.setText("" + bmr + " Calories/day");
     }
 
 
     public void jsonUploadTarget(final String targetSteps, String targetCaloriesToBurn, double targetWaterInTake) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSetGoals(targetSteps, targetCaloriesToBurn, targetWaterInTake);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS, data,
@@ -1074,8 +1090,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -1124,7 +1140,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECT_GLASS + glassInTake + "&glassNumber=" + glassNumber,
                 new Response.Listener<String>() {
                     @Override
@@ -1175,6 +1193,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1359,7 +1378,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private void getAllDetails() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_SET_GOALS_DEATILS,
                     new Response.Listener<String>() {
                         @Override
@@ -1406,8 +1427,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                            if (userInfo == null)
+                                return;
+                            setGoals(userInfo);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
+
                         }
                     }
             ) {
@@ -1420,6 +1446,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -1514,7 +1541,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             gender = "FEMALE";
         }
         String dateOfBirth = AppPreference.getInstance().getGoalAge();
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(new DecimalFormat("###.###").format(totalHeight)), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
@@ -1563,8 +1592,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -1575,6 +1604,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1661,7 +1691,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 isMale = true;
                 isFemale = false;
                 radioMale.setChecked(true);
-                getBmrForFeMale();
+                getBmrForMale();
                 if (heightfeet > 4) {
                     if (!validateHeightFeetBMI()) {
                         return;
@@ -1690,7 +1720,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 radioFemale.setChecked(true);
                 isMale = false;
                 isFemale = true;
-                getBmrForMale();
+                getBmrForFeMale();
                 if (heightfeet > 4) {
                     if (!validateHeightFeetBMI()) {
                         return;

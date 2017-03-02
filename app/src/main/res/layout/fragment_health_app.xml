@@ -6,8 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:background="@color/health_yellow"
     android:clickable="true"
-    android:focusable="false"
-    android:focusableInTouchMode="false">
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -423,7 +422,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="1.2"
+                    android:layout_marginRight="@dimen/_5dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -547,6 +547,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="@dimen/_5dp"
+                            android:visibility="gone"
                             android:background="@drawable/today_edit_rounded"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">

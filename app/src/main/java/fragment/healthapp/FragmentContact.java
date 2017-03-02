@@ -50,13 +50,13 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     private EditText edt_deatils, edt_subject;
     private RequestQueue requestQueue;
 
-    @Override
-    public boolean onBackPressed() {
-        CureFull.getInstanse().cancel();
-        CureFull.getInstanse().getFlowInstanse()
-                .replace(new FragmentLandingPage(), false);
-        return super.onBackPressed();
-    }
+//    @Override
+//    public boolean onBackPressed() {
+//        CureFull.getInstanse().cancel();
+//        CureFull.getInstanse().getFlowInstanse()
+//                .replace(new FragmentLandingPage(), false);
+//        return super.onBackPressed();
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +64,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_contact,
                 container, false);
+        CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
@@ -74,6 +75,8 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         edt_subject = (EditText) rootView.findViewById(R.id.edt_subject);
         btn_done = (TextView) rootView.findViewById(R.id.btn_done);
         btn_done.setOnClickListener(this);
+
+
 
 
         edt_subject.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -144,10 +147,11 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     public void jsonCotactCheck() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             JSONObject data = JsonUtilsObject.toCotact(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim());
-            if (MyConstants.WebUrls.isLogCheck)
-                Log.e("data", ":- " + data.toString());
+
 
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_CONTACT, data,
                     new Response.Listener<JSONObject>() {
@@ -166,7 +170,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 edt_subject.setText("");
                                 edt_deatils.setText("");
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Contact Sent");
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "We love questions! will reach you shortly.");
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -186,7 +190,6 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
                     btn_done.setEnabled(true);
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                    VolleyLog.e("health, URL 3.", "Error: " + error.getMessage());
                 }
 
             }) {
@@ -200,13 +203,14 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
 
             };
             CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
         } else {
-
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
         }
 
     }

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
+    android:focusableInTouchMode="true"
     android:clickable="true">
 
     <RelativeLayout
@@ -360,6 +361,17 @@
                     android:layout_height="match_parent"
                     android:visibility="visible">
 
+                    <ImageView
+                        android:id="@+id/img_btn_refresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_above="@+id/txt_no_prescr"
+                        android:layout_centerHorizontal="true"
+                        android:visibility="gone"
+                        android:padding="@dimen/_5dp"
+                        android:src="@drawable/refresh" />
+
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_no_prescr"
                         style="@style/textView_dark_grey_normal_micro"
@@ -435,7 +447,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
-                                        android:text="Cancel"
+                                        android:text="Reset"
                                         android:textColor="@color/health_yellow_bottom" />
 
                                 </LinearLayout>

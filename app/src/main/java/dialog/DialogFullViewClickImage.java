@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -46,6 +47,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
     private String date = "";
     private LinearLayout liner_date_select;
     private ImageView btn_delete;
+    private RelativeLayout image_item;
     private String type;
     private boolean isclick = false, isClickDate = false;
 
@@ -63,6 +65,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         txt_pre_date = (TextView) findViewById(R.id.txt_pre_date);
         txt_health_text = (TextView) findViewById(R.id.txt_health_text);
+        image_item = (RelativeLayout) findViewById(R.id.image_item);
         btn_delete = (ImageView) findViewById(R.id.btn_delete);
         btn_done = (TextView) findViewById(R.id.btn_done);
         txt_date = (TextView) findViewById(R.id.txt_date);
@@ -72,6 +75,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         liner_date_select.setOnClickListener(this);
         btn_done.setOnClickListener(this);
         btn_delete.setOnClickListener(this);
+        image_item.setOnClickListener(this);
         prescriptionImageListss = prescriptionImageLists;
         if (prescriptionImageListss.size() > 0) {
             recyclerViewAddImage = (RecyclerView) findViewById(R.id.grid_list_symptom);
@@ -90,10 +94,10 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         if (type.equalsIgnoreCase("lab")) {
             txt_pre_date.setText("Report Date");
             input_disease.setHint("Test Name");
-            txt_health_text.setText("You added " + (prescriptionImageListss.size() - 1) + " file in this Lab test please add detail for better experince");
+            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this Lab test please add detail for better experince");
         } else {
             input_disease.setHint("Disease Name");
-            txt_health_text.setText("You added " + (prescriptionImageListss.size() - 1) + " file in this prescription please add detail for better experince");
+            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this prescription please add detail for better experince");
 
         }
 
@@ -130,6 +134,9 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.image_item:
+                isCheck();
+                break;
             case R.id.btn_done:
                 CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 if (btn_done.getText().toString().equalsIgnoreCase("Done")) {
@@ -150,7 +157,6 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                     }
                 } else {
                     for (int i = 0; i < prescriptionImageListss.size(); i++) {
-                        Log.e("check ", ":- " + prescriptionImageListss.get(i).isChecked());
                         if (prescriptionImageListss.get(i).isChecked() == true) {
                             prescriptionImageListss.remove(i);
                         }
@@ -208,6 +214,7 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        txt_date.setError(null);
         int mnt = (monthOfYear + 1);
         txt_date.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" + (mnt < 10 ? "0" + mnt : mnt) + "/" + year);
         date = "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);

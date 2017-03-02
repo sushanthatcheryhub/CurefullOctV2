@@ -61,14 +61,20 @@ public class BaseMainActivity extends AppCompatActivity
 
         int id = item.getItemId();
         if (id == R.id.nav_home) {
+            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentLandingPage(), false);
         } else if (id == R.id.nav_profile) {
+            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentProfile(), false);
         } else if (id == R.id.nav_uhid) {
+            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentUHID(), false);
@@ -81,14 +87,18 @@ public class BaseMainActivity extends AppCompatActivity
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
+            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentTermCondition(), false);
         } else if (id == R.id.nav_contact) {
+            CureFull.getInstanse().cancel();
             CureFull.getInstanse().getFlowInstanse().clearBackStack();
             CureFull.getInstanse().getFlowInstanse()
                     .replace(new FragmentContact(), false);
         } else if (id == R.id.nav_share) {
+
             getShareLink();
         }
 
@@ -100,11 +110,13 @@ public class BaseMainActivity extends AppCompatActivity
 //                    .replace(new FragmentSettingPage(), true);
 //        }
 
-        else if (id == R.id.nav_reminder) {
-            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-            CureFull.getInstanse().getFlowInstanse()
-                    .replace(new FragmentReminderMedicine(), false);
-        }
+//        else if (id == R.id.nav_reminder) {
+//            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+//            CureFull.getInstanse().cancel();
+//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+//            CureFull.getInstanse().getFlowInstanse()
+//                    .replace(new FragmentReminderMedicine(), false);
+//        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -148,15 +160,15 @@ public class BaseMainActivity extends AppCompatActivity
                 super.onBackPressed();
             else {
                 _backBtnCount++;
-                if (_backBtnCount == 3) {
+                if (_backBtnCount == 2) {
                     preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     preferences.edit().putBoolean("destroy", true).commit();
 //                    CureFull.getInstanse().getActivityIsntanse().startFitService();
                     System.exit(0);
                     finish();
                     return;
-                } else if (_backBtnCount == 2) {
-                    String first = "Press back thrice to exit";
+                } else if (_backBtnCount == 1) {
+                    String first = "Press back twice to exit";
                     String meassgeTxt = first;
                     Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), meassgeTxt, Toast.LENGTH_SHORT).show();
                     new Handler().postDelayed(new Runnable() {
@@ -191,7 +203,6 @@ public class BaseMainActivity extends AppCompatActivity
                     "yyyy-MM-dd", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -285,7 +296,6 @@ public class BaseMainActivity extends AppCompatActivity
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("logout", " " + response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -295,6 +305,7 @@ public class BaseMainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            AppPreference.getInstance().setIsFirstTimeSteps(false);
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentLogin(), false);
@@ -304,7 +315,6 @@ public class BaseMainActivity extends AppCompatActivity
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override

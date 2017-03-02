@@ -32,8 +32,6 @@ import item.property.PrescriptionImageList;
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
 public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.ItemViewHolder> {
-
-
     Context applicationContext;
     List<PrescriptionImageList> prescriptionImageLists;
     private RequestQueue requestQueue;
@@ -93,12 +91,12 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
         holder.txt_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("click", "ok");
+//                Log.e("click", "ok");
                 if (!isDelete && prescriptionImageLists.get(position).getImageNumber() != 000) {
                     DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext, prescriptionImageLists.get(position).getPrescriptionImage());
                     dialogFullViewImage.show();
                 } else if (prescriptionImageLists.get(position).getImageNumber() == 000) {
-                    Log.e("ok", "ok");
+//                    Log.e("ok", "ok");
                     dialogFullViewClickImages.isCheck();
                 }
 
@@ -125,8 +123,6 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             image_item.setScaleType(ImageView.ScaleType.CENTER);
             image_item.setImageResource(R.drawable.plus_red);
         }
-
-
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

@@ -48,13 +48,13 @@ public class FlowOrganizer {
     }
 
     public void clearBackStack() {
-        List<Fragment> framentList = _fragmnet_manager.getFragments();
-        if (framentList != null) {
-            for (Fragment f : framentList) {
-                if (f != null)
-                    Log.e("ss", "f name:" + f.getClass().getName());
-            }
-        }
+//        List<Fragment> framentList = _fragmnet_manager.getFragments();
+//        if (framentList != null) {
+//            for (Fragment f : framentList) {
+//                if (f != null)
+//                    Log.e("ss", "f name:" + f.getClass().getName());
+//            }
+//        }
         if (_fragmnet_manager.getBackStackEntryCount() > 0) {
             _fragmnet_manager.popBackStack(null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -94,9 +94,9 @@ public class FlowOrganizer {
                 // for (int i = 0; i <
                 // _fragmnet_manager.getBackStackEntryCount(); i++) {
                 for (int i = _fragmnet_manager.getBackStackEntryCount(); i >= 0; i--) {
-                    Log.e("the fragment is", ""
-                            + _fragmnet_manager.getFragments().get(i)
-                            .getClass().getSimpleName());
+//                    Log.e("the fragment is", ""
+//                            + _fragmnet_manager.getFragments().get(i)
+//                            .getClass().getSimpleName());
                     try {
                         if (_list_back_state != null
                                 && _list_back_state.size() > 0) {
@@ -361,8 +361,8 @@ public class FlowOrganizer {
                 .equalsIgnoreCase("FragmentUserHomeMyOrder")) {
             if (!isToAdd(toFragment)) {
                 try {
-                    Log.e("Current Fragment", ""
-                            + toFragment.getClass().getSimpleName());
+//                    Log.e("Current Fragment", ""
+//                            + toFragment.getClass().getSimpleName());
                     if (toFragment.getClass().getSimpleName()
                             .equalsIgnoreCase("FragmentUserHomeMyOrder")) {
                         popUpFragment(toFragment.getClass().getSimpleName());
@@ -600,7 +600,7 @@ public class FlowOrganizer {
     public void onResume() {
         isPaused = false;
         if (_list_instant_state != null) {
-            Log.e("", "size to exc:" + _list_instant_state.size());
+//            Log.e("", "size to exc:" + _list_instant_state.size());
             for (int i = 0; i < _list_instant_state.size(); i++) {
                 InstanseState instanseState = _list_instant_state.get(i);
                 switch (instanseState._fragment_type) {

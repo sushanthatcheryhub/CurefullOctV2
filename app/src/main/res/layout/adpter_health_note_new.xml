@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:focusable="true"
     android:focusableInTouchMode="true">
 
     <LinearLayout
@@ -34,8 +33,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:text="17 Oct 2016-4pm"
-                    android:textColor="@color/health_yellow"
-                   />
+                    android:textColor="@color/health_yellow" />
 
             </LinearLayout>
 
@@ -57,31 +55,32 @@
                     android:layout_gravity="left"
                     android:gravity="left"
                     android:text="Health App"
-                    android:textColor="@color/white"
-                     />
+                    android:textColor="@color/health_yellow" />
+
+
 
                 <!--<customsTextViews.CustomTextViewOpenSanBold-->
-                    <!--style="@style/textView_dark_grey_normal_micro"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center_horizontal"-->
-                    <!--android:text=" : "-->
-                    <!--android:textColor="@color/yellow"-->
-                    <!--android:textStyle="bold" />-->
+                <!--style="@style/textView_dark_grey_normal_micro"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:text=" : "-->
+                <!--android:textColor="@color/yellow"-->
+                <!--android:textStyle="bold" />-->
 
                 <!--<customsTextViews.CustomTextViewOpenSanBold-->
-                    <!--android:id="@+id/txt_deatils"-->
-                    <!--style="@style/textView_dark_grey_normal_micro_mini"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginLeft="@dimen/_3dp"-->
-                    <!--android:ellipsize="marquee"-->
-                    <!--android:gravity="center_horizontal"-->
-                    <!--android:marqueeRepeatLimit="marquee_forever"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:text="Health App"-->
-                    <!--android:textColor="@color/white"-->
-                    <!--android:textStyle="bold" />-->
+                <!--android:id="@+id/txt_deatils"-->
+                <!--style="@style/textView_dark_grey_normal_micro_mini"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="@dimen/_3dp"-->
+                <!--android:ellipsize="marquee"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:marqueeRepeatLimit="marquee_forever"-->
+                <!--android:singleLine="true"-->
+                <!--android:text="Health App"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textStyle="bold" />-->
 
             </LinearLayout>
 

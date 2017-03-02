@@ -6,7 +6,6 @@
     android:layout_gravity="center_horizontal"
     android:background="#E9E9E9"
     android:clickable="true"
-    android:focusable="true"
     android:focusableInTouchMode="true">
 
 

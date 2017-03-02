@@ -73,7 +73,7 @@ public class FragmentLabReportImageView extends Fragment {
             txt_doctor_name.setText("" + bundle.getString("doctorName"));
             txt_diease_name.setText("" + bundle.getString("dieaseName"));
             prescriptionImageListViews = bundle.getParcelableArrayList("imageList");
-            Log.e("size", ":- " + prescriptionImageListViews.size());
+//            Log.e("size", ":- " + prescriptionImageListViews.size());
 
             if (prescriptionImageListViews.size() > 0 && prescriptionImageListViews != null) {
                 prescriptionImageViewAdpter = new LabReportImageViewAdpter(CureFull.getInstanse().getActivityIsntanse(),

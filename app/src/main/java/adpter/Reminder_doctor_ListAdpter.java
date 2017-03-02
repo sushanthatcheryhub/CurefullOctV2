@@ -94,7 +94,7 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
 
             }
             if (med.endsWith(" | ")) {
-                Log.e("time", "" + med);
+//                Log.e("time", "" + med);
                 med = med.substring(0, med.length() - 2);
             }
             txt_med_time.setText("" + med);
@@ -145,11 +145,9 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
             @Override
             public void onClick(View view) {
                 if (checkBox.isChecked()) {
-                    Log.e("check", ":- isChecked");
                     getDoctorVisitDelete(healthNoteItemses.get(position).getMedicineReminderId(), position, false, true);
                 } else {
                     getDoctorVisitDelete(healthNoteItemses.get(position).getMedicineReminderId(), position, false, false);
-                    Log.e("check", ":- not");
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
 
@@ -181,13 +179,14 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor Delete, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -223,6 +222,7 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

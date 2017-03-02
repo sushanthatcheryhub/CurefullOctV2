@@ -1,1 +1,1 @@
-include ':app', ':supportDifferentScreen', ':wildCameraLib', ':imagepicker'
+include ':app', ':supportDifferentScreen', ':wildCameraLib', ':imagepicker', ':sandriosCamera'

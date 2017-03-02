@@ -230,7 +230,6 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                     "yyyy-MM-dd", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,6 +239,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     AdapterView.OnItemClickListener popUpItemClickDoctor = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
             listPopupWindow.dismiss();
             if (position == 0) {
                 txt_change.setText("Walking Steps");
@@ -455,7 +455,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     public void jsonGetGraphDeatils(String fromDate, String date, final String frequency, final String type) {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             JSONObject data1 = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
 
 
@@ -481,16 +483,16 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                                     cv.put("graph_type", type);
                                     cv.put("graph_frequecy", frequency);
                                     DbOperations.insertGraphList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid());
-                                    setChartGraph();
+                                    setChartGraph(frequency);
                                 }
                             } else {
-                                try {
-                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+//                                try {
+//                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+//                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+//                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
                             }
 
 
@@ -499,9 +501,15 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    String response = DbOperations.getGraphList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), type, frequency);
+                    if (!response.equalsIgnoreCase("")) {
+                        graphViewsList = ParseJsonData.getInstance().getGraphViewList(response.toString());
+                        if (graphViewsList != null)
+                            setChartGraph(frequency);
+                    }
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+//                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
                 }
             }) {
                 @Override
@@ -512,6 +520,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -521,7 +530,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
             if (!response.equalsIgnoreCase("")) {
                 graphViewsList = ParseJsonData.getInstance().getGraphViewList(response.toString());
                 if (graphViewsList != null)
-                    setChartGraph();
+                    setChartGraph(frequency);
             }
 
         }
@@ -529,9 +538,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     }
 
 
-    public void valueFromGrpah(String date, String stepsValue, String waterTake, String calories) {
+    public void valueFromGrpah(String date, String stepsValue, String waterTake, String calories, String frequencys) {
         liner_avg.setVisibility(View.VISIBLE);
-        if (frequency.equalsIgnoreCase("daily")) {
+        if (frequencys.equalsIgnoreCase("daily")) {
             if (!date.equalsIgnoreCase("")) {
                 String[] dateFormat = date.split("-");
                 int mYear = Integer.parseInt(dateFormat[0]);
@@ -545,7 +554,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                 }
                 txt_change_aveg.setText("" + date + " " + mYear);
             }
-        } else if (frequency.equalsIgnoreCase("monthly")) {
+        } else if (frequencys.equalsIgnoreCase("monthly")) {
             txt_change_aveg.setText("Average of " + MyConstants.IArrayData.mMonths[Integer.parseInt(date)] + " " + graphViewsList.get(0).getYear());
         } else {
             String dateTime = date;
@@ -574,8 +583,8 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     }
 
 
-    public void setChartGraph() {
-        horizontalAdapterNew = new HorizontalAdapterNewProgress(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNewProgress.this, frequency, isFirstTime);
+    public void setChartGraph(String frequencys) {
+        horizontalAdapterNew = new HorizontalAdapterNewProgress(graphViewsList.get(0).getGraphViewDetailses(), CureFull.getInstanse().getActivityIsntanse(), FragmentHealthAppNewProgress.this, frequencys, isFirstTime);
         horizontal_recycler_view.setAdapter(horizontalAdapterNew);
 //                                horizontal_recycler_view.scrollToPosition(graphViewsList.get(0).getGraphViewDetailses().size() - 1);
         new Handler().postDelayed(new Runnable() {

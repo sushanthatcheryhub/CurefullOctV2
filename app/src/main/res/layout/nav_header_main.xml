@@ -47,7 +47,14 @@
                 android:textColor="@color/health_yellow"
 
                 />
-
+            <ProgressBar
+                android:id="@+id/progress_bar_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminateTint="@color/health_red_drawer"
+                android:maxHeight="@dimen/_30dp"
+                android:minHeight="@dimen/_30dp" />
 
         </RelativeLayout>
 

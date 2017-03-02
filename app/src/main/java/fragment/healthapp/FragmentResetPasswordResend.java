@@ -74,7 +74,7 @@ public class FragmentResetPasswordResend extends Fragment {
             public void messageReceived(String messageText) {
                 liner_resend.setVisibility(View.GONE);
                 liner_next.setVisibility(View.VISIBLE);
-                Log.e("hi", "hi");
+//                Log.e("hi", "hi");
 //                edt_otp_password.setText("");
 //                String mgs=messageText.replace("Dear User ,\n" + "Your verification code is ","");
 //                String again=mgs.replace("\nThanx for using Curefull. Stay Relief.","");
@@ -109,12 +109,14 @@ public class FragmentResetPasswordResend extends Fragment {
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + mob_number + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 //                        CureFull.getInstanse().getFlowInstanse()
 //                                .addWithBottomTopAnimation(new FragmentResetPasswordResend(), null, true);

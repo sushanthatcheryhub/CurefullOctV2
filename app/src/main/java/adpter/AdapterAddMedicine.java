@@ -79,6 +79,7 @@ public class AdapterAddMedicine extends BaseAdapter {
                     null);
             holder = new ViewHolder();
             holder.edt_doctor_name = (EditText) convertView.findViewById(R.id.edt_doctor_name);
+            holder.edt_ml = (EditText) convertView.findViewById(R.id.edt_ml);
             holder.edt_medicine_name = (EditText) convertView.findViewById(R.id.edt_medicine_name);
             holder.image_tablet = (ImageView) convertView.findViewById(R.id.image_tablet);
             holder.img_capsule = (ImageView) convertView.findViewById(R.id.img_capsule);
@@ -280,7 +281,6 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_drops.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("DRO");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -302,7 +302,6 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_injection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                medicineReminderItems.get(position).setType("INJ");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -362,6 +361,24 @@ public class AdapterAddMedicine extends BaseAdapter {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String type = holder.edt_doctor_name.getText().toString().trim();
                 medicineReminderItems.get(position).setDoctorName("" + type);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        holder.edt_ml.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String type = holder.edt_ml.getText().toString().trim();
+                medicineReminderItems.get(position).setQuantityType("" + type);
             }
 
             @Override
@@ -461,8 +478,6 @@ public class AdapterAddMedicine extends BaseAdapter {
             }
 
         }
-
-
         return convertView;
     }
 
@@ -472,7 +487,7 @@ public class AdapterAddMedicine extends BaseAdapter {
         public TextView txt_tablet, txt_capsule, txt_syrup, txt_drop, txt_injection, txt_interval_count, txt_btn_add_more_med, txt_btn_remove;
         private RadioGroup radioMeal;
         private RadioButton radioAfter, radioBefore;
-        private EditText edt_doctor_name, edt_medicine_name;
+        private EditText edt_doctor_name, edt_medicine_name, edt_ml;
     }
 
 

@@ -11,8 +11,8 @@ import com.android.volley.toolbox.Volley;
 
 import java.io.IOException;
 
-import LazyLoaderLibs.ImageType;
-import LazyLoaderLibs.PhoneSpecificImage;
+import interfaces.IOnEmailUpdate;
+import interfaces.IOnOtpDonePath;
 import operations.DatabaseHelper;
 import utils.FlowOrganizer;
 
@@ -37,8 +37,8 @@ public class CureFull extends Application {
         return isEditext;
     }
 
-    private PhoneSpecificImage fullImageLoader;
-    private PhoneSpecificImage smallImageLoader;
+    private IOnOtpDonePath iOnOtpDonePath;
+    private IOnEmailUpdate  iOnEmailUpdate;
 
     public void setEditext(boolean editext) {
         isEditext = editext;
@@ -93,22 +93,6 @@ public class CureFull extends Application {
     //
 
 
-    public PhoneSpecificImage getFullImageLoader() {
-        if (fullImageLoader == null) {
-            fullImageLoader = new PhoneSpecificImage(_activity,
-                    ImageType.FULL_SCREEN_IMAGE);
-        }
-        return fullImageLoader;
-    }
-
-
-    public PhoneSpecificImage getSmallImageLoader() {
-        if (smallImageLoader == null) {
-            smallImageLoader = new PhoneSpecificImage(_activity,
-                    ImageType.THUMB_IMAGE);
-        }
-        return smallImageLoader;
-    }
 
 
     public static synchronized CureFull getInstanse() {
@@ -190,4 +174,19 @@ public class CureFull extends Application {
         CureFull.idss = idss;
     }
 
+    public IOnOtpDonePath getiOnOtpDonePath() {
+        return iOnOtpDonePath;
+    }
+
+    public void setiOnOtpDonePath(IOnOtpDonePath iOnOtpDonePath) {
+        this.iOnOtpDonePath = iOnOtpDonePath;
+    }
+
+    public IOnEmailUpdate getiOnEmailUpdate() {
+        return iOnEmailUpdate;
+    }
+
+    public void setiOnEmailUpdate(IOnEmailUpdate iOnEmailUpdate) {
+        this.iOnEmailUpdate = iOnEmailUpdate;
+    }
 }

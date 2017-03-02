@@ -25,7 +25,6 @@ public class HandlePermission {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static boolean checkPermissionSMS(final Context context) {
-        Log.e("checkPermissionSMS ", ": +why");
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -57,7 +56,6 @@ public class HandlePermission {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static boolean checkPermissionCamera(final Context context) {
-        Log.e("checkPermissionSMS ", ": +why");
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -89,7 +87,6 @@ public class HandlePermission {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static boolean checkPermissionReadContact(final Context context) {
-        Log.e("checkPermissionSMS ", ": +why");
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
@@ -121,7 +118,6 @@ public class HandlePermission {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static boolean checkPermissionWriteExternalStorage(final Context context) {
-        Log.e("checkPermissionSMS ", ": +why");
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

@@ -42,6 +42,7 @@ import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -171,8 +172,12 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                 break;
             case R.id.btn_set_reminder:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                setMedReminderDetails();
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    setMedReminderDetails();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                }
                 break;
         }
     }
@@ -214,7 +219,9 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
             return;
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSetLabTestReminder(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM, data,
@@ -250,7 +257,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -261,6 +268,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

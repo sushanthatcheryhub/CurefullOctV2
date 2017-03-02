@@ -7,7 +7,6 @@
     android:background="@drawable/login_gradient"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    android:focusable="true"
    >
 
     <ScrollView
@@ -21,11 +20,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/liner_profile_pic"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_150dp"
                 android:orientation="vertical">
+
 
                 <utils.CircularImageView
                     android:id="@+id/profile_image_view"
@@ -37,7 +37,16 @@
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/profile_avatar"
                     app:civ_border_color="@color/health_yellow" />
-            </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_one"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/health_red_drawer"
+                    android:maxHeight="@dimen/_30dp"
+                    android:minHeight="@dimen/_30dp" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/liner_upload_new"
@@ -151,6 +160,10 @@
                         android:drawableLeft="@drawable/email_icon"
                         android:drawablePadding="@dimen/_5dp"
                         android:hint="Email id"
+                        android:enabled="true"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:inputType="textEmailAddress"
                         android:paddingBottom="@dimen/_12dp"
                         android:textColor="@color/white"
@@ -376,8 +389,8 @@
                                 android:id="@+id/liner_remove"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:visibility="gone"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:visibility="gone">
 
 
                                 <ImageView
@@ -404,6 +417,7 @@
                     <RelativeLayout
                         android:id="@+id/realtive_notes"
                         android:layout_width="match_parent"
+                        android:visibility="visible"
                         android:layout_height="match_parent">
 
 

@@ -45,6 +45,7 @@ import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -178,7 +179,13 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
             case R.id.btn_set_reminder:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                setMedReminderDetails();
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    setMedReminderDetails();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+
+                }
+
                 break;
         }
     }
@@ -254,10 +261,10 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
         }
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSetDoctorVisitReminder(edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder);
-        if(MyConstants.WebUrls.isLogCheck)
-        Log.e("jsonUploadLabRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM, data,
                 new Response.Listener<JSONObject>() {
@@ -291,8 +298,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
             @Override
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
+//                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
             }
         }) {
             @Override
@@ -303,6 +309,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

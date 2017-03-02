@@ -106,10 +106,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            Log.e("yaya", "steps received in service:" + msg.what);
-            Log.e("yaya", "steps arg in service: " + msg.arg1);
             if (preferences.getBoolean("isDestroy", false)) {
-                Log.e("check", "check:" + "isdes");
             } else {
                 switch (msg.what) {
                     case MSG_REGISTER_CLIENT:
@@ -230,7 +227,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
     public void step(long timeNs) {
 //        numSteps = preferences.getInt("stepsIn", 0);
         numSteps++;
-        Log.e("step", "steps" + numSteps);
 //        Notification notification = getNotification();
 //        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 //        mNotificationManager.notify(NOTIF_ID, notification);
@@ -238,9 +234,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
         try {
             if (preferences.getBoolean("isDestroy", false)) {
-                Log.e("check", "check:" + "isdes");
             } else {
-                Log.e("message", "steps" + numSteps);
                 Message message = new Message();
                 message.what = MSG_SET_VALUE;
                 message.arg1 = numSteps;
@@ -248,7 +242,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
             }
 
         } catch (RemoteException e) {
-            Log.e("step", "steps error:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -268,7 +261,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
 
     public void updateTimeOnEachSecond() {
-        Log.e("Timer", "Timer");
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
 
@@ -277,11 +269,12 @@ public class MessengerService extends Service implements StepListener, SensorEve
                 Calendar c = Calendar.getInstance();
                 final int hrs = c.get(Calendar.HOUR_OF_DAY);
                 final int min = c.get(Calendar.MINUTE);
+                final int sec = c.get(Calendar.SECOND);
                 mHandler.post(new Runnable() {
 
                     @Override
                     public void run() {
-//                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
                         // display toast
                         if (updateTime(hrs, min).equalsIgnoreCase("12:00 am")) {
                             double wirght = 0;
@@ -295,11 +288,60 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             preferences.edit().putInt("stepsIn", 0).commit();
                             Intent intent = new Intent();
                             intent.setAction("steps");
-                            intent.putExtra("stepsCount", "" + numSteps);
+                            intent.putExtra("stepsCount", "" + 0);
                             intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
                             intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            intent.putExtra("newTime", "11:00 pm");
                             sendBroadcast(intent);
-                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 am")) {
+                        }
+//                        else if (updateTime(hrs, min).equalsIgnoreCase("8:00 am")) {
+//                            double wirght = 0;
+//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+//                                wirght = 40;
+//                            } else {
+//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+//                            }
+//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+//                            Intent intent = new Intent();
+//                            intent.setAction("steps");
+//                            intent.putExtra("stepsCount", "" + numSteps);
+//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+//                            intent.putExtra("newTime", "11:00 pm");
+//                            sendBroadcast(intent);
+//                        }
+//                        else if (updateTime(hrs, min).equalsIgnoreCase("12:00 pm")) {
+//                            double wirght = 0;
+//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+//                                wirght = 40;
+//                            } else {
+//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+//                            }
+//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+//                            Intent intent = new Intent();
+//                            intent.setAction("steps");
+//                            intent.putExtra("stepsCount", "" + numSteps);
+//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+//                            intent.putExtra("newTime", "11:00 pm");
+//                            sendBroadcast(intent);
+//                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 pm")) {
+//                            double wirght = 0;
+//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
+//                                wirght = 40;
+//                            } else {
+//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
+//                            }
+//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
+//                            Intent intent = new Intent();
+//                            intent.setAction("steps");
+//                            intent.putExtra("stepsCount", "" + numSteps);
+//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
+//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+//                            intent.putExtra("newTime", "11:00 pm");
+//                            sendBroadcast(intent);
+//                        }
+                        else if (updateTime(hrs, min).equalsIgnoreCase("11:59 +")) {
                             double wirght = 0;
                             if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
                                 wirght = 40;
@@ -312,63 +354,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             intent.putExtra("stepsCount", "" + numSteps);
                             intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
                             intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
+                            intent.putExtra("newTime", "11:59 pm");
                             sendBroadcast(intent);
-                        } else if (updateTime(hrs, min).equalsIgnoreCase("12:00 pm")) {
-                            double wirght = 0;
-                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-                                wirght = 40;
-                            } else {
-                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-                            }
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            Intent intent = new Intent();
-                            intent.setAction("steps");
-                            intent.putExtra("stepsCount", "" + numSteps);
-                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-                            sendBroadcast(intent);
-                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 pm")) {
-                            double wirght = 0;
-                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-                                wirght = 40;
-                            } else {
-                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-                            }
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            Intent intent = new Intent();
-                            intent.setAction("steps");
-                            intent.putExtra("stepsCount", "" + numSteps);
-                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-                            sendBroadcast(intent);
-                        } else if (updateTime(hrs, min).equalsIgnoreCase("11:59 pm")) {
-                            double wirght = 0;
-                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-                                wirght = 40;
-                            } else {
-                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-                            }
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                                Intent intent = new Intent();
-                                intent.setAction("steps");
-                                intent.putExtra("stepsCount", "" + numSteps);
-                                intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-                                intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-                                sendBroadcast(intent);
-                            } else {
-                                ContentValues cv = new ContentValues();
-                                cv.put("steps_count", numSteps);
-                                cv.put("runing", 0);
-                                cv.put("cycling", 0);
-                                cv.put("calories", "" + new DecimalFormat("###.###").format(i2));
-                                cv.put("dateTime", "" + getTodayDateTime());
-                                cv.put("waterTake", preferences.getString("waterin", ""));
-                                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-                                DbOperations operations = new DbOperations();
-                                operations.insertStepsCounts(MessengerService.this, cv);
-                            }
-
                         }
 
                     }
@@ -376,22 +363,9 @@ public class MessengerService extends Service implements StepListener, SensorEve
                 });
 
             }
-        }, 0, 1000 * 40);
+        }, 0, 1000 * 60);
     }
 
-    public static String getTodayDateTime() {
-        String formattedDate = null;
-        try {
-            SimpleDateFormat initialformatter = new SimpleDateFormat(
-                    "yyyy-MM-dd HH:mm", Locale.getDefault());
-            java.util.Date today = Calendar.getInstance().getTime();
-            formattedDate = initialformatter.format(today);
-            Log.e("sds", "formattedDate" + formattedDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
 
     private String updateTime(int hours, int mins) {
 

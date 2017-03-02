@@ -28,14 +28,13 @@
             android:id="@+id/image_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
             android:layout_centerInParent="true"
-           />
+            android:scaleType="fitXY" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_45dp"
+            android:layout_height="@dimen/_50dp"
             android:layout_alignParentBottom="true"
             android:background="#FECC1D"
             android:orientation="vertical"
@@ -107,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/_5dp"
+                        android:layout_marginLeft="@dimen/_4dp"
                         android:layout_marginRight="@dimen/_2dp"
                         android:src="@drawable/share"
                         android:visibility="visible" />
@@ -156,6 +155,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/_5dp"
+                    android:singleLine="true"
                     android:layout_toRightOf="@+id/linear_doctor"
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
@@ -176,9 +176,9 @@
                     android:layout_width="@dimen/_40dp"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:visibility="invisible"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         style="@style/textView_dark_grey_normal_micro_mini"
@@ -207,14 +207,14 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:visibility="invisible"
                     android:layout_toLeftOf="@+id/liner_count"
                     android:layout_toRightOf="@+id/linear_dates"
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
                     android:singleLine="true"
                     android:text="Cancer"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:visibility="invisible" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

@@ -31,11 +31,9 @@ import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
-import fragment.healthapp.FragmentDoctorVisitSetReminder;
 import fragment.healthapp.FragmentLabTestSetReminder;
 import interfaces.IOnOtpDoneDelete;
 import item.property.Lab_Test_Reminder_SelfListView;
-import item.property.Reminder_SelfListView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -125,11 +123,9 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
             @Override
             public void onClick(View view) {
                 if (checkBox.isChecked()) {
-                    Log.e("check", ":- isChecked");
                     getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, true);
                 } else {
                     getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, false);
-                    Log.e("check", ":- not");
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
 
@@ -166,13 +162,14 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.LAB_TEST_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor Delete, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -208,6 +205,7 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

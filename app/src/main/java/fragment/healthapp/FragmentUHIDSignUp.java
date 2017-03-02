@@ -129,14 +129,16 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
     private void sendOTPService(final String realUHID) {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         btn_contiune.setEnabled(true);
                         btn_skip.setEnabled(true);
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
                         if (realUHID.equalsIgnoreCase("")) {

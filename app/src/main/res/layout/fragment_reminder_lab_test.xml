@@ -548,7 +548,7 @@
                 android:elevation="@dimen/_10dp"
                 android:gravity="center"
                 android:padding="@dimen/_2dp"
-                android:text="No Reminder Set Yet!!"
+                android:text="Help us remind you of Lab Test! Add a reminder"
                 android:textColor="@color/white"
                 android:visibility="gone" />
         </RelativeLayout>

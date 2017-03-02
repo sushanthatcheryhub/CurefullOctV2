@@ -1,18 +1,13 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -21,7 +16,6 @@ import java.util.List;
 
 import curefull.healthapp.R;
 import item.property.PrescriptionImageList;
-import item.property.PrescriptionUploadItems;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -30,7 +24,6 @@ public class AddImageAdpter extends RecyclerView.Adapter<AddImageAdpter.ItemView
 
     Context applicationContext;
     List<PrescriptionImageList> prescriptionImageLists;
-    private RequestQueue requestQueue;
 
     public AddImageAdpter(Context applicationContexts,
                           List<PrescriptionImageList> patientList) {

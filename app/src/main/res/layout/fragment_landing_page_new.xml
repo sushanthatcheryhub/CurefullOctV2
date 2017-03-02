@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:background="@color/health_yellow"
+    android:focusableInTouchMode="true"
     android:clickable="true"
     >
 
@@ -446,6 +447,7 @@
                                 android:visibility="visible">
 
                                 <LinearLayout
+                                    android:id="@+id/liner_date_on"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal">
@@ -647,7 +649,6 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:text="       "
                                                     android:textColor="@color/health_yellow"
                                                     android:textColorHint="@color/health_yellow" />
 
@@ -724,7 +725,6 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:text="     "
                                                     android:textColor="@color/health_yellow"
                                                     android:textColorHint="@color/health_yellow" />
 
@@ -798,13 +798,12 @@
                                                 style="@style/textView_dark_grey_normal_micro"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:layout_gravity="center"
+                                                android:layout_gravity="top"
                                                 android:layout_marginLeft="@dimen/_10dp"
                                                 android:background="@drawable/yellow_button_selector"
                                                 android:elevation="@dimen/_5dp"
                                                 android:gravity="center_vertical"
                                                 android:paddingBottom="@dimen/_2dp"
-                                                android:layout_marginTop="@dimen/_15dp"
                                                 android:paddingLeft="@dimen/_15dp"
                                                 android:paddingRight="@dimen/_15dp"
                                                 android:paddingTop="@dimen/_2dp"

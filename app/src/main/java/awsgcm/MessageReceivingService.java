@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
 import utils.NotificationUtils;
+
+import static utils.CheckNetworkState.context;
 
 /*
  * This service is designed to run in the background and receive messages from gcm. If the app is in the foreground
@@ -43,12 +46,9 @@ public class MessageReceivingService extends Service {
         // In later versions multi_process is no longer the default
         gcm = GoogleCloudMessaging.getInstance(getBaseContext());
         sharedPreferencesUserLogin = getSharedPreferences("Login", 0);
-        SharedPreferences savedValues = PreferenceManager.getDefaultSharedPreferences(this);
-        if (savedValues.getBoolean(getString(R.string.first_launch), true)) {
+        if (sharedPreferencesUserLogin.getBoolean(getString(R.string.first_launch), true)) {
             register();
-            SharedPreferences.Editor editor = savedValues.edit();
-            editor.putBoolean(getString(R.string.first_launch), false);
-            editor.commit();
+            sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), false).commit();
         }
     }
 
@@ -61,7 +61,6 @@ public class MessageReceivingService extends Service {
 //            message += (line + "\n");
 //            Log.e("key"," "+key);
 //        }
-        Log.e("aws message", " " + message);
         if (!message.equalsIgnoreCase("")) {
             try {
                 JSONObject jsonObject = new JSONObject(message);
@@ -97,17 +96,18 @@ public class MessageReceivingService extends Service {
             protected Object doInBackground(final Object... params) {
                 String token;
                 try {
-                    token = gcm.register(getString(R.string.project_number));
+                    token = InstanceID.getInstance(MessageReceivingService.this)
+                            .getToken(getString(R.string.project_number), GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+
+//                    Log.e("regId"," "+regId);
+//                    token = gcm.register(getString(R.string.project_number));
                     String android_id = Settings.Secure.getString(getContentResolver(),
                             Settings.Secure.ANDROID_ID);
                     sharedPreferencesUserLogin.edit()
                             .putString("tokenid", token).commit();
                     sharedPreferencesUserLogin.edit()
                             .putString("android_id", android_id).commit();
-                    Log.e("android_id ", android_id);
-                    Log.e("registrationId ", token);
                 } catch (IOException e) {
-                    Log.e("Registration Error", e.getMessage());
                 }
                 return true;
             }

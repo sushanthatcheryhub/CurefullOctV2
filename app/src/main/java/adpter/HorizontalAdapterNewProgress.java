@@ -113,12 +113,12 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
         }
 
         if (isFirstTimes) {
-            Log.e("pos", "pos" + position);
+//            Log.e("pos", "pos" + position);
             if ((horizontalList.size() - 1) == position) {
                 isFirstTimes = false;
                 AppPreference.getInstance().setGraphDate(horizontalList.get(position).getDate());
                 holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector_new));
-                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());
+                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt(),frequencys);
             }
 
         }
@@ -128,7 +128,7 @@ public class HorizontalAdapterNewProgress extends RecyclerView.Adapter<Horizonta
             public void onClick(View v) {
                 AppPreference.getInstance().setGraphDate(horizontalList.get(position).getDate());
                 holder.vprogressbar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progess_bar_selector_new));
-                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt());
+                fragmentHealthAppNews.valueFromGrpah(horizontalList.get(position).getDate(), horizontalList.get(position).getCount(), horizontalList.get(position).getWaterIntake(), horizontalList.get(position).getCaloriesBurnt(),frequencys);
                 notifyDataSetChanged();
             }
         });

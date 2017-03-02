@@ -25,6 +25,7 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/img_share"
             android:padding="@dimen/_5dp"
+            android:visibility="invisible"
             android:src="@drawable/bell_white" />
 
         <ImageView

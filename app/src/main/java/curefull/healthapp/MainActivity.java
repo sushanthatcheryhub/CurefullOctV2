@@ -38,6 +38,26 @@ import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.error.AuthFailureError;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
+import com.nguyenhoanglam.imagepicker.model.Image;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,10 +65,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ElasticVIews.ElasticAction;
 import awsgcm.MessageReceivingService;
+import dialog.DialogEmailMessage;
 import fragment.healthapp.FragmentEditGoal;
 import fragment.healthapp.FragmentHealthAppNewProgress;
 import fragment.healthapp.FragmentHealthNote;
@@ -62,10 +86,12 @@ import fragment.healthapp.FragmentReminderLabTest;
 import fragment.healthapp.FragmentReminderMedicine;
 import fragment.healthapp.FragmentSignUp;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.CircularImageView;
 import utils.HandlePermission;
+import utils.MyConstants;
 
-public class MainActivity extends BaseMainActivity implements TransferListener, View.OnClickListener {
+public class MainActivity extends BaseMainActivity implements View.OnClickListener {
 
     static {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -83,13 +109,15 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
     private TextView txt_doctor_name_edu;
     private ImageView img_drawer, img_share;
     private CircularImageView circularImageView;
+    private int REQUEST_CODE_PICKERPROFILE = 2001;
     private NavigationView navigationView;
     SharedPreferences preferences;
+    private static final int CAPTURE_MEDIA = 368;
     private File myPath;
+    private RequestQueue requestQueue;
     String encodedImage;
     private View view1;
-
-
+    private ProgressBar progressBar;
     private RelativeLayout liner_bottom_view;
     private LinearLayout top_view;
     private LinearLayout txt_bottom_heath_app, txt_bottom_health_note, txt_bottom_home, txt_bottom_prescription, txt_bottom_reports;
@@ -111,6 +139,9 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //            window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
             window.setBackgroundDrawable(background);
         }
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         top_view = (LinearLayout) findViewById(R.id.top_view);
         liner_bottom_view = (RelativeLayout) findViewById(R.id.liner_bottom_view);
@@ -119,7 +150,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         img_health_home = (ImageView) findViewById(R.id.img_health_home);
         img_health_pre = (ImageView) findViewById(R.id.img_health_pre);
         img_health_report = (ImageView) findViewById(R.id.img_health_report);
-
 
         txt_bottom_heath_app = (LinearLayout) findViewById(R.id.txt_bottom_heath_app);
         txt_bottom_health_note = (LinearLayout) findViewById(R.id.txt_bottom_health_note);
@@ -149,7 +179,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         txt_bottom_prescription.setOnClickListener(this);
         txt_bottom_reports.setOnClickListener(this);
 
-
         img_share = (ImageView) findViewById(R.id.img_share);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -168,54 +197,71 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         View header = navigationView.getHeaderView(0);
         circularImageView = (CircularImageView) header.findViewById(R.id.placeholder);
         txt_doctor_name_edu = (TextView) header.findViewById(R.id.txt_doctor_name_edu);
+        progressBar = (ProgressBar) header.findViewById(R.id.progress_bar_one);
         preferences.edit().putBoolean("isDestroy", false).commit();
         getKeyHash();
         showActionBarToggle(false);
         disableDrawer();
         changeTitle("cureFull");
         startService(new Intent(this, MessageReceivingService.class));
-//        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-//
-        Log.e("Intent ", " " + getIntent().getAction());
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
 //        startService(serviceIntent);
 
         if (getIntent().getAction() != null && !getIntent().getAction().equalsIgnoreCase("")) {
-            Log.e("sdsd", "dssds");
             if (AppPreference.getInstance().isLogin()) {
-                CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
-                CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
-                showLogo(false);
-                String type = getIntent().getExtras().getString("type");
-                if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
-                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderLabTest(), false);
-                } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                    liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                    liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                    img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                    txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                    img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                    txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                    txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderDoctorVisit(), false);
+                String action = getIntent().getAction();
+                if (action.equalsIgnoreCase("android.intent.action.VIEW")) {
+                    Uri uri = this.getIntent().getData();
+                    try {
+//                        URL url = new URL(uri.getScheme(), uri.getHost(), uri.getq);
+                        getUpdateEmailId(uri.getQueryParameter("id"), uri.getQueryParameter("email"), uri.getQueryParameter("token"));
+                        showLogo(false);
+                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentProfile(), false);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentReminderMedicine(), false);
+                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
+                    CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
+                    showLogo(false);
+                    String type = getIntent().getExtras().getString("type");
+                    if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderLabTest(), false);
+                    } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderDoctorVisit(), false);
+                    } else {
+                        CureFull.getInstanse().getFlowInstanse()
+                                .replace(new FragmentReminderMedicine(), false);
+                    }
                 }
+
+
             } else {
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
@@ -232,8 +278,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLandingPage(), false);
             } else {
-
-
                 CureFull.getInstanse().getFlowInstanse().clearBackStack();
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
@@ -256,7 +300,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 new LongOperation().execute("");
             }
         });
@@ -317,19 +361,55 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void setshareVisibilty(boolean isGone) {
+        if (isGone) {
+            img_share.setVisibility(View.VISIBLE);
+        } else {
+            img_share.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public void setActionDrawerHeading(String name, String id) {
         txt_doctor_name_edu.setText("" + name);
     }
 
-    public void setActionDrawerProfilePic(String name) {
-        CureFull.getInstanse().getSmallImageLoader().clearCache();
-        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
-//        Glide.with(this).load(name)
-//                .thumbnail(0.5f)
-//                .placeholder(R.drawable.profile_avatar)
-//                .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                .skipMemoryCache(true)
-//                .into(circularImageView);
+    public void setActionDrawerProfilePic(String url) {
+
+
+        if (url.equalsIgnoreCase("") || url.equalsIgnoreCase("null") || url.equalsIgnoreCase(null)) {
+            progressBar.setVisibility(View.GONE);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(AppPreference.getInstance().getProfileImage())
+                    .priority(Priority.HIGH)
+                    .dontAnimate()
+                    .placeholder(R.drawable.profile_avatar)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(circularImageView);
+        }
+//        CureFull.getInstanse().getSmallImageLoader().clearCache();
+//        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(name, circularImageView);
+////        Glide.with(this).load(name)
+////                .thumbnail(0.5f)
+////                .placeholder(R.drawable.profile_avatar)
+////                .diskCacheStrategy(DiskCacheStrategy.NONE)
+////                .skipMemoryCache(true)
+////                .into(circularImageView);
+
     }
 
 
@@ -450,7 +530,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
 //                CureFull.getInstanse().getFlowInstanse().clearBackStack();
 //                CureFull.getInstanse().getFlowInstanse()
 //                        .replace(new FragmentLogin(), false);
@@ -460,49 +539,110 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         }
     }
 
+
+    private void getUpdateEmailId(String id, final String emailId, String tokenId) {
+        if (CheckNetworkState.isNetworkAvailable(this)) {
+            showProgressBar(true);
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(this);
+            }
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.EMAIL_ID_UPDATE + id + "&email=" + emailId + "&token=" + tokenId + "&type=UPDATE_EMAIL_ID",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                AppPreference.getInstance().setUserID(emailId);
+                                CureFull.getInstanse().getiOnEmailUpdate().optEmailUpdate();
+                                DialogEmailMessage dialogEmailMessage = new DialogEmailMessage(MainActivity.this);
+                                dialogEmailMessage.show();
+                            } else {
+
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            showProgressBar(false);
+                            error.printStackTrace();
+                        }
+                    }
+            ) {
+
+
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+        }
+
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         if (intent.getAction() != null) {
             String action = intent.getAction();
-            if (!action.equalsIgnoreCase("steps")) {
-                if (AppPreference.getInstance().isLogin()) {
-                    showLogo(false);
-                    String type = intent.getExtras().getString("type");
-                    if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
-                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
-                        img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                        CureFull.getInstanse().getFlowInstanse()
-                                .replace(new FragmentReminderLabTest(), false);
-                    } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
-                        img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                        img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
-                        CureFull.getInstanse().getFlowInstanse()
-                                .replace(new FragmentReminderDoctorVisit(), false);
+            if (action.equalsIgnoreCase("android.intent.action.VIEW")) {
+                Uri uri = intent.getData();
+                try {
+                    Log.e("id","id "+uri.getQueryParameter("id"));
+                    getUpdateEmailId(uri.getQueryParameter("id"), uri.getQueryParameter("email"), uri.getQueryParameter("token"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+                if (!action.equalsIgnoreCase("steps")) {
+                    if (AppPreference.getInstance().isLogin()) {
+                        showLogo(false);
+                        String type = intent.getExtras().getString("type");
+                        if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
+                            liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                            liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                            img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                            txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                            img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
+                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                            img_lab_test.setImageResource(R.drawable.lab_icon_red);
+                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentReminderLabTest(), false);
+                        } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
+                            liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
+                            liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                            img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
+                            txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                            img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
+                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                            img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
+                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentReminderDoctorVisit(), false);
+                        } else {
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentReminderMedicine(), false);
+                        }
                     } else {
-                        CureFull.getInstanse().getFlowInstanse()
-                                .replace(new FragmentReminderMedicine(), false);
+
                     }
-                } else {
+
 
                 }
-
-
             }
+
         }
 
 
@@ -592,7 +732,7 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
         Bitmap b = getBitmapFromView(view, totalHeight, totalWidth);
 
-        myPath = new File(Environment.getExternalStorageDirectory(), "report.png");
+        myPath = new File(Environment.getExternalStorageDirectory(), +System.currentTimeMillis() + ".png");
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(myPath);
@@ -643,20 +783,6 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
         startActivity(Intent.createChooser(sharingIntent, "Share image using"));
     }
 
-    @Override
-    public void onStateChanged(int id, TransferState state) {
-        Log.e("state", " " + state.name());
-    }
-
-    @Override
-    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-        Log.e("bytesTotal", " " + bytesCurrent);
-    }
-
-    @Override
-    public void onError(int id, Exception ex) {
-        Log.e("error", "" + ex.getMessage());
-    }
 
     @Override
     public void onClick(View view) {
@@ -664,9 +790,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
             switch (view.getId()) {
                 case R.id.liner_medincine:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentMedicine()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
@@ -682,9 +809,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.liner_doctor_visit:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentDoctorVisit()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
@@ -700,9 +828,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.liner_lab_test:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentLabTs()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
@@ -718,9 +847,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_heath_app:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentHealthApp()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoal()) {
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentHealthAppNewProgress(), false);
@@ -733,9 +863,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_health_note:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentHealthNote()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -749,16 +880,18 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_home:
+                    CureFull.getInstanse().cancel();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentLandingPage(), false);
                     break;
                 case R.id.txt_bottom_prescription:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentHealtpre()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -773,9 +906,10 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 
                     break;
                 case R.id.txt_bottom_reports:
+                    CureFull.getInstanse().cancel();
                     if (!AppPreference.getInstance().isFragmentHealtReprts()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                            ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoalPage()) {
                             if (AppPreference.getInstance().isEditGoal()) {
                                 CureFull.getInstanse().getFlowInstanse()
@@ -954,7 +1088,20 @@ public class MainActivity extends BaseMainActivity implements TransferListener, 
 //                false);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        ArrayList<Image> images = null;
+        if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
+            CureFull.getInstanse().getiOnOtpDonePath().optDonePath(images, data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH), CAPTURE_MEDIA);
+        } else if (resultCode == RESULT_OK && data != null && CureFull.getInstanse().getPostionGet() == REQUEST_CODE_PICKERPROFILE) {
+            images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+            CureFull.getInstanse().getiOnOtpDonePath().optDonePath(images, "", REQUEST_CODE_PICKERPROFILE);
+        } else if (resultCode == RESULT_OK && data != null && CureFull.getInstanse().getPostionGet() == 2002) {
+            images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+            CureFull.getInstanse().getiOnOtpDonePath().optDonePath(images, "", 2002);
+        }
 
 
-
+    }
 }

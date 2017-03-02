@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,11 +19,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -74,7 +69,6 @@ import java.util.Map;
 import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
-import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogHintScreenaLanding;
@@ -88,7 +82,6 @@ import ticker.TickerUtils;
 import ticker.TickerView;
 import utils.AppPreference;
 import utils.CheckNetworkState;
-import utils.CustomTypefaceSpan;
 import utils.HandlePermission;
 import utils.MyConstants;
 import utils.SeekArc;
@@ -130,7 +123,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private static TickerView ticker1;
     private static TickerView text_steps_count;
     ImageButton imageButton;
-    LinearLayout liner_bottomd, revealView, layoutButtons, liner_click, linear_prescription_click, linear_lab_report_click, date_time_picker;
+    LinearLayout liner_date_on, liner_bottomd, revealView, layoutButtons, liner_click, linear_prescription_click, linear_lab_report_click, date_time_picker;
     Animation alphaAnimation;
     float pixelDensity;
     boolean flag = true;
@@ -145,7 +138,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private ImageView img_pre, img_minus_icon, img_plus_icon;
     static Messenger mService = null;
     static boolean mIsBound;
-    static boolean isToStop = false;
+    static boolean isToStop = false, isWaterTakeCall = false;
     private int waterLevel = 0;
     private boolean isFirstTime = false;
     private boolean isSelectFrom = false;
@@ -185,6 +178,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
         txt_date_times = (TextView) rootView.findViewById(R.id.txt_date_times);
         txt_title = (TextView) rootView.findViewById(R.id.txt_title);
+        liner_date_on = (LinearLayout) rootView.findViewById(R.id.liner_date_on);
         liner_bottomd = (LinearLayout) rootView.findViewById(R.id.liner_bottomd);
         linear_health_note = (LinearLayout) rootView.findViewById(R.id.linear_health_note);
         imgg_question_white = (ImageView) rootView.findViewById(R.id.imgg_question_white);
@@ -221,15 +215,21 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
 
         txt_steps_counter = (TextView) rootView.findViewById(R.id.txt_steps_counter);
+        liner_date_on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
         linear_lab_report_click.setOnClickListener(this);
         linear_prescription_click.setOnClickListener(this);
         liner_click.setOnClickListener(this);
         btn_set_goal.setOnClickListener(this);
         txt_date_time.setOnClickListener(this);
 //        liner_date_t.setOnClickListener(this);
-        txt_time.setOnClickListener(this);
         txt_to_time.setOnClickListener(this);
+        txt_time.setOnClickListener(this);
+//        txt_to_time.setOnClickListener(this);
         btn_done.setOnClickListener(this);
         txt_click_here_add.setOnClickListener(this);
         img_plus_icon.setOnClickListener(this);
@@ -250,18 +250,19 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
         getAllHealthList();
         preferences.edit().putBoolean("destroy", false).commit();
-
-
+        txt_water_level.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L");
+        txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+        txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
         if (AppPreference.getInstance().isFirstTimeSteps()) {
             stepsCountsItemses = DbOperations.getOfflineSteps(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid());
             if (stepsCountsItemses != null && stepsCountsItemses.size() > 0) {
+//                Log.e("db mai aaya ", " db mai aaya");
                 for (int i = 0; i < stepsCountsItemses.size(); i++) {
                     jsonUploadTargetSteps(CureFull.getInstanse().getActivityIsntanse(), stepsCountsItemses.get(i).getSteps_count(), stepsCountsItemses.get(i).getCalories(), stepsCountsItemses.get(i).getWaterTake(), stepsCountsItemses.get(i).getDateTime(), i, stepsCountsItemses.size());
                 }
             } else {
                 jsonUploadTarget();
             }
-
         } else {
             getDailyHealth();
             AppPreference.getInstance().setIsFirstTimeSteps(true);
@@ -316,6 +317,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         });
         txt_click_here_add.setPaintFlags(txt_click_here_add.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
+        txt_date_time.setText("     ");
+        txt_time.setText("      ");
+        txt_to_time.setText("      ");
+
         return rootView;
     }
 
@@ -326,14 +331,14 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
             case R.id.imgg_question_white:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(imgg_question_white, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(imgg_question_white, 400, 0.9f, 0.9f);
                 DialogHintScreenaLanding dialogHintScreenaLanding = new DialogHintScreenaLanding(CureFull.getInstanse().getActivityIsntanse());
                 dialogHintScreenaLanding.show();
                 break;
 
             case R.id.imgg_question_red:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(imgg_question_red, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(imgg_question_red, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), true);
                 DialogHintScreenaPrescriptions dialogHintScreenaPrescriptions = new DialogHintScreenaPrescriptions(CureFull.getInstanse().getActivityIsntanse());
@@ -369,6 +374,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 //
 //                break;
             case R.id.liner_click:
+                CureFull.getInstanse().cancel();
                 if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentHealthAppNewProgress(), false);
@@ -379,24 +385,27 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 }
                 break;
             case R.id.btn_set_goal:
+                CureFull.getInstanse().cancel();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
 //                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
 //                dialogFullViewPrescription.show();
                 CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentEditGoal(), false);
+                        .replace(new FragmentEditGoal(), true);
 
 
                 break;
             case R.id.linear_lab_report_click:
+                CureFull.getInstanse().cancel();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabTestReport(), false);
                 break;
             case R.id.linear_prescription_click:
+                CureFull.getInstanse().cancel();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionCheckNew(), false);
                 break;
@@ -443,7 +452,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 break;
             case R.id.btn_done:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (!validateSubject()) {
                     return;
                 }
@@ -463,24 +472,34 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 break;
             case R.id.img_plus_icon:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_plus_icon, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_plus_icon, 400, 0.9f, 0.9f);
                 if (AppPreference.getInstance().isEditGoal()) {
-                    getIncreseWaterInTake("true");
+                    if (isWaterTakeCall) {
+
+                    } else {
+                        getIncreseWaterInTake("true");
+                    }
+
                 } else {
                     CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentEditGoal(), false);
+                            .replace(new FragmentEditGoal(), true);
 
                 }
 
                 break;
             case R.id.img_minus_icon:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_minus_icon, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_minus_icon, 400, 0.9f, 0.9f);
                 if (AppPreference.getInstance().isEditGoal()) {
-                    getIncreseWaterInTake("false");
+                    if (isWaterTakeCall) {
+
+                    } else {
+                        getIncreseWaterInTake("false");
+                    }
+
                 } else {
                     CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentEditGoal(), false);
+                            .replace(new FragmentEditGoal(), true);
                 }
                 break;
 
@@ -669,7 +688,9 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
     public void jsonHealthNoteCheck() {
 
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         String date = "";
         if (firstDate.equalsIgnoreCase("")) {
             date = Utils.getTodayDate();
@@ -695,7 +716,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             toTime = toFirstTime;
         }
 
-        Log.e("date", " " + date);
+//        Log.e("date", " " + date);
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             JSONObject data = JsonUtilsObject.toAddHealthNote(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim(), date, time, toTime);
@@ -703,7 +724,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.e("response", " " + response);
+//                            Log.e("response", " " + response);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             int responseStatus = 0;
                             JSONObject json = null;
@@ -727,13 +748,13 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 getAllHealthList();
 
                             } else {
-                                try {
-                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+//                                try {
+//                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+//                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+//                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
                             }
 
 
@@ -743,8 +764,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+//                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
                 }
 
             }) {
@@ -775,6 +796,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
 
@@ -828,12 +850,14 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private void getAllHealthList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=4&offset=0",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.e("HealthList", " " + response);
+//                            Log.e("HealthList", " " + response);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             int responseStatus = 0;
                             JSONObject json = null;
@@ -863,13 +887,13 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 }
 
                             } else {
-                                try {
-                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+//                                try {
+//                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+//                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+//                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
 
 
                             }
@@ -899,6 +923,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -993,7 +1018,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
                     Date x = calendar3.getTime();
 
-                    Log.e("value ", "" + " " + calendar3.getTime() + " " + calendar2.getTime() + " " + calendar1.getTime());
+//                    Log.e("value ", "" + " " + calendar3.getTime() + " " + calendar2.getTime() + " " + calendar1.getTime());
 
                     if (x.before(calendar1.getTime()) && x.after(calendar2.getTime())) {
                         //checkes whether the current time is between 14:49:00 and 20:11:13.
@@ -1044,9 +1069,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
 
     public void jsonUploadTarget() {
-        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
 
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
+//            Log.e("raat ko bheja ", "" + preferences.getInt("stepsIn", 0));
             String steps = "" + preferences.getInt("stepsIn", 0);
             String running = "0";
             String cycling = "0";
@@ -1074,13 +1102,12 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 getDailyHealth();
                             } else {
-                                try {
-                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                                txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                                txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+                                Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                                CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                                doBindService();
+
                             }
 
 
@@ -1089,8 +1116,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+//                    VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
                 }
             }) {
                 @Override
@@ -1101,12 +1128,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
             CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
         } else {
-
+            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+            Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+            CureFull.getInstanse().getActivityIsntanse().startService(intent);
+            doBindService();
         }
 
     }
@@ -1118,7 +1150,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     "yyyy-MM-dd HH:mm", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
+//            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1129,7 +1161,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private void getDailyHealth() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
+//            Log.e("date", " " + CureFull.getInstanse().getActivityIsntanse().getTodayDate());
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_HEALTH_DAILY_APP + CureFull.getInstanse().getActivityIsntanse().getTodayDate(),
                     new Response.Listener<String>() {
                         @Override
@@ -1151,6 +1186,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
                                         JSONObject json2 = new JSONObject(json1.getString("dailyDetails"));
                                         String steps = json2.getString("steps");
+//                                        Log.e("steps", " " + steps);
                                         String waterIntakeDone = json2.getString("waterIntakeDone");
 //                                        boolean goalSet = json2.getBoolean("goalSet");
                                         AppPreference.getInstance().setWaterInTake("" + waterIntakeDone);
@@ -1226,6 +1262,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -1246,12 +1283,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
 
     private void getIncreseWaterInTake(String isture) {
+        isWaterTakeCall = true;
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.INCRESE_WATER_INTAKE + isture,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+//                        Log.e("response", " " + response);
+                        isWaterTakeCall = false;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -1294,6 +1336,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+//                        Log.e("error", " " + error.getMessage());
+                        isWaterTakeCall = false;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         error.printStackTrace();
                     }
@@ -1308,6 +1352,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1345,32 +1390,9 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 e.printStackTrace();
             }
         }
-        String name = healthNoteItemses.get(0).getNote_heading();
-        String comma = " : ";
-        String gameName = healthNoteItemses.get(0).getDeatils();
+        String text = "<font color=#fdb832>" + healthNoteItemses.get(0).getNote_heading() + ":" + "</font> <font color=#ffffff>" + healthNoteItemses.get(0).getDeatils() + "</font>";
+        txt_title.setText(Html.fromHtml(text));
 
-        String meassgeTxt = name + comma + gameName;
-
-        Spannable sb = new SpannableString(meassgeTxt);
-        Typeface font = Typeface.createFromAsset(CureFull.getInstanse().getActivityIsntanse().getAssets(), "Montserrat-Bold.ttf");
-        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
-                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
-                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(comma),
-                meassgeTxt.indexOf(comma) + comma.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(CureFull.getInstanse().getActivityIsntanse().getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
-                meassgeTxt.indexOf(gameName) + gameName.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        txt_title.setText(sb);
     }
 
     public static String getTodayDate() {
@@ -1380,7 +1402,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                     "yyyy-MM-dd", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
+//            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1390,7 +1412,9 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
     public void jsonUploadTargetSteps(Context context, int stepsCount, String caloriesBurnts, String waterin, final String dateTimes, final int i, final int size) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(context);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context);
+        }
         String steps = "" + stepsCount;
         String running = "0";
         String cycling = "0";
@@ -1422,12 +1446,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 getDailyHealth();
                             }
                         } else {
-                            try {
-                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                            txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+                            Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                            CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                            doBindService();
+//                            try {
+//                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+//                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
                         }
 
 
@@ -1436,8 +1465,13 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
+                txt_calories.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
+                Intent intent = new Intent(CureFull.getInstanse().getActivityIsntanse(), MessengerService.class);
+                CureFull.getInstanse().getActivityIsntanse().startService(intent);
+                doBindService();
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -1448,6 +1482,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

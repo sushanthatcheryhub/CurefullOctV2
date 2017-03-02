@@ -65,6 +65,7 @@ import item.property.ReminderMedicnceDoagePer;
 import toggle.button.MultiSelectToggleGroup;
 import toggle.button.ToggleButtonGroup;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 
@@ -336,7 +337,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         switch (v.getId()) {
             case R.id.relative_schedule:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (isVisible) {
                     rotatePhoneAntiClockwise(img_rotate);
                     isVisible = false;
@@ -354,12 +355,17 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 break;
             case R.id.txt_set_reminder:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                if (isEdit) {
-                    setMedReminderDetailsEdit();
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (isEdit) {
+                        setMedReminderDetailsEdit();
+                    } else {
+                        setMedReminderDetails();
+                    }
                 } else {
-                    setMedReminderDetails();
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
+
                 break;
 
             case R.id.liner_date_select:
@@ -462,7 +468,6 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
                 return;
             }
-
         }
         if (!validateDate()) {
             return;
@@ -495,7 +500,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.setRemMedAdd(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
         Log.e("jsonUploadMedRem", ":- " + data.toString());
 
@@ -601,7 +608,9 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.setRemMedEdit(medicineReminderId, startFrom, duration, doages, addDays, listCurrent, newTime, interval);
         Log.e("jsonUploadMedEdit", ":- " + data.toString());
 
@@ -650,6 +659,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -857,7 +867,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
                         int hour1 = Integer.parseInt(hour);
                         // Current Minute
-                        int minute1 = Integer.parseInt(mintue);
+                        int minute1 = Integer.parseInt(mintue.trim());
 
                         TimePickerDialog timePickerDialog1 = new TimePickerDialog(CureFull.getInstanse().getActivityIsntanse(), new TimePickerDialog.OnTimeSetListener() {
                             @Override

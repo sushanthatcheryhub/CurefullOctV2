@@ -5,7 +5,6 @@
     android:layout_gravity="center_horizontal"
     android:background="@drawable/login_gradient"
     android:focusableInTouchMode="true"
-    android:focusable="true"
     android:clickable="true">
 
     <RelativeLayout
@@ -234,8 +233,8 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:textColor="#282828"
-                                                    android:textColorHint="@color/cure_hint_color" />
+                                                    android:textColor="@color/health_yellow"
+                                                    android:textColorHint="@color/health_yellow" />
 
                                             </LinearLayout>
 
@@ -294,9 +293,9 @@
                                                     android:marqueeRepeatLimit="marquee_forever"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:text="     "
-                                                    android:textColor="#282828"
-                                                    android:textColorHint="@color/cure_hint_color" />
+                                                    android:text="      "
+                                                    android:textColor="@color/health_yellow"
+                                                    android:textColorHint="@color/health_yellow" />
 
 
                                             </LinearLayout>
@@ -372,8 +371,8 @@
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
                                                     android:text="     "
-                                                    android:textColor="#282828"
-                                                    android:textColorHint="@color/cure_hint_color" />
+                                                    android:textColor="@color/health_yellow"
+                                                    android:textColorHint="@color/health_yellow" />
 
                                             </LinearLayout>
 

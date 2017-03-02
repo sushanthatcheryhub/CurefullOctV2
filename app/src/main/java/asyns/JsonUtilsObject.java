@@ -112,7 +112,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put(EMAIL, email.trim());
             jsonParent.put(PASSWORD, password.trim());
             jsonParent.put(MOBILE_NO, mobileNo.trim());
-            Log.e("cf", "" + uhid);
             if ("null".equalsIgnoreCase(uhid)) {
                 jsonParent.put("cfUuhid", "");
             } else {
@@ -134,7 +133,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("subject", subject.trim());
             jsonParent.put("details", details.trim());
             jsonParent.put("date", date.trim());
-            Log.e("date t", " " + date.trim());
             jsonParent.put("fromTime", fromTime.trim());
             jsonParent.put("toTime", toTime.trim());
 
@@ -276,7 +274,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                 for (int i = 0; i < prescriptionImageList.size(); i++) {
                     JSONObject list1 = new JSONObject();
                     list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
-                    Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
 //                    list1.put("prescriptionImage", changeTOBase64(prescriptionImageList.get(i).getPrescriptionImage()));
                     obj1.put(list1);
                 }
@@ -371,6 +368,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("medicineType", listCurrent.get(i).getType());
                     list1.put("medicineName", listCurrent.get(i).getMedicineName());
                     list1.put("doctorName", listCurrent.get(i).getDoctorName());
+                    list1.put("quantityType", "Mg");
                     list1.put("medicinePotency", "600 mg");
                     list1.put("medicineQuantity", listCurrent.get(i).getInterval());
                     list1.put("isAtferMeal", listCurrent.get(i).isBaMealAfter());
@@ -496,7 +494,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                         JSONObject list1 = new JSONObject();
                         list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
                         list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
-                        Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
                         obj1.put(list1);
                     }
 
@@ -545,7 +542,6 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                         JSONObject list1 = new JSONObject();
                         list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
                         list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
-                        Log.e("number:- ", "" + prescriptionImageList.get(i).getImageNumber());
                         obj1.put(list1);
                     }
 

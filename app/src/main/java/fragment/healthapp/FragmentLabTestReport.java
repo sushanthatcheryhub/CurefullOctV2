@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
@@ -55,7 +54,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
@@ -64,6 +62,8 @@ import com.android.volley.toolbox.Volley;
 import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
 import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
 import com.nguyenhoanglam.imagepicker.model.Image;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,7 +83,6 @@ import adpter.UploadLabTestReportAdpter;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
-import curefull.healthapp.BuildConfig;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
@@ -91,6 +90,7 @@ import dialog.DialogLoader;
 import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
+import interfaces.IOnOtpDonePath;
 import item.property.FilterDataReports;
 import item.property.LabReportListView;
 import item.property.PrescriptionDiseaseName;
@@ -110,13 +110,14 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLabTestReport extends BaseBackHandlerFragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage, PopupWindow.OnDismissListener {
+public class FragmentLabTestReport extends BaseBackHandlerFragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage, PopupWindow.OnDismissListener, IOnOtpDonePath {
 
 
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
     public static final int SELECT_PHOTO = 12345;
+    private static final int CAPTURE_MEDIA = 368;
     private RelativeLayout realtive_notes;
     private RelativeLayout realtive_notesShort, liner_short_by, txt_filter_by, liner_upload_new;
     private RelativeLayout realtive_notesFilter;
@@ -126,6 +127,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private LinearLayout liner_gallery, liner_camera, liner_btn_done, liner_filter_btn_reset;
     private float pixelDensity;
     boolean flag = true;
+    private int valueUpload = 0;
     boolean flagShort = true;
     boolean flagFilter = true;
     private Animation alphaAnimation;
@@ -144,21 +146,22 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private List<PrescriptionDoctorName> prescriptionDoctorNames;
     private List<PrescriptionDiseaseName> prescriptionDiseaseNames;
     private TextView txt_no_prescr;
+    private ImageView img_btn_refresh;
     private List<UHIDItems> uhidItemses;
     private TextView txt_sort_user_name, txt_total_prescription;
     private String imageName = "" + System.currentTimeMillis();
     private String fileName = "";
     private LinearLayout liner_layout_recyler;
     private String newMessage = "";
-    private String clickDoctorName = "", clickDiseaseName = "", clickDates = "", clickShortBy = "DESC";
+    private String clickDoctorName = "", clickDiseaseName = "", clickUploadBy = "", clickDates = "", clickShortBy = "DESC";
     private ImageView img_doctor_name, img_test_name, img_date, img_user_name;
     private String checkDialog = "";
     private boolean isButtonRest = false, isUploadClick = false, isloadMore = false, isOpenShortBy = false, isOpenUploadNew = false, isOpenFilter = false;
     private String doctorName, dieaseName, prescriptionDate;
     private int offset = 0;
     private FilterDataReports filterDataReports;
-    private LinearLayout liner_filter_date, liner_filter_doctor, liner_filter_disease;
-    private TextView txt_date, txt_doctor, txt_diease, txt_pre_total;
+    private LinearLayout liner_filter_date, liner_filter_doctor, liner_filter_disease, liner_filter_uploadby;
+    private TextView txt_date, txt_doctor, txt_diease, txt_pre_total, txt_uploadby;
 
     private RecyclerView recyclerView_filter;
     private Filter_Reports_ListAdpter filter_prescription_listAdpter;
@@ -166,10 +169,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private RadioButton radioNewtest, radioOldest;
 
     private LinearLayout txt_short_cancel, txt_short_apply;
-    private boolean isList = false, isRest = true;
+    private boolean isList = false, isRest = true, isChecked = true;
     private DialogLoader dialogLoader;
     private ArrayList<Image> images = null;
-    private int REQUEST_CODE_PICKER = 2000;
+    private int REQUEST_CODE_PICKER = 2002;
 
     @Override
     public boolean onBackPressed() {
@@ -225,25 +228,25 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
         AppPreference.getInstance().setFragmentHealthReprts(true);
-
+        AppPreference.getInstance().setIsEditGoalPage(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         txt_short_cancel = (LinearLayout) rootView.findViewById(R.id.txt_short_cancel);
         txt_short_apply = (LinearLayout) rootView.findViewById(R.id.txt_short_apply);
         radioShort = (RadioGroup) rootView.findViewById(R.id.radioShort);
         radioNewtest = (RadioButton) rootView.findViewById(R.id.radioNewtest);
         radioOldest = (RadioButton) rootView.findViewById(R.id.radioOldest);
-
+        img_btn_refresh = (ImageView) rootView.findViewById(R.id.img_btn_refresh);
         liner_filter_btn_reset = (LinearLayout) rootView.findViewById(R.id.liner_filter_btn_reset);
         liner_btn_done = (LinearLayout) rootView.findViewById(R.id.liner_btn_done);
         txt_pre_total = (TextView) rootView.findViewById(R.id.txt_pre_total);
         txt_date = (TextView) rootView.findViewById(R.id.txt_date);
         txt_doctor = (TextView) rootView.findViewById(R.id.txt_doctor);
         txt_diease = (TextView) rootView.findViewById(R.id.txt_diease);
-
+        txt_uploadby = (TextView) rootView.findViewById(R.id.txt_uploadby);
         liner_filter_date = (LinearLayout) rootView.findViewById(R.id.txt_filter_date);
         liner_filter_doctor = (LinearLayout) rootView.findViewById(R.id.txt_filter_doctor);
         liner_filter_disease = (LinearLayout) rootView.findViewById(R.id.txt_filter_disease);
-
+        liner_filter_uploadby = (LinearLayout) rootView.findViewById(R.id.txt_filter_uploadby);
 
         recyclerView_filter = (RecyclerView) rootView.findViewById(R.id.recyclerView_filter);
         realtive_notesShort = (RelativeLayout) rootView.findViewById(R.id.realtive_notesShort);
@@ -251,9 +254,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(CureFull.getInstanse().getActivityIsntanse());
         recyclerView_filter.setLayoutManager(mLayoutManager);
         txt_total_prescription = (TextView) rootView.findViewById(R.id.txt_total_prescription);
-
         img_user_name = (ImageView) rootView.findViewById(R.id.img_user_name);
-
         liner_layout_recyler = (LinearLayout) rootView.findViewById(R.id.liner_layout_recyler);
         txt_sort_user_name = (TextView) rootView.findViewById(R.id.txt_sort_user_name);
         txt_no_prescr = (TextView) rootView.findViewById(R.id.txt_no_prescr);
@@ -300,8 +301,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         liner_filter_date.setOnClickListener(this);
         liner_filter_doctor.setOnClickListener(this);
         liner_filter_disease.setOnClickListener(this);
+        liner_filter_uploadby.setOnClickListener(this);
         liner_btn_done.setOnClickListener(this);
         liner_filter_btn_reset.setOnClickListener(this);
+        CureFull.getInstanse().setiOnOtpDonePath(this);
         revealViewFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -312,6 +315,17 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             @Override
             public void onClick(View v) {
                 launchTwitterShort(rootView);
+            }
+        });
+
+
+        img_btn_refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                getAllHealthUserList();
+                getAllFilterData();
             }
         });
 
@@ -374,11 +388,18 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         radioShort.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioNewtest) {
-                    clickShortBy = "DESC";
-                } else if (checkedId == R.id.radioOldest) {
-                    clickShortBy = "ASC";
+                if (isChecked) {
+                    if (checkedId == R.id.radioNewtest) {
+                        clickShortBy = "DESC";
+                        radioNewtest.setChecked(true);
+                        radioOldest.setChecked(false);
+                    } else if (checkedId == R.id.radioOldest) {
+                        clickShortBy = "ASC";
+                        radioNewtest.setChecked(false);
+                        radioOldest.setChecked(true);
+                    }
                 }
+
             }
         });
         txt_pre_total.setSelected(true);
@@ -426,17 +447,21 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 clickDoctorName = "";
                 clickDiseaseName = "";
                 clickDates = "";
+                clickUploadBy = "";
                 AppPreference.getInstance().setFilterDateReports("");
                 AppPreference.getInstance().setFilterDoctorReports("");
                 AppPreference.getInstance().setFilterDieseReports("");
+                AppPreference.getInstance().setFilterUploadBy("");
                 getAllFilterData();
                 getLabReportList();
                 liner_filter_date.setBackgroundResource(R.color.health_yellow);
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                 liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
                 txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
                 txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
                 txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
             }
         }
     };
@@ -455,12 +480,28 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 break;
 
             case R.id.txt_short_cancel:
-                liner_upload_new.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchTwitterShort(rootView);
-                    }
-                });
+                if (isRest) {
+                    isChecked = false;
+                    isRest = false;
+                    isButtonRest = true;
+                    clickDoctorName = "";
+                    clickDiseaseName = "";
+                    clickUploadBy = "";
+                    clickDates = "";
+                    radioNewtest.setChecked(false);
+                    radioOldest.setChecked(false);
+                    AppPreference.getInstance().setFilterDateReports("");
+                    AppPreference.getInstance().setFilterDoctorReports("");
+                    AppPreference.getInstance().setFilterDieseReports("");
+                    getAllFilterData();
+                    getLabReportList();
+                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                }
                 break;
             case R.id.liner_btn_done:
                 liner_upload_new.post(new Runnable() {
@@ -472,6 +513,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
                 clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
                 clickDates = AppPreference.getInstance().getFilterDateReports();
+                clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
                 getLabReportList();
                 getAllFilterData();
                 break;
@@ -482,6 +524,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
                 txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
                 txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
                 if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
                     showAdpter(filterDataReports.getDateList(), "date");
                 }
@@ -493,6 +537,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
                 txt_doctor.setTextColor(getResources().getColor(R.color.health_red_drawer));
                 txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
                 if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
                     showAdpter(filterDataReports.getDoctorNameList(), "doctor");
                 }
@@ -504,18 +550,39 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
                 txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
                 txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
                 if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
                     showAdpter(filterDataReports.getDiseaseNameList(), "disease");
                 }
                 break;
 
+            case R.id.txt_filter_uploadby:
+                liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.health_yellow);
+                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                if (filterDataReports.getUploadedByList() != null && filterDataReports.getUploadedByList().size() > 0) {
+                    showAdpter(filterDataReports.getUploadedByList(), "uploadBy");
+                }
+                break;
+
             case R.id.liner_filter_btn_reset:
                 if (isRest) {
+
+                    isChecked = false;
                     isRest = false;
                     isButtonRest = true;
                     clickDoctorName = "";
                     clickDiseaseName = "";
+                    clickUploadBy = "";
                     clickDates = "";
+                    radioNewtest.setChecked(false);
+                    radioOldest.setChecked(false);
                     AppPreference.getInstance().setFilterDateReports("");
                     AppPreference.getInstance().setFilterDoctorReports("");
                     AppPreference.getInstance().setFilterDieseReports("");
@@ -603,6 +670,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 break;
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
+                    newMessage = "";
                     value = 0;
                     imageName = "" + System.currentTimeMillis();
                     prescriptionImageLists = new ArrayList<PrescriptionImageList>();
@@ -617,25 +685,31 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                     }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                file);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                        Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                file);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                    } else {
+                    new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                            .setShowPicker(false)
+                            .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                            .enableImageCropping(true)
+                            .launchCamera();
+//                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                    }
 
                 }
 
                 break;
             case R.id.liner_gallery:
+                newMessage = "";
                 prescriptionImageLists = new ArrayList<>();
                 isUploadClick = false;
                 liner_upload_new.post(new Runnable() {
@@ -674,11 +748,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 }
 
                 if (newMessage.equalsIgnoreCase("yes")) {
-                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
-                    prescriptionImageList1.setImageNumber(000);
-                    prescriptionImageList1.setPrescriptionImage(null);
-                    prescriptionImageList1.setChecked(false);
-                    prescriptionImageLists.add(prescriptionImageList1);
                     DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
                     dialogFullViewClickImage.setiOnDoneMoreImage(this);
                     dialogFullViewClickImage.show();
@@ -702,11 +771,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 prescriptionImageList.setChecked(false);
                 prescriptionImageLists.add(prescriptionImageList);
                 if (newMessage.equalsIgnoreCase("yes")) {
-                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
-                    prescriptionImageList1.setImageNumber(000);
-                    prescriptionImageList1.setPrescriptionImage(null);
-                    prescriptionImageList1.setChecked(false);
-                    prescriptionImageLists.add(prescriptionImageList1);
                     DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
                     dialogFullViewClickImage.setiOnDoneMoreImage(this);
                     dialogFullViewClickImage.show();
@@ -728,11 +792,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 prescriptionImageList.setChecked(false);
                 prescriptionImageLists.add(prescriptionImageList);
                 if (newMessage.equalsIgnoreCase("yes")) {
-                    PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
-                    prescriptionImageList1.setImageNumber(000);
-                    prescriptionImageList1.setPrescriptionImage(null);
-                    prescriptionImageList1.setChecked(false);
-                    prescriptionImageLists.add(prescriptionImageList1);
                     DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
                     dialogFullViewClickImage.setiOnDoneMoreImage(this);
                     dialogFullViewClickImage.show();
@@ -760,11 +819,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         labReportImageList.setChecked(false);
                         prescriptionImageLists.add(labReportImageList);
                         if (newMessage.equalsIgnoreCase("yes")) {
-                            PrescriptionImageList prescriptionImageList1 = new PrescriptionImageList();
-                            prescriptionImageList1.setImageNumber(000);
-                            prescriptionImageList1.setPrescriptionImage(null);
-                            prescriptionImageList1.setChecked(false);
-                            prescriptionImageLists.add(prescriptionImageList1);
                             DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
                             dialogFullViewClickImage.setiOnDoneMoreImage(this);
                             dialogFullViewClickImage.show();
@@ -1126,11 +1180,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     @Override
     public void optAddMoreImage(String messsage) {
         if (messsage.equalsIgnoreCase("done")) {
-            PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
-            prescriptionImageList.setImageNumber(000);
-            prescriptionImageList.setPrescriptionImage(null);
-            prescriptionImageList.setChecked(false);
-            prescriptionImageLists.add(prescriptionImageList);
             DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
             dialogFullViewClickImage.setiOnDoneMoreImage(this);
             dialogFullViewClickImage.show();
@@ -1139,24 +1188,29 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 prescriptionImageLists.remove(prescriptionImageLists.size() - 1);
                 value = prescriptionImageLists.size() - 1;
                 imageName = "" + System.currentTimeMillis();
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                            BuildConfig.APPLICATION_ID + ".provider",
-                            file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                } else {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                }
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                    Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            file);
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                } else {
+                new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                        .setShowPicker(false)
+                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                        .enableImageCropping(true)
+                        .launchCamera();
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                }
 //                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 //                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
 //                        BuildConfig.APPLICATION_ID + ".provider",
 //                        file);
 //                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -1176,26 +1230,31 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
 //                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 //                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
 //                        BuildConfig.APPLICATION_ID + ".provider",
 //                        file);
 //                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 //                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                            BuildConfig.APPLICATION_ID + ".provider",
-                            file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                } else {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                    Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            file);
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                } else {
+                new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                        .setShowPicker(false)
+                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                        .enableImageCropping(true)
+                        .launchCamera();
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                }
 
             } else {
                 images = new ArrayList<>();
@@ -1217,25 +1276,30 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (selectUploadPrescription.equalsIgnoreCase("camera")) {
 //                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 //                File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
 //                        BuildConfig.APPLICATION_ID + ".provider",
 //                        file);
 //                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 //                startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                            BuildConfig.APPLICATION_ID + ".provider",
-                            file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                } else {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                    Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            file);
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                } else {
+                new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                        .setShowPicker(false)
+                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                        .enableImageCropping(true)
+                        .launchCamera();
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                    startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                }
             } else {
                 images = new ArrayList<>();
                 start();
@@ -1254,7 +1318,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     dieaseName = dieaseNames;
                     prescriptionDate = prescriptionDates;
                     dialogLoader.show();
-                    jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                        dialogLoader.hide();
+                    }
 //                    new LongOperation().execute(prescriptionImageListss);
 //                    sentSaveTestingServer(doctorName, dieaseName, prescriptionDate, prescriptionImageListss);
                 }
@@ -1338,6 +1407,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             isloadMore = false;
             offset = 0;
             labReportListViews = null;
+            labReportListViewsDummy = null;
             labReportListViews = new ArrayList<>();
 
             StringBuilder s = new StringBuilder();
@@ -1350,17 +1420,22 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             if (!clickDates.equalsIgnoreCase("")) {
                 s.append("&date=" + clickDates);
             }
-
-            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
+            if (!clickUploadBy.equalsIgnoreCase("")) {
+                s.append("&uploadedBy=" + clickUploadBy);
+            }
+            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 s.append("");
             }
 
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+//                            Log.e("res ", " " + response);
                             isRest = true;
                             dialogLoader.hide();
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
@@ -1383,6 +1458,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     }
                                     labReportListViews.addAll(labReportListViewsDummy);
                                     txt_no_prescr.setVisibility(View.GONE);
+                                    img_btn_refresh.setVisibility(View.GONE);
                                     labReportItemView.setVisibility(View.VISIBLE);
                                     uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
                                             labReportListViews);
@@ -1393,14 +1469,16 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     if (labReportListViewsDummy == null) {
                                         isloadMore = true;
                                     }
-                                    txt_no_prescr.setText("No Reports Uploaded Yet!");
+                                    img_btn_refresh.setVisibility(View.GONE);
+                                    txt_no_prescr.setText("No Reports Yet.");
                                     labReportItemView.setVisibility(View.GONE);
                                     txt_no_prescr.setVisibility(View.VISIBLE);
                                 }
 
                             } else {
-                                txt_no_prescr.setText("No Reports Uploaded Yet!");
+                                txt_no_prescr.setText("No Reports Yet.");
                                 txt_no_prescr.setVisibility(View.VISIBLE);
+                                img_btn_refresh.setVisibility(View.GONE);
                             }
                         }
                     },
@@ -1409,7 +1487,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         public void onErrorResponse(VolleyError error) {
                             isRest = true;
                             dialogLoader.hide();
-                            txt_no_prescr.setText("No Reports Uploaded Yet!");
+                            img_btn_refresh.setVisibility(View.VISIBLE);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
                             labReportItemView.setVisibility(View.GONE);
                             txt_no_prescr.setVisibility(View.VISIBLE);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
@@ -1426,6 +1505,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -1434,8 +1514,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         } else {
             isRest = true;
             labReportItemView.setVisibility(View.GONE);
-            txt_no_prescr.setText("No Internet Connection");
+            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         }
 
@@ -1458,12 +1539,19 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 s.append("&date=" + clickDates);
             }
 
-            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
+            if (!clickUploadBy.equalsIgnoreCase("")) {
+                s.append("&uploadedBy=" + clickUploadBy);
+            }
+
+
+            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 s.append("");
             }
             offset = +offsets;
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
                     new Response.Listener<String>() {
                         @Override
@@ -1504,7 +1592,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            txt_no_prescr.setText("No Reports Uploaded Yet!");
+                            txt_no_prescr.setText("No Reports Yet.");
                             txt_no_prescr.setVisibility(View.VISIBLE);
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
@@ -1520,6 +1608,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -1551,7 +1640,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private void getAllHealthUserList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
                     new Response.Listener<String>() {
                         @Override
@@ -1585,6 +1676,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                 getAllFilterData();
                             } else {
                                 txt_sort_user_name.setText("User Name");
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                txt_no_prescr.setVisibility(View.VISIBLE);
+                                img_btn_refresh.setVisibility(View.VISIBLE);
                             }
                         }
                     },
@@ -1592,6 +1687,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                            txt_no_prescr.setVisibility(View.VISIBLE);
+                            img_btn_refresh.setVisibility(View.VISIBLE);
                             error.printStackTrace();
                         }
                     }
@@ -1605,6 +1703,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     headers.put("user_name", AppPreference.getInstance().getUserName());
                     headers.put("email_id", AppPreference.getInstance().getUserID());
                     headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                     return headers;
                 }
             };
@@ -1614,13 +1713,16 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);
         }
 
     }
 
     private void getSelectedUserList(String cfUuhid) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECTED_USER_LIST + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
@@ -1657,6 +1759,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1687,25 +1790,30 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     selectUploadPrescription = "camera";
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                         ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                file);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                    }
+//
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 //                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-//                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                file);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//                    } else {
+                    new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                            .setShowPicker(false)
+                            .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                            .enableImageCropping(true)
+                            .launchCamera();
+//                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                        Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
 //                                BuildConfig.APPLICATION_ID + ".provider",
 //                                file);
 //                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -1749,70 +1857,90 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
     private void getAllFilterData() {
-        clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
-        clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
-        clickDates = AppPreference.getInstance().getFilterDateReports();
-        StringBuilder s = new StringBuilder();
+        isChecked = true;
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
+            clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
+            clickDates = AppPreference.getInstance().getFilterDateReports();
+            clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
+            StringBuilder s = new StringBuilder();
 
-        if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("")) {
-            s.append("");
-        } else {
-            s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
-            s.append("&testName=" + clickDiseaseName.replace(" ", "%20"));
-            s.append("&date=" + clickDates);
-        }
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            filterDataReports = ParseJsonData.getInstance().getFilterDataReports(response);
-                            if (isButtonRest) {
-                                isButtonRest = false;
-                                if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
-                                    showAdpter(filterDataReports.getDateList(), "date");
-                                }
-                            }
-
-
-                        } else {
-
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                return headers;
+            if (clickDoctorName.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
+                s.append("");
+            } else {
+                s.append("doctorName=" + clickDoctorName.replace(" ", "%20"));
+                s.append("&testName=" + clickDiseaseName.replace(" ", "%20"));
+                s.append("&date=" + clickDates);
+                s.append("&uploadedBy=" + clickUploadBy);
             }
-        };
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+            }
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+//                            Log.e("res", " " + response);
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                filterDataReports = ParseJsonData.getInstance().getFilterDataReports(response);
+                                if (isButtonRest) {
+                                    isButtonRest = false;
+                                    if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
+                                        showAdpter(filterDataReports.getDateList(), "date");
+                                    }
+                                }
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+
+                            } else {
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                txt_no_prescr.setText(MyConstants.CustomMessages.No_DATA);
+                                txt_no_prescr.setVisibility(View.VISIBLE);
+                                img_btn_refresh.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                            txt_no_prescr.setVisibility(View.VISIBLE);
+                            img_btn_refresh.setVisibility(View.VISIBLE);
+                        }
+                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                    return headers;
+                }
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            txt_no_prescr.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);
+        }
+
     }
 
     public void showAdpter(ArrayList<String> strings, String filterName) {
@@ -1850,7 +1978,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
 
     public void jsonSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease, final List<PrescriptionImageList> file) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSaveUploadLabReposrtMetadata(prescriptionDate, doctorName, disease);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_UPLOAD_LAB_REPORTS_METADATA, data,
@@ -1867,7 +1997,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                 JSONObject json1 = new JSONObject(json.getString("payload"));
                                 String prescriptionId = json1.getString("labReportId");
                                 String cfUuhidId = json1.getString("cfUuhidId");
-                                getSaveUploadPrescriptionMetadata(prescriptionId, cfUuhidId, file);
+                                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                    getSaveUploadPrescriptionMetadata(prescriptionId, cfUuhidId, file);
+                                } else {
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                    dialogLoader.hide();
+                                }
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -1888,7 +2023,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             public void onErrorResponse(VolleyError error) {
                 dialogLoader.hide();
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -1899,6 +2034,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1906,7 +2042,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
     private void getSaveUploadPrescriptionMetadata(final String prescriptionId, final String cfUuhidId, final List<PrescriptionImageList> file) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
                 new Response.Listener<String>() {
                     @Override
@@ -1922,7 +2060,13 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     String accessKeyID = json1.getString("accessKeyID");
                                     String secretAccessKey = json1.getString("secretAccessKey");
                                     String sessionToken = json1.getString("sessionToken");
-                                    uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file);
+                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                        valueUpload = 0;
+                                        uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file);
+                                    } else {
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                        dialogLoader.hide();
+                                    }
                                 }
 
                             } else {
@@ -1936,6 +2080,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                         dialogLoader.hide();
                         error.printStackTrace();
                     }
@@ -1950,6 +2095,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1981,49 +2127,54 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         }
 
         for (int i = 0; i < imageFile.size(); i++) {
-            if (imageFile.get(i).getImageNumber() != 000) {
-                TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
-                // Request server-side encryption.
-                ObjectMetadata objectMetadata = new ObjectMetadata();
-                objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-                try {
-                    File fileUpload = new File(compressImage(imageFile.get(i).getPrescriptionImage()));
-                    String[] spiltName = new File(imageFile.get(i).getPrescriptionImage()).getName().split("\\.");
-                    String getName = spiltName[1];
-                    String name = prescriptionId + "-" + cfUuhidId + "-" + imageFile.get(i).getImageNumber() + "." + getName;
-                    final TransferObserver observer = transferUtility.upload(
-                            bucketName,
-                            name,
-                            fileUpload, CannedAccessControlList.PublicRead
-                    );
-                    final int finalI = i;
-                    observer.setTransferListener(new TransferListener() {
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            switch (state.name()) {
-                                case "COMPLETED":
-                                    imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
-                                    if (finalI == (imageFile.size() - 2)) {
+            TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+            // Request server-side encryption.
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            try {
+                File fileUpload = new File(compressImage(imageFile.get(i).getPrescriptionImage()));
+                String[] spiltName = new File(imageFile.get(i).getPrescriptionImage()).getName().split("\\.");
+                String getName = spiltName[1];
+                String name = prescriptionId + "-" + cfUuhidId + "-" + imageFile.get(i).getImageNumber() + "." + getName;
+                final TransferObserver observer = transferUtility.upload(
+                        bucketName,
+                        name,
+                        fileUpload, CannedAccessControlList.PublicRead
+                );
+                final int finalI = i;
+                observer.setTransferListener(new TransferListener() {
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        switch (state.name()) {
+                            case "COMPLETED":
+                                valueUpload += 1;
+//                                Log.e("check", " - " + finalI + " size " + imageFile.size());
+                                imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
+                                if (valueUpload == (imageFile.size())) {
+                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                                         jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile);
+                                    } else {
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                        dialogLoader.hide();
                                     }
-                                    break;
-
-                            }
-
+                                }
+                                break;
 
                         }
 
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                        }
 
-                        @Override
-                        public void onError(int id, Exception ex) {
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    }
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
 
@@ -2043,7 +2194,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
 
     public void jsonSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, final List<PrescriptionImageList> file) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toSaveUploadedLabReportData(prescriptionId, cfuuhidId, file);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOADED_LAB_REPORTS_DATA, data,
@@ -2082,7 +2235,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 dialogLoader.hide();
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -2093,6 +2246,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -2226,7 +2380,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = getActivity().getContentResolver().query(contentUri, null, null, null, null);
+        Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(contentUri, null, null, null, null);
         if (cursor == null) {
             return contentUri.getPath();
         } else {
@@ -2258,6 +2412,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     // Recomended builder
     public void start() {
+        CureFull.getInstanse().setPostionGet(2002);
         ImagePicker.create(this)
                 .folderMode(true) // set folder mode (false by default)
                 .folderTitle("CureFull") // folder selection title
@@ -2269,6 +2424,51 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 .imageDirectory("Camera")   // captured image directory name ("Camera" folder by default)
                 .origin(images) // original selected images, used in multi mode
                 .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+    }
+
+    @Override
+    public void optDonePath(ArrayList<Image> path, String pathCamera, int id) {
+        if (id == CAPTURE_MEDIA) {
+            PrescriptionImageList prescriptionImageList = new PrescriptionImageList();
+            prescriptionImageList.setImageNumber(value + 1);
+            value = value + 1;
+            imageName = "" + System.currentTimeMillis();
+            prescriptionImageList.setPrescriptionImage(pathCamera);
+
+            prescriptionImageList.setChecked(false);
+            prescriptionImageLists.add(prescriptionImageList);
+            if (newMessage.equalsIgnoreCase("yes")) {
+                DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                dialogFullViewClickImage.show();
+            } else {
+                DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), pathCamera, selectUploadPrescription, prescriptionImageLists);
+                dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                dialogUploadNewPrescription.show();
+            }
+        } else if (id == REQUEST_CODE_PICKER) {
+            images = path;
+            for (int i = 0, l = images.size(); i < l; i++) {
+                PrescriptionImageList labReportImageList = new PrescriptionImageList();
+                labReportImageList.setImageNumber(value + 1);
+                value = value + 1;
+                labReportImageList.setPrescriptionImage(images.get(i).getPath());
+                labReportImageList.setChecked(false);
+                prescriptionImageLists.add(labReportImageList);
+            }
+
+            if (newMessage.equalsIgnoreCase("yes")) {
+                DialogFullViewClickImage dialogFullViewClickImage = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse(), prescriptionImageLists, "lab");
+                dialogFullViewClickImage.setiOnDoneMoreImage(this);
+                dialogFullViewClickImage.show();
+            } else {
+                DialogUploadNewPrescription dialogUploadNewPrescription = new DialogUploadNewPrescription(CureFull.getInstanse().getActivityIsntanse(), "", selectUploadPrescription, prescriptionImageLists);
+                dialogUploadNewPrescription.setiOnAddMoreImage(this);
+                dialogUploadNewPrescription.show();
+            }
+
+        }
+
     }
 
 }

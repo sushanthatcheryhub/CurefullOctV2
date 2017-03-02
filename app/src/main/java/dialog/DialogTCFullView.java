@@ -61,8 +61,25 @@ public class DialogTCFullView extends Dialog {
     private class WebViewClient extends android.webkit.WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            return super.shouldOverrideUrlLoading(view, url);
+            if (url.startsWith("http:") || url.startsWith("https:")) {
+//                webView.loadUrl(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                context.startActivity(intent);
+            } else if (url.startsWith("mail")) {
+                /* Create the Intent */
+                final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+/* Fill it with Data */
+                emailIntent.setType("plain/text");
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{url.replace("mailto:", "")});
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "");
+/* Send it off to the Activity-Chooser */
+                context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            }
+
+            return true;
         }
+
 
         public WebViewClient() {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);

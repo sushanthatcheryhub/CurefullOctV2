@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -41,6 +42,7 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.UHIDItems;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 
@@ -57,16 +59,17 @@ public class FragmentUHID extends BaseBackHandlerFragment {
     private RequestQueue requestQueue;
     private LinearLayout liner_add_new, login_liner;
     private EditText input_name, edt_phone;
-    private TextView btn_add;
+    private TextView btn_add, txt_no_prescr;
+    private RelativeLayout realtive_notes;
 
 
-    @Override
-    public boolean onBackPressed() {
-        CureFull.getInstanse().cancel();
-        CureFull.getInstanse().getFlowInstanse()
-                .replace(new FragmentLandingPage(), false);
-        return super.onBackPressed();
-    }
+//    @Override
+//    public boolean onBackPressed() {
+//        CureFull.getInstanse().cancel();
+//        CureFull.getInstanse().getFlowInstanse()
+//                .replace(new FragmentLandingPage(), false);
+//        return super.onBackPressed();
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,15 +77,16 @@ public class FragmentUHID extends BaseBackHandlerFragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_uhid,
                 container, false);
-            CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true,"");
-            CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true,"");
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().selectedNav(2);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
+        txt_no_prescr = (TextView) rootView.findViewById(R.id.txt_no_prescr);
         btn_add = (TextView) rootView.findViewById(R.id.btn_add);
         input_name = (EditText) rootView.findViewById(R.id.input_name);
         edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
-
+        realtive_notes = (RelativeLayout) rootView.findViewById(R.id.realtive_notes);
         liner_add_new = (LinearLayout) rootView.findViewById(R.id.liner_add_new);
         login_liner = (LinearLayout) rootView.findViewById(R.id.login_liner);
         recyclerView_notes = (RecyclerView) rootView.findViewById(R.id.recyclerView_notes);
@@ -103,7 +107,7 @@ public class FragmentUHID extends BaseBackHandlerFragment {
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (!validateName()) {
                     return;
                 }
@@ -115,6 +119,16 @@ public class FragmentUHID extends BaseBackHandlerFragment {
             }
         });
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
+
+        realtive_notes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                getAllUserList();
+            }
+        });
+
         return rootView;
     }
 
@@ -163,65 +177,84 @@ public class FragmentUHID extends BaseBackHandlerFragment {
 
     public void showAdpter() {
         if (uhidItemses != null && uhidItemses.size() > 0) {
+            realtive_notes.setVisibility(View.GONE);
             recyclerView_notes.setVisibility(View.VISIBLE);
             uhid_listAdpter = new UHID_ListAdpter(FragmentUHID.this, CureFull.getInstanse().getActivityIsntanse(), uhidItemses);
             recyclerView_notes.setAdapter(uhid_listAdpter);
             uhid_listAdpter.notifyDataSetChanged();
+        } else {
+            realtive_notes.setVisibility(View.VISIBLE);
         }
     }
 
 
     private void getAllUserList() {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            uhidItemses = ParseJsonData.getInstance().getUHID(response);
-                            showAdpter();
-                        } else {
-
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
             }
-        };
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                realtive_notes.setVisibility(View.GONE);
+                                uhidItemses = ParseJsonData.getInstance().getUHID(response);
+                                showAdpter();
+                            } else {
+                                txt_no_prescr.setText(MyConstants.CustomMessages.No_DATA);
+                                realtive_notes.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+                            realtive_notes.setVisibility(View.VISIBLE);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
+                        }
+                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                    return headers;
+                }
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            realtive_notes.setVisibility(View.VISIBLE);
+            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+        }
+
     }
 
 
     public void jsonUploadUHID(String name, String mobileNumber) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = JsonUtilsObject.toUHIDADD(name, mobileNumber);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.CfUuhidUpload, data,
@@ -260,7 +293,7 @@ public class FragmentUHID extends BaseBackHandlerFragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -271,6 +304,7 @@ public class FragmentUHID extends BaseBackHandlerFragment {
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

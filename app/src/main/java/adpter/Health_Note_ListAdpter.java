@@ -1,13 +1,8 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +39,6 @@ import operations.DbOperations;
 import sticky.header.StickyListHeadersAdapter;
 import utils.AppPreference;
 import utils.CheckNetworkState;
-import utils.CustomTypefaceSpan;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -108,6 +102,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                     .findViewById(R.id.txt_date_time);
             holder.txt_title = (TextView) convertView
                     .findViewById(R.id.txt_title);
+//            holder.txt_deatils=(TextView)convertView.findViewById(R.id.txt_deatils);
 //            holder.txt_deatils = (TextView) convertView
 //                    .findViewById(R.id.txt_deatils);
             holder.img_delete = (LinearLayout) convertView.findViewById(R.id.img_delete);
@@ -134,7 +129,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
         if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
             try {
-                holder.txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
+                holder.txt_date_time.setText("" + days + " " + Utils.formatMonth(months) + "\n" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -149,37 +144,9 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                 e.printStackTrace();
             }
         }
-//        holder.txt_title.setText("" + healthNoteItemses.get(position).getNote_heading());
-//        holder.txt_deatils.setText("" + healthNoteItemses.get(position).getDeatils());
-//        holder.txt_deatils.setSelected(true);
 
-        final String name = healthNoteItemses.get(position).getNote_heading();
-        final String comma = " : ";
-        final String gameName = healthNoteItemses.get(position).getDeatils();
-
-        final String meassgeTxt = name + comma + gameName;
-
-        Spannable sb = new SpannableString(meassgeTxt);
-        Typeface font = Typeface.createFromAsset(applicationContext.getAssets(), "Montserrat-Bold.ttf");
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new CustomTypefaceSpan("", font), meassgeTxt.indexOf(name), meassgeTxt.indexOf(name) + name.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                meassgeTxt.indexOf(name),
-                meassgeTxt.indexOf(name) + name.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.health_yellow)), meassgeTxt.indexOf(comma),
-                meassgeTxt.indexOf(comma) + comma.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(applicationContext.getResources()
-                        .getColor(R.color.white)), meassgeTxt.indexOf(gameName),
-                meassgeTxt.indexOf(gameName) + gameName.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        holder.txt_title.setText(sb);
-
+        String text = "<font color=#fdb832>" + healthNoteItemses.get(position).getNote_heading() + ":" + "</font> <font color=#ffffff>" + healthNoteItemses.get(position).getDeatils() + "</font>";
+        holder.txt_title.setText(Html.fromHtml(text));
 
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,7 +219,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
     public static class ViewHolder {
         public TextView txt_date_time;
-        public TextView txt_title;
+        public TextView txt_title, txt_deatils;
         public LinearLayout img_delete;
 
     }
@@ -277,13 +244,15 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
 
     private void getAllHealthListRemove(final int id, final int postis) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.HEALTH_LIST_DELETE + id,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getHealthAdpter, URL 1.", response);
+//                        Log.e("getHealthAdpter, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;

@@ -83,12 +83,9 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
             }
         } else {
             if (healthNoteItemses.get(position).isSelected()) {
-                Log.e("isSelected", "true");
-                Log.e("cfuuhid", " " + healthNoteItemses.get(position).getCfUuhid());
                 AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
                 image_item.setVisibility(View.GONE);
             } else {
-                Log.e("isSelected", "false");
                 image_item.setVisibility(View.VISIBLE);
             }
 
@@ -96,7 +93,6 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
         txt_name.setSelected(true);
         if (AppPreference.getInstance().getcf_uuhidNeew().equalsIgnoreCase(healthNoteItemses.get(position).getCfUuhid())) {
             checkBox.setChecked(true);
-            Log.e("innner", " " + healthNoteItemses.get(position).getCfUuhid() + " " + AppPreference.getInstance().getcf_uuhidNeew());
         } else {
             checkBox.setChecked(false);
         }
@@ -116,15 +112,11 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("check", ":- right");
                 if (checkBox.isChecked()) {
-                    Log.e("check", ":- isChecked");
 //                    healthNoteItemses.get(position).setSelected(true);
-                    Log.e("here", "here" + healthNoteItemses.get(position).getCfUuhid());
                     AppPreference.getInstance().setcf_uuhidNeew(healthNoteItemses.get(position).getCfUuhid());
                     getSelectedUserList(healthNoteItemses.get(position).getCfUuhid());
                 } else {
-                    Log.e("check", ":- not");
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
 
@@ -162,13 +154,14 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
     private void getSelectedUserList(String cfUuhid) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECTED_USER_LIST + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -211,13 +204,14 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
     private void getSelectedUserListDelete(String cfUuhid, final int position) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SELECTE_USER + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("getUserList, URL 1.", response);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -251,6 +245,7 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };

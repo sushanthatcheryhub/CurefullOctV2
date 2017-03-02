@@ -37,6 +37,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -62,7 +63,17 @@ import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.SimpleMultiPartRequest;
 import com.android.volley.request.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
+import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
+import com.nguyenhoanglam.imagepicker.model.Image;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 import com.wildcoder.camera.lib.CameraFragment;
 import com.wildcoder.camera.lib.ICameraListnerCropListner;
 
@@ -73,6 +84,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -83,6 +95,8 @@ import curefull.healthapp.BuildConfig;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogProfileFullView;
+import interfaces.IOnEmailUpdate;
+import interfaces.IOnOtpDonePath;
 import interfaces.SmsListener;
 import utils.AppPreference;
 import utils.CheckNetworkState;
@@ -92,15 +106,18 @@ import utils.IncomingSms;
 import utils.MyConstants;
 import utils.RequestBuilderOkHttp;
 
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentProfile extends CameraFragment implements View.OnClickListener, ICameraListnerCropListner {
+public class FragmentProfile extends CameraFragment implements View.OnClickListener, ICameraListnerCropListner, IOnOtpDonePath, IOnEmailUpdate {
     private CircularImageView profile_image_view;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
+    private static final int CAPTURE_MEDIA = 368;
     public static final int SELECT_PHOTO = 12345;
     public static final int PICK_FROM_CROP = 203;
     private RelativeLayout realtive_notes;
@@ -126,6 +143,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private boolean showPwd = false;
     private LinearLayout linearView;
     private String imageName = "" + System.currentTimeMillis();
+    private ArrayList<Image> images = null;
+    private int REQUEST_CODE_PICKER = 2000;
+    private ProgressBar progressBar;
 //    @Override
 //    public boolean onBackPressed() {
 //        CureFull.getInstanse().cancel();
@@ -140,7 +160,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile,
                 container, false);
-
         setFixedHeightWidth(true, 300);
         registerCameraListner(this);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(1);
@@ -149,7 +168,10 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
+        CureFull.getInstanse().setiOnOtpDonePath(this);
+
         linearView = (LinearLayout) rootView.findViewById(R.id.linearView);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_one);
         input_layout_otp = (TextInputLayout) rootView.findViewById(R.id.input_layout_otp);
         btn_save_changes = (TextView) rootView.findViewById(R.id.btn_save_changes);
         btn_click_change = (TextView) rootView.findViewById(R.id.btn_click_change);
@@ -179,6 +201,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
 //        img_upload_pre.setOnClickListener(this);
+        CureFull.getInstanse().setiOnEmailUpdate(this);
         liner_animation_upload.setOnClickListener(this);
         liner_upload_new.setOnClickListener(this);
         liner_camera.setOnClickListener(this);
@@ -206,16 +229,30 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             }
         });
 
-        if (!AppPreference.getInstance().getProfileImage().equalsIgnoreCase("")) {
-            CureFull.getInstanse().getSmallImageLoader().clearCache();
-            CureFull.getInstanse().getSmallImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), profile_image_view);
+        if (AppPreference.getInstance().getProfileImage().equalsIgnoreCase("") || AppPreference.getInstance().getProfileImage().equalsIgnoreCase("null") || AppPreference.getInstance().getProfileImage().equalsIgnoreCase(null)) {
+            progressBar.setVisibility(View.GONE);
+        } else {
+            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(AppPreference.getInstance().getProfileImage())
+                    .priority(Priority.HIGH)
+                    .dontAnimate()
+                    .placeholder(R.drawable.profile_avatar)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-//            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(AppPreference.getInstance().getProfileImage())
-//                    .thumbnail(0.5f)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                    .skipMemoryCache(true)
-//                    .into(profile_image_view);
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(profile_image_view);
         }
+
 
         profile_image_view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -334,7 +371,13 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    jsonUpdateProfile();
+                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                        jsonUpdateProfile();
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+
+                    }
+
                 }
                 return false;
             }
@@ -351,7 +394,12 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             case R.id.btn_save_changes:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-                jsonUpdateProfile();
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    jsonUpdateProfile();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                }
+
                 break;
             case R.id.btn_click_change:
                 if (isclick) {
@@ -367,9 +415,10 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 }
                 break;
             case R.id.liner_animation_upload:
+
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_upload_animation, 400, 0.9f, 0.9f);
+                        ElasticAction.doAction(img_upload_animation, 100, 0.9f, 0.9f);
                     profile_image_view.post(new Runnable() {
                         @Override
                         public void run() {
@@ -382,6 +431,10 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
                 break;
             case R.id.liner_upload_new:
+                img_password_icon.setImageResource(R.drawable.password_icon);
+                btn_click_change.setText("Change password");
+                isclick = false;
+                liner_password.setVisibility(View.GONE);
                 if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                         ElasticAction.doAction(img_upload, 400, 0.9f, 0.9f);
@@ -397,22 +450,29 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
 
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                                BuildConfig.APPLICATION_ID + ".provider",
-                                file);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
-                    }
+
+                    new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                            .setShowPicker(false)
+                            .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                            .enableImageCropping(true)
+                            .launchCamera();
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+//                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+//                        Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                file);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE);
+//
+//                    } else {
+//                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
+//                    }
 
 
                 }
@@ -421,13 +481,15 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             case R.id.liner_gallery:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(img_gallery, 400, 0.9f, 0.9f);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-                } else {
-                    pickFromGallery();
-                }
+                images = new ArrayList<>();
+                start();
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                    photoPickerIntent.setType("image/*");
+//                    startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+//                } else {
+//                    pickFromGallery();
+//                }
 
                 break;
 
@@ -476,38 +538,162 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode != 0) {
-            if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
-                //Get our saved file into a bitmap object:
-                File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + "image.jpg");
+
+//            if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
+//                String path = data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH);
+//                Log.e("File", " " + data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
+//                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+//                getSaveUploadPrescriptionMetadata(new File(path));
+//            }
+
+            if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+
+                images = data.getParcelableArrayListExtra(ImagePickerActivity.INTENT_EXTRA_SELECTED_IMAGES);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    File file1 = new File(images.get(0).getPath());
 //                Utils.uploadFile("", "", "", file1);
-                Uri pickedImage = Uri.fromFile(file1);
-                // Let's read picked image path using content resolver
-                Intent cropIntent = new Intent("com.android.camera.action.CROP");
-                // indicate image type and Uri
-                cropIntent.setDataAndType(pickedImage, "image/*");
-                // set crop properties
-                cropIntent.putExtra("crop", "true");
-                // indicate aspect of desired crop
-                cropIntent.putExtra("aspectX", 1);
-                cropIntent.putExtra("aspectY", 1);
-                cropIntent.putExtra("outputX", 300);
-                cropIntent.putExtra("outputY", 300);
-                cropIntent.putExtra("scale", true);
+                    Uri pickedImage = Uri.fromFile(file1);
+                    // Let's read picked image path using content resolver
+                    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                    // indicate image type and Uri
+                    cropIntent.setDataAndType(pickedImage, "image/*");
+                    cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    // set crop properties
+                    cropIntent.putExtra("crop", "true");
+                    // indicate aspect of desired crop
+                    cropIntent.putExtra("aspectX", 1);
+                    cropIntent.putExtra("aspectY", 1);
+                    cropIntent.putExtra("outputX", 300);
+                    cropIntent.putExtra("outputY", 300);
+                    cropIntent.putExtra("scale", true);
 
-                // retrieve data on return
-                cropIntent.putExtra("return-data", false);
-                File f = createNewFile();
-                Log.e("f", " " + f.getPath());
+                    // retrieve data on return
+                    cropIntent.putExtra("return-data", false);
+                    File f = createNewFile();
+//                    Log.e("f", " " + f.getPath());
 
-                Uri mCropImagedUri = Uri.fromFile(f);
-                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
-                // start the activity - we handle returning in onActivityResult
-                startActivityForResult(cropIntent, PICK_FROM_CROP);
+                    Uri mCropImagedUri = Uri.fromFile(f);
+                    cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+                    // start the activity - we handle returning in onActivityResult
+                    startActivityForResult(cropIntent, PICK_FROM_CROP);
+                } else {
+                    File file1 = new File(images.get(0).getPath());
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    getSaveUploadPrescriptionMetadata(new File(file1.getPath()));
+//                Utils.uploadFile("", "", "", file1);
+//                    Uri pickedImage = Uri.fromFile(file1);
+                    // Let's read picked image path using content resolver
+//                    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+//                    // indicate image type and Uri
+//                    Uri photoURI1 = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            file1);
+//                    cropIntent.setDataAndType(photoURI1, "image/*");
+//                    cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                    cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    // set crop properties
+//                    cropIntent.putExtra("crop", "true");
+//                    // indicate aspect of desired crop
+//                    cropIntent.putExtra("aspectX", 1);
+//                    cropIntent.putExtra("aspectY", 1);
+//                    cropIntent.putExtra("outputX", 300);
+//                    cropIntent.putExtra("outputY", 300);
+//                    cropIntent.putExtra("scale", true);
+//
+//                    // retrieve data on return
+//                    cropIntent.putExtra("return-data", false);
+//                    File f = createNewFile();
+//                    Log.e("f", " " + f.getPath());
+//                    Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            f);
+////                    Uri mCropImagedUri = Uri.fromFile(f);
+//                    cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                    // start the activity - we handle returning in onActivityResult
+//                    startActivityForResult(cropIntent, PICK_FROM_CROP);
+                }
+
+            }
+
+            if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    Uri pickedImage = Uri.fromFile(file1);
+                    // Let's read picked image path using content resolver
+                    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                    // indicate image type and Uri
+                    cropIntent.setDataAndType(pickedImage, "image/*");
+                    // set crop properties
+
+                    cropIntent.putExtra("crop", "true");
+                    // indicate aspect of desired crop
+                    cropIntent.putExtra("aspectX", 1);
+                    cropIntent.putExtra("aspectY", 1);
+                    cropIntent.putExtra("outputX", 300);
+                    cropIntent.putExtra("outputY", 300);
+                    cropIntent.putExtra("scale", true);
+
+                    // retrieve data on return
+                    cropIntent.putExtra("return-data", false);
+                    File f = createNewFile();
+//                    Log.e("f", " " + f.getPath());
+
+                    Uri mCropImagedUri = Uri.fromFile(f);
+                    cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+                    cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    // start the activity - we handle returning in onActivityResult
+                    startActivityForResult(cropIntent, PICK_FROM_CROP);
+                } else {
+                    File file1 = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    getSaveUploadPrescriptionMetadata(new File(file1.getPath()));
+//                imageUpload(file.getPath());
+//                sentSaveTestingServer(file.getPath());
+
+//                Utils.uploadFile("", "", "", file1);
+//                    Uri pickedImage = Uri.fromFile(file1);
+//                    // Let's read picked image path using content resolver
+//                    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+//                    // indicate image type and Uri
+//
+//                    Uri photoURI1 = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            file1);
+//                    cropIntent.setDataAndType(photoURI1, "image/*");
+//                    // set crop properties
+//                    cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                    cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    cropIntent.putExtra("crop", "true");
+//                    // indicate aspect of desired crop
+//                    cropIntent.putExtra("aspectX", 1);
+//                    cropIntent.putExtra("aspectY", 1);
+//                    cropIntent.putExtra("outputX", 300);
+//                    cropIntent.putExtra("outputY", 300);
+//                    cropIntent.putExtra("scale", true);
+//
+//                    // retrieve data on return
+//                    cropIntent.putExtra("return-data", false);
+//                    File f = createNewFile();
+//                    Log.e("f", " " + f.getPath());
+//
+////                Uri mCropImagedUri = Uri.fromFile(f);
+//                    Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
+//                            BuildConfig.APPLICATION_ID + ".provider",
+//                            f);
+//                    cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//
+//                    // start the activity - we handle returning in onActivityResult
+//                    startActivityForResult(cropIntent, PICK_FROM_CROP);
+                }
+                //Get our saved file into a bitmap object:
+
 
 //            sentSaveTestingServer(file.getAbsolutePath());
             } else if (requestCode == CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT) {
                 //Get our saved file into a bitmap object:
-                File file1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "image.jpg");
+                File file1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + imageName + ".jpg");
 //                Utils.uploadFile("", "", "", file1);
                 Uri pickedImage = Uri.fromFile(file1);
                 // Let's read picked image path using content resolver
@@ -525,7 +711,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 // retrieve data on return
                 cropIntent.putExtra("return-data", false);
                 File f = createNewFile();
-                Log.e("f", " " + f.getPath());
+//                Log.e("f", " " + f.getPath());
 
                 Uri mCropImagedUri = Uri.fromFile(f);
                 cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
@@ -543,6 +729,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                         Intent cropIntent = new Intent("com.android.camera.action.CROP");
                         // indicate image type and Uri
                         cropIntent.setDataAndType(pickedImage, "image/*");
+                        //you must setup two line below
+                        cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         // set crop properties
                         cropIntent.putExtra("crop", "true");
                         // indicate aspect of desired crop
@@ -555,7 +744,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                         // retrieve data on return
                         cropIntent.putExtra("return-data", false);
                         File f = createNewFile();
-                        Log.e("f", " " + f.getPath());
+//                        Log.e("f", " " + f.getPath());
                         Uri mCropImagedUri = Uri.fromFile(f);
                         cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
                         // start the activity - we handle returning in onActivityResult
@@ -565,17 +754,19 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 }
 
             } else if (requestCode == PICK_FROM_CROP) {
+//                    CureFull.getInstanse().getActivityIsntanse().grantUriPermission(CureFull.getInstanse().getActivityIsntanse().revokeUriPermissionfileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
 //            Uri selectedImageUri= data.getData();
 //            String[] filePath = {MediaStore.Images.Media.DATA};
 //            Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(selectedImageUri, filePath, null, null, null);
 //            cursor.moveToFirst();
 //            String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 //            cursor.close();
-                Log.e("file.exists ", " " + file.exists() + " " + file.getPath());
+//                Log.e("file.exists ", " " + file.exists() + " " + file.getPath());
                 if (file.exists()) {
-                    Log.e("file", " " + file.getPath());
+//                    Log.e("file", " " + file.getPath());
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                    getSaveUploadPrescriptionMetadata(new File(compressImage(file.getAbsolutePath())));
+                    getSaveUploadPrescriptionMetadata(new File(file.getPath()));
 //                imageUpload(file.getPath());
 //                sentSaveTestingServer(file.getPath());
                 }
@@ -587,7 +778,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
     public File createNewFile() {
-        dir = new File(Environment.getExternalStorageDirectory().getPath(), "/AppPics/");
+        dir = new File(Environment.getExternalStorageDirectory().getPath(), "profilepics");
         if (!dir.exists())
             dir.mkdir();
         if (file == null)
@@ -615,6 +806,8 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         x -= ((28 * pixelDensity) + (16 * pixelDensity));
         int hypotenuse = (int) Math.hypot(realtive_notes.getWidth(), realtive_notes.getHeight());
 
+//        Log.e("flag", " " + flag);
+
         if (flag) {
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
@@ -626,7 +819,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 revealView.setLayoutParams(parameters);
 
                 Animator anim = ViewAnimationUtils.createCircularReveal(revealView, x, y, 0, hypotenuse);
-                anim.setDuration(700);
+                anim.setDuration(100);
 
                 anim.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -702,56 +895,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
 
-    private void sentSaveTestingServer(String fileName) {
-        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            String response = "";
-            RequestBuilderOkHttp builderOkHttp = new RequestBuilderOkHttp();
-            try {
-                response = builderOkHttp.postProfile(MyConstants.WebUrls.UPDATE_PROFILE, null, getFileParam(fileName));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.e("response :- ", "" + response);
-            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            profile_image_view.post(new Runnable() {
-                @Override
-                public void run() {
-                    launchTwitter(rootView);
-                }
-            });
-
-            if (!"null".equalsIgnoreCase(response) || !response.equalsIgnoreCase("null")) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
-                        AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
-                        try {
-
-                            CureFull.getInstanse().getSmallImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
-
-//                            Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
-//                                    .thumbnail(0.5f)
-//                                    .crossFade()
-//                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                                    .into(profile_image_view);
-                            CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
-                        } catch (Exception e) {
-
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Upload Error");
-            }
-        } else {
-
-        }
-
-
-    }
 
 
     public static HashMap<String, File> getFileParam(String image) {
@@ -770,7 +913,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                         File file = new File(Environment.getExternalStorageDirectory() + File.separator + imageName + ".jpg");
-                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        Uri photoURI = FileProvider.getUriForFile(CureFull.getInstanse().getActivityIsntanse(),
                                 BuildConfig.APPLICATION_ID + ".provider",
                                 file);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -837,7 +980,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         }
 
 
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 
         final String name;
         final String mobNo;
@@ -881,7 +1026,6 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             newPasswrod = input_new_pass.getText().toString().trim();
         }
 
-
         if (name.equalsIgnoreCase("") && mobNo.equalsIgnoreCase("") && emailId.equalsIgnoreCase("") && oldPassowrd.equalsIgnoreCase("") && newPasswrod.equalsIgnoreCase("")) {
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Change in profile");
             return;
@@ -903,7 +1047,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                             responseStatus = json.getInt("responseStatus");
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 if (json.getString("payload").equals(null) || json.getString("payload").equalsIgnoreCase("No Data")) {
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No Changed");
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No changed in profile");
                                 } else {
                                     isOtp = false;
                                     img_password_icon.setImageResource(R.drawable.password_icon);
@@ -911,10 +1055,26 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                                     liner_password.setVisibility(View.GONE);
                                     input_layout_otp.setVisibility(View.GONE);
                                     edt_otp.setText("");
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Profile Changed");
+                                    if (input_name.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserName().trim()) && edt_phone.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getMobileNumber().trim()) && input_email.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserID().trim())) {
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Your Password Successfully Changed");
+                                    } else {
+                                        if (isclick) {
+                                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Your Password Successfully Changed");
+                                        } else {
+                                            if (!input_email.getText().toString().trim().equalsIgnoreCase(AppPreference.getInstance().getUserID().trim())) {
+                                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Please check your email id for verification");
+                                            } else {
+                                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "Your Profile is up to date now.");
+                                            }
+
+
+                                        }
+                                    }
+
                                     AppPreference.getInstance().setUserName(input_name.getText().toString().trim());
                                     AppPreference.getInstance().setMobileNumber(edt_phone.getText().toString().trim());
-                                    AppPreference.getInstance().setUserID(input_email.getText().toString().trim());
+
+
                                     if (isclick) {
                                         AppPreference.getInstance().setPassword("" + input_new_pass.getText().toString().trim());
                                         input_old_pass.setText("");
@@ -941,7 +1101,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
             @Override
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -971,6 +1131,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private boolean validateOldPassword() {
         String email = input_old_pass.getText().toString().trim();
         if (email.isEmpty()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Enter Old Password");
             return false;
         } else {
         }
@@ -980,6 +1141,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private boolean validateNewPassword() {
         String email = input_new_pass.getText().toString().trim();
         if (email.isEmpty()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Enter New Password");
             return false;
         } else {
         }
@@ -1029,7 +1191,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     private void sendOTPService() {
         Random rnd = new Random();
         otp_number = 100000 + rnd.nextInt(900000);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(otp_number) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
@@ -1050,70 +1214,13 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
 
-    private void imageUpload(final String imagePath) {
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, MyConstants.WebUrls.UPDATE_PROFILE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        profile_image_view.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitter(rootView);
-                            }
-                        });
-                        if (!"null".equalsIgnoreCase(response) || !response.equalsIgnoreCase("null")) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(response);
-                                if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
-                                    AppPreference.getInstance().setProfileImage(jsonObject.getString("payload"));
-                                    try {
-                                        CureFull.getInstanse().getSmallImageLoader().clearCache();
-                                        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(jsonObject.getString("payload"), profile_image_view);
-//                                        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
-//                                                .thumbnail(0.5f)
-//                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                                                .skipMemoryCache(true)
-//                                                .into(profile_image_view);
-                                        CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(jsonObject.getString("payload"));
-                                    } catch (Exception e) {
-
-                                    }
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Upload Error");
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                return headers;
-            }
-        };
-        smr.addFile("profileImage", imagePath);
-        CureFull.getInstanse().getRequestQueue().add(smr);
-
-    }
 
 
     private void getSaveUploadPrescriptionMetadata(final File file) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
                 new Response.Listener<String>() {
                     @Override
@@ -1238,7 +1345,9 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
 
     private void sendImgProfileToServer(final String url) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.UPLOADED_PROFILE + url,
                 new Response.Listener<String>() {
                     @Override
@@ -1251,13 +1360,35 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                         });
                         AppPreference.getInstance().setProfileImage(url);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        CureFull.getInstanse().getSmallImageLoader().clearCache();
-                        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(url, profile_image_view);
+                        progressBar.setVisibility(View.VISIBLE);
+                        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(url)
+                                .priority(Priority.HIGH)
+                                .dontAnimate()
+                                .placeholder(R.drawable.profile_avatar)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        progressBar.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                })
+                                .into(profile_image_view);
+//                        CureFull.getInstanse().getSmallImageLoader().clearCache();
+//                        CureFull.getInstanse().getSmallImageLoader().startLazyLoading(url, profile_image_view);
 //                                        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(jsonObject.getString("payload"))
 //                                                .thumbnail(0.5f)
 //                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
 //                                                .skipMemoryCache(true)
 //                                                .into(profile_image_view);
+
+
                         CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(url);
                     }
                 },
@@ -1277,6 +1408,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -1369,17 +1501,17 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, 0);
-            Log.d("EXIF", "Exif: " + orientation);
+//            Log.d("EXIF", "Exif: " + orientation);
             Matrix matrix = new Matrix();
             if (orientation == 6) {
                 matrix.postRotate(90);
-                Log.d("EXIF", "Exif: " + orientation);
+//                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 3) {
                 matrix.postRotate(180);
-                Log.d("EXIF", "Exif: " + orientation);
+//                Log.d("EXIF", "Exif: " + orientation);
             } else if (orientation == 8) {
                 matrix.postRotate(270);
-                Log.d("EXIF", "Exif: " + orientation);
+//                Log.d("EXIF", "Exif: " + orientation);
             }
             scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
                     scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
@@ -1393,7 +1525,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
         try {
             out = new FileOutputStream(filename);
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 95, out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -1402,7 +1534,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
     public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "CureFull/Profile");
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "profile");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -1413,7 +1545,7 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = getActivity().getContentResolver().query(contentUri, null, null, null, null);
+        Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(contentUri, null, null, null, null);
         if (cursor == null) {
             return contentUri.getPath();
         } else {
@@ -1453,4 +1585,36 @@ public class FragmentProfile extends CameraFragment implements View.OnClickListe
     }
 
 
+    // Recomended builder
+    public void start() {
+        CureFull.getInstanse().setPostionGet(2001);
+        ImagePicker.create(this)
+                .folderMode(true) // set folder mode (false by default)
+                .folderTitle("CureFull") // folder selection title
+                .imageTitle("Tap to select") // image selection title
+                .single() // single mode
+                .limit(1) // max images can be selected (999 by default)
+                .showCamera(false) // show camera or not (true by default)
+                .imageDirectory("Camera")   // captured image directory name ("Camera" folder by default)
+                .origin(images) // original selected images, used in multi mode
+                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
+    }
+
+
+    @Override
+    public void optDonePath(ArrayList<Image> path, String pathCAmera, int id) {
+        if (id == CAPTURE_MEDIA) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            getSaveUploadPrescriptionMetadata(new File(pathCAmera));
+        } else {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            getSaveUploadPrescriptionMetadata(new File(path.get(0).getPath()));
+        }
+
+    }
+
+    @Override
+    public void optEmailUpdate() {
+        input_email.setText("" + AppPreference.getInstance().getUserID());
+    }
 }

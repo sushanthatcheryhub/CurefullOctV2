@@ -85,25 +85,51 @@ public class NotificationUtils {
         // Build notification
         // Actions are just fake
         int color = ContextCompat.getColor(_context, R.color.health_red_drawer);
-        Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
-                R.mipmap.app_icon);
-        Notification noti = new Notification.Builder(_context)
-                .setContentTitle(name)
-                .setContentText(text)
-                .setSmallIcon(R.drawable.notification_small)
-                .setColor(color)
-                .setLargeIcon(icon2)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
+                    R.mipmap.app_icon);
+            Notification noti = new Notification.Builder(_context)
+                    .setContentTitle(name)
+                    .setContentText(text)
+                    .setSmallIcon(R.drawable.notification_small)
+
+                    .setColor(color)
+                    .setLargeIcon(icon2)
 //                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
-                .setAutoCancel(true)
-                .addAction(R.drawable.done, "Done", pIntent)
-                .addAction(R.drawable.skip, "Skip", pIntent2)
-                .setContentIntent(pIntent1)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_AUTO_CANCEL;
-        noti.defaults |= Notification.DEFAULT_SOUND;
-        notificationManager.notify(Integer.parseInt(id), noti);
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.done, "Done", pIntent)
+                    .addAction(R.drawable.skip, "Skip", pIntent2)
+                    .setContentIntent(pIntent1)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
+            // hide the notification after its selected
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+            noti.defaults |= Notification.DEFAULT_SOUND;
+            notificationManager.notify(Integer.parseInt(id), noti);
+        }else{
+
+            Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
+                    R.mipmap.app_icon);
+            Notification noti = new Notification.Builder(_context)
+                    .setContentTitle(name)
+                    .setContentText(text)
+                    .setSmallIcon(R.drawable.notification_small)
+                    .setLargeIcon(icon2)
+//                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.done, "Done", pIntent)
+                    .addAction(R.drawable.skip, "Skip", pIntent2)
+                    .setContentIntent(pIntent1)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
+            // hide the notification after its selected
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+            noti.defaults |= Notification.DEFAULT_SOUND;
+            notificationManager.notify(Integer.parseInt(id), noti);
+        }
+
 
     }
 

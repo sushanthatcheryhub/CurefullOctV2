@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
@@ -37,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Random;
 
 import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
@@ -61,7 +63,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
     private int OTP;
     private String health_mobile, health_password;
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
-    private boolean showPwd = false;
+    private boolean showPwd = false, isResendPassword = false, isCancel = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +130,8 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
         IncomingSms.bindListener(new SmsListener() {
             @Override
             public void messageReceived(String messageText) {
+//                Log.e("message", ": " + messageText);
+                isCancel = true;
                 edt_otp_password.setText("");
                 String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
                 String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
@@ -191,6 +195,28 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
             }
         });
 
+        new CountDownTimer(30000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                if (isCancel) {
+                    onFinish();
+                    cancel();
+                } else {
+                    isResendPassword = true;
+                    btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                }
+                //here you can have your logic to set text to edittext
+            }
+
+            public void onFinish() {
+//                Log.e("k", "k");
+                isResendPassword = false;
+                btn_click_resend_otp.setText("Resend OTP");
+                isCancel = false;
+            }
+
+        }.start();
+
 
         return rootView;
     }
@@ -201,12 +227,37 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
         switch (view.getId()) {
             case R.id.btn_done:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 submitForm();
                 break;
             case R.id.btn_click_resend_otp:
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                sendOTPService();
+                if (isResendPassword) {
+
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    sendOTPService();
+                    new CountDownTimer(30000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            if (isCancel) {
+                                onFinish();
+                                cancel();
+                            } else {
+                                isResendPassword = true;
+                                btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                            }
+                            //here you can have your logic to set text to edittext
+                        }
+
+                        public void onFinish() {
+                            isResendPassword = false;
+                            btn_click_resend_otp.setText("Resend OTP");
+                            isCancel = false;
+                        }
+
+                    }.start();
+                }
+
                 break;
         }
     }
@@ -276,10 +327,12 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 jsonLoginCheck();
             } else {
+                btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
             }
         } else {
+            btn_done.setEnabled(true);
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid OTP Please check again");
 
         }
@@ -288,11 +341,18 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
     }
 
     private void sendOTPService() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0A%20Your%20verification%20code%20is%20" + String.valueOf(OTP) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
+//        Log.e("mob", " " + health_mobile + " " + OTP);
+        Random rnd = new Random();
+        final int n = 100000 + rnd.nextInt(900000);
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        OTP = n;
+//                        Log.e("response", "" + response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                     }
                 },
@@ -310,7 +370,9 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
 
 
     public void jsonLoginCheck() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toForgotPassword(health_mobile, edtInputPassword.getText().toString().trim());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_SEND, data,
@@ -353,7 +415,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                 btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
 
@@ -404,7 +466,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
             }
 
             // Take your time to look at all available accounts
-            Log.i("Accounts : ", "Accounts : " + acname);
+//            Log.i("Accounts : ", "Accounts : " + acname);
         }
 
         return email;

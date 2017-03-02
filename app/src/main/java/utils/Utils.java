@@ -1,5 +1,9 @@
 package utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.Log;
 
 import com.amazonaws.AmazonClientException;
@@ -29,6 +33,27 @@ import curefull.healthapp.CureFull;
 
 public class Utils {
 
+
+    public static Bitmap getCircularBitmapImage(Bitmap source) {
+        int size = Math.min(source.getWidth(), source.getHeight());
+        int x = (source.getWidth() - size) / 2;
+        int y = (source.getHeight() - size) / 2;
+        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+        if (squaredBitmap != source) {
+            source.recycle();
+        }
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        BitmapShader shader = new BitmapShader(squaredBitmap, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+        paint.setShader(shader);
+        paint.setAntiAlias(true);
+        float r = size / 2f;
+        canvas.drawCircle(r, r, r, paint);
+        squaredBitmap.recycle();
+        return bitmap;
+    }
+
     /**
      * Returns a proportion (n out of a total) as a percentage, in a float.
      */
@@ -47,10 +72,7 @@ public class Utils {
         return cal;
     }
 
-    public static float getIdealWeightMen(double inch) {
-        float cal = (float) (50 + (2.3 * inch));
-        return cal;
-    }
+
 
     public static double getMlToLiter(int ml) {
         double cal = (ml * 0.001);
@@ -64,6 +86,10 @@ public class Utils {
 
     public static double getLiterToMl(double liter) {
         double cal = (liter * 1000);
+        return cal;
+    }
+    public static float getIdealWeightMen(double inch) {
+        float cal = (float) (50 + (2.3 * inch));
         return cal;
     }
 
@@ -103,7 +129,7 @@ public class Utils {
 
 
     public static double convertFeetandInchesToCentimeter(String feet, String inches) {
-        Log.e("convert", "feet " + feet + "inches " + inches);
+//        Log.e("convert", "feet " + feet + "inches " + inches);
         double heightInFeet = 0;
         double heightInInches = 0;
         try {
@@ -116,7 +142,6 @@ public class Utils {
         } catch (NumberFormatException nfe) {
 
         }
-
         return (heightInFeet * 30.48) + (heightInInches * 2.54);
     }
 
@@ -141,7 +166,7 @@ public class Utils {
                     "yyyy-MM-dd", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
+//            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -217,7 +242,7 @@ public class Utils {
                     "HH:mm", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("", "formattedDate" + formattedDate);
+//            Log.e("", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -225,51 +250,4 @@ public class Utils {
     }
 
 
-    public static String uploadFile(String bucketName, String folderName, String fileName, File imageFile) {
-
-        String imageUploadUrl = null;
-    /*
-    String yourAccessKeyID = "AKIAJN5QJUNXG75URSMA";
-	String yourSecretAccessKey = "4C59wSvi9p3nGdHy31OVWdvdToJGz9xOJMPLZy/m";
-
-	AWSCredentials credentials = new BasicAWSCredentials(yourAccessKeyID,  yourSecretAccessKey);*/
-        AWSCredentials credentials = new BasicAWSCredentials("AKIAJN5QJUNXG75URSMA", "4C59wSvi9p3nGdHy31OVWdvdToJGz9xOJMPLZy/m");
-        AmazonS3 s3client = new AmazonS3Client(credentials);
-//        s3client.setRegion(Region.getRegion(Regions.AP_SOUTH_1));
-        try {
-
-            if (!(s3client.doesBucketExist(bucketName))) {
-                // Note that CreateBucketRequest does not specify region. So bucket is
-                // created in the region specified in the client.
-                s3client.createBucket(new CreateBucketRequest(
-                        bucketName));
-            }
-
-
-        } catch (Exception e) {
-
-        }
-        TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
-        // Request server-side encryption.
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-        Log.e("imageFile", " " + imageFile.getAbsolutePath() + " " + imageFile.getName());
-        TransferObserver observer = transferUtility.upload(
-                "curefull.storage.test",
-                imageFile.getName(),
-                imageFile
-        );
-        observer.setTransferListener(CureFull.getInstanse().getActivityIsntanse());
-//        TransferObserver observer = transferUtility.download(
-//                "curefull.storage.test/cure.ehr",
-//                "",
-//                imageFile
-//        );
-
-//        for (Bucket bucket : s3client.listBuckets()) {
-//            Log.e("Bucket list - ", bucket.getName());
-//        }
-        observer.refresh();
-        return "";
-    }
 }

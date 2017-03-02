@@ -7,11 +7,11 @@ android {
         applicationId "com.curefull"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.0.1"
+        versionCode 9
+        versionName "1.0.3"
     }
     lintOptions {
-        abortOnError false
+        abortOnError true
     }
 
     buildTypes {
@@ -45,6 +45,7 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:10.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile project(':imagepicker')
+    compile project(':sandriosCamera')
     testCompile 'junit:junit:4.12'
 }
 

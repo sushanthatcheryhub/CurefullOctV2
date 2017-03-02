@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-
 import java.text.ParseException;
 import java.util.List;
 
@@ -26,7 +24,6 @@ public class Filter_Reports_ListAdpter extends RecyclerView.Adapter<Filter_Repor
 
     Context applicationContext;
     List<String> healthNoteItemses;
-    private RequestQueue requestQueue;
     private String filterNames;
     private FragmentLabTestReport fragmentLabTestReport;
 
@@ -85,6 +82,14 @@ public class Filter_Reports_ListAdpter extends RecyclerView.Adapter<Filter_Repor
                 checkBox.setChecked(false);
             }
 
+        } else if (filterNames.equalsIgnoreCase("uploadBy")) {
+            checkBox.setText("" + healthNoteItemses.get(position).toString());
+            if (AppPreference.getInstance().getFilterUploadBy().equalsIgnoreCase(healthNoteItemses.get(position).toString())) {
+                checkBox.setChecked(true);
+            } else {
+                checkBox.setChecked(false);
+            }
+
         } else if (filterNames.equalsIgnoreCase("disease")) {
             checkBox.setText("" + healthNoteItemses.get(position).toString());
             if (AppPreference.getInstance().getFilterDieseReports().equalsIgnoreCase(healthNoteItemses.get(position).toString())) {
@@ -106,6 +111,9 @@ public class Filter_Reports_ListAdpter extends RecyclerView.Adapter<Filter_Repor
                         AppPreference.getInstance().setFilterDoctorReports(healthNoteItemses.get(position).toString());
                     } else if (filterNames.equalsIgnoreCase("disease")) {
                         AppPreference.getInstance().setFilterDieseReports(healthNoteItemses.get(position).toString());
+                    }else if (filterNames.equalsIgnoreCase("uploadBy")) {
+                        AppPreference.getInstance().setFilterUploadBy(healthNoteItemses.get(position).toString());
+                    } else {
                     }
                     fragmentLabTestReport.callFilterAgain();
                 } else {

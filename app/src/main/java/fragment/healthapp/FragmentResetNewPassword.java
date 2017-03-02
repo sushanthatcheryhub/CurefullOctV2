@@ -139,20 +139,22 @@ public class FragmentResetNewPassword extends Fragment {
     }
 
     public void jsonForgotCheck(String userId) {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         JSONObject data = null;
         if (emailCheck.equalsIgnoreCase("yes")) {
             data = JsonUtilsObject.toForgotPasswordEmail(userId, input_confirm_password.getText().toString().trim());
         } else {
             data = JsonUtilsObject.toForgotPassword(userId, input_confirm_password.getText().toString().trim());
         }
-        Log.e("data", ":- " + data.toString());
+//        Log.e("data", ":- " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_SEND, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("FragmentLogin, URL 3.", response.toString());
+//                        Log.e("FragmentLogin, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -176,7 +178,7 @@ public class FragmentResetNewPassword extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
 

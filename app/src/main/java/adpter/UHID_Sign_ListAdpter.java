@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-
 import java.util.List;
 
 import curefull.healthapp.R;
@@ -24,7 +22,6 @@ import utils.AppPreference;
 public class UHID_Sign_ListAdpter extends RecyclerView.Adapter<UHID_Sign_ListAdpter.ItemViewHolder> {
     Context applicationContext;
     List<UHIDItemsCheck> healthNoteItemses;
-    private RequestQueue requestQueue;
     private FragmentUHIDSignUp fragmentUHIDs;
 
     public UHID_Sign_ListAdpter(FragmentUHIDSignUp fragmentUHID, Context applicationContexts,
@@ -63,22 +60,18 @@ public class UHID_Sign_ListAdpter extends RecyclerView.Adapter<UHID_Sign_ListAdp
         }
 
         txt_name.setSelected(true);
-        Log.e("yes", ":- yes" + healthNoteItemses.get(position).isChecked());
 
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("check", ":- right");
                 if (checkBox.isChecked()) {
 //                    checkBox.setChecked(false);
-                    Log.e("check", ":- true");
                     healthNoteItemses.get(position).setChecked(true);
                     AppPreference.getInstance().setcf_uuhidSignUp(healthNoteItemses.get(position).getCfUuhid());
                     fragmentUHIDs.checkedUHID(healthNoteItemses.get(position).getCfUuhid(), healthNoteItemses.get(position).getName());
 
                 } else {
 //                    checkBox.setChecked(true);
-                    Log.e("check", ":- false");
                     fragmentUHIDs.checkedUHID("", "");
                     healthNoteItemses.get(position).setChecked(false);
                 }

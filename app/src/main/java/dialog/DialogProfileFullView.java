@@ -9,7 +9,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
@@ -36,15 +40,15 @@ public class DialogProfileFullView extends Dialog {
         getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         img_full_view = (GestureImageView) findViewById(R.id.img_full_view);
-        CureFull.getInstanse().getFullImageLoader().clearCache();
-        CureFull.getInstanse().getFullImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), img_full_view);
+//        CureFull.getInstanse().getFullImageLoader().clearCache();
+//        CureFull.getInstanse().getFullImageLoader().startLazyLoading(AppPreference.getInstance().getProfileImage(), img_full_view);
 
-//        Glide.with(context).load(AppPreference.getInstance().getProfileImage())
-//                .thumbnail(0.5f)
-//                .crossFade()
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                .into(img_full_view);
-
+        Glide.with(CureFull.getInstanse().getActivityIsntanse()).load(AppPreference.getInstance().getProfileImage())
+                .priority(Priority.HIGH)
+                .dontAnimate()
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(img_full_view);
 
     }
 

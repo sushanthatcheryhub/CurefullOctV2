@@ -11,7 +11,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,8 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
@@ -84,6 +81,7 @@ public class FragmentResetPassword extends Fragment {
 //                } else {
 //                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid Enter");
 //                }
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 checkMoileNumber();
 
             }
@@ -98,6 +96,7 @@ public class FragmentResetPassword extends Fragment {
                     if (!validateMobileNo()) {
                         return false;
                     } else {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                         btn_reset_password.setEnabled(false);
                         checkMoileNumber();
                     }
@@ -112,12 +111,14 @@ public class FragmentResetPassword extends Fragment {
 
 
     private void checkEmailId() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CHECK_EMAIL_VALID + input_mobile_number.getText().toString().trim(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
 
                         try {
                             JSONObject jsonObject = new JSONObject(response);
@@ -160,12 +161,14 @@ public class FragmentResetPassword extends Fragment {
 
 
     private void checkMoileNumber() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CHECK_MOBILE_VALID + input_mobile_number.getText().toString().trim(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
                         btn_reset_password.setEnabled(true);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
@@ -193,6 +196,7 @@ public class FragmentResetPassword extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         btn_reset_password.setEnabled(true);
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         error.printStackTrace();
                     }
@@ -207,12 +211,14 @@ public class FragmentResetPassword extends Fragment {
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e("getSymptomsList, URL 1.", response);
+//                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         Bundle bundle = new Bundle();
                         bundle.putInt("otp", n);

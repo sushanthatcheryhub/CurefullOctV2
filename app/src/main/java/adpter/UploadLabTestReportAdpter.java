@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +43,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,12 +56,8 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLabReportImageFullView;
 import fragment.healthapp.FragmentLabReportImageView;
 import fragment.healthapp.FragmentLabTestReport;
-import fragment.healthapp.FragmentPrescriptionImageFullView;
-import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
-import item.property.LabReportImageListView;
 import item.property.LabReportListView;
-import item.property.PrescriptionImageListView;
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.Utils;
@@ -113,7 +108,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
         final ProgressBar progressBar = holder.progress_bar_one;
-        Log.e("position", position + "");
 
 
         if (labReportListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
@@ -124,7 +118,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
 
         String date = labReportListViews.get(position).getReportDate();
 
-        Log.e("date ", date);
 
         if (!date.equalsIgnoreCase("null")) {
             String[] dateFormat = date.split("-");
@@ -143,6 +136,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         text_doctor_name.setText("" + labReportListViews.get(position).getDoctorName());
         txt_disease_name.setText("" + labReportListViews.get(position).getTestName());
         if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
+            Collections.sort(labReportListViews.get(position).getLabReportImageListViews());
             Glide.with(applicationContext).load(labReportListViews.get(position).getLabReportImageListViews().get(0).getReportImage())
                     .thumbnail(0.1f)
                     .crossFade()
@@ -169,7 +163,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
                 dialogDeleteAll.show();
@@ -178,14 +172,24 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
                     files = new ArrayList<Uri>();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
+                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
                     pos = position;
                     for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
-                        Log.e("check new", "" + labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
-                        new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
+                        if (labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
+                            new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
+                        } else {
+                            files.add(Uri.fromFile(new File("" + labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage())));
+                            if (size == labReportListViews.get(pos).getLabReportImageListViews().size()) {
+                                prepareShareIntent(files);
+                            }
+                            size += 1;
+                        }
+
+
                     }
 
                 }
@@ -268,15 +272,15 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     }
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
-        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.Delete_Report + id + "&doctor_name=" + name,
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.Delete_Report + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor List, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -321,6 +325,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     }
 
     private void prepareShareIntent(ArrayList<Uri> files) {
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, " " + AppPreference.getInstance().getUserName() + " Lab Report");
@@ -334,7 +339,7 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
 
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
-        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/CureFull/" + System.currentTimeMillis() + ".jpeg");
+        File file = new File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".jpeg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
@@ -358,7 +363,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         @Override
         protected Bitmap doInBackground(String... params) {
 
-            Log.e("url new", " " + params[0]);
             try {
                 URL url = new URL(params[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();

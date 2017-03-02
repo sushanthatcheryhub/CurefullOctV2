@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,12 +132,14 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
         txt_count_file.setText(prescriptionListViews.get(position).getCountOfFiles());
         text_doctor_name.setText("" + doctorName);
         if (prescriptionListViews.get(position).getPrescriptionImageListViews() != null && prescriptionListViews.get(position).getPrescriptionImageListViews().size() > 0) {
+            Collections.sort(prescriptionListViews.get(position).getPrescriptionImageListViews());
             Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage())
                     .thumbnail(0.1f)
                     .crossFade()
                     .override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
                     .priority(Priority.HIGH)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -258,15 +261,15 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
     }
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
-        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse().getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name,
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
+        }
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("Doctor Delete, URL 1.", response);
 
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -279,7 +282,6 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                             prescriptionListViews.remove(pos);
                             notifyDataSetChanged();
-                            Log.e("size after delete", ":- " + prescriptionListViews.size());
                         } else {
                         }
                     }
@@ -301,6 +303,7 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
                 headers.put("user_name", AppPreference.getInstance().getUserName());
                 headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
                 return headers;
             }
         };
@@ -362,7 +365,6 @@ public class UploadFollowUpPrescriptionAdpter extends RecyclerView.Adapter<Uploa
         @Override
         protected Bitmap doInBackground(String... params) {
 
-            Log.e("url", " " + params[0]);
             try {
                 URL url = new URL(params[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();

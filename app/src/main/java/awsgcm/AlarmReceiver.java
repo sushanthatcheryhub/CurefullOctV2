@@ -2,6 +2,7 @@ package awsgcm;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,6 +29,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
+import stepcounter.MessengerService;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -41,14 +47,30 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("recevice", "recevice");
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String action = intent.getAction();
         if (action.equalsIgnoreCase("steps")) {
             String stepsCount = intent.getExtras().getString("stepsCount");
             String caloriesBurnt = intent.getExtras().getString("caloriesBurnt");
             String waterin = intent.getExtras().getString("waterin");
-            jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
+            String newTime = intent.getExtras().getString("newTime");
+            if (CheckNetworkState.isNetworkAvailable(context)) {
+                jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
+            } else {
+                if (newTime.equalsIgnoreCase("11:59 pm")) {
+                    ContentValues cv = new ContentValues();
+                    cv.put("steps_count", stepsCount);
+                    cv.put("runing", 0);
+                    cv.put("cycling", 0);
+                    cv.put("calories", "" + caloriesBurnt);
+                    cv.put("dateTime", "" + getTodayDateTime());
+                    cv.put("waterTake", waterin);
+                    cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    DbOperations operations = new DbOperations();
+                    operations.insertStepsCounts(context, cv);
+                }
+
+            }
         } else {
             String id = intent.getExtras().getString("perDayDosageDetailsId");
             String type = intent.getExtras().getString("type");
@@ -68,12 +90,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void jsonUploadMedicine(final Context context, final String id, String action) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JSONObject data = JsonUtilsObject.toNotificationMEdincie(id, action);
-        Log.e("jsonUploadTarget", ": " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_MEDICINE, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("service, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -100,7 +120,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -122,12 +141,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void jsonUploadDoctorVist(final Context context, final String id, String action) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JSONObject data = JsonUtilsObject.toNotificationDoctor(id, action);
-        Log.e("jsonUploadTarget", ": " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_DOCTOR, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("service, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -154,7 +171,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -176,12 +192,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void jsonUploadLabTest(final Context context, final String id, String action) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JSONObject data = JsonUtilsObject.toNotificationLabTest(id, action);
-        Log.e("jsonUploadTarget", ": " + data.toString());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_LAB_TEST, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("service, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -208,7 +222,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -240,13 +253,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         String timeReal = dateParts[1];
 
         JSONObject data = JsonUtilsObject.toSaveHealthAppDetails(steps, running, cycling, waterintake, caloriesBurnt, date, timeReal);
-        Log.e("jsonUploadTarget", ": " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_HELTHAPP_DETALS, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("Target, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -271,7 +282,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -295,7 +305,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     "yyyy-MM-dd HH:mm", Locale.getDefault());
             java.util.Date today = Calendar.getInstance().getTime();
             formattedDate = initialformatter.format(today);
-            Log.e("sds", "formattedDate" + formattedDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
