@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
   >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/login_gradient"
+        android:background="@color/white"
         android:orientation="vertical">
 
 
@@ -18,7 +18,7 @@
             android:id="@+id/webView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/login_gradient"
+            android:background="@color/white"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 

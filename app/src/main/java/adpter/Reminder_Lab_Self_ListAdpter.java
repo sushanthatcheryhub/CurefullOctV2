@@ -1,10 +1,10 @@
 package adpter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +43,6 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
 
     Context applicationContext;
     List<Lab_Test_Reminder_SelfListView> healthNoteItemses;
-    private RequestQueue requestQueue;
 
     public Reminder_Lab_Self_ListAdpter(Context applicationContexts,
                                         List<Lab_Test_Reminder_SelfListView> healthNoteItemses) {
@@ -77,6 +74,14 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
 
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName());
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
+            img_edit_rem.setVisibility(View.GONE);
+            txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            img_edit_rem.setVisibility(View.VISIBLE);
+        }
+
         if (healthNoteItemses.get(position).isAfterMeal()) {
             txt_hospital.setText("After Meal");
         } else {
@@ -162,9 +167,6 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.LAB_TEST_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override

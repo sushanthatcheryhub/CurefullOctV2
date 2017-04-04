@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +39,6 @@ public class FragmentResetNewPassword extends Fragment {
     private View rootView;
     private TextInputLayout input_layout_mobile, input_layout_email;
     private EditText input_mobile_number, input_confirm_password, input_email;
-    private RequestQueue requestQueue;
     private TextView btn_reset_password;
     private String emailCheck = "";
 
@@ -139,9 +134,6 @@ public class FragmentResetNewPassword extends Fragment {
     }
 
     public void jsonForgotCheck(String userId) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = null;
         if (emailCheck.equalsIgnoreCase("yes")) {
             data = JsonUtilsObject.toForgotPasswordEmail(userId, input_confirm_password.getText().toString().trim());

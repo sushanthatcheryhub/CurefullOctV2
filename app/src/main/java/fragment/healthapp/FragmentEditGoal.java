@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,7 +16,6 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,21 +37,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,7 +96,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private double heightInch;
     private double weightkg;
     double fweight, mweight;
-    private RequestQueue requestQueue;
     private GoalInfo userInfo;
     private TextView txt_btn_set_glass, btn_edit_done;
     private RelativeLayout realtive_notes;
@@ -250,58 +247,53 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     AppPreference.getInstance().setFeMale(false);
                     isMale = true;
                     isFemale = false;
-                    getBmrForMale();
-
-                    if (heightfeet > 4) {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-//                        if (!validateHeightinchBMI()) {
+//                    getBmrForMale();
+//
+//                    if (heightfeet > 4) {
+//                        if (!validateHeightFeetBMI()) {
 //                            return;
 //                        }
-                        if (heightfeet == 5) {
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(heightInch)) + " kg");
-                        } else {
-                            double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
-                        }
-                    } else {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-//                        if (!validateHeightinchBMI()) {
+////                        if (!validateHeightinchBMI()) {
+////                            return;
+////                        }
+//
+//                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+//                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
+//                    } else {
+//                        if (!validateHeightFeetBMI()) {
 //                            return;
 //                        }
-                        txt_ideal_weight.setText("" + "50 kg");
-                    }
+////                        if (!validateHeightinchBMI()) {
+////                            return;
+////                        }
+//                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+//                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMenBelow(checkheight)) + " kg");
+//                    }
                 } else if (checkedId == R.id.radioFemale) {
                     AppPreference.getInstance().setMale(false);
                     AppPreference.getInstance().setFeMale(true);
                     isMale = false;
                     isFemale = true;
-                    getBmrForFeMale();
-                    if (heightfeet > 4) {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-//                        if (!validateHeightinchBMI()) {
+//                    getBmrForFeMale();
+//                    if (heightfeet > 4) {
+//                        if (!validateHeightFeetBMI()) {
 //                            return;
 //                        }
-                        if (heightfeet == 5) {
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(heightInch)) + " kg");
-                        } else {
-                            double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
-                        }
-                    } else {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-//                        if (!validateHeightinchBMI()) {
+////                        if (!validateHeightinchBMI()) {
+////                            return;
+////                        }
+//                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+//                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
+//                    } else {
+//                        if (!validateHeightFeetBMI()) {
 //                            return;
 //                        }
-                        txt_ideal_weight.setText("" + "45 kg");
-                    }
+////                        if (!validateHeightinchBMI()) {
+////                            return;
+////                        }
+//                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+//                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomenBelow(checkheight)) + " kg");
+//                    }
                 }
 
 
@@ -376,6 +368,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 if (s.length() > 0) {
+                    isCm = false;
                     int value = Integer.parseInt(s.toString());
                     if (value > 10) {
                         value = 10;
@@ -406,6 +399,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
+                    isCm = true;
                     double value = Double.parseDouble(s.toString());
                     if (value > 332.74) {
                         value = 332.74;
@@ -437,7 +431,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
-
+                    isPounds = true;
                     double value = Double.parseDouble(s.toString());
                     if (value > 1102.31) {
                         value = 1102.31;
@@ -502,6 +496,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
+                    isPounds = false;
                     int value = Integer.parseInt(s.toString());
                     if (value > 800) {
                         value = 800;
@@ -533,6 +528,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
                     AppPreference.getInstance().setGoalWeightGrams("" + s.toString());
+                    preferences.edit().putString("gram", "" + s.toString()).commit();
                 }
             }
 
@@ -725,8 +721,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     AppPreference.getInstance().setGoalWeightKg("" + kg);
                     preferences.edit().putString("kg", kg).commit();
                     if (graam.length() == 1) {
+                        preferences.edit().putString("gram", "" + graam + "00").commit();
                         AppPreference.getInstance().setGoalWeightGrams("" + graam + "00");
                     } else {
+                        preferences.edit().putString("gram", graam).commit();
                         AppPreference.getInstance().setGoalWeightGrams("" + graam);
                     }
 
@@ -843,7 +841,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private boolean validateHeightFeetBMI() {
         String email = edt_feet.getText().toString().trim();
 
-        if (email.equalsIgnoreCase("")) {
+        if (email.equalsIgnoreCase("") || email.equalsIgnoreCase("0")) {
             return false;
         }
         return true;
@@ -860,7 +858,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
     private boolean validateWeightKgsBMI() {
         String email = edt_kgs.getText().toString().trim();
-        if (email.equalsIgnoreCase("")) {
+        if (email.equalsIgnoreCase("") || email.equalsIgnoreCase("0")) {
             return false;
         }
         return true;
@@ -878,7 +876,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
     private boolean validateHeightCM() {
         String email = edt_cm.getText().toString().trim();
-        if (email.equalsIgnoreCase("")) {
+        if (email.equalsIgnoreCase("") || email.equalsIgnoreCase("0")) {
             return false;
         }
         return true;
@@ -886,7 +884,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
     private boolean validateWeightPounds() {
         String email = edt_pounds.getText().toString().trim();
-        if (email.equalsIgnoreCase("")) {
+        if (email.equalsIgnoreCase("") || email.equalsIgnoreCase("0")) {
             return false;
         }
         return true;
@@ -1037,9 +1035,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
 
     public void jsonUploadTarget(final String targetSteps, String targetCaloriesToBurn, double targetWaterInTake) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSetGoals(targetSteps, targetCaloriesToBurn, targetWaterInTake);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS, data,
@@ -1140,9 +1135,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECT_GLASS + glassInTake + "&glassNumber=" + glassNumber,
                 new Response.Listener<String>() {
                     @Override
@@ -1285,9 +1277,12 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Done")) {
                         String steps = edt_steps.getText().toString().trim();
                         String calories = edt_calories.getText().toString().trim();
-                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("")) {
+                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("") && !edt_steps.getText().toString().trim().equalsIgnoreCase("") && !edt_calories.getText().toString().trim().equalsIgnoreCase("")) {
                             double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
                             jsonUploadTarget(steps, calories, Utils.getLiterToMl(water));
+                        } else {
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please fill all recommended daily exercise");
+
                         }
 
                     }
@@ -1306,47 +1301,72 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 break;
 
             case R.id.btn_edit_done:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                }
+
+                if (!isFemale && !isMale) {
+                    Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Select Gender", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!validateAge()) {
+                    Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Select Date of Birth", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                if (isCm) {
+                    if (!validateHeightCM()) {
+                        Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Enter Height CM", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } else {
+                    if (!validateHeightFeetBMI()) {
+                        Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Enter Height", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                }
+
+                if (isPounds) {
+                    if (!validateWeightPounds()) {
+                        Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Enter Weight", Toast.LENGTH_SHORT).show();
+
+                        return;
+                    }
+                } else {
+                    if (!validateWeightKgsBMI()) {
+                        Toast.makeText(CureFull.getInstanse().getActivityIsntanse(), "Please Enter Weight", Toast.LENGTH_SHORT).show();
+
+                        return;
+                    }
+                }
+
                 bmiCalculator();
                 if (isFemale) {
                     getBmrForFeMale();
                     if (heightfeet > 4) {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-                        if (heightfeet == 5) {
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(heightInch)) + " kg");
-                        } else {
-                            double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
-                        }
+                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
 
                     } else {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-                        txt_ideal_weight.setText("" + "45 kg");
+                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomenBelow(checkheight)) + " kg");
                     }
                 }
                 if (isMale) {
                     getBmrForMale();
                     if (heightfeet > 4) {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-                        if (heightfeet == 5) {
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(heightInch)) + " kg");
-                        } else {
-                            double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                            txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
-                        }
+
+
+                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
 
                     } else {
-                        if (!validateHeightFeetBMI()) {
-                            return;
-                        }
-                        txt_ideal_weight.setText("" + "50 kg");
+
+                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMenBelow(checkheight)) + " kg");
                     }
 
                 }
@@ -1378,9 +1398,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private void getAllDetails() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_SET_GOALS_DEATILS,
                     new Response.Listener<String>() {
                         @Override
@@ -1474,7 +1491,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
         AppPreference.getInstance().setGoalAge("" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + year);
-        AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(year, mnt, dayOfMonth));
+        String age = dayOfMonth + "/" + mnt + "/" + year;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date birthDate = sdf.parse(age); //Yeh !! It's my date of birth :-)
+            AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(birthDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        Age age = calculateAge(birthDate);
+
     }
 
 
@@ -1541,9 +1567,6 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             gender = "FEMALE";
         }
         String dateOfBirth = AppPreference.getInstance().getGoalAge();
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSetGoalsDetails(String.valueOf(new DecimalFormat("###.###").format(totalHeight)), String.valueOf(new DecimalFormat("###.###").format(totalWeight)), dateOfBirth, gender);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
@@ -1627,7 +1650,15 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             int mMonth = Integer.parseInt(dateFormat[1]);
             int mDay = Integer.parseInt(dateFormat[2]);
             edt_years.setText("" + (mDay < 10 ? "0" + mDay : mDay) + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + mYear);
-            AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(mYear, mMonth, mDay));
+            String age1 = mDay + "/" + mMonth + "/" + mYear;
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                Date birthDate = sdf.parse(age1); //Yeh !! It's my date of birth :-)
+                AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(birthDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+//            AppPreference.getInstance().setGoalAgeNew("" + Utils.getAge(mYear, mMonth, mDay));
             AppPreference.getInstance().setGoalAge(userInfo.getDateOfBirth());
         }
         if (!userInfo.getWeight().equalsIgnoreCase("null")) {
@@ -1639,10 +1670,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 String kg = dateParts[0];
                 String graam = dateParts[1];
                 preferences.edit().putString("kg", "" + kg).commit();
+
                 AppPreference.getInstance().setGoalWeightKg("" + kg);
                 if (graam.length() == 1) {
+                    preferences.edit().putString("gram", "" + graam + "00").commit();
                     AppPreference.getInstance().setGoalWeightGrams("" + graam + "00");
                 } else {
+                    preferences.edit().putString("gram", graam).commit();
                     AppPreference.getInstance().setGoalWeightGrams("" + graam);
                 }
 
@@ -1699,12 +1733,9 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 //                    if (!validateHeightinchBMI()) {
 //                        return;
 //                    }
-                    if (heightfeet == 5) {
-                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(heightInch)) + " kg");
-                    } else {
-                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
-                    }
+
+                    double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                    txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMen(checkheight)) + " kg");
                 } else {
                     if (!validateHeightFeetBMI()) {
                         return;
@@ -1712,7 +1743,8 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 //                    if (!validateHeightinchBMI()) {
 //                        return;
 //                    }
-                    txt_ideal_weight.setText("" + "50 kg");
+                    double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                    txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightMenBelow(checkheight)) + " kg");
                 }
             } else {
                 AppPreference.getInstance().setMale(false);
@@ -1728,18 +1760,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 //                    if (!validateHeightinchBMI()) {
 //                        return;
 //                    }
-                    if (heightfeet == 5) {
-                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(heightInch)) + " kg");
-                    } else {
-                        double checkheight = ((heightfeet * 12) - 60) + heightInch;
-                        txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
-                    }
+
+                    double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                    txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomen(checkheight)) + " kg");
                 } else {
                     if (!validateHeightFeetBMI()) {
                         return;
                     }
 
-                    txt_ideal_weight.setText("" + "45 kg");
+                    double checkheight = ((heightfeet * 12) - 60) + heightInch;
+                    txt_ideal_weight.setText("" + new DecimalFormat("###.###").format(Utils.getIdealWeightWomenBelow(checkheight)) + " kg");
                 }
             }
 //
@@ -1782,7 +1812,11 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 img_200ml.setVisibility(View.INVISIBLE);
                 img_300ml.setVisibility(View.INVISIBLE);
                 img_500ml.setVisibility(View.VISIBLE);
+            } else {
+                glassNumber = 2;
             }
+        } else {
+            glassNumber = 2;
         }
         bmiCalculator();
     }

@@ -19,12 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -70,7 +68,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
 
     Context applicationContext;
     List<LabReportListView> labReportListViews;
-    private RequestQueue requestQueue;
     private FragmentLabTestReport fragmentLabTestReports;
     private Uri uri;
     ArrayList<Uri> files = null;
@@ -273,9 +270,6 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.Delete_Report + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override

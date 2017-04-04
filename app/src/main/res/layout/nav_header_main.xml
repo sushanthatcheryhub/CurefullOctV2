@@ -11,7 +11,7 @@
         android:id="@+id/lnr_drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/login_gradient"
+        android:background="@color/white"
         android:orientation="vertical">
 
 
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="#CC2C34"
+            android:background="#018fc1"
             android:gravity="bottom">
 
 
@@ -30,7 +30,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_5dp"
-                app:civ_border_color="@color/health_yellow"
+                app:civ_border_color="@color/white"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/profile_avatar" />
 
@@ -44,7 +44,7 @@
                 android:gravity="center_horizontal"
                 android:padding="@dimen/_5dp"
                 android:text="Amit kumar"
-                android:textColor="@color/health_yellow"
+                android:textColor="@color/white"
 
                 />
             <ProgressBar
@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:indeterminateTint="@color/health_red_drawer"
+                android:indeterminateTint="@color/health_yellow"
                 android:maxHeight="@dimen/_30dp"
                 android:minHeight="@dimen/_30dp" />
 

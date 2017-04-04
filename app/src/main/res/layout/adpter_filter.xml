@@ -27,7 +27,7 @@
             android:gravity="center_vertical"
             android:padding="@dimen/_5dp"
             android:text="Check"
-            android:textColor="@color/health_yellow"
+            android:textColor="@color/health_mid_gray"
             android:visibility="visible" />
 
 

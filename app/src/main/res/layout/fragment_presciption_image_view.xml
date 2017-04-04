@@ -3,9 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
-    android:clickable="true"
->
+    android:background="@color/white"
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/liner_bottom"
             android:layout_below="@+id/top_view"
-            android:layout_margin="@dimen/_15dp"
+            android:background="@color/health_light_bg"
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
@@ -70,12 +69,12 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/_15dp"
-                    android:visibility="gone"
                     android:layout_marginRight="@dimen/_5dp"
                     android:elevation="@dimen/_10dp"
                     android:padding="@dimen/_2dp"
                     android:text="doctor name"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_yellow"
+                    android:visibility="gone" />
 
 
                 <customsTextViews.CustomTextViewOpenSanRegular
@@ -84,10 +83,10 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:elevation="@dimen/_10dp"
-                    android:visibility="gone"
                     android:padding="@dimen/_2dp"
                     android:text="-"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_yellow"
+                    android:visibility="gone" />
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_date"

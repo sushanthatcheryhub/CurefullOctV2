@@ -2,7 +2,6 @@ package adpter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +39,6 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
     Context applicationContext;
     List<UHIDItems> healthNoteItemses;
-    private RequestQueue requestQueue;
     private FragmentUHID fragmentUHIDs;
 
     public UHID_ListAdpter(FragmentUHID fragmentUHID, Context applicationContexts,
@@ -154,9 +150,6 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
     private void getSelectedUserList(String cfUuhid) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECTED_USER_LIST + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
@@ -204,9 +197,6 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
     private void getSelectedUserListDelete(String cfUuhid, final int position) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SELECTE_USER + cfUuhid,
                 new Response.Listener<String>() {
                     @Override

@@ -4,10 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
-    android:focusableInTouchMode="true"
-   >
+    android:focusableInTouchMode="true">
 
     <RelativeLayout
         android:id="@+id/reltvi_new"
@@ -15,19 +14,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <View
+            android:id="@+id/view_medo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2dp"
+            android:background="@color/health_light_bg" />
+
         <ScrollView
             android:id="@+id/top_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="true"
-            android:smoothScrollbar="true"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:smoothScrollbar="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10dp"
-                android:background="@drawable/login_gradient"
+                android:background="@color/white"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -86,10 +91,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/txt_med_detail"
-                        android:nestedScrollingEnabled="true"
-                        android:smoothScrollbar="true"
                         android:divider="@null"
-                        android:listSelector="@color/transparent_bg_list"></ListView>
+                        android:listSelector="@color/transparent_bg_list"
+                        android:nestedScrollingEnabled="true"
+                        android:smoothScrollbar="true"></ListView>
 
 
                 </RelativeLayout>
@@ -128,7 +133,7 @@
                             android:elevation="@dimen/_5dp"
                             android:gravity="left"
                             android:text="Schedule"
-                            android:textColor="@color/health_red_drawer" />
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                     <ImageView
@@ -146,10 +151,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:visibility="gone"
                     android:layout_marginRight="@dimen/_5dp"
                     android:background="@drawable/reminder_boader"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -174,7 +179,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Start from"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
                             <LinearLayout
@@ -200,7 +205,7 @@
                                         android:layout_gravity="center_horizontal"
                                         android:background="@android:color/transparent"
                                         android:text="DD/MM/YYYY"
-                                        android:textColor="@color/health_yellow" />
+                                        android:textColor="@color/health_light_gray" />
 
                                     <ImageView
                                         android:layout_width="wrap_content"
@@ -222,7 +227,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Duration"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
                             <LinearLayout
@@ -247,7 +252,7 @@
                                         android:layout_gravity="center_horizontal"
                                         android:background="@android:color/transparent"
                                         android:text="0"
-                                        android:textColor="@color/health_yellow" />
+                                        android:textColor="@color/health_light_gray" />
 
                                     <ImageView
                                         android:layout_width="wrap_content"
@@ -270,7 +275,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Days"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_mid_gray"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -300,7 +305,7 @@
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
                                         android:text="Select the days for reminder in a week"
-                                        android:textColor="@color/health_yellow"
+                                        android:textColor="@color/health_dark_gray"
                                         android:textStyle="bold" />
 
                                 </LinearLayout>
@@ -319,7 +324,7 @@
                                         app:animationType="scale"
                                         app:buttonHeight="40dp"
                                         app:buttonWidth="40dp"
-                                        app:checkedTextColor="@color/health_login_text"
+                                        app:checkedTextColor="@color/white"
                                         app:textButtons="@array/weekdays"
                                         app:uncheckedTextColor="@color/health_yellow" />
 
@@ -342,7 +347,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Doages per day"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
                             <LinearLayout
@@ -367,7 +372,7 @@
                                         android:layout_gravity="center_horizontal"
                                         android:background="@android:color/transparent"
                                         android:text="0"
-                                        android:textColor="@color/health_yellow" />
+                                        android:textColor="@color/health_light_gray" />
 
                                     <ImageView
                                         android:layout_width="wrap_content"
@@ -387,9 +392,9 @@
                             android:id="@+id/liner_reminder_visible"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
                             android:layout_marginTop="@dimen/_5dp"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_micro"
@@ -399,7 +404,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="We have set reminder for :"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
                             <LinearLayout
@@ -416,11 +421,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:gravity="center_vertical"
                                 android:layout_marginTop="@dimen/_5dp"
+                                android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="You can also change time by taping on time."
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -447,7 +452,7 @@
                                 android:paddingRight="@dimen/_25dp"
                                 android:paddingTop="@dimen/_5dp"
                                 android:text="Set Reminder"
-                                android:textColor="@color/health_red_drawer" />
+                                android:textColor="@color/white" />
 
 
                         </LinearLayout>

@@ -2,7 +2,7 @@
     android:shape="rectangle"
     android:thickness="1dp" >
 
-    <solid android:color="@color/health_yellow" />
+    <solid android:color="@color/colorPrimaryDark" />
 
 
 

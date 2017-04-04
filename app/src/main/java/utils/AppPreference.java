@@ -260,12 +260,12 @@ public class AppPreference implements MyConstants.JsonUtils {
 
     public void setUserID(String className) {
         if (_prefrence != null)
-            _prefrence.edit().putString(USER_ID, className).commit();
+            _prefrence.edit().putString("email_id", className).commit();
     }
 
     public String getUserID() {
         if (_prefrence != null)
-            return _prefrence.getString(USER_ID, "");
+            return _prefrence.getString("email_id", "");
         return "";
     }
 
@@ -420,16 +420,16 @@ public class AppPreference implements MyConstants.JsonUtils {
 //    }
 
 
-    public void setCaloriesCount(String className) {
-        if (_prefrence != null)
-            _prefrence.edit().putString("CaloriesCount", className).commit();
-    }
+//    public void setCaloriesCount(String className) {
+//        if (_prefrence != null)
+//            _prefrence.edit().putString("CaloriesCount", className).commit();
+//    }
 
-    public String getCaloriesCount() {
-        if (_prefrence != null)
-            return _prefrence.getString("CaloriesCount", "0");
-        return "";
-    }
+//    public String getCaloriesCount() {
+//        if (_prefrence != null)
+//            return _prefrence.getString("CaloriesCount", "0");
+//        return "";
+//    }
 
 
     public void setStepsCountTarget(int className) {
@@ -443,16 +443,16 @@ public class AppPreference implements MyConstants.JsonUtils {
         return 0;
     }
 
-    public void setWaterInTake(String className) {
-        if (_prefrence != null)
-            _prefrence.edit().putString("waterTake", className).commit();
-    }
+//    public void setWaterInTake(String className) {
+//        if (_prefrence != null)
+//            _prefrence.edit().putString("waterTake", className).commit();
+//    }
 
-    public String getWaterInTake() {
-        if (_prefrence != null)
-            return _prefrence.getString("waterTake", "0");
-        return "";
-    }
+//    public String getWaterInTake() {
+//        if (_prefrence != null)
+//            return _prefrence.getString("waterTake", "0");
+//        return "";
+//    }
 
 
     public void setWaterInTakeLeft(String className) {
@@ -683,18 +683,6 @@ public class AppPreference implements MyConstants.JsonUtils {
     }
 
 
-    public void setPercentage(int className) {
-        if (_prefrence != null)
-            _prefrence.edit().putInt("percentage", className).commit();
-    }
-
-    public int getPercentage() {
-        if (_prefrence != null)
-            return _prefrence.getInt("percentage", 0);
-        return 0;
-    }
-
-
     public void setDelete(boolean isMale) {
         if (_prefrence != null)
             _prefrence.edit().putBoolean("delete", isMale).commit();
@@ -895,6 +883,19 @@ public class AppPreference implements MyConstants.JsonUtils {
     public boolean isFragmentLabTs() {
         if (_prefrence != null)
             return _prefrence.getBoolean("LabTs", false);
+        return false;
+    }
+
+
+    public void setIsFirstTimeNotifictaion(boolean isLogin) {
+        if (_prefrence != null) {
+            _prefrence.edit().putBoolean("Notifictaion", isLogin).commit();
+        }
+    }
+
+    public boolean isFirstTimeStepsNotifictaion() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("Notifictaion", true);
         return false;
     }
 

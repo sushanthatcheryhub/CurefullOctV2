@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#C64236</color>
-    <color name="colorPrimaryDark">#C64236</color>
-    <color name="colorAccent">#046F78</color>
+    <color name="colorPrimary">#00aae5</color>
+    <color name="colorPrimaryDark">#018fc1</color>
+    <color name="colorAccent">#018fc1</color>
     <color name="app_medium_grey">#646663</color>
     <color name="app_dark_grey">#666666</color>
 
@@ -30,7 +30,7 @@
     <color name="spinner_unselected">#95A493</color>
     <color name="translucent_pink">#a7e7e7</color>
     <color name="open_task_type_text_color">#24a5d5</color>
-    <color name="red">#ff0000</color>
+    <color name="red">#018fc1</color>
     <color name="blue">#278be9</color>
     <color name="color_overlay">#A6000000</color>
     <color name="black">#000000</color>
@@ -109,14 +109,14 @@
     <color name="health_pink">#BE28CF</color>
     <color name="health_green">#24BC71</color>
     <color name="health_brown">#402021</color>
-    <color name="health_yellow">#fdb832</color>
+    <color name="health_yellow">#00aae5</color>
     <color name="health_yellow_bottom">#fecc1c</color>
     <color name="health_yellow_drawer">#fecc1d</color>
-    <color name="health_red_drawer">#CC2C34</color>
+    <color name="health_red_drawer">#a5a5a5</color>
     <color name="progress_gray">#FFD8D8D8</color>
     <color name="progress_gray_dark">#FF383838</color>
     <color name="default_blue_light">#ff33b5e5</color>
-    <color name="health_login_text">#EB4748</color>
+    <color name="health_login_text">#018fc1</color>
     <color name="health_set_goal">#046F78</color>
     <color name="health_app_text">#036F79</color>
     <color name="health_app_progress">#159640</color>
@@ -125,4 +125,9 @@
     <color name="health_hint_color_new">#80b1b1b1</color>
     <color name="dateTimeColorAccent">#494949</color>
     <color name="scrim">#99323232</color>
+    <color name="health_dark_gray">#151515</color>
+    <color name="health_mid_gray">#555555</color>
+    <color name="health_light_gray">#a5a5a5</color>
+    <color name="health_light_bg">#e7ebee</color>
+    <color name="health_blue_new">#00aae5</color>
 </resources>

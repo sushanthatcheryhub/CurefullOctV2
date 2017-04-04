@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -30,12 +29,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +70,6 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
     private View rootView;
     private RelativeLayout relative_bottom_next, realtive_today, rel_set_reminder, liner_filter_by, realtive_notesShort, txt_doctor_name;
-    private RequestQueue requestQueue;
     private RecyclerView recyclerView_doctor, recyclerView_self;
     private Reminder_Visit_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Visit_Self_ListAdpter reminder_medicine_self_listAdpter;
@@ -199,8 +195,8 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         });
         txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
         txt_filter_status.setBackgroundResource(R.color.transprent_new);
-        txt_reminder.setTextColor(getResources().getColor(R.color.health_red_drawer));
-        txt_status.setTextColor(getResources().getColor(R.color.health_yellow));
+        txt_reminder.setTextColor(getResources().getColor(R.color.white));
+        txt_status.setTextColor(getResources().getColor(R.color.health_dark_gray));
         radioReminder.setVisibility(View.VISIBLE);
         radioStatus.setVisibility(View.GONE);
         String[] dateAll = Utils.getTodayDate().split("-");
@@ -327,16 +323,16 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             case R.id.txt_filter_reminder:
                 txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
                 txt_filter_status.setBackgroundResource(R.color.transprent_new);
-                txt_reminder.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_status.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_reminder.setTextColor(getResources().getColor(R.color.white));
+                txt_status.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 radioReminder.setVisibility(View.VISIBLE);
                 radioStatus.setVisibility(View.GONE);
                 break;
             case R.id.txt_filter_status:
                 txt_filter_reminder.setBackgroundResource(R.color.transprent_new);
                 txt_filter_status.setBackgroundResource(R.color.health_yellow);
-                txt_reminder.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_status.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_reminder.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_status.setTextColor(getResources().getColor(R.color.white));
                 radioReminder.setVisibility(View.GONE);
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
@@ -402,13 +398,11 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         isChecked = true;
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_VISIT_REM + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+//                            Log.e("response",""+response);
                             isReset = true;
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             int responseStatus = 0;
@@ -488,7 +482,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                             isReset = true;
                             txt_no_medicine.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                             txt_no_medicine.setVisibility(View.VISIBLE);
-                            Log.e("error", " " + error.getMessage());
+//                            Log.e("error", " " + error.getMessage());
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         }
                     }
@@ -631,9 +625,6 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
 
     private void getDoctorName() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_DOCTOR_VISIT + "" + AppPreference.getInstance().getcf_uuhid(),
                 new Response.Listener<String>() {
                     @Override

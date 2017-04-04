@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/_20dp"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:gravity="left"
-    android:singleLine="true"
     android:padding="@dimen/_5dp"
-    android:textColor="@color/white" />
+    android:singleLine="true"
+    android:textColor="@color/health_dark_gray" />

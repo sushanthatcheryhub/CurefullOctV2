@@ -5,7 +5,7 @@
     <solid android:color="@color/health_hint_color_new" />
 
     <stroke  android:width="@dimen/_2dp"
-        android:color="@color/health_login_text"/>
+        android:color="@color/health_yellow"/>
 
 
 </shape>

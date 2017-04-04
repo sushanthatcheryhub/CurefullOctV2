@@ -9,12 +9,12 @@ public class MyConstants {
 
         boolean isLogCheck = false;
 
-//        String HOST_IP = "http://lp.hatcheryhub.com";
-                String HOST_IP = "http://hatcheryhub.com";
-        //                        String HOST_IP = "http://192.168.0.26:8080";
+//                String HOST_IP = "http://lp.hatcheryhub.com";
+        String HOST_IP = "http://hatcheryhub.com";
+        //                                String HOST_IP = "http://192.168.0.82:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/api/v1/";
-        //                        String HOST_LOCATION = "/CurefullRestService/api/v1/";
+        //                                String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -104,7 +104,7 @@ public class MyConstants {
         String GET_CONTACT = URL + "endUser/contact/sendMail";
 
         //Email Id Update
-        String EMAIL_ID_UPDATE = URL +"endUser/profile/processResetLink?id=";
+        String EMAIL_ID_UPDATE = URL + "endUser/profile/processEmailVerficationResetLink?id=";
     }
 
     //
@@ -114,7 +114,6 @@ public class MyConstants {
         String FOLDER_PRECREPTION_NAME = "/prescription";
         String FOLDER_LAB_REPORT_NAME = "/labReport";
         String FOLDER_PROFILE_NAME = "/profileImages";
-
     }
 //
 //    public interface AWSType {
@@ -130,7 +129,8 @@ public class MyConstants {
         String No_INTERNET_USAGE = "The internet seems Unhealthy! Check connections";
         String ISSUE_WITH_DATA = "Issue with data";
         String No_DATA = "No data in server";
-        String ISSUES_WITH_SERVER = "Server Not reachable.Try again in a moment.";
+        //        String ISSUES_WITH_SERVER = "Server Not reachable.Try again in a moment.";
+        String ISSUES_WITH_SERVER = "Oops server on maintenance, give us a minute, Please try later!!";
         String OFFLINE_MODE = "You are in Offline Mode!!";
     }
 
@@ -224,6 +224,7 @@ public class MyConstants {
         String TABLE_EMAIL = "tbl_emailId";
         String TABLE_EDIT_GOAL = "tbl_edit_goal";
         String TABLE_GRAPH = "tbl_graph";
+        String TABLE_PRESCRIPTION = "tbl_prescription";
         String TABLE_OFFLINE_NOTE = "offline_note_master";
         String TABLE_STEPS = "tbl_steps";
     }

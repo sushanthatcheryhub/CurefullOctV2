@@ -1,17 +1,19 @@
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "com.curefull"
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 25
-        versionCode 10
-        versionName "1.0.4"
+        versionCode 34
+        versionName "1.1.4"
     }
     lintOptions {
-        abortOnError true
+        checkReleaseBuilds false
+        abortOnError false
+        disable "ResourceType"
     }
 
     buildTypes {
@@ -29,11 +31,11 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':supportDifferentScreen')
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
-    compile 'com.android.support:cardview-v7:25.1.0'
-    compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'dev.dworks.libs:volleyplus:+'
     compile 'com.nineoldandroids:library:2.4.0'

@@ -31,13 +31,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +75,6 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
     private View rootView;
     private TextView txt_set_reminder, edt_years, txt_duration, txt_dogaes, txt_duration_txt;
-    private RequestQueue requestQueue;
     private ListView list_view_current_visit;
     private static int APPEND_HEIGHT_TO_LIST = 2;
     private ArrayList<MedicineReminderItem> listCurrent = new ArrayList<>();
@@ -90,7 +87,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private String addDays = "";
     private CustomTextViewOpenSanRegular[] view_text_page;
     private double interval;
-    private boolean isNewReminder = true, isVisible = false, isEdit = false;
+    private boolean isNewReminder = true, isVisible = false, isEdit = false, btnClick = true;
     private String medicineReminderId = "";
     private MultiSelectToggleGroup multiSelect;
     private RelativeLayout relative_schedule, relative_bottom_area, reltvi_new;
@@ -208,6 +205,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             rotatePhoneClockwise(img_rotate);
             isVisible = true;
             relative_bottom_area.setVisibility(View.VISIBLE);
+
             isEdit = true;
             MedicineReminderItem reminderItem = new MedicineReminderItem();
             reminderItem.setId(1);
@@ -357,11 +355,15 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (isEdit) {
-                        setMedReminderDetailsEdit();
-                    } else {
-                        setMedReminderDetails();
+                    if (btnClick) {
+                        btnClick = false;
+                        if (isEdit) {
+                            setMedReminderDetailsEdit();
+                        } else {
+                            setMedReminderDetails();
+                        }
                     }
+
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
@@ -453,32 +455,41 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     public void setMedReminderDetails() {
         for (int i = 0; i < listCurrent.size(); i++) {
             if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
                 return;
             } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
                 return;
             } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
                 return;
             } else if (listCurrent.get(i).getInterval() == 0) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
                 return;
             } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
                 return;
             }
         }
         if (!validateDate()) {
+            btnClick = true;
             return;
         }
         if (!validateDuration()) {
+            btnClick = true;
             return;
         }
         if (!validateDays()) {
+            btnClick = true;
             return;
         }
         if (!validateDoages()) {
+            btnClick = true;
             return;
         }
         String newTime = "";
@@ -500,18 +511,16 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.setRemMedAdd(startFrom, duration, doages, addDays, listCurrent, newTime, interval);
-        Log.e("jsonUploadMedRem", ":- " + data.toString());
+//        Log.e("jsonUploadMedRem", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btnClick = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("MedRemDetails, URL 3.", response.toString());
+//                        Log.e("MedRemDetails, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -538,9 +547,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -562,33 +572,42 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         for (int i = 0; i < listCurrent.size(); i++) {
             if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
                 return;
             } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
+                btnClick = true;
                 return;
             } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
+                btnClick = true;
                 return;
             } else if (listCurrent.get(i).getInterval() == 0) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
+                btnClick = true;
                 return;
             } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
+                btnClick = true;
                 return;
             }
 
         }
         if (!validateDate()) {
+            btnClick = true;
             return;
         }
         if (!validateDuration()) {
+            btnClick = true;
             return;
         }
         if (!validateDays()) {
+            btnClick = true;
             return;
         }
         if (!validateDoages()) {
+            btnClick = true;
             return;
         }
         String newTime = "";
@@ -608,18 +627,16 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.setRemMedEdit(medicineReminderId, startFrom, duration, doages, addDays, listCurrent, newTime, interval);
-        Log.e("jsonUploadMedEdit", ":- " + data.toString());
+//        Log.e("jsonUploadMedEdit", ":- " + data.toString());
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.EDIT_MEDICINE_REM, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btnClick = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Log.e("MedRemDetails, URL 3.", response.toString());
+//                        Log.e("MedRemDetails, URL 3.", response.toString());
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -646,9 +663,10 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
+//                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());
             }
         }) {
             @Override
@@ -669,7 +687,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
-        Log.e("state", " " + "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
+//        Log.e("state", " " + "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         startFrom = "" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" + (mnt < 10 ? "0" + mnt : mnt) + "/" + year);
     }
@@ -716,7 +734,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
         if (timeToTakeMedicne == null) {
             interval = (Double.parseDouble("" + 14) / Double.parseDouble("" + totalPage));
-            Log.e("value", "" + new DecimalFormat("##.#").format(interval) + " " + (14 / totalPage));
+//            Log.e("value", "" + new DecimalFormat("##.#").format(interval) + " " + (14 / totalPage));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 0, 0, 0);
             view_text_page = new CustomTextViewOpenSanRegular[totalPage];
@@ -726,7 +744,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     text = 9;
                 } else {
                     double value = Double.parseDouble(new DecimalFormat("#.#").format(interval));
-                    Log.e("value ", " " + value);
+//                    Log.e("value ", " " + value);
                     text = text + value;
                 }
 
@@ -739,7 +757,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 view_text_page[i].setSingleLine(true);
                 view_text_page[i].setId(i);
                 view_text_page[i].setLayoutParams(params);
-                Log.e("i ", " " + i);
+//                Log.e("i ", " " + i);
                 if (i == (totalPage - 1)) {
                     String[] time = String.valueOf(text).split("\\.");
                     String hrs = time[0];
@@ -752,7 +770,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     }
                     view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + ".");
                 } else {
-                    Log.e("new ", " " + text);
+//                    Log.e("new ", " " + text);
                     String[] time = String.valueOf(text).split("\\.");
                     String hrs = time[0];
                     String min = "0";
@@ -764,7 +782,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     }
                     view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(hrs), Integer.parseInt(min)) + " | ");
                 }
-                view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
+                view_text_page[i].setTextColor(Color.parseColor("#a5a5a5"));
                 view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                 final int finalI = i;
                 view_text_page[i].setOnClickListener(new View.OnClickListener() {
@@ -772,7 +790,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     public void onClick(View view) {
 
                         String time = "" + view_text_page[finalI].getText();
-                        Log.e("time", " " + time);
+//                        Log.e("time", " " + time);
                         if (time.endsWith(" am | ")) {
                             time = time.substring(0, time.length() - 6);
                         } else if (time.endsWith(" pm | ")) {
@@ -835,7 +853,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 view_text_page[i].setSingleLine(true);
                 view_text_page[i].setId(i);
                 view_text_page[i].setLayoutParams(params);
-                Log.e("i ", " " + i);
+//                Log.e("i ", " " + i);
                 if (i == (timeToMedo.length - 1)) {
                     String[] text = timeToMedo[i].split(":");
                     view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + ".");
@@ -843,7 +861,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     String[] text = timeToMedo[i].split(":");
                     view_text_page[i].setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(Integer.parseInt(text[0]), Integer.parseInt(text[1])) + " | ");
                 }
-                view_text_page[i].setTextColor(Color.parseColor("#fdb832"));
+                view_text_page[i].setTextColor(Color.parseColor("#a5a5a5"));
                 view_text_page[i].setPaintFlags(txt_dogaes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                 final int finalI = i;
                 view_text_page[i].setOnClickListener(new View.OnClickListener() {
@@ -851,7 +869,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                     public void onClick(View view) {
 
                         String time = "" + view_text_page[finalI].getText();
-                        Log.e("time", " " + time);
+//                        Log.e("time", " " + time);
                         if (time.endsWith(" am | ")) {
                             time = time.substring(0, time.length() - 5);
                         } else if (time.endsWith(" pm | ")) {
@@ -922,7 +940,7 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
             Date date = null;
             try {
                 date = parseFormat.parse(time);
-                Log.e("format ", parseFormat.format(date) + " = " + displayFormat.format(date));
+//                Log.e("format ", parseFormat.format(date) + " = " + displayFormat.format(date));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
-    android:focusableInTouchMode="true"
-    >
+    android:focusableInTouchMode="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/health_light_bg"
         android:orientation="vertical">
 
 
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/liner_dialog"
-            android:layout_marginTop="@dimen/_15dp"
+
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
@@ -43,7 +43,7 @@
             android:id="@+id/top_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/health_yellow"
+            android:background="@color/white"
             android:orientation="vertical"
             android:padding="@dimen/_5dp">
 
@@ -55,7 +55,7 @@
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_health_text"
-                    style="@style/textView_dark_grey_normal_micro"
+                    style="@style/textView_medium_grey_bold_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -64,7 +64,7 @@
                     android:elevation="@dimen/_10dp"
                     android:padding="@dimen/_2dp"
                     android:text="Lab Report"
-                    android:textColor="@color/health_red_drawer" />
+                    android:textColor="@color/health_dark_gray" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -116,7 +116,7 @@
                                 android:padding="@dimen/_4dp"
                                 android:singleLine="true"
                                 android:text="User Name"
-                                android:textColor="@color/health_red_drawer" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <LinearLayout
                                 android:id="@+id/liner_user_name_click"
@@ -155,8 +155,14 @@
             android:id="@+id/liner_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:layout_below="@+id/top_view"
             android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/health_light_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -180,7 +186,7 @@
                         android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:text="Sort By"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -195,7 +201,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/health_yellow_bottom" />
+                    android:background="@color/health_light_gray" />
 
                 <RelativeLayout
                     android:id="@+id/txt_filter_by"
@@ -213,7 +219,7 @@
                         android:layout_gravity="right"
                         android:gravity="right"
                         android:text="Filter"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -228,7 +234,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/health_yellow_bottom" />
+                    android:background="@color/health_light_gray" />
 
                 <RelativeLayout
                     android:id="@+id/liner_upload_new"
@@ -247,7 +253,7 @@
                         android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:text="Upload New"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -264,7 +270,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_light_gray" />
 
         </LinearLayout>
 
@@ -294,7 +300,7 @@
                         android:id="@+id/layoutButtons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/login_gradient"
+                        android:background="@color/white"
                         android:orientation="vertical"
                         android:visibility="gone">
 
@@ -315,7 +321,7 @@
                                 android:gravity="right"
                                 android:singleLine="true"
                                 android:text="Browse"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_mid_gray" />
 
 
                             <ImageView
@@ -344,7 +350,7 @@
                                 android:gravity="right"
                                 android:singleLine="true"
                                 android:text="Take a picture"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_mid_gray" />
 
 
                             <ImageView
@@ -370,12 +376,12 @@
                         android:id="@+id/img_btn_refresh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:layout_above="@+id/txt_no_prescr"
                         android:layout_centerHorizontal="true"
-                        android:visibility="gone"
+                        android:layout_gravity="center_vertical"
                         android:padding="@dimen/_5dp"
-                        android:src="@drawable/refresh" />
+                        android:src="@drawable/refresh"
+                        android:visibility="gone" />
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_no_prescr"
@@ -387,7 +393,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_2dp"
                         android:text="No Reports Uploaded Yet!"
-                        android:textColor="@color/white"
+                        android:textColor="@color/health_dark_gray"
                         android:visibility="gone" />
                 </RelativeLayout>
 
@@ -420,7 +426,7 @@
                         android:id="@+id/layoutButtonsShort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/login_gradient"
+                        android:background="@color/white"
                         android:orientation="vertical"
                         android:visibility="gone">
 
@@ -454,7 +460,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Reset"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
                                 </LinearLayout>
 
@@ -479,7 +485,7 @@
                                         android:marqueeRepeatLimit="marquee_forever"
                                         android:singleLine="true"
                                         android:text="Lab Report(0)"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
 
                                 </LinearLayout>
@@ -503,7 +509,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Apply"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
 
                                 </LinearLayout>
@@ -529,7 +535,7 @@
                                     android:clickable="true"
                                     android:paddingLeft="@dimen/_5dp"
                                     android:text="Newest first"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_mid_gray" />
 
                                 <customsTextViews.CustomRadioButtonOpenSanRegular
                                     android:id="@+id/radioOldest"
@@ -541,7 +547,7 @@
                                     android:clickable="true"
                                     android:paddingLeft="@dimen/_5dp"
                                     android:text="Oldest first"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_mid_gray" />
 
                             </RadioGroup>
 
@@ -589,7 +595,7 @@
                         android:id="@+id/layoutButtonsFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/login_gradient"
+                        android:background="@color/white"
                         android:orientation="vertical"
                         android:visibility="gone">
 
@@ -622,7 +628,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Reset"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
                                 </LinearLayout>
 
@@ -647,7 +653,7 @@
                                         android:marqueeRepeatLimit="marquee_forever"
                                         android:singleLine="true"
                                         android:text="Lab Report(0)"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
 
                                 </LinearLayout>
@@ -670,7 +676,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Apply"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
 
                                 </LinearLayout>
@@ -681,7 +687,7 @@
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="@color/health_yellow" />
+                                android:background="@color/health_light_gray" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -712,7 +718,7 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Date"
-                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textColor="@color/health_dark_gray"
                                             android:textStyle="bold" />
 
 
@@ -735,7 +741,7 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Doctor"
-                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textColor="@color/health_dark_gray"
                                             android:textStyle="bold" />
 
 
@@ -758,8 +764,8 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Test Name"
-                                            android:textColor="@color/health_yellow_bottom"
-                                        android:textStyle="bold" />
+                                            android:textColor="@color/health_dark_gray"
+                                            android:textStyle="bold" />
 
 
                                     </LinearLayout>
@@ -781,7 +787,7 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Upload by"
-                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textColor="@color/health_dark_gray"
                                             android:textStyle="bold" />
 
 
@@ -793,7 +799,7 @@
                                 <View
                                     android:layout_width="1dp"
                                     android:layout_height="match_parent"
-                                    android:background="@color/health_yellow" />
+                                    android:background="@color/health_light_gray" />
 
                                 <LinearLayout
                                     android:layout_width="0dp"

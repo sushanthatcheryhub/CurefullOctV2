@@ -33,7 +33,7 @@
                     android:layout_height="match_parent"
                     android:gravity="left"
                     android:text=""
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_dark_gray"
                     />
 
             </LinearLayout>
@@ -59,7 +59,7 @@
                     android:singleLine="true"
                     android:gravity="left"
                     android:text="Health App"
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_mid_gray"
                     />
 
                 <!--<customsTextViews.CustomTextViewOpenSanBold-->

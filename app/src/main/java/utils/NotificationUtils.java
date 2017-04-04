@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.BigTextStyle;
 import android.support.v4.content.ContextCompat;
 
 import curefull.healthapp.MainActivity;
@@ -67,6 +69,7 @@ public class NotificationUtils {
 
         Intent intent11 = new Intent(_context, MainActivity.class);
         intent11.setAction("open");
+        intent11.putExtra("perDayDosageDetailsId", id);
         intent11.putExtra("type", type);
         intent11.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         intent11.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -89,12 +92,12 @@ public class NotificationUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
-                    R.mipmap.app_icon);
+                    R.mipmap.app_icons);
             Notification noti = new Notification.Builder(_context)
                     .setContentTitle(name)
                     .setContentText(text)
                     .setSmallIcon(R.drawable.notification_small)
-
+                    .setStyle(new Notification.BigTextStyle().bigText(text))
                     .setColor(color)
                     .setLargeIcon(icon2)
 //                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
@@ -107,15 +110,18 @@ public class NotificationUtils {
             // hide the notification after its selected
             noti.flags |= Notification.FLAG_AUTO_CANCEL;
             noti.defaults |= Notification.DEFAULT_SOUND;
+            noti.defaults |= Notification.DEFAULT_LIGHTS;
+            noti.flags |= Notification.FLAG_SHOW_LIGHTS;
             notificationManager.notify(Integer.parseInt(id), noti);
-        }else{
+        } else {
 
             Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
-                    R.mipmap.app_icon);
+                    R.mipmap.app_icons);
             Notification noti = new Notification.Builder(_context)
                     .setContentTitle(name)
                     .setContentText(text)
                     .setSmallIcon(R.drawable.notification_small)
+                    .setStyle(new Notification.BigTextStyle().bigText(text))
                     .setLargeIcon(icon2)
 //                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
                     .setAutoCancel(true)
@@ -127,6 +133,8 @@ public class NotificationUtils {
             // hide the notification after its selected
             noti.flags |= Notification.FLAG_AUTO_CANCEL;
             noti.defaults |= Notification.DEFAULT_SOUND;
+            noti.defaults |= Notification.DEFAULT_LIGHTS;
+            noti.flags |= Notification.FLAG_SHOW_LIGHTS;
             notificationManager.notify(Integer.parseInt(id), noti);
         }
 
@@ -156,7 +164,7 @@ public class NotificationUtils {
         // Build notification
         // Actions are just fake
         Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
-                R.mipmap.app_icon);
+                R.mipmap.app_icons);
         Notification noti = new Notification.Builder(_context)
                 .setContentTitle("Big picture notification")
                 .setContentText("This is test of big picture notification.")

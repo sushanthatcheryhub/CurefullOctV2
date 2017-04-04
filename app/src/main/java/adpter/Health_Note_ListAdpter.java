@@ -3,7 +3,6 @@ package adpter;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,7 +144,7 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
             }
         }
 
-        String text = "<font color=#fdb832>" + healthNoteItemses.get(position).getNote_heading() + ":" + "</font> <font color=#ffffff>" + healthNoteItemses.get(position).getDeatils() + "</font>";
+        String text = "<font color=#151515>" + healthNoteItemses.get(position).getNote_heading() + ":" + "</font> <font color=#555555>" + healthNoteItemses.get(position).getDeatils() + "</font>";
         holder.txt_title.setText(Html.fromHtml(text));
 
         holder.img_delete.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +152,41 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
             public void onClick(View view) {
                 if (!CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (healthNoteItemses.get(position).getIs_offline() == 1) {
+
+//                        new SweetAlertDialog(CureFull.getInstanse().getActivityIsntanse(), SweetAlertDialog.WARNING_TYPE)
+//                                .setTitleText("Health Note")
+//                                .setContentText("Do you want to remove selected Health Note ?")
+//                                .setConfirmText("Yes")
+//                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                                    @Override
+//                                    public void onClick(SweetAlertDialog sDialog) {
+//
+//                                        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+//                                            getAllHealthListRemove(healthNoteItemses.get(position).getNote_id(), position, sDialog);
+//                                        } else {
+//                                            sDialog
+//                                                    .setTitleText("Deleted!")
+//                                                    .setContentText("Your note has been deleted!")
+//                                                    .setConfirmText("OK")
+//                                                    .showCancelButton(false)
+//                                                    .setConfirmClickListener(null)
+//                                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+//                                            DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
+//                                            healthNoteItemses.remove(position);
+//                                            notifyDataSetChanged();
+//                                            fragmentHealthNotes.checkSize();
+//                                        }
+//
+//                                    }
+//                                })
+//                                .setCancelText("No")
+//                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                                    @Override
+//                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+//                                        sweetAlertDialog.dismissWithAnimation();
+//                                    }
+//                                })
+//                                .show();
                         DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
                         dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
                         dialogDeleteAll.show();
@@ -163,6 +197,43 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                     DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
                     dialogDeleteAll.setiOnOtpDoneDelete(Health_Note_ListAdpter.this);
                     dialogDeleteAll.show();
+//                    DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
+//                                        healthNoteItemses.remove(position);
+//                                        notifyDataSetChanged();
+//                                        fragmentHealthNotes.checkSize();
+
+//                    new SweetAlertDialog(CureFull.getInstanse().getActivityIsntanse(), SweetAlertDialog.WARNING_TYPE)
+//                            .setTitleText("Health Note")
+//                            .setContentText("Do you want to remove selected Health Note ?")
+//                            .setConfirmText("Yes")
+//                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                                @Override
+//                                public void onClick(SweetAlertDialog sDialog) {
+//                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+//                                        getAllHealthListRemove(healthNoteItemses.get(position).getNote_id(), position, sDialog);
+//                                    } else {
+//                                        sDialog
+//                                                .setTitleText("Deleted!")
+//                                                .setContentText("Your note has been deleted!")
+//                                                .setConfirmText("OK")
+//                                                .showCancelButton(false)
+//                                                .setConfirmClickListener(null)
+//                                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+//                                        DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
+//                                        healthNoteItemses.remove(position);
+//                                        notifyDataSetChanged();
+//                                        fragmentHealthNotes.checkSize();
+//                                    }
+//                                }
+//                            })
+//                            .setCancelText("No")
+//                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                                @Override
+//                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+//                                    sweetAlertDialog.dismissWithAnimation();
+//                                }
+//                            })
+//                            .show();
                 }
 
 
@@ -267,6 +338,14 @@ public class Health_Note_ListAdpter extends BaseAdapter implements
                             healthNoteItemses.remove(postis);
                             notifyDataSetChanged();
                             fragmentHealthNotes.checkSize();
+//                            sDialog
+//                                    .setTitleText("Deleted!")
+//                                    .setContentText("Your note has been deleted!")
+//                                    .setConfirmText("OK")
+//                                    .showCancelButton(false)
+//                                    .setConfirmClickListener(null)
+//                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+
                         }
                     }
                 },

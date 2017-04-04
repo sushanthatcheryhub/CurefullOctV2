@@ -1,18 +1,16 @@
 package stepcounter;
 
+import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -20,42 +18,17 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyLog;
-import com.android.volley.error.AuthFailureError;
-import com.android.volley.error.VolleyError;
-import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import asyns.JsonUtilsObject;
 import awsgcm.AlarmReceiver;
-import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
-import operations.DbOperations;
-import utils.AppPreference;
-import utils.CheckNetworkState;
-import utils.MyConstants;
-import utils.Utils;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
     /**
@@ -99,6 +72,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     boolean activityRunning;
     private Handler mHandler = new Handler();
+    private Runnable mUpdate;
 
     /**
      * Handler of incoming messages from clients.
@@ -148,8 +122,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     @Override
     public void onCreate() {
-        updateTimeOnEachSecond();
         initSensor();
+        updateTimeOnEachSecond();
     }
 
 
@@ -158,15 +132,14 @@ public class MessengerService extends Service implements StepListener, SensorEve
         // This always shows up in the notifications area when this Service is running.
         // TODO: String localization
 //        Notification notification = getNotification();
-//        startForeground(NOTIF_ID, notification);
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
     public void onDestroy() {
         // Tell the user we stopped.
         sensorManager.unregisterListener(this);
-        Toast.makeText(this, R.string.remote_service_stopped, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, R.string.remote_service_stopped, Toast.LENGTH_SHORT).show();
     }
 
     private Notification getNotification() {
@@ -210,40 +183,101 @@ public class MessengerService extends Service implements StepListener, SensorEve
     private Sensor accel;
     private static final String TEXT_NUM_STEPS = "Number of Steps: ";
     private int numSteps;
+    private int newSteps;
+    private boolean issenor = false;
+    private boolean stepsReal = false;
 
     private void initSensor() {
         // Get an instance of the SensorManager
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         numSteps = preferences.getInt("stepsIn", 0);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        simpleStepDetector = new SimpleStepDetector();
-        simpleStepDetector.registerListener(this);
-        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        if (accel != null) {
+//            Toast.makeText(MessengerService.this, "" + "true ", Toast.LENGTH_SHORT).show();
+            issenor = true;
+            simpleStepDetector = new SimpleStepDetector();
+            simpleStepDetector.registerListener(this, MessengerService.this);
+            sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_UI);
+        } else {
+//            Toast.makeText(MessengerService.this, "" + "false ", Toast.LENGTH_SHORT).show();
+            issenor = false;
+            accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            simpleStepDetector = new SimpleStepDetector();
+            simpleStepDetector.registerListener(this, MessengerService.this);
+            sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+        }
+
 
     }
 
     @Override
     public void step(long timeNs) {
-//        numSteps = preferences.getInt("stepsIn", 0);
-        numSteps++;
-//        Notification notification = getNotification();
-//        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        mNotificationManager.notify(NOTIF_ID, notification);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Calendar c = Calendar.getInstance();
+        final int hrs = c.get(Calendar.HOUR_OF_DAY);
+        final int min = c.get(Calendar.MINUTE);
+        final int sec = c.get(Calendar.SECOND);
 
+//        Toast.makeText(MessengerService.this, "" + "num " .+ numSteps, Toast.LENGTH_SHORT).show();
+        preferences.edit().putBoolean("saveSteps", false).commit();
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(mUpdate, 3000);
+        mUpdate = new Runnable() {
+            @Override
+            public void run() {
+                if (!preferences.getBoolean("saveSteps", false)) {
+//                    Toast.makeText(MessengerService.this, "" + "num " + numSteps, Toast.LENGTH_SHORT).show();
+                    newSteps = 0;
+                    stepsReal = false;
+                }
 
-        try {
-            if (preferences.getBoolean("isDestroy", false)) {
-            } else {
-                Message message = new Message();
-                message.what = MSG_SET_VALUE;
-                message.arg1 = numSteps;
-                mMessenger.send(message);
             }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        };
+        newSteps++;
+        if (newSteps > 7) {
+            stepsReal = true;
+            if (newSteps == 8) {
+                updateTimeOnEachSecond();
+                preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 8)).commit();
+            }
         }
+
+        if (updateTime(hrs, min).equalsIgnoreCase("12:05 am")) {
+            numSteps = 0;
+            preferences.edit().putInt("stepsIn", 0).commit();
+            preferences.edit().putString("waterTake", "0").commit();
+            preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
+
+        }
+        if (preferences.getBoolean("logout", false)) {
+            preferences.edit().putInt("stepsIn", 0).commit();
+            preferences.edit().putString("waterTake", "0").commit();
+            preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
+            preferences.edit().putBoolean("logout", false).commit();
+        }
+
+        if (stepsReal) {
+            numSteps = preferences.getInt("stepsIn", 0);
+            numSteps++;
+            preferences.edit().putInt("stepsIn", numSteps).commit();
+
+            try {
+                if (preferences.getBoolean("isDestroy", false)) {
+                } else {
+                    Message message = new Message();
+                    message.what = MSG_SET_VALUE;
+                    message.arg1 = numSteps;
+                    mMessenger.send(message);
+                }
+
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override
@@ -252,15 +286,192 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            simpleStepDetector.updateAccel(
-                    event.timestamp, event.values[0], event.values[1], event.values[2]);
+//                            Toast.makeText(MessengerService.this, "" + "num " + numSteps, Toast.LENGTH_SHORT).show();
+        Calendar c1 = Calendar.getInstance();
+        final int hrs1 = c1.get(Calendar.HOUR_OF_DAY);
+        final int min1 = c1.get(Calendar.MINUTE);
+
+        if (updateTime(hrs1, min1).equalsIgnoreCase("12:05 am")) {
+            numSteps = 0;
+            preferences.edit().putInt("stepsIn", 0).commit();
+            preferences.edit().putString("waterTake", "0").commit();
+            preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
         }
+
+        if (preferences.getBoolean("logout", false)) {
+            numSteps = preferences.getInt("stepsIn", 0);
+            preferences.edit().putString("waterTake", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
+            preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putBoolean("logout", false).commit();
+
+        }
+
+        if (issenor) {
+            if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+                updateTimeOnEachSecond();
+                preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                Calendar c = Calendar.getInstance();
+                final int hrs = c.get(Calendar.HOUR_OF_DAY);
+                final int min = c.get(Calendar.MINUTE);
+
+                if (updateTime(hrs, min).equalsIgnoreCase("12:05 am")) {
+                    numSteps = 0;
+                    preferences.edit().putInt("stepsIn", 0).commit();
+                    preferences.edit().putString("waterTake", "0").commit();
+                    preferences.edit().putString("CaloriesCount", "0").commit();
+                    preferences.edit().putInt("percentage", 0).commit();
+                }
+
+                if (preferences.getBoolean("logout", false)) {
+                    numSteps = 0;
+                    preferences.edit().putInt("stepsIn", 0).commit();
+                    preferences.edit().putString("waterTake", "0").commit();
+                    preferences.edit().putString("CaloriesCount", "0").commit();
+                    preferences.edit().putInt("percentage", 0).commit();
+                    preferences.edit().putBoolean("logout", false).commit();
+                }
+
+                preferences.edit().putBoolean("saveSteps", false).commit();
+                mHandler.removeCallbacksAndMessages(null);
+                mHandler.postDelayed(mUpdate, 3000);
+                mUpdate = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!preferences.getBoolean("saveSteps", false)) {
+//                    Toast.makeText(MessengerService.this, "" + "num " + numSteps, Toast.LENGTH_SHORT).show();
+                            newSteps = 0;
+                        }
+
+                    }
+                };
+//                newSteps++;
+//                if (newSteps > 5) {
+//                    if (newSteps == 7) {
+//                        preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 7)).commit();
+//                    }
+//                }
+                float steps = event.values[0];
+
+//                textViewStepCounter.setText((int) steps + "");
+
+                if (preferences.getBoolean("resetStepReboot", true)) {
+                    if (preferences.getBoolean("resetStepFirstTime", true)) {
+                        preferences.edit().putBoolean("resetStepFirstTime", false).commit();
+                        preferences.edit().putInt("resetStep", (int) steps).commit();
+                        numSteps = preferences.getInt("resetStep", 0) - preferences.getInt("resetStep", 0);
+                        preferences.edit().putInt("firstLogin", preferences.getInt("stepsIn", 0)).commit();
+                        if (preferences.getInt("firstLogin", 0) != 0) {
+                            numSteps = preferences.getInt("firstLogin", 0);
+                        }
+                        preferences.edit().putInt("stepsIn", numSteps).commit();
+                        try {
+                            if (preferences.getBoolean("isDestroy", false)) {
+                            } else {
+                                Message message = new Message();
+                                message.what = MSG_SET_VALUE;
+                                message.arg1 = numSteps;
+                                mMessenger.send(message);
+                            }
+
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+
+                        if (preferences.getInt("firstLogin", 0) != 0) {
+                            numSteps = (int) steps - preferences.getInt("resetStep", 0);
+                            numSteps += preferences.getInt("firstLogin", 0);
+//                numSteps = (int) steps;
+                            preferences.edit().putInt("stepsIn", numSteps).commit();
+                            try {
+                                if (preferences.getBoolean("isDestroy", false)) {
+                                } else {
+                                    Message message = new Message();
+                                    message.what = MSG_SET_VALUE;
+                                    message.arg1 = numSteps;
+                                    mMessenger.send(message);
+                                }
+
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            numSteps = (int) steps - preferences.getInt("resetStep", 0);
+//                numSteps = (int) steps;
+                            preferences.edit().putInt("stepsIn", numSteps).commit();
+                            try {
+                                if (preferences.getBoolean("isDestroy", false)) {
+                                } else {
+                                    Message message = new Message();
+                                    message.what = MSG_SET_VALUE;
+                                    message.arg1 = numSteps;
+                                    mMessenger.send(message);
+                                }
+
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                } else {
+                    numSteps = preferences.getInt("stepsIn", 0) + (int) steps;
+                    preferences.edit().putInt("stepsIn", numSteps).commit();
+                    try {
+                        if (preferences.getBoolean("isDestroy", false)) {
+                        } else {
+                            Message message = new Message();
+                            message.what = MSG_SET_VALUE;
+                            message.arg1 = numSteps;
+                            mMessenger.send(message);
+                        }
+
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+        } else {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                simpleStepDetector.updateAccel(
+                        event.timestamp, event.values[0], event.values[1], event.values[2]);
+            }
+        }
+
 
     }
 
 
     public void updateTimeOnEachSecond() {
+//        if (preferences.getBoolean("stepFirstTime", true)) {
+//            preferences.edit().putBoolean("stepFirstTime", false).commit();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 55);
+        calendar.set(Calendar.SECOND, 05);
+//            Toast.makeText(MessengerService.this, "set hua" + calendar.getTimeInMillis(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("steps");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(), 234324243, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (Build.VERSION.SDK_INT >= 23) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+// Wakes up the device in Doze Mode
+        } else if (Build.VERSION.SDK_INT >= 19) {
+// Wakes up the device in Idle Mode
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        } else {
+// Old APIs
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+//        }
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
 
@@ -274,97 +485,25 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
                     @Override
                     public void run() {
-//                        Toast.makeText(MessengerService.this, "" + updateTime(hrs, min), Toast.LENGTH_SHORT).show();
+//                        Log.e("hi", "hi" + updateTime(hrs, min));
                         // display toast
-                        if (updateTime(hrs, min).equalsIgnoreCase("12:00 am")) {
-                            preferences.edit().putInt("stepsIn", 0).commit();
-                            numSteps = 0;
-                            double wirght = 0;
-                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-                                wirght = 40;
-                            } else {
-                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-                            }
 
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            Intent intent = new Intent();
-                            intent.setAction("steps");
-                            intent.putExtra("stepsCount", "" + 0);
-                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.##").format(i2));
-                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-                            intent.putExtra("newTime", "11:00 pm");
-                            sendBroadcast(intent);
+                        if (updateTime(hrs, min).equalsIgnoreCase("12:05 am")) {
+                            numSteps = 0;
+                            preferences.edit().putInt("stepsIn", 0).commit();
+                            preferences.edit().putString("waterTake", "0").commit();
+                            preferences.edit().putString("CaloriesCount", "0").commit();
+                            preferences.edit().putInt("percentage", 0).commit();
+
                         }
-//                        else if (updateTime(hrs, min).equalsIgnoreCase("8:00 am")) {
-//                            double wirght = 0;
-//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-//                                wirght = 40;
-//                            } else {
-//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-//                            }
-//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-//                            Intent intent = new Intent();
-//                            intent.setAction("steps");
-//                            intent.putExtra("stepsCount", "" + numSteps);
-//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-//                            intent.putExtra("newTime", "11:00 pm");
-//                            sendBroadcast(intent);
-//                        }
-//                        else if (updateTime(hrs, min).equalsIgnoreCase("12:00 pm")) {
-//                            double wirght = 0;
-//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-//                                wirght = 40;
-//                            } else {
-//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-//                            }
-//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-//                            Intent intent = new Intent();
-//                            intent.setAction("steps");
-//                            intent.putExtra("stepsCount", "" + numSteps);
-//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-//                            intent.putExtra("newTime", "11:00 pm");
-//                            sendBroadcast(intent);
-//                        } else if (updateTime(hrs, min).equalsIgnoreCase("8:00 pm")) {
-//                            double wirght = 0;
-//                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-//                                wirght = 40;
-//                            } else {
-//                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-//                            }
-//                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-//                            Intent intent = new Intent();
-//                            intent.setAction("steps");
-//                            intent.putExtra("stepsCount", "" + numSteps);
-//                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-//                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-//                            intent.putExtra("newTime", "11:00 pm");
-//                            sendBroadcast(intent);
-//                        }
-                        else if (updateTime(hrs, min).equalsIgnoreCase("11:59 pm")) {
-                            double wirght = 0;
-                            if (preferences.getString("kg", "").equalsIgnoreCase("0") || preferences.getString("kg", "").equalsIgnoreCase(null) || preferences.getString("kg", "").equalsIgnoreCase("")) {
-                                wirght = 40;
-                            } else {
-                                wirght = Double.parseDouble(preferences.getString("kg", ""));
-                            }
-                            double i2 = Utils.getCaloriesBurnt((wirght * 2.20462), numSteps);
-                            Intent intent = new Intent();
-                            intent.setAction("steps");
-                            intent.putExtra("stepsCount", "" + numSteps);
-                            intent.putExtra("caloriesBurnt", "" + new DecimalFormat("###.###").format(i2));
-                            intent.putExtra("waterin", "" + preferences.getString("waterin", ""));
-                            intent.putExtra("newTime", "11:59 pm");
-                            sendBroadcast(intent);
-                        }
+
 
                     }
 
                 });
 
             }
-        }, 0, 1000 * 60);
+        }, 0, 1000 * 40);
     }
 
 

@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -156,12 +158,14 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
                         dismiss();
                     }
                 } else {
-                    for (int i = 0; i < prescriptionImageListss.size(); i++) {
-                        if (prescriptionImageListss.get(i).isChecked() == true) {
-                            prescriptionImageListss.remove(i);
+                    for (int j = prescriptionImageListss.size() - 1; j >= 0; j--) {
+                        if (prescriptionImageListss.get(j).isChecked() == true) {
+                            prescriptionImageListss.remove(j);
                         }
                     }
+                    btn_delete.setImageResource(R.drawable.delete_red);
                     isdelete = false;
+                    isclick = false;
                     addImageAdpter = new AddImageDoneAdpter(CureFull.getInstanse().getActivityIsntanse(),
                             prescriptionImageListss, isdelete, DialogFullViewClickImage.this);
                     recyclerViewAddImage.setAdapter(addImageAdpter);

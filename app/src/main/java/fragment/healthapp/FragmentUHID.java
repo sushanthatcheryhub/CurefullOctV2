@@ -56,7 +56,6 @@ public class FragmentUHID extends BaseBackHandlerFragment {
     private RecyclerView recyclerView_notes;
     private List<UHIDItems> uhidItemses;
     private UHID_ListAdpter uhid_listAdpter;
-    private RequestQueue requestQueue;
     private LinearLayout liner_add_new, login_liner;
     private EditText input_name, edt_phone;
     private TextView btn_add, txt_no_prescr;
@@ -191,9 +190,6 @@ public class FragmentUHID extends BaseBackHandlerFragment {
     private void getAllUserList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
                     new Response.Listener<String>() {
                         @Override
@@ -252,9 +248,6 @@ public class FragmentUHID extends BaseBackHandlerFragment {
 
 
     public void jsonUploadUHID(String name, String mobileNumber) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toUHIDADD(name, mobileNumber);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.CfUuhidUpload, data,

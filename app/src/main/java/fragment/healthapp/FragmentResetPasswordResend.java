@@ -36,7 +36,6 @@ public class FragmentResetPasswordResend extends Fragment {
 
     private View rootView;
     private TextView btn_next, btn_resend, txt_top, txt_below;
-    private RequestQueue requestQueue;
     private String mob_number;
     private LinearLayout liner_resend, liner_next;
     private String checkEmail;
@@ -109,9 +108,6 @@ public class FragmentResetPasswordResend extends Fragment {
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + mob_number + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:focusableInTouchMode="true"
     android:clickable="true">
 
@@ -92,8 +92,8 @@
                         android:nextFocusDown="@+id/input_password"
                         android:nextFocusForward="@+id/input_password"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_mid_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -116,8 +116,8 @@
                         android:hint="Password"
                         android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/grey_interpid" />
+                        android:textColor="@color/health_mid_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -128,7 +128,7 @@
                     android:orientation="horizontal">
 
 
-                    <customsTextViews.CustomTextViewMontserratHairLine
+                    <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/btn_click_forgot"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="0dp"
@@ -139,7 +139,7 @@
                         android:paddingBottom="@dimen/_5dp"
                         android:paddingTop="@dimen/_5dp"
                         android:text="@string/forgot_password"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/health_yellow" />
 
                 </LinearLayout>
 
@@ -160,7 +160,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_10dp"
                         android:text="Log in"
-                        android:textColor="@color/health_login_text" />
+                        android:textColor="@color/white" />
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -208,7 +208,7 @@
                             android:gravity="center"
                             android:padding="@dimen/_10dp"
                             android:text="Sign Up"
-                            android:textColor="@color/health_login_text"
+                            android:textColor="@color/white"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -225,7 +225,7 @@
                     android:orientation="horizontal">
 
 
-                    <customsTextViews.CustomTextViewMontserratHairLine
+                    <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_term_conditions"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
@@ -234,7 +234,7 @@
                         android:paddingBottom="@dimen/_5dp"
                         android:paddingTop="@dimen/_5dp"
                         android:text="@string/forgot_password"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/health_light_gray" />
 
                 </LinearLayout>
 

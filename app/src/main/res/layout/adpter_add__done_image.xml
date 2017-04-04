@@ -24,7 +24,7 @@
                 android:id="@+id/image_item"
                 android:layout_width="@dimen/_80dp"
                 android:layout_height="@dimen/_80dp"
-                android:layout_margin="@dimen/_1dp"
+                android:layout_margin="@dimen/_2dp"
                 android:scaleType="fitXY"
               />
 
@@ -38,7 +38,7 @@
                 android:background="@color/health_hint_color_new"
                 android:gravity="center"
                 android:text="View"
-                android:textColor="@color/health_login_text"
+                android:textColor="@color/health_yellow"
                 android:textStyle="bold" />
 
             <CheckBox

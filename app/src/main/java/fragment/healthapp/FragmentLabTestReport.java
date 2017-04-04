@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,13 +54,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
 import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
 import com.nguyenhoanglam.imagepicker.model.Image;
@@ -141,7 +141,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private List<PrescriptionImageList> prescriptionImageLists;
     private String selectUploadPrescription = "";
     private int value = 0;
-    private RequestQueue requestQueue;
     private ListPopupWindow listPopupWindow4;
     private List<PrescriptionDoctorName> prescriptionDoctorNames;
     private List<PrescriptionDiseaseName> prescriptionDiseaseNames;
@@ -173,6 +172,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private DialogLoader dialogLoader;
     private ArrayList<Image> images = null;
     private int REQUEST_CODE_PICKER = 2002;
+    static SharedPreferences preferences;
 
     @Override
     public boolean onBackPressed() {
@@ -224,6 +224,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         dialogLoader.setCancelable(false);
         dialogLoader.setCanceledOnTouchOutside(false);
         dialogLoader.hide();
+        preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
         AppPreference.getInstance().setFragmentHealthpre(false);
@@ -458,10 +459,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                 liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_date.setTextColor(getResources().getColor(R.color.white));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
             }
         }
     };
@@ -498,9 +499,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     liner_filter_date.setBackgroundResource(R.color.health_yellow);
                     liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                     liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_date.setTextColor(getResources().getColor(R.color.white));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 }
                 break;
             case R.id.liner_btn_done:
@@ -521,11 +522,11 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 liner_filter_date.setBackgroundResource(R.color.health_yellow);
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                 liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_date.setTextColor(getResources().getColor(R.color.white));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
                     showAdpter(filterDataReports.getDateList(), "date");
                 }
@@ -534,11 +535,11 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 liner_filter_date.setBackgroundResource(R.color.transprent_new);
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                 liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
-                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_doctor.setTextColor(getResources().getColor(R.color.white));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
                     showAdpter(filterDataReports.getDoctorNameList(), "doctor");
                 }
@@ -547,11 +548,11 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 liner_filter_date.setBackgroundResource(R.color.transprent_new);
                 liner_filter_disease.setBackgroundResource(R.color.health_yellow);
                 liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.white));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
                     showAdpter(filterDataReports.getDiseaseNameList(), "disease");
                 }
@@ -562,10 +563,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                 liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
                 liner_filter_uploadby.setBackgroundResource(R.color.health_yellow);
-                txt_date.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_uploadby.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.white));
                 if (filterDataReports.getUploadedByList() != null && filterDataReports.getUploadedByList().size() > 0) {
                     showAdpter(filterDataReports.getUploadedByList(), "uploadBy");
                 }
@@ -591,9 +592,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     liner_filter_date.setBackgroundResource(R.color.health_yellow);
                     liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                     liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_date.setTextColor(getResources().getColor(R.color.white));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
 
                 }
 
@@ -1082,9 +1083,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     liner_filter_date.setBackgroundResource(R.color.health_yellow);
                     liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                     liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                    txt_date.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                    txt_doctor.setTextColor(getResources().getColor(R.color.health_yellow));
-                    txt_diease.setTextColor(getResources().getColor(R.color.health_yellow));
+                    txt_date.setTextColor(getResources().getColor(R.color.white));
+                    txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
                     showAdpter(filterDataReports.getDateList(), "date");
                 }
 
@@ -1428,9 +1430,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             }
 
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
                     new Response.Listener<String>() {
                         @Override
@@ -1450,6 +1449,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                 e.printStackTrace();
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                getFilenameDelete();
+                                getFilenameDeleteDialog();
                                 labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
                                 if (labReportListViewsDummy != null && labReportListViewsDummy.size() > 0) {
                                     isList = true;
@@ -1549,9 +1550,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             }
             offset = +offsets;
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LAB_TEST_REPORT_list + "?limit=10&offset=" + offset + "&sortBy=" + clickShortBy + s,
                     new Response.Listener<String>() {
                         @Override
@@ -1640,9 +1638,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private void getAllHealthUserList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
                     new Response.Listener<String>() {
                         @Override
@@ -1677,9 +1672,23 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             } else {
                                 txt_sort_user_name.setText("User Name");
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                txt_no_prescr.setText(MyConstants.CustomMessages.No_DATA);
                                 txt_no_prescr.setVisibility(View.VISIBLE);
                                 img_btn_refresh.setVisibility(View.VISIBLE);
+
+                                try {
+                                    JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                    JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                                    if (json12.getInt("errorCode") == 110001) {
+                                        preferences.edit().putBoolean("logout", true).commit();
+                                        AppPreference.getInstance().setIsFirstTimeSteps(false);
+                                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                        CureFull.getInstanse().getFlowInstanse()
+                                                .replace(new FragmentLogin(), false);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     },
@@ -1687,7 +1696,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                             txt_no_prescr.setVisibility(View.VISIBLE);
                             img_btn_refresh.setVisibility(View.VISIBLE);
                             error.printStackTrace();
@@ -1720,9 +1729,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     private void getSelectedUserList(String cfUuhid) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECTED_USER_LIST + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
@@ -1769,6 +1775,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
 
     public void checkList() {
+        getAllFilterData();
         getLabReportList();
     }
 
@@ -1874,9 +1881,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 s.append("&uploadedBy=" + clickUploadBy);
             }
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.REPORTS_FILTER_DATA + s,
                     new Response.Listener<String>() {
                         @Override
@@ -1978,9 +1982,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
 
     public void jsonSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease, final List<PrescriptionImageList> file) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSaveUploadLabReposrtMetadata(prescriptionDate, doctorName, disease);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SAVE_UPLOAD_LAB_REPORTS_METADATA, data,
@@ -2042,9 +2043,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     }
 
     private void getSaveUploadPrescriptionMetadata(final String prescriptionId, final String cfUuhidId, final List<PrescriptionImageList> file) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
                 new Response.Listener<String>() {
                     @Override
@@ -2194,9 +2192,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
 
     public void jsonSaveUploadedPrescriptionData(String prescriptionId, String cfuuhidId, final List<PrescriptionImageList> file) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSaveUploadedLabReportData(prescriptionId, cfuuhidId, file);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.UPLOADED_LAB_REPORTS_DATA, data,
@@ -2358,7 +2353,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             out = new FileOutputStream(filename);
 
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 98, out);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -2377,6 +2372,23 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
         return uriSting;
 
     }
+
+    public void getFilenameDelete() {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "CureFull/Images");
+        if (file.exists()) {
+            file.delete();
+        }
+
+    }
+
+    public void getFilenameDeleteDialog() {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        if (file.exists()) {
+            file.delete();
+        }
+
+    }
+
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);

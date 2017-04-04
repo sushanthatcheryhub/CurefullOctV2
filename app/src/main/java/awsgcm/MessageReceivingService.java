@@ -61,6 +61,7 @@ public class MessageReceivingService extends Service {
 //            message += (line + "\n");
 //            Log.e("key"," "+key);
 //        }
+
         if (!message.equalsIgnoreCase("")) {
             try {
                 JSONObject jsonObject = new JSONObject(message);
@@ -105,6 +106,7 @@ public class MessageReceivingService extends Service {
                             Settings.Secure.ANDROID_ID);
                     sharedPreferencesUserLogin.edit()
                             .putString("tokenid", token).commit();
+//                    Log.e("tokenid",""+token);
                     sharedPreferencesUserLogin.edit()
                             .putString("android_id", android_id).commit();
                 } catch (IOException e) {

@@ -9,7 +9,7 @@
         android:id="@+id/top_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#A91922"
+        android:background="@color/white"
         android:elevation="@dimen/_15dp"
         android:orientation="horizontal"
         android:visibility="gone">
@@ -33,7 +33,7 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="Medicine"
-                android:textColor="@color/health_yellow_bottom"
+                android:textColor="@color/health_dark_gray"
                 android:textStyle="bold" />
 
             <ImageView
@@ -49,7 +49,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/health_yellow_bottom" />
+            android:background="@color/health_light_gray" />
 
         <LinearLayout
             android:id="@+id/liner_doctor_visit"
@@ -69,7 +69,7 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="Doctor Visit"
-                android:textColor="@color/health_yellow_bottom"
+                android:textColor="@color/health_dark_gray"
                 android:textStyle="bold" />
 
             <ImageView
@@ -84,7 +84,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/health_yellow_bottom" />
+            android:background="@color/health_light_gray" />
 
         <LinearLayout
             android:id="@+id/liner_lab_test"
@@ -105,7 +105,7 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:text="Lab Test"
-                android:textColor="@color/health_yellow_bottom"
+                android:textColor="@color/health_dark_gray"
                 android:textStyle="bold" />
 
             <ImageView
@@ -118,6 +118,8 @@
         </LinearLayout>
 
     </LinearLayout>
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -171,7 +173,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#A91922"
+        android:background="@color/health_yellow"
         android:elevation="@dimen/_15dp"
         android:visibility="gone">
 

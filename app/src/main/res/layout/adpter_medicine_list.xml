@@ -32,7 +32,7 @@
                     android:gravity="left"
                     android:padding="@dimen/_5dp"
                     android:text="Type"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_dark_gray" />
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_btn_remove"
@@ -86,7 +86,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="Tablet"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
                 </RelativeLayout>
 
 
@@ -118,7 +118,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="Capsule"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
                 </RelativeLayout>
 
 
@@ -150,7 +150,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="Syrup"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
                 </RelativeLayout>
 
 
@@ -182,7 +182,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="Drops"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
                 </RelativeLayout>
 
 
@@ -214,7 +214,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="Injection"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
                 </RelativeLayout>
 
 
@@ -246,7 +246,7 @@
                             android:paddingTop="@dimen/_5dp"
                             android:singleLine="true"
                             android:text="Doctor Name"
-                            android:textColor="@color/health_yellow"
+                            android:textColor="@color/health_dark_gray"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -280,8 +280,8 @@
                                 android:nextFocusRight="@+id/edt_medicine_name"
                                 android:padding="@dimen/_4dp"
                                 android:singleLine="true"
-                                android:textColor="@color/health_yellow"
-                                android:textColorHint="@color/health_yellow" />
+                                android:textColor="@color/health_mid_gray"
+                                android:textColorHint="@color/health_light_gray" />
 
                         </LinearLayout>
 
@@ -309,7 +309,7 @@
                             android:paddingTop="@dimen/_5dp"
                             android:singleLine="true"
                             android:text="Medicine Name"
-                            android:textColor="@color/health_yellow"
+                            android:textColor="@color/health_dark_gray"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -342,8 +342,8 @@
                                 android:maxLength="35"
                                 android:padding="@dimen/_4dp"
                                 android:singleLine="true"
-                                android:textColor="@color/health_yellow"
-                                android:textColorHint="@color/health_yellow" />
+                                android:textColor="@color/health_mid_gray"
+                                android:textColorHint="@color/health_light_gray" />
 
                         </LinearLayout>
 
@@ -374,7 +374,7 @@
                         android:paddingTop="@dimen/_5dp"
                         android:singleLine="true"
                         android:text="Quantity"
-                        android:textColor="@color/health_yellow"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -396,7 +396,7 @@
                         android:paddingTop="@dimen/_5dp"
                         android:singleLine="true"
                         android:text="0"
-                        android:textColor="@color/health_yellow"
+                        android:textColor="@color/health_mid_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -457,7 +457,7 @@
                     android:gravity="center_vertical"
                     android:singleLine="true"
                     android:text="When "
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_dark_gray"
                     android:textStyle="bold" />
 
                 <RadioGroup
@@ -477,7 +477,7 @@
                         android:clickable="true"
                         android:paddingLeft="@dimen/_5dp"
                         android:text="Before Meal"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_mid_gray" />
 
                     <customsTextViews.CustomRadioButtonOpenSanRegular
                         android:id="@+id/radioAfter"
@@ -489,7 +489,7 @@
                         android:clickable="true"
                         android:paddingLeft="@dimen/_5dp"
                         android:text="After Meal"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_mid_gray" />
 
                 </RadioGroup>
 
@@ -510,7 +510,7 @@
                     android:layout_gravity="center_horizontal"
                     android:background="@android:color/transparent"
                     android:text="Add more medicine if the schedule is same"
-                    android:textColor="@color/health_yellow"
+                    android:textColor="@color/health_dark_gray"
                     android:visibility="gone" />
 
             </LinearLayout>

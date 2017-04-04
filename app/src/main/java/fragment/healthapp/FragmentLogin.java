@@ -37,15 +37,12 @@ import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.ParseError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +61,6 @@ import awsgcm.MessageReceivingService;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import dialog.DialogTCFullView;
-import item.property.EduationDetails;
 import item.property.UserInfo;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -87,7 +83,6 @@ public class FragmentLogin extends Fragment implements
     private boolean showPwd = false;
     private AutoCompleteTextView edtInputEmail;
     private EditText edtInputPassword;
-    private RequestQueue requestQueue;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
@@ -151,7 +146,7 @@ public class FragmentLogin extends Fragment implements
 
         Spannable sb1 = new SpannableString(meassgeNew);
         sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
-                        .getColor(R.color.white)), meassgeNew.indexOf(you),
+                        .getColor(R.color.health_light_gray)), meassgeNew.indexOf(you),
                 meassgeNew.indexOf(you) + you.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
@@ -162,7 +157,7 @@ public class FragmentLogin extends Fragment implements
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
-                        .getColor(R.color.white)), meassgeNew.indexOf(submit),
+                        .getColor(R.color.health_light_gray)), meassgeNew.indexOf(submit),
                 meassgeNew.indexOf(submit) + submit.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         txt_term_conditions.setText(sb1);
@@ -231,9 +226,12 @@ public class FragmentLogin extends Fragment implements
                 return false;
             }
         });
-        if (HandlePermission.checkPermissionReadContact(CureFull.getInstanse().getActivityIsntanse())) {
-            addAdapterToViews();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (HandlePermission.checkPermissionReadContact(CureFull.getInstanse().getActivityIsntanse())) {
+                addAdapterToViews();
+            }
         }
+
 //        AppPreference.getInstance().clearAllData();
         AppPreference.getInstance().setIsLogin(false);
         return rootView;
@@ -333,16 +331,19 @@ public class FragmentLogin extends Fragment implements
 
 
         if (!validateEmail()) {
+            login_button.setEnabled(true);
             return;
         }
 
         if (!validatePassword()) {
+            login_button.setEnabled(true);
             return;
         }
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             jsonLoginCheck();
         } else {
+            login_button.setEnabled(true);
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
         }
@@ -369,9 +370,6 @@ public class FragmentLogin extends Fragment implements
     }
 
     public void jsonLoginCheck() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toLogin(edtInputEmail.getText().toString().trim(), edtInputPassword.getText().toString().trim());
 
@@ -379,6 +377,7 @@ public class FragmentLogin extends Fragment implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+//                        Log.e("res", "" + response.toString());
                         login_button.setEnabled(true);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
@@ -400,10 +399,9 @@ public class FragmentLogin extends Fragment implements
                                             "123").equalsIgnoreCase("123")) {
                                         sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
                                         CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
-                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                                         return;
                                     }
-
 
                                     if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
                                         AppPreference.getInstance().setIsLoginFirst(false);
@@ -432,7 +430,7 @@ public class FragmentLogin extends Fragment implements
                                     preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
                                     preferences.edit().putString("email_id", userInfo.getUser_id()).commit();
                                     preferences.edit().putString("cf_uuhid", userInfo.getCf_uuhid()).commit();
-                                    preferences.edit().putString("user_id",userInfo.getUser_id_profile()).commit();
+                                    preferences.edit().putString("user_id", userInfo.getUser_id_profile()).commit();
 
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
@@ -447,7 +445,12 @@ public class FragmentLogin extends Fragment implements
                                             "123");
                                     String device_Id = sharedPreferencesUserLogin.getString("android_id",
                                             "123");
-                                    jsonSaveNotification(token_Id, device_Id);
+
+                                    if (AppPreference.getInstance().isFirstTimeStepsNotifictaion()) {
+//                                        Log.e("aaya","kya");
+                                        AppPreference.getInstance().setIsFirstTimeNotifictaion(false);
+                                        jsonSaveNotification(token_Id, device_Id);
+                                    }
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
                                     CureFull.getInstanse().getFlowInstanse()
                                             .replace(new FragmentLandingPage(), false);
@@ -477,6 +480,7 @@ public class FragmentLogin extends Fragment implements
 
             @Override
             public void onErrorResponse(VolleyError error) {
+//                Log.e("error", "" + error.getMessage());
                 login_button.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
@@ -542,9 +546,6 @@ public class FragmentLogin extends Fragment implements
     }
 
     public void jsonSaveNotification(String registrationToken, String deviceId) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 
 //        if (registrationToken.contains(":")) {
 //            String[] token = registrationToken.split(":");

@@ -54,13 +54,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -131,7 +129,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     private File dir;
     private File file;
     private String fileName = "my_image.jpg";
-    private RequestQueue requestQueue;
     private int otp_number;
     private TextInputLayout input_layout_otp;
     private boolean isOtp = false;
@@ -888,8 +885,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     }
 
 
-
-
     public static HashMap<String, File> getFileParam(String image) {
         HashMap<String, File> param = new HashMap<>();
         param.put("profileImage", new File(image));
@@ -950,32 +945,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
             return;
         }
 
-        if (!isOtp) {
-            if (!AppPreference.getInstance().getMobileNumber().equalsIgnoreCase(edt_phone.getText().toString().trim())) {
-                isOtp = true;
-                sendOTPService();
-                CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Otp Sent Please check your mobile");
-                input_layout_otp.setVisibility(View.VISIBLE);
-                return;
-            } else {
-                isOtp = false;
-                input_layout_otp.setVisibility(View.GONE);
-            }
-
-        }
-
-
         if (isOtp) {
             if (!validateOtp()) {
                 return;
             }
         }
 
-
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 
         final String name;
         final String mobNo;
@@ -1042,6 +1017,21 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
                                 if (json.getString("payload").equals(null) || json.getString("payload").equalsIgnoreCase("No Data")) {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + "No changed in profile");
                                 } else {
+
+                                    if (!isOtp) {
+                                        if (!AppPreference.getInstance().getMobileNumber().equalsIgnoreCase(edt_phone.getText().toString().trim())) {
+                                            isOtp = true;
+                                            sendOTPService();
+                                            CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
+                                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Otp Sent Please check your mobile");
+                                            input_layout_otp.setVisibility(View.VISIBLE);
+                                            return;
+                                        } else {
+                                            isOtp = false;
+                                            input_layout_otp.setVisibility(View.GONE);
+                                        }
+
+                                    }
                                     isOtp = false;
                                     img_password_icon.setImageResource(R.drawable.password_icon);
                                     btn_click_change.setText("Change password");
@@ -1184,9 +1174,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     private void sendOTPService() {
         Random rnd = new Random();
         otp_number = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + edt_phone.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(otp_number) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
@@ -1207,13 +1194,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     }
 
 
-
-
     private void getSaveUploadPrescriptionMetadata(final File file) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.TEMPORY_CREDENTIALS,
                 new Response.Listener<String>() {
                     @Override
@@ -1338,19 +1320,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
 
 
     private void sendImgProfileToServer(final String url) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.UPLOADED_PROFILE + url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        profile_image_view.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitter(rootView);
-                            }
-                        });
+
+                        getFilenameDelete();
                         AppPreference.getInstance().setProfileImage(url);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         progressBar.setVisibility(View.VISIBLE);
@@ -1536,6 +1511,15 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
 
     }
 
+
+    public void getFilenameDelete() {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "profile");
+        if (file.exists()) {
+            file.delete();
+        }
+
+    }
+
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);
         Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(contentUri, null, null, null, null);
@@ -1567,7 +1551,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     }
 
 
-
     // Recomended builder
     public void start() {
         CureFull.getInstanse().setPostionGet(2001);
@@ -1586,6 +1569,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
 
     @Override
     public void optDonePath(ArrayList<Image> path, String pathCAmera, int id) {
+        profile_image_view.post(new Runnable() {
+            @Override
+            public void run() {
+                launchTwitter(rootView);
+            }
+        });
         if (id == CAPTURE_MEDIA) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             getSaveUploadPrescriptionMetadata(new File(pathCAmera));
@@ -1599,5 +1588,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
     @Override
     public void optEmailUpdate() {
         input_email.setText("" + AppPreference.getInstance().getUserID());
+        input_email.clearFocus();
     }
 }

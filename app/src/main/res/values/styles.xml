@@ -224,10 +224,10 @@
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/health_hint_color</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
-        <item name="colorAccent">@color/white</item>
-        <item name="colorControlNormal">@color/health_edit_line</item>
-        <item name="colorControlActivated">@color/white</item>
-        <item name="colorControlHighlight">@color/white</item>
+        <item name="colorAccent">@color/health_light_gray</item>
+        <item name="colorControlNormal">@color/health_light_gray</item>
+        <item name="colorControlActivated">@color/health_light_gray</item>
+        <item name="colorControlHighlight">@color/health_light_gray</item>
 
     </style>
 
@@ -269,7 +269,7 @@
     </style>
 
     <style name="TickerTextAppearance2">
-        <item name="android:textColor">@color/health_red_drawer</item>
+        <item name="android:textColor">@color/health_yellow</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
     </style>

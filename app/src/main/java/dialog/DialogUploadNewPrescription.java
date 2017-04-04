@@ -250,7 +250,7 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
             out = new FileOutputStream(filename);
 
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 98, out);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -269,6 +269,8 @@ public class DialogUploadNewPrescription extends Dialog implements View.OnClickL
         return uriSting;
 
     }
+
+
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);

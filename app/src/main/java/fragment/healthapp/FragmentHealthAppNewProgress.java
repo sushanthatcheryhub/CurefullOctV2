@@ -83,7 +83,6 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     private SeekArc seekArcComplete;
     private static final char[] NUMBER_LIST = TickerUtils.getDefaultNumberList();
     private ListPopupWindow listPopupWindow;
-    private RequestQueue requestQueue;
     private String fromdate, date, frequency, type;
     private List<GraphYearMonthDeatilsList> graphViewsList;
     private TextView btn_set_goal_target;
@@ -152,7 +151,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
 //        }
 
         btn_set_goal_target.setText("Goals - " + AppPreference.getInstance().getStepsCountTarget() + " steps");
-        txt_water_intake_done.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(AppPreference.getInstance().getWaterInTake()))) + " L Drinked");
+        txt_water_intake_done.setText("" + new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(preferences.getString("waterTake", "0")))) + " L Drinked");
 
         if (AppPreference.getInstance().getWaterInTakeLeft().equalsIgnoreCase("0")) {
             txt_water_intake_left.setText("0 L Left");
@@ -183,9 +182,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
         txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
 //        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         tickerTotal.setText("" + preferences.getInt("stepsIn", 0));
-        text_calories_count.setText("" + AppPreference.getInstance().getCaloriesCount() + " kcal");
-        ticker1.setText("" + AppPreference.getInstance().getPercentage() + "%");
-        seekArcComplete.setProgress(AppPreference.getInstance().getPercentage());
+        text_calories_count.setText("" + preferences.getString("CaloriesCount", "0") + " kcal");
+        ticker1.setText("" +preferences.getInt("percentage", 0) + "%");
+        seekArcComplete.setProgress(preferences.getInt("percentage", 0));
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 
         horizontal_recycler_view = (HorizontalRecyclerView) rootView.findViewById(R.id.horizontal_recycler_view);
@@ -282,9 +281,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                 isFirstTime = false;
                 AppPreference.getInstance().setGraphDate("");
                 liner_avg.setVisibility(View.GONE);
-                btn_daily.setTextColor(Color.parseColor("#CC2C34"));
-                btn_monthy.setTextColor(Color.parseColor("#fdb832"));
-                btn_weekly.setTextColor(Color.parseColor("#fdb832"));
+                btn_daily.setTextColor(Color.parseColor("#ffffff"));
+                btn_monthy.setTextColor(Color.parseColor("#151515"));
+                btn_weekly.setTextColor(Color.parseColor("#151515"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
@@ -298,9 +297,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 isFirstTime = true;
                 AppPreference.getInstance().setGraphDate("");
-                btn_daily.setTextColor(Color.parseColor("#fdb832"));
-                btn_monthy.setTextColor(Color.parseColor("#fdb832"));
-                btn_weekly.setTextColor(Color.parseColor("#CC2C34"));
+                btn_daily.setTextColor(Color.parseColor("#151515"));
+                btn_monthy.setTextColor(Color.parseColor("#151515"));
+                btn_weekly.setTextColor(Color.parseColor("#ffffff"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded);
@@ -318,9 +317,9 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 isFirstTime = true;
                 AppPreference.getInstance().setGraphDate("");
-                btn_daily.setTextColor(Color.parseColor("#fdb832"));
-                btn_monthy.setTextColor(Color.parseColor("#CC2C34"));
-                btn_weekly.setTextColor(Color.parseColor("#fdb832"));
+                btn_daily.setTextColor(Color.parseColor("#151515"));
+                btn_monthy.setTextColor(Color.parseColor("#ffffff"));
+                btn_weekly.setTextColor(Color.parseColor("#151515"));
                 btn_daily.setBackgroundResource(R.drawable.today_edit_rounded_trans);
                 btn_monthy.setBackgroundResource(R.drawable.today_edit_rounded);
                 btn_weekly.setBackgroundResource(R.drawable.today_edit_rounded_trans);
@@ -433,17 +432,29 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                     seekArcComplete.setProgress(b);
 ////                    setProgressUpdateAnimation(b);
                     ticker1.setText(b + "%");
-                    AppPreference.getInstance().setPercentage(b);
+                    preferences.edit().putInt("percentage", b).commit();
                     tickerTotal.setText("" + msg.arg1);
 
-                    double wirght;
-                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
-                        wirght = 40;
-                    } else {
-                        wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
-                    }
-                    double i2 = Utils.getCaloriesBurnt((wirght * 2.2), msg.arg1);
-                    text_calories_count.setText("" + new DecimalFormat("###.##").format(i2) + " kcal");
+                    double wirght = 0.0;
+////                    if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("0.0") || AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
+////                        wirght = 40;
+////                    } else {
+////                        wirght = Double.parseDouble(AppPreference.getInstance().getGoalWeightKg());
+////                    }
+//                    if (AppPreference.getInstance().getGoalWeightGrams().equalsIgnoreCase("")) {
+//                        wirght = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
+//                    } else {
+//                        if (AppPreference.getInstance().getGoalWeightKg().equalsIgnoreCase("")) {
+//                            wirght = 40;
+//                        } else {
+//                            wirght = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
+//
+//                        }
+//
+//                    }
+                    double i2 = Utils.getCaloriesBurnt(wirght, msg.arg1);
+                    text_calories_count.setText("" + new DecimalFormat("###.#").format(i2) + " kcal");
+                    preferences.edit().putString("CaloriesCount", "" + new DecimalFormat("###.#").format(i2)).commit();
 //                    text_calories_count.setText("" + Utils.getCaloriesBurnt((int) (kg * 2.20462), msg.arg1)+"kcal");
                     break;
                 default:
@@ -455,12 +466,7 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
     public void jsonGetGraphDeatils(String fromDate, String date, final String frequency, final String type) {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             JSONObject data1 = JsonUtilsObject.getGraphDeatils(fromDate, date, frequency, type);
-
-
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_GRAPH, data1,
                     new Response.Listener<JSONObject>() {
                         @Override

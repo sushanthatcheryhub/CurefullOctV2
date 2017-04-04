@@ -48,7 +48,6 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     private View rootView;
     private TextView btn_done;
     private EditText edt_deatils, edt_subject;
-    private RequestQueue requestQueue;
 
 //    @Override
 //    public boolean onBackPressed() {
@@ -65,7 +64,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
         rootView = inflater.inflate(R.layout.fragment_contact,
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(false);
-        CureFull.getInstanse().getActivityIsntanse().selectedNav(4);
+        CureFull.getInstanse().getActivityIsntanse().selectedNav(5);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(true);
         CureFull.getInstanse().getActivityIsntanse().showUpButton(true);
@@ -128,7 +127,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     private boolean validateDeatils() {
         String email = edt_deatils.getText().toString().trim();
         if (email.isEmpty()) {
-            edt_deatils.setError("Deatils cannot be left blank.");
+            edt_deatils.setError("Details cannot be left blank.");
             requestFocus(edt_deatils);
             return false;
         } else {
@@ -147,12 +146,7 @@ public class FragmentContact extends BaseBackHandlerFragment implements View.OnC
     public void jsonCotactCheck() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             JSONObject data = JsonUtilsObject.toCotact(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim());
-
-
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_CONTACT, data,
                     new Response.Listener<JSONObject>() {
                         @Override

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true">
 
     <RelativeLayout
@@ -25,7 +25,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:scaleType="fitXY"
-                android:src="@drawable/upload_icon" />
+                 />
 
 
         </LinearLayout>
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_80dp"
             android:layout_above="@+id/liner_bottom"
-            android:background="#c1c1c1"
+            android:background="@color/health_light_bg"
             android:elevation="@dimen/_15dp"
             android:orientation="horizontal"
             android:padding="@dimen/_10dp"
@@ -51,15 +51,22 @@
                 android:scrollbars="horizontal" />
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/liner_mid"
+            android:background="@color/health_light_gray" />
+
         <LinearLayout
             android:id="@+id/liner_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="#A91922"
+            android:background="@color/white"
             android:elevation="@dimen/_15dp"
             android:orientation="horizontal"
             android:padding="@dimen/_10dp">
+
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -86,7 +93,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_light_gray" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -112,7 +119,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_light_gray" />
 
             <LinearLayout
                 android:layout_width="0dp"

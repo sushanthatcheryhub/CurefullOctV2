@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/_2dp"
-            android:src="@drawable/how_to" />
+            android:src="@drawable/how_to_yellow" />
     </LinearLayout>
 
     <customsTextViews.CustomTextViewOpenSanRegular
@@ -54,7 +54,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/liner_user"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="@dimen/_40dp"
+        android:layout_marginRight="@dimen/_15dp"
         android:layout_marginTop="@dimen/_195dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/_2dp"
-            android:src="@drawable/red_yellow_question_mark" />
+            android:src="@drawable/how_to_red" />
     </LinearLayout>
 
     <customsTextViews.CustomTextViewOpenSanRegular

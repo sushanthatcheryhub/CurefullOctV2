@@ -1,6 +1,7 @@
 package adpter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +44,7 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
 
     Context applicationContext;
     List<Lab_Test_Reminder_DoctorListView> healthNoteItemses;
-    private RequestQueue requestQueue;
+
     public Reminder_visit_Lab_ListAdpter(Context applicationContexts,
                                          List<Lab_Test_Reminder_DoctorListView> healthNoteItemses) {
         this.healthNoteItemses = healthNoteItemses;
@@ -74,6 +75,14 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName());
 
+
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
+            img_edit_rem.setVisibility(View.GONE);
+            txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            img_edit_rem.setVisibility(View.VISIBLE);
+        }
+
         if (healthNoteItemses.get(position).isAfterMeal()) {
             txt_hospital.setText("After Meal");
         } else {
@@ -84,7 +93,7 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
                 Bundle bundle = new Bundle();
                 bundle.putString("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
@@ -128,6 +137,7 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
         public TextView txt_med_time;
         public ImageView img_edit_rem;
         public CheckBox checkbox;
+
         ItemViewHolder(View view) {
             super(view);
             this.img_edit_rem = (ImageView) itemView.findViewById(R.id.img_edit_rem);
@@ -141,9 +151,6 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.LAB_TEST_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override
@@ -192,7 +199,6 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
-
 
 
 }

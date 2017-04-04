@@ -2,6 +2,7 @@ package adpter;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import ElasticVIews.ElasticAction;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentReminderSetMedicine;
@@ -131,15 +133,15 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_drops.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
                 holder.image_tablet.setImageResource(R.drawable.tablet_red);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
             } else if (types.equalsIgnoreCase("CAP")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.buttonclick);
@@ -147,15 +149,15 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_drops.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_red);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
             } else if (types.equalsIgnoreCase("SYR")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
@@ -163,15 +165,15 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_drops.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_red);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
             } else if (types.equalsIgnoreCase("DRO")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
@@ -180,30 +182,30 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
 
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_red);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
             } else if (types.equalsIgnoreCase("INJ")) {
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_drops.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_injection.setBackgroundResource(R.drawable.buttonclick);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_red);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
             }
 
         }
@@ -212,6 +214,8 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.layout_tablet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 medicineReminderItems.get(position).setType("TAB");
                 holder.layout_tablet.setBackgroundResource(R.drawable.buttonclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
@@ -220,21 +224,23 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
 
                 holder.image_tablet.setImageResource(R.drawable.tablet_red);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
 
             }
         });
         holder.layout_capsule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 medicineReminderItems.get(position).setType("CAP");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.buttonclick);
@@ -243,21 +249,23 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
 
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_red);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
 
             }
         });
         holder.layout_syrup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 medicineReminderItems.get(position).setType("SYR");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
@@ -266,21 +274,24 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
 
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_red);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
 
             }
         });
         holder.layout_drops.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                medicineReminderItems.get(position).setType("DRO");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
@@ -288,35 +299,38 @@ public class AdapterAddMedicine extends BaseAdapter {
                 holder.layout_injection.setBackgroundResource(R.drawable.button_unclick);
 
                 holder.image_tablet.setImageResource(R.drawable.tablet_yellow);
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_red);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
                 holder.img_injection.setImageResource(R.drawable.injection_yellow);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
             }
         });
         holder.layout_injection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
+                medicineReminderItems.get(position).setType("INJ");
                 holder.layout_tablet.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_capsule.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_syrup.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_drops.setBackgroundResource(R.drawable.button_unclick);
                 holder.layout_injection.setBackgroundResource(R.drawable.buttonclick);
 
-                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_tablet.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_capsule.setImageResource(R.drawable.capsule_yellow);
-                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_capsule.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_syrup.setImageResource(R.drawable.syrup_yellow);
-                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_syrup.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_drops.setImageResource(R.drawable.drops_yellow);
-                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
+                holder.txt_drop.setTextColor(applicationContext.getResources().getColor(R.color.health_dark_gray));
                 holder.img_injection.setImageResource(R.drawable.injection_red);
-                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_red_drawer));
+                holder.txt_injection.setTextColor(applicationContext.getResources().getColor(R.color.health_yellow));
             }
         });
 
@@ -326,6 +340,8 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.img_minus_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 intervalCunt = medicineReminderItems.get(position).getInterval();
                 if (intervalCunt != 0) {
@@ -338,6 +354,8 @@ public class AdapterAddMedicine extends BaseAdapter {
         holder.img_plus_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 intervalCunt = medicineReminderItems.get(position).getInterval();
                 ++intervalCunt;

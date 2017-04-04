@@ -233,6 +233,33 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return response;
     }
 
+    public static String getPrescriptionList(Context context, String cf_uuhid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return "";
+        String response = "";
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT P.* FROM " + TABLE_PRESCRIPTION
+                    + " P WHERE P.cf_uuhid = '" + cf_uuhid + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                response = cursor.getString(cursor.getColumnIndex("prescription_data"));
+//                cursor.moveToNext();
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return response;
+    }
+
 
     public static void insertEmailList(Context context, ContentValues cv, String emailID) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
@@ -404,6 +431,39 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 //                Log.e("updateLoginList", "Qurery Enty number-");
             } else {
                 long id = database.insert(TABLE_GRAPH, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
+    public static void insertPrescriptionList(Context context, ContentValues cv, String cf_uuhid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION + " Where cf_uuhid ='" + cf_uuhid + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_PRESCRIPTION, cv, CF_UUHID + "='" + cf_uuhid + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_PRESCRIPTION, null, cv);
 //                Log.e("insertLoginList", "Qurery Enty number-" + id);
             }
 

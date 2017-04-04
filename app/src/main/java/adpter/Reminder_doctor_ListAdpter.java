@@ -45,7 +45,6 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
     Context applicationContext;
     List<Reminder_DoctorListView> healthNoteItemses;
     private String checking;
-    private RequestQueue requestQueue;
 
     public Reminder_doctor_ListAdpter(Context applicationContexts,
                                       List<Reminder_DoctorListView> healthNoteItemses, String check) {
@@ -179,9 +178,6 @@ public class Reminder_doctor_ListAdpter extends RecyclerView.Adapter<Reminder_do
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.MEDICINCE_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override

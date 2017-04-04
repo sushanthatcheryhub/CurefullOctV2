@@ -1,8 +1,6 @@
 package adpter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,15 +11,12 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
-import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
 import dialog.DialogFullViewClickImage;
 import dialog.DialogFullViewImage;
@@ -34,7 +29,6 @@ import item.property.PrescriptionImageList;
 public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.ItemViewHolder> {
     Context applicationContext;
     List<PrescriptionImageList> prescriptionImageLists;
-    private RequestQueue requestQueue;
     private boolean isDelete;
     private IOnCheckCheckbox iOnCheckCheckbox;
     private DialogFullViewClickImage dialogFullViewClickImages;
@@ -72,12 +66,10 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
 
 //        Log.e("pics"," "+prescriptionImageLists.get(position).getPrescriptionImage());
 //
-        if (prescriptionImageLists.get(position).getImageNumber() != 000) {
             Glide.with(applicationContext).load(Uri.fromFile(new File(prescriptionImageLists.get(position).getPrescriptionImage())))
                     .dontAnimate()
                     .into(image_item);
 //
-        }
 
 
         if (isDelete) {
@@ -92,12 +84,9 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             @Override
             public void onClick(View view) {
 //                Log.e("click", "ok");
-                if (!isDelete && prescriptionImageLists.get(position).getImageNumber() != 000) {
+                if (!isDelete ) {
                     DialogFullViewImage dialogFullViewImage = new DialogFullViewImage(applicationContext, prescriptionImageLists.get(position).getPrescriptionImage());
                     dialogFullViewImage.show();
-                } else if (prescriptionImageLists.get(position).getImageNumber() == 000) {
-//                    Log.e("ok", "ok");
-                    dialogFullViewClickImages.isCheck();
                 }
 
             }
@@ -108,8 +97,10 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             public void onClick(View view) {
                 CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                 if (btn_checkbox.isChecked()) {
+                    Log.e("if","position"+position);
                     prescriptionImageLists.get(position).setChecked(true);
                 } else {
+                    Log.e("else","position");
                     prescriptionImageLists.get(position).setChecked(false);
                 }
 
@@ -117,12 +108,12 @@ public class AddImageDoneAdpter extends RecyclerView.Adapter<AddImageDoneAdpter.
             }
         });
 
-        if (prescriptionImageLists.get(position).getImageNumber() == 000) {
-            holder.txt_view.setText("");
-            btn_checkbox.setVisibility(View.GONE);
-            image_item.setScaleType(ImageView.ScaleType.CENTER);
-            image_item.setImageResource(R.drawable.plus_red);
-        }
+//        if (prescriptionImageLists.get(position).getImageNumber() == 000) {
+//            holder.txt_view.setText("");
+//            btn_checkbox.setVisibility(View.GONE);
+//            image_item.setScaleType(ImageView.ScaleType.CENTER);
+//            image_item.setImageResource(R.drawable.plus_red);
+//        }
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

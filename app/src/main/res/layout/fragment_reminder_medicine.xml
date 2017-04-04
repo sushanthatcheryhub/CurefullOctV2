@@ -3,20 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
-    android:clickable="true"
-    >
+    android:background="@color/white"
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <View
+            android:id="@+id/view_medo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2dp"
+            android:background="@color/health_light_bg" />
+
         <LinearLayout
             android:id="@+id/liner_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/top_view"
+            android:layout_below="@+id/view_medo"
             android:orientation="vertical">
 
             <LinearLayout
@@ -41,7 +46,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:text="Filter"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -58,7 +63,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/health_yellow_bottom" />
+                    android:background="@color/health_light_gray" />
 
                 <RelativeLayout
                     android:id="@+id/txt_doctor_name"
@@ -79,7 +84,7 @@
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:text="Doctor Name"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -95,7 +100,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/health_yellow_bottom" />
+                    android:background="@color/health_light_gray" />
 
                 <RelativeLayout
                     android:id="@+id/rel_set_reminder"
@@ -115,7 +120,7 @@
                         android:layout_centerVertical="true"
                         android:gravity="center_vertical"
                         android:text="Set Reminder"
-                        android:textColor="@color/health_yellow_bottom"
+                        android:textColor="@color/health_dark_gray"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -132,8 +137,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/health_yellow" />
+                android:layout_height="@dimen/_2dp"
+                android:background="@color/health_light_bg" />
 
         </LinearLayout>
 
@@ -147,35 +152,35 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/realtive_today"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="@dimen/_5dp"
-                android:orientation="horizontal">
-
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro_mini"
-                    android:id="@+id/text_date"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:id="@+id/realtive_today"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Today, "
-                    android:textColor="@color/health_yellow_bottom"
-                    android:textStyle="bold" />
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5dp">
 
-                <customsTextViews.CustomTextViewOpenSanBold
-                    style="@style/textView_dark_grey_normal_micro_mini"
-                    android:id="@+id/txt_date_dialog"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/text_date"
-                    android:layout_centerHorizontal="true"
-                    android:text="26/11/1989"
-                    android:textColor="@color/health_yellow_bottom"
-                    android:textStyle="bold" />
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        android:id="@+id/text_date"
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Today, "
+                        android:textColor="@color/health_dark_gray"
+                        android:textStyle="bold" />
+
+                    <customsTextViews.CustomTextViewOpenSanBold
+                        android:id="@+id/txt_date_dialog"
+                        style="@style/textView_dark_grey_normal_micro_mini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/text_date"
+                        android:text="26/11/1989"
+                        android:textColor="@color/health_light_gray"
+                        android:textStyle="bold" />
 
 
                 </RelativeLayout>
@@ -198,7 +203,7 @@
                     android:layout_marginTop="@dimen/_10dp"
                     android:gravity="center_horizontal"
                     android:text="Prescribed by - Self"
-                    android:textColor="@color/health_yellow_bottom"
+                    android:textColor="@color/health_dark_gray"
                     android:textStyle="bold"
                     android:visibility="gone" />
 
@@ -214,6 +219,7 @@
                     android:id="@+id/relative_bottom_next"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_10dp"
                     android:orientation="horizontal">
 
@@ -232,7 +238,7 @@
                         android:paddingRight="@dimen/_10dp"
                         android:paddingTop="@dimen/_2dp"
                         android:text="History"
-                        android:textColor="@color/health_red_drawer"
+                        android:textColor="@color/white"
                         android:textStyle="bold" />
 
                     <customsTextViews.CustomTextViewOpenSanRegular
@@ -251,7 +257,7 @@
                         android:paddingRight="@dimen/_10dp"
                         android:paddingTop="@dimen/_2dp"
                         android:text="Next"
-                        android:textColor="@color/health_red_drawer"
+                        android:textColor="@color/white"
                         android:textStyle="bold" />
 
                 </RelativeLayout>
@@ -287,7 +293,7 @@
                         android:id="@+id/layoutButtonsShort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/login_gradient"
+                        android:background="@color/white"
                         android:orientation="vertical"
                         android:visibility="gone">
 
@@ -321,7 +327,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Reset"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -339,7 +345,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -360,7 +366,7 @@
                                         android:layout_gravity="center_vertical"
                                         android:gravity="center_vertical"
                                         android:text="Apply"
-                                        android:textColor="@color/health_yellow_bottom" />
+                                        android:textColor="@color/health_mid_gray" />
 
 
                                 </LinearLayout>
@@ -370,7 +376,7 @@
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="@color/health_yellow" />
+                                android:background="@color/health_light_gray" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -401,7 +407,7 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Reminder"
-                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textColor="@color/health_mid_gray"
                                             android:textStyle="bold" />
 
 
@@ -424,7 +430,7 @@
                                             android:layout_gravity="center_vertical"
                                             android:gravity="center_vertical"
                                             android:text="Status"
-                                            android:textColor="@color/health_yellow_bottom"
+                                            android:textColor="@color/health_mid_gray"
                                             android:textStyle="bold" />
 
 
@@ -436,7 +442,7 @@
                                 <View
                                     android:layout_width="1dp"
                                     android:layout_height="match_parent"
-                                    android:background="@color/health_yellow" />
+                                    android:background="@color/health_light_gray" />
 
                                 <LinearLayout
                                     android:layout_width="0dp"
@@ -466,7 +472,7 @@
                                             android:clickable="true"
                                             android:paddingLeft="@dimen/_5dp"
                                             android:text="Curefull"
-                                            android:textColor="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray" />
 
                                         <customsTextViews.CustomRadioButtonOpenSanRegular
                                             android:id="@+id/radioSelf"
@@ -478,7 +484,7 @@
                                             android:clickable="true"
                                             android:paddingLeft="@dimen/_5dp"
                                             android:text="Self"
-                                            android:textColor="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray" />
 
                                     </RadioGroup>
 
@@ -501,7 +507,7 @@
                                             android:clickable="true"
                                             android:paddingLeft="@dimen/_5dp"
                                             android:text="Pending"
-                                            android:textColor="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray" />
 
                                         <customsTextViews.CustomRadioButtonOpenSanRegular
                                             android:id="@+id/radioDone"
@@ -513,7 +519,7 @@
                                             android:clickable="true"
                                             android:paddingLeft="@dimen/_5dp"
                                             android:text="Done"
-                                            android:textColor="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray" />
 
                                     </RadioGroup>
 
@@ -555,7 +561,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_2dp"
                 android:text="Help us remind you of Medicine! Add a reminder"
-                android:textColor="@color/white"
+                android:textColor="@color/health_dark_gray"
                 android:visibility="gone" />
         </RelativeLayout>
 

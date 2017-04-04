@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -62,7 +59,6 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
     private ImageView img_delete, img_share;
     private GestureImageView gestureImageView;
     private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date, uploadedBy;
-    private RequestQueue requestQueue;
     private Bundle bundle;
     private String images;
 
@@ -177,9 +173,6 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
 
     private void getPrescriptionDelete(String id, String prescriptionFollowupId, String name, String prescriptionPartId) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + name,
                 new Response.Listener<String>() {
                     @Override

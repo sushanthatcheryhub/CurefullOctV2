@@ -117,7 +117,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:background="#C65944"
+                            android:background="@color/health_light_gray"
                             android:gravity="center_vertical"
                             android:singleLine="true"
                             android:text="Clear here to Add more details"

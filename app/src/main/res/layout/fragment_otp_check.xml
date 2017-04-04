@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
-    android:focusableInTouchMode="true"
-    android:clickable="true">
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusableInTouchMode="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                 android:orientation="vertical">
 
 
-                <customsTextViews.CustomTextViewMontserratHairLine
+                <customsTextViews.CustomTextViewOpenSanRegular
                     style="@style/textView_dark_grey_normal_small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                     android:gravity="left"
                     android:padding="@dimen/_5dp"
                     android:text="Please enter OTP which we have sent your mobile number."
-                    android:textColor="@color/white" />
+                    android:textColor="@color/health_yellow" />
 
 
                 <android.support.design.widget.TextInputLayout
@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5dp"
-                    android:textColorHint="@color/health_hint_color_new"
+                    android:textColorHint="@color/health_light_gray"
                     android:theme="@style/TextLabel">
 
                     <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -58,17 +58,16 @@
                         android:maxLength="6"
                         android:nextFocusDown="@+id/edt_password"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_mid_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
+
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:gravity="center_vertical"
+                    android:layout_marginTop="@dimen/_15dp"
                     android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
@@ -77,27 +76,21 @@
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
-                        android:drawablePadding="@dimen/_5dp"
+                        android:drawablePadding="@dimen/_7dp"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Password"
-                        android:imeOptions="actionNext"
                         android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
-
-
+                        android:textColor="@color/health_mid_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_confirm_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_10dp"
-                    android:gravity="center_vertical"
+                    android:layout_marginTop="@dimen/_15dp"
                     android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
@@ -106,19 +99,16 @@
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/white"
                         android:drawableLeft="@drawable/password_icon"
-                        android:drawablePadding="@dimen/_5dp"
+                        android:drawablePadding="@dimen/_7dp"
                         android:drawableRight="@drawable/password_hide"
                         android:hint="Confirm Password"
-                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
-
-
+                        android:textColor="@color/health_mid_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -126,7 +116,7 @@
                     android:layout_marginTop="@dimen/_5dp"
                     android:orientation="horizontal">
 
-                    <customsTextViews.CustomTextViewMontserratHairLine
+                    <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/btn_click_resend_otp"
                         style="@style/textView_dark_grey_normal_micro"
                         android:layout_width="wrap_content"
@@ -136,7 +126,7 @@
                         android:gravity="right"
                         android:padding="@dimen/_5dp"
                         android:text="Resend OTP"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/health_yellow" />
 
                 </LinearLayout>
 
@@ -156,7 +146,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_10dp"
                         android:text="Done"
-                        android:textColor="@color/health_login_text" />
+                        android:textColor="@color/white" />
 
                     <ImageView
                         android:layout_width="match_parent"

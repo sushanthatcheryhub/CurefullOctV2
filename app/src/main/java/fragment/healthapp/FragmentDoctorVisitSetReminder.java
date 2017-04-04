@@ -59,10 +59,9 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
     private EditText edt_test_name, edt_lab_name;
     private String startFrom = "";
     private String firstTime = "";
-    private RequestQueue requestQueue;
     private LinearLayout txt_reminder_every;
     private ListPopupWindow listPopupWindow;
-    private boolean isNewReminder = true;
+    private boolean isNewReminder = true, btnClick = true;
     private String doctorFollowupReminderId = "";
 
     @Override
@@ -180,7 +179,11 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    setMedReminderDetails();
+                    if (btnClick) {
+                        btnClick = false;
+                        setMedReminderDetails();
+                    }
+
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
@@ -246,30 +249,32 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
 
     public void setMedReminderDetails() {
         if (!validateTestName()) {
+            btnClick = true;
             return;
         }
         if (!validateLabName()) {
+            btnClick = true;
             return;
         }
 
         if (!validateDate()) {
+            btnClick = true;
             return;
         }
 
         if (!validateLabTime()) {
+            btnClick = true;
             return;
         }
 
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSetDoctorVisitReminder(edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btnClick = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -297,6 +302,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 //                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
             }

@@ -148,7 +148,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginRight="@dimen/_7dp"
             android:padding="@dimen/_5dp"
-            android:src="@drawable/upload_icon" />
+            android:src="@drawable/upload_yellow" />
     </LinearLayout>
 
     <LinearLayout

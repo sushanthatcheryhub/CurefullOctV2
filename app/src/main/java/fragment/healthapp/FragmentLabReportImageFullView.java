@@ -60,7 +60,6 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
     private ImageView img_delete, img_share;
     private GestureImageView image_item;
     private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy;
-    private RequestQueue requestQueue;
     private String images;
 
     @Override
@@ -141,10 +140,6 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
 
     private void getPrescriptionDelete(String id, String realId, String name) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
-
 
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_LAB_REPORT + id + "&iReportId=" + realId + "&doctor_name=" + name,
                 new Response.Listener<String>() {
@@ -160,7 +155,9 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                            CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentLabTestReport(), false);
                         } else {
                         }
                     }

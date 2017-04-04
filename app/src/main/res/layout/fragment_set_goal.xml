@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
     android:focusableInTouchMode="true"
 >
@@ -21,6 +21,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_15dp"
                 android:orientation="vertical">
 
 
@@ -50,7 +51,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="Gender"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -59,7 +60,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
 
@@ -80,7 +81,7 @@
                                 android:clickable="true"
                                 android:paddingLeft="@dimen/_5dp"
                                 android:text="Male"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/health_light_gray" />
 
                             <customsTextViews.CustomRadioButtonOpenSanRegular
                                 android:id="@+id/radioFemale"
@@ -92,7 +93,7 @@
                                 android:clickable="true"
                                 android:paddingLeft="@dimen/_5dp"
                                 android:text="Female"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/health_light_gray" />
 
                         </RadioGroup>
                     </LinearLayout>
@@ -116,7 +117,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="Date of Birth"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -125,7 +126,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <customsTextViews.CustomTextViewOpenSanRegular
@@ -137,8 +138,8 @@
                             android:hint="DD-MM-YYYY"
                             android:paddingBottom="@dimen/_5dp"
                             android:paddingTop="@dimen/_5dp"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_light_gray"
+                            android:textColorHint="@color/health_light_gray" />
 
 
                     </LinearLayout>
@@ -162,7 +163,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="Height"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -171,7 +172,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -196,8 +197,8 @@
                                     android:inputType="number"
                                     android:maxLength="2"
                                     android:nextFocusRight="@+id/edt_inchs"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel" />
 
 
@@ -211,8 +212,8 @@
                                     android:inputType="numberDecimal"
                                     android:maxLength="4"
                                     android:nextFocusDown="@+id/edt_kgs"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel" />
 
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -224,8 +225,8 @@
                                     android:hint="Cm"
                                     android:inputType="numberDecimal"
                                     android:maxLength="6"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel"
                                     android:visibility="gone" />
                             </LinearLayout>
@@ -283,7 +284,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="Weight"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -292,7 +293,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -318,8 +319,8 @@
                                     android:inputType="number"
                                     android:maxLength="3"
                                     android:nextFocusRight="@+id/edt_grams"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel" />
 
 
@@ -333,8 +334,8 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="number"
                                     android:maxLength="3"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel" />
 
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -347,8 +348,8 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="number"
                                     android:maxLength="8"
-                                    android:textColor="@color/white"
-                                    android:textColorHint="@color/white"
+                                    android:textColor="@color/health_light_gray"
+                                    android:textColorHint="@color/health_light_gray"
                                     android:theme="@style/TextLabel"
                                     android:visibility="gone" />
                             </LinearLayout>
@@ -401,14 +402,13 @@
                             android:layout_gravity="bottom"
                             android:layout_marginRight="@dimen/_10dp"
                             android:background="@drawable/yellow_button_selector"
-                            android:elevation="@dimen/_5dp"
                             android:gravity="center_vertical"
                             android:paddingBottom="@dimen/_2dp"
                             android:paddingLeft="@dimen/_10dp"
                             android:paddingRight="@dimen/_10dp"
                             android:paddingTop="@dimen/_2dp"
                             android:text="Done"
-                            android:textColor="@color/health_red_drawer"
+                            android:textColor="@color/white"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -440,7 +440,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="BMI"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 android:id="@+id/customTextViewOpenSanRegular4"
@@ -450,7 +450,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <customsTextViews.CustomTextViewOpenSanRegular
@@ -464,8 +464,8 @@
                             android:marqueeRepeatLimit="marquee_forever"
                             android:padding="@dimen/_5dp"
                             android:singleLine="true"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_yellow"
+                            android:textColorHint="@color/health_yellow" />
 
 
                     </LinearLayout>
@@ -489,7 +489,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="BMR"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -498,7 +498,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <customsTextViews.CustomTextViewOpenSanRegular
@@ -509,8 +509,8 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="---"
                             android:padding="@dimen/_5dp"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_yellow"
+                            android:textColorHint="@color/health_yellow" />
 
 
                     </LinearLayout>
@@ -535,7 +535,7 @@
                                 android:layout_gravity="left"
                                 android:gravity="left"
                                 android:text="Ideal Weight"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
 
                             <customsTextViews.CustomTextViewOpenSanRegular
                                 style="@style/textView_dark_grey_normal_small"
@@ -544,7 +544,7 @@
                                 android:layout_gravity="right"
                                 android:gravity="right"
                                 android:text="-"
-                                android:textColor="@color/health_yellow" />
+                                android:textColor="@color/health_dark_gray" />
                         </LinearLayout>
 
                         <customsTextViews.CustomTextViewOpenSanRegular
@@ -555,8 +555,8 @@
                             android:layout_marginLeft="@dimen/_20dp"
                             android:hint="---"
                             android:padding="@dimen/_5dp"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_yellow"
+                            android:textColorHint="@color/health_yellow" />
 
 
                     </LinearLayout>
@@ -580,8 +580,8 @@
                             style="@style/textView_dark_grey_normal_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Recommended Daily exercise"
-                            android:textColor="@color/health_yellow" />
+                            android:text="Recommended Daily Exercise"
+                            android:textColor="@color/health_dark_gray" />
 
                     </LinearLayout>
 
@@ -629,7 +629,7 @@
                                     android:layout_centerInParent="true"
                                     android:gravity="left"
                                     android:text="Walk Steps"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
 
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -643,9 +643,9 @@
                                     android:inputType="number"
                                     android:maxLength="5"
                                     android:text=""
-                                    android:textColor="@color/health_yellow"
+                                    android:textColor="@color/health_dark_gray"
                                     android:textStyle="bold"
-                                    android:theme="@style/TextLabelYellow" />
+                                    android:theme="@style/TextLabel" />
 
 
                             </LinearLayout>
@@ -658,7 +658,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginBottom="@dimen/_5dp"
                             android:layout_marginTop="@dimen/_5dp"
-                            android:background="@color/health_yellow" />
+                            android:background="@color/health_light_gray" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -699,7 +699,7 @@
                                     android:layout_centerInParent="true"
                                     android:gravity="left"
                                     android:text="Calories burn"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
 
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -712,9 +712,9 @@
                                     android:gravity="left"
                                     android:inputType="number"
                                     android:text=""
-                                    android:textColor="@color/health_yellow"
+                                    android:textColor="@color/health_dark_gray"
                                     android:textStyle="bold"
-                                    android:theme="@style/TextLabelYellow" />
+                                    android:theme="@style/TextLabel" />
 
 
                             </LinearLayout>
@@ -768,7 +768,7 @@
                                     android:layout_centerInParent="true"
                                     android:gravity="left"
                                     android:text="Water     "
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
 
                                 <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -781,9 +781,9 @@
                                     android:gravity="left"
                                     android:inputType="numberDecimal"
                                     android:text=""
-                                    android:textColor="@color/health_yellow"
+                                    android:textColor="@color/health_dark_gray"
                                     android:textStyle="bold"
-                                    android:theme="@style/TextLabelYellow" />
+                                    android:theme="@style/TextLabel" />
                             </LinearLayout>
 
 
@@ -794,7 +794,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginBottom="@dimen/_5dp"
                             android:layout_marginTop="@dimen/_5dp"
-                            android:background="@color/health_yellow" />
+                            android:background="@color/health_light_gray" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -813,14 +813,13 @@
                                 android:layout_gravity="bottom"
                                 android:layout_marginLeft="@dimen/_10dp"
                                 android:background="@drawable/yellow_button_selector"
-                                android:elevation="@dimen/_5dp"
                                 android:gravity="center_vertical"
                                 android:paddingBottom="@dimen/_2dp"
                                 android:paddingLeft="@dimen/_10dp"
                                 android:paddingRight="@dimen/_10dp"
                                 android:paddingTop="@dimen/_2dp"
                                 android:text="Edit Goal"
-                                android:textColor="@color/health_red_drawer"
+                                android:textColor="@color/white"
                                 android:textStyle="bold" />
 
 
@@ -845,7 +844,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5dp"
                         android:text="Click here to set glass size for water"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
 
                 </LinearLayout>
 
@@ -870,7 +869,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:background="#ccfdb832"
+                    android:background="#cce7ebee"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:visibility="gone">
@@ -910,7 +909,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Select glass size for water"
-                                        android:textColor="@color/health_yellow"
+                                        android:textColor="@color/health_dark_gray"
                                         android:textStyle="bold" />
 
                                 </LinearLayout>
@@ -963,15 +962,15 @@
                                                 android:inputType="number"
                                                 android:maxLength="4"
                                                 android:text="100"
-                                                android:textColor="@color/health_yellow"
-                                                android:theme="@style/TextLabelYellow" />
+                                                android:textColor="@color/health_dark_gray"
+                                                android:theme="@style/TextLabel" />
 
                                             <customsTextViews.CustomTextViewOpenSanRegular
                                                 style="@style/textView_dark_grey_normal_small"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="ml"
-                                                android:textColor="@color/health_yellow"
+                                                android:textColor="@color/health_dark_gray"
                                                 android:textStyle="bold" />
                                         </LinearLayout>
                                     </LinearLayout>
@@ -1015,16 +1014,16 @@
                                                 android:inputType="number"
                                                 android:maxLength="4"
                                                 android:text="200"
-                                                android:textColor="@color/health_yellow"
-                                                android:textColorHint="@color/health_yellow"
-                                                android:theme="@style/TextLabelYellow" />
+                                                android:textColor="@color/health_dark_gray"
+                                                android:textColorHint="@color/health_dark_gray"
+                                                android:theme="@style/TextLabel" />
 
                                             <customsTextViews.CustomTextViewOpenSanRegular
                                                 style="@style/textView_dark_grey_normal_small"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="ml"
-                                                android:textColor="@color/health_yellow"
+                                                android:textColor="@color/health_dark_gray"
                                                 android:textStyle="bold" />
                                         </LinearLayout>
                                     </LinearLayout>
@@ -1068,9 +1067,9 @@
                                                 android:inputType="number"
                                                 android:maxLength="4"
                                                 android:text="300"
-                                                android:textColor="@color/health_yellow"
-                                                android:textColorHint="@color/health_yellow"
-                                                android:theme="@style/TextLabelYellow" />
+                                                android:textColor="@color/health_dark_gray"
+                                                android:textColorHint="@color/health_dark_gray"
+                                                android:theme="@style/TextLabel" />
 
                                             <customsTextViews.CustomTextViewOpenSanRegular
                                                 android:id="@+id/customTextViewMontserratHairLine"
@@ -1078,7 +1077,7 @@
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="ml"
-                                                android:textColor="@color/health_yellow"
+                                                android:textColor="@color/health_dark_gray"
                                                 android:textStyle="bold" />
                                         </LinearLayout>
                                     </LinearLayout>
@@ -1122,16 +1121,16 @@
                                                 android:inputType="number"
                                                 android:maxLength="4"
                                                 android:text="500"
-                                                android:textColor="@color/health_yellow"
-                                                android:textColorHint="@color/health_yellow"
-                                                android:theme="@style/TextLabelYellow" />
+                                                android:textColor="@color/health_dark_gray"
+                                                android:textColorHint="@color/health_dark_gray"
+                                                android:theme="@style/TextLabel" />
 
                                             <customsTextViews.CustomTextViewOpenSanRegular
                                                 style="@style/textView_dark_grey_normal_small"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="ml"
-                                                android:textColor="@color/health_yellow"
+                                                android:textColor="@color/health_dark_gray"
                                                 android:textStyle="bold" />
                                         </LinearLayout>
                                     </LinearLayout>
@@ -1159,7 +1158,7 @@
                                         android:paddingRight="@dimen/_10dp"
                                         android:paddingTop="@dimen/_2dp"
                                         android:text="Done"
-                                        android:textColor="@color/health_red_drawer"
+                                        android:textColor="@color/white"
                                         android:textStyle="bold" />
 
 

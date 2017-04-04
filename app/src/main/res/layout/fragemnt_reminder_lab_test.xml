@@ -1,18 +1,21 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
-    android:focusableInTouchMode="true"
-  >
+    android:focusableInTouchMode="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <View
+            android:id="@+id/view_medo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2dp"
+            android:background="@color/health_light_bg" />
 
         <LinearLayout
             android:id="@+id/top_view"
@@ -24,7 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/login_gradient"
+                android:background="@color/white"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -104,7 +107,7 @@
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
                                         android:text="Test Name"
-                                        android:textColor="@color/health_yellow"
+                                        android:textColor="@color/health_dark_gray"
                                         android:textStyle="bold" />
 
                                 </LinearLayout>
@@ -138,8 +141,8 @@
                                             android:nextFocusDown="@id/edt_deatils"
                                             android:padding="@dimen/_4dp"
                                             android:singleLine="true"
-                                            android:textColor="@color/health_yellow"
-                                            android:textColorHint="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray"
+                                            android:textColorHint="@color/health_light_gray" />
 
                                     </LinearLayout>
 
@@ -167,7 +170,7 @@
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
                                         android:text="Lab Name"
-                                        android:textColor="@color/health_yellow"
+                                        android:textColor="@color/health_dark_gray"
                                         android:textStyle="bold" />
 
                                 </LinearLayout>
@@ -201,8 +204,8 @@
                                             android:nextFocusDown="@id/edt_deatils"
                                             android:padding="@dimen/_4dp"
                                             android:singleLine="true"
-                                            android:textColor="@color/health_yellow"
-                                            android:textColorHint="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray"
+                                            android:textColorHint="@color/health_light_gray" />
 
                                     </LinearLayout>
 
@@ -210,6 +213,7 @@
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -235,7 +239,7 @@
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
                                         android:text="Doctor Name"
-                                        android:textColor="@color/health_yellow"
+                                        android:textColor="@color/health_dark_gray"
                                         android:textStyle="bold" />
 
                                 </LinearLayout>
@@ -269,8 +273,8 @@
                                             android:nextFocusDown="@id/edt_deatils"
                                             android:padding="@dimen/_4dp"
                                             android:singleLine="true"
-                                            android:textColor="@color/health_yellow"
-                                            android:textColorHint="@color/health_yellow" />
+                                            android:textColor="@color/health_mid_gray"
+                                            android:textColorHint="@color/health_light_gray" />
 
                                     </LinearLayout>
 
@@ -294,7 +298,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Date"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
 
@@ -316,7 +320,7 @@
                                     android:layout_gravity="center_horizontal"
                                     android:background="@android:color/transparent"
                                     android:text="DD/MM/YYYY"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
                                 <ImageView
                                     android:layout_width="wrap_content"
@@ -336,7 +340,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="Time"
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
 
@@ -355,7 +359,7 @@
                                     android:layout_gravity="center_horizontal"
                                     android:background="@android:color/transparent"
                                     android:text="HH:MM AM"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
                                 <ImageView
                                     android:layout_width="wrap_content"
@@ -381,7 +385,7 @@
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
                                 android:text="When "
-                                android:textColor="@color/health_yellow"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
                             <RadioGroup
@@ -401,7 +405,7 @@
                                     android:clickable="true"
                                     android:paddingLeft="@dimen/_5dp"
                                     android:text="Before Meal"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
                                 <customsTextViews.CustomRadioButtonOpenSanRegular
                                     android:id="@+id/radioAfterMeal"
@@ -413,7 +417,7 @@
                                     android:clickable="true"
                                     android:paddingLeft="@dimen/_5dp"
                                     android:text="After Meal"
-                                    android:textColor="@color/health_yellow" />
+                                    android:textColor="@color/health_light_gray" />
 
                             </RadioGroup>
 
@@ -442,7 +446,7 @@
                                 android:paddingRight="@dimen/_25dp"
                                 android:paddingTop="@dimen/_5dp"
                                 android:text="Set Reminder"
-                                android:textColor="@color/health_red_drawer" />
+                                android:textColor="@color/white" />
 
 
                         </LinearLayout>

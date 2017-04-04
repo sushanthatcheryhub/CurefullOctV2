@@ -59,7 +59,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
     private View rootView;
     private TextView btn_done, btn_click_resend_otp;
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
-    private RequestQueue requestQueue;
     private int OTP;
     private String health_mobile, health_password;
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
@@ -86,6 +85,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
         if (bundle != null) {
             health_mobile = bundle.getString("MOBILE");
             OTP = bundle.getInt("otp");
+//            edt_otp_password.setText("" + OTP);
         }
 
 //        btn_click_resend_otp.setText("" + OTP);
@@ -344,9 +344,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
 //        Log.e("mob", " " + health_mobile + " " + OTP);
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
@@ -370,9 +367,6 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
 
 
     public void jsonLoginCheck() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toForgotPassword(health_mobile, edtInputPassword.getText().toString().trim());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.FORGOT_SEND, data,

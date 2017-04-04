@@ -12,7 +12,6 @@ import android.provider.ContactsContract;
 import android.support.design.widget.TextInputLayout;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +24,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +63,6 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
     private TextView btn_signup;
     private AutoCompleteTextView edtInputEmail;
     private EditText edtInput_name, edt_phone;
-    private RequestQueue requestQueue;
     private boolean showPwd = false;
     private TextInputLayout input_layout_name, inputLayoutEmail;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
@@ -109,24 +105,30 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                 return false;
             }
         });
-
-        if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
-            try {
-                Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-                c.moveToFirst();
-                TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-                edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-                if (tMgr.getLine1Number() != null) {
-                    edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
-                }
-                addAdapterToViews();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
+                try {
+                    Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                    if (c != null) {
+                        c.moveToFirst();
+                        TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                        edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+                        if (tMgr.getLine1Number() != null) {
+                            edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+                        }
+                        addAdapterToViews();
 //        edtInputEmail.setText("" + getAllAccount());
-                c.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                        c.close();
+                    }
 
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
+
 
         return rootView;
     }
@@ -137,7 +139,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_signup:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 btn_signup.setEnabled(false);
                 submitForm();
 //                CureFull.getInstanse().getFlowInstanse()
@@ -295,9 +297,6 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 //        String firstName = "";
 //        String LastName = "";
 //        String[] name = edtInput_name.getText().toString().split(" ");
@@ -390,9 +389,6 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
 
     public void jsonUHIDCheck() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toUHID(edtInput_name.getText().toString().trim(), edt_phone.getText().toString().trim(), edtInputEmail.getText().toString().trim());
 //        Log.e("data", ":- " + data.toString() + ":- " + MyConstants.WebUrls.UHID_SIGN_UP);
@@ -458,22 +454,29 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
         switch (requestCode) {
             case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-                    c.moveToFirst();
-                    TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-                    edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-                    if (tMgr.getLine1Number() != null) {
-                        edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
-                    }
-                    addAdapterToViews();
+                    try {
+                        Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                        if (c != null) {
+                            c.moveToFirst();
+                            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                            edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+                            if (tMgr.getLine1Number() != null) {
+                                edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+                            }
+                            addAdapterToViews();
 //        edtInputEmail.setText("" + getAllAccount());
-                    c.close();
+                            c.close();
+                        }
+                    } catch (Exception e) {
+
+                    }
                 } else {
                     //code for deny
+
+
+                    break;
                 }
-                break;
         }
     }
-
 
 }

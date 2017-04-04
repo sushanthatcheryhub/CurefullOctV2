@@ -18,10 +18,10 @@
             android:icon="@drawable/drawer_uhid"
             android:title="UHID" />
 
-        <!--<item-->
-            <!--android:id="@+id/nav_reminder"-->
-            <!--android:icon="@drawable/drawer_notification_bell"-->
-            <!--android:title="Reminder" />-->
+        <item
+            android:id="@+id/nav_reminder"
+            android:icon="@drawable/drawer_notification_bell"
+            android:title="Reminder" />
         <item
             android:id="@+id/nav_share"
             android:icon="@drawable/drawer_share"

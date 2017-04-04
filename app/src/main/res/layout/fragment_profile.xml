@@ -4,10 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
-    android:focusableInTouchMode="true"
-   >
+    android:focusableInTouchMode="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -43,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:indeterminateTint="@color/health_red_drawer"
+                    android:indeterminateTint="@color/health_yellow"
                     android:maxHeight="@dimen/_30dp"
                     android:minHeight="@dimen/_30dp" />
             </RelativeLayout>
@@ -80,10 +79,10 @@
                     android:id="@+id/input_layout_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/input_name"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -91,10 +90,11 @@
                         android:drawableLeft="@drawable/user_icon"
                         android:drawablePadding="@dimen/_5dp"
                         android:hint="Name"
-                        android:inputType="textCapSentences"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
+                        android:inputType="textCapWords"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_light_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -102,10 +102,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/edt_phone"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -116,8 +116,8 @@
                         android:inputType="number"
                         android:maxLength="10"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_light_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -125,11 +125,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel"
                     android:visibility="gone">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/edt_otp"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -140,8 +140,8 @@
                         android:inputType="number"
                         android:maxLength="10"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_light_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -149,10 +149,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10dp"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/health_hint_color_new"
                     android:theme="@style/TextLabel">
 
-                    <customsTextViews.CustomEditTextViewMontserratHairLine
+                    <customsTextViews.CustomEditTextViewOpenSanRegular
                         android:id="@+id/input_email"
                         style="@style/textView_dark_grey_normal_small"
                         android:layout_width="match_parent"
@@ -160,14 +160,10 @@
                         android:drawableLeft="@drawable/email_icon"
                         android:drawablePadding="@dimen/_5dp"
                         android:hint="Email id"
-                        android:enabled="true"
-                        android:focusableInTouchMode="false"
-                        android:clickable="false"
-                        android:focusable="false"
                         android:inputType="textEmailAddress"
                         android:paddingBottom="@dimen/_12dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white" />
+                        android:textColor="@color/health_light_gray"
+                        android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
@@ -197,7 +193,7 @@
                         android:paddingBottom="@dimen/_5dp"
                         android:paddingTop="@dimen/_5dp"
                         android:text="Change Password"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_dark_gray" />
 
                 </LinearLayout>
 
@@ -214,7 +210,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10dp"
-                        android:textColorHint="@color/white"
+                        android:textColorHint="@color/health_hint_color_new"
                         android:theme="@style/TextLabel">
 
                         <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -228,8 +224,8 @@
                             android:hint="Old Password"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_light_gray"
+                            android:textColorHint="@color/health_light_gray" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -237,7 +233,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10dp"
-                        android:textColorHint="@color/white"
+                        android:textColorHint="@color/health_hint_color_new"
                         android:theme="@style/TextLabel">
 
                         <customsTextViews.CustomEditTextViewOpenSanRegular
@@ -252,8 +248,8 @@
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
                             android:paddingBottom="@dimen/_12dp"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/white" />
+                            android:textColor="@color/health_light_gray"
+                            android:textColorHint="@color/health_light_gray" />
                     </android.support.design.widget.TextInputLayout>
 
 
@@ -275,7 +271,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_10dp"
                         android:text="Save Changes"
-                        android:textColor="@color/health_login_text" />
+                        android:textColor="@color/white" />
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -417,8 +413,8 @@
                     <RelativeLayout
                         android:id="@+id/realtive_notes"
                         android:layout_width="match_parent"
-                        android:visibility="visible"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:visibility="visible">
 
 
                     </RelativeLayout>

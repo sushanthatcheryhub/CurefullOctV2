@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/_25dp"
-        android:background="@drawable/login_gradient">
+        android:background="@color/health_yellow">
 
         <ImageView
             android:id="@+id/img_drawer_open"
@@ -25,8 +25,8 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/img_share"
             android:padding="@dimen/_5dp"
-            android:visibility="invisible"
-            android:src="@drawable/bell_white" />
+            android:src="@drawable/bell_white"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/img_share"

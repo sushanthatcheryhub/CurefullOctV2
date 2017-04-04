@@ -42,7 +42,6 @@ public class FragmentResetPassword extends Fragment {
 
     private View rootView;
     private EditText input_mobile_number;
-    private RequestQueue requestQueue;
     private TextView btn_reset_password;
 
     @Override
@@ -111,9 +110,6 @@ public class FragmentResetPassword extends Fragment {
 
 
     private void checkEmailId() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CHECK_EMAIL_VALID + input_mobile_number.getText().toString().trim(),
                 new Response.Listener<String>() {
                     @Override
@@ -161,9 +157,6 @@ public class FragmentResetPassword extends Fragment {
 
 
     private void checkMoileNumber() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CHECK_MOBILE_VALID + input_mobile_number.getText().toString().trim(),
                 new Response.Listener<String>() {
                     @Override
@@ -211,9 +204,6 @@ public class FragmentResetPassword extends Fragment {
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + input_mobile_number.getText().toString().trim() + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override

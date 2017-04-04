@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -72,7 +69,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
     Context applicationContext;
     List<PrescriptionListView> prescriptionListViews;
-    private RequestQueue requestQueue;
     private FragmentPrescriptionCheckNew prescriptionCheck;
     private Uri uri;
     ArrayList<Uri> files = null;
@@ -291,9 +287,6 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override

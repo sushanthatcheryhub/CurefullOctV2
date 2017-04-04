@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
     android:focusableInTouchMode="true">
 
@@ -20,7 +20,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/_10dp"
             android:text="Prescribed by-Self"
-            android:textColor="@color/health_yellow_bottom"
+            android:textColor="@color/health_dark_gray"
             android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView

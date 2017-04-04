@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:text="17 Oct 2016-4pm"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_dark_gray" />
 
             </LinearLayout>
 
@@ -55,7 +55,7 @@
                     android:layout_gravity="left"
                     android:gravity="left"
                     android:text="Health App"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_dark_gray" />
 
 
 
@@ -110,7 +110,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/health_yellow" />
+            android:background="@color/health_light_bg" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

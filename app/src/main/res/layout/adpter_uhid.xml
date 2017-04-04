@@ -64,7 +64,7 @@
                             android:layout_gravity="left"
                             android:gravity="left"
                             android:text="CFUUHID"
-                            android:textColor="@color/health_yellow" />
+                            android:textColor="@color/health_dark_gray" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             style="@style/textView_dark_grey_normal_small"
@@ -73,7 +73,7 @@
                             android:layout_gravity="right"
                             android:gravity="right"
                             android:text="-"
-                            android:textColor="@color/health_yellow" />
+                            android:textColor="@color/health_dark_gray" />
                     </LinearLayout>
 
                     <customsTextViews.CustomTextViewOpenSanRegular
@@ -83,8 +83,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_20dp"
                         android:singleLine="true"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/health_yellow"
+                        android:textColor="@color/health_dark_gray"
+                        android:textColorHint="@color/health_dark_gray"
                         android:theme="@style/TextLabel" />
 
 
@@ -109,7 +109,7 @@
                             android:layout_gravity="left"
                             android:gravity="left"
                             android:text="Name"
-                            android:textColor="@color/health_yellow" />
+                            android:textColor="@color/health_dark_gray" />
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             style="@style/textView_dark_grey_normal_small"
@@ -118,7 +118,7 @@
                             android:layout_gravity="right"
                             android:gravity="right"
                             android:text="-"
-                            android:textColor="@color/health_yellow" />
+                            android:textColor="@color/health_dark_gray" />
                     </LinearLayout>
 
                     <customsTextViews.CustomTextViewOpenSanRegular
@@ -130,8 +130,8 @@
                         android:marqueeRepeatLimit="marquee_forever"
                         android:ellipsize="marquee"
                         android:singleLine="true"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/health_yellow"
+                        android:textColor="@color/health_dark_gray"
+                        android:textColorHint="@color/health_dark_gray"
                         android:theme="@style/TextLabel" />
 
 
@@ -163,7 +163,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/health_yellow" />
+            android:background="@color/health_light_gray" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -40,7 +40,6 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
     private View rootView;
     private RecyclerView recyclerView_notes;
     private UHID_Sign_ListAdpter uhid_listAdpter;
-    private RequestQueue requestQueue;
     private TextView btn_contiune, btn_skip, txt_we;
     private List<UHIDItemsCheck> uhidItemsChecks;
     private String health_name, health_email, health_mobile;
@@ -129,9 +128,6 @@ public class FragmentUHIDSignUp extends Fragment implements View.OnClickListener
     private void sendOTPService(final String realUHID) {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override

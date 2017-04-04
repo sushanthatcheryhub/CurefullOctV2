@@ -1,6 +1,7 @@
 package adpter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +33,6 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentDoctorVisitSetReminder;
 import interfaces.IOnOtpDoneDelete;
 import item.property.Doctor_Visit_Reminder_SelfListView;
-import item.property.Lab_Test_Reminder_SelfListView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -46,7 +44,6 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
 
     Context applicationContext;
     List<Doctor_Visit_Reminder_SelfListView> healthNoteItemses;
-    private RequestQueue requestQueue;
 
     public Reminder_Visit_Self_ListAdpter(Context applicationContexts,
                                           List<Doctor_Visit_Reminder_SelfListView> healthNoteItemses) {
@@ -79,11 +76,18 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         txt_med_name.setText("Dr. " + healthNoteItemses.get(position).getDoctorName());
         txt_hospital.setText("" + healthNoteItemses.get(position).getRemMedicineName());
 
+        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
+            img_edit_rem.setVisibility(View.GONE);
+            txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            img_edit_rem.setVisibility(View.VISIBLE);
+        }
+
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
                 Bundle bundle = new Bundle();
                 bundle.putString("doctorFollowupReminderId", healthNoteItemses.get(position).getDoctorFollowupReminderId());
                 bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
@@ -99,7 +103,7 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab doctor visit ?", "Doctor Visit", position);
                 dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Visit_Self_ListAdpter.this);
                 dialogDeleteAll.show();
@@ -162,9 +166,6 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
 
     private void getDoctorVisitDelete(String id, final int pos, final boolean isDeleted, boolean isOn) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DOCTOR_VIsit_DELETE_ + id + "&isDeleted=" + isDeleted + "&isOn=" + isOn,
                 new Response.Listener<String>() {
                     @Override

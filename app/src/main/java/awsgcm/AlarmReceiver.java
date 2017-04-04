@@ -1,18 +1,16 @@
 package awsgcm;
 
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
@@ -21,7 +19,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -29,11 +26,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
-import curefull.healthapp.CureFull;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import utils.CheckNetworkState;
 import utils.MyConstants;
+import utils.NotificationUtils;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -41,7 +38,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  * Created by Curefull on 02-02-2017.
  */
 
-public class AlarmReceiver extends BroadcastReceiver {
+public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     SharedPreferences preferences;
     RequestQueue requestQueue;
@@ -50,27 +47,38 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String action = intent.getAction();
+
+//        NotificationUtils notificationUtils = new NotificationUtils(context);
+//        notificationUtils.allGetNotfication("sdd", "ds", "123", "sdd");
+
         if (action.equalsIgnoreCase("steps")) {
-            String stepsCount = intent.getExtras().getString("stepsCount");
-            String caloriesBurnt = intent.getExtras().getString("caloriesBurnt");
-            String waterin = intent.getExtras().getString("waterin");
-            String newTime = intent.getExtras().getString("newTime");
+            String stepsCount = "" + preferences.getInt("stepsIn", 0);
+            String caloriesBurnt = "" + preferences.getString("CaloriesCount", "");
+            String waterin = preferences.getString("waterTake", "");
+//            String newTime = intent.getExtras().getString("newTime");
+            preferences.edit().putInt("stepsIn", 0).commit();
+            preferences.edit().putString("waterTake", "0").commit();
+            preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
+            preferences.edit().putInt("firstLogin", 0).commit();
+            if (preferences.getBoolean("resetStepReboot", true)) {
+            } else {
+                preferences.edit().putBoolean("resetStepReboot", true).commit();
+            }
+            preferences.edit().putBoolean("resetStepFirstTime", true).commit();
             if (CheckNetworkState.isNetworkAvailable(context)) {
                 jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
             } else {
-                if (newTime.equalsIgnoreCase("11:59 pm")) {
-                    ContentValues cv = new ContentValues();
-                    cv.put("steps_count", stepsCount);
-                    cv.put("runing", 0);
-                    cv.put("cycling", 0);
-                    cv.put("calories", "" + caloriesBurnt);
-                    cv.put("dateTime", "" + getTodayDateTime());
-                    cv.put("waterTake", waterin);
-                    cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-                    DbOperations operations = new DbOperations();
-                    operations.insertStepsCounts(context, cv);
-                }
-
+                ContentValues cv = new ContentValues();
+                cv.put("steps_count", stepsCount);
+                cv.put("runing", 0);
+                cv.put("cycling", 0);
+                cv.put("calories", "" + caloriesBurnt);
+                cv.put("dateTime", "" + getTodayDateTime());
+                cv.put("waterTake", waterin);
+                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                DbOperations operations = new DbOperations();
+                operations.insertStepsCounts(context, cv);
             }
         } else {
             String id = intent.getExtras().getString("perDayDosageDetailsId");

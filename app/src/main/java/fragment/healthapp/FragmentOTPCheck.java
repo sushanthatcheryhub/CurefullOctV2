@@ -70,7 +70,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private View rootView;
     private TextView btn_done, btn_click_resend_otp;
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
-    private RequestQueue requestQueue;
     private int OTP;
     private String health_name, health_email, health_mobile, health_password, realUHID = "";
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
@@ -105,6 +104,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             health_email = bundle.getString("EMAIL");
             health_mobile = bundle.getString("MOBILE");
             OTP = bundle.getInt("otp");
+//            edt_otp_password.setText(""+OTP);
             realUHID = bundle.getString("UHID");
         }
 
@@ -349,7 +349,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 jsonLoginCheck();
             } else {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
-
             }
         } else {
             CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid OTP Please check again");
@@ -362,9 +361,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private void sendOTPService() {
         Random rnd = new Random();
         final int n = 100000 + rnd.nextInt(900000);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.OTP_WEB_SERVICE + health_mobile + MyConstants.WebUrls.OTP_MESSAGE + "Dear%20User%20,%0AYour%20verification%20code%20is%20" + String.valueOf(n) + "%0AThanx%20for%20using%20Curefull.%20Stay%20Relief." + MyConstants.WebUrls.OTP_LAST,
                 new Response.Listener<String>() {
                     @Override
@@ -389,9 +385,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
 
     public void jsonLoginCheck() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
 //        JSONObject data = JsonUtilsObject.toLogin("user.doctor1.fortise@hatcheryhub.com", "ashwani");
         JSONObject data = JsonUtilsObject.toSignUp(health_name, health_email, edtInputPassword.getText().toString().trim(), health_mobile, realUHID);
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SIGN_UP, data,
@@ -414,6 +407,14 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             if (ParseJsonData.getInstance().getHttp_code().equalsIgnoreCase(MyConstants.JsonUtils.OK)) {
 
                                 if (userInfo != null) {
+
+                                    if (sharedPreferencesUserLogin.getString("tokenid",
+                                            "123").equalsIgnoreCase("123")) {
+                                        sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
+                                        CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                                        return;
+                                    }
                                     AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
                                     AppPreference.getInstance().setUserName(userInfo.getUser_name());
                                     AppPreference.getInstance().setUserID(userInfo.getUser_id());
@@ -436,28 +437,20 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     preferences.edit().putString("user_name", userInfo.getUser_name()).commit();
                                     preferences.edit().putString("email_id", userInfo.getUser_id()).commit();
                                     preferences.edit().putString("cf_uuhid", userInfo.getCf_uuhid()).commit();
-                                    preferences.edit().putString("user_id",userInfo.getUser_id_profile()).commit();
+                                    preferences.edit().putString("user_id", userInfo.getUser_id_profile()).commit();
 
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
 //                                Log.e("name", " " + userInfo.getA_t());
 
-                                    if (sharedPreferencesUserLogin.getString("tokenid",
-                                            "123").equalsIgnoreCase("123")) {
-                                        sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
-                                        CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
-                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
-
-                                    } else {
-                                        String token_Id = sharedPreferencesUserLogin.getString("tokenid",
-                                                "123");
-                                        String device_Id = sharedPreferencesUserLogin.getString("android_id",
-                                                "123");
-                                        jsonSaveNotification(token_Id, device_Id);
-                                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                        CureFull.getInstanse().getFlowInstanse()
-                                                .replace(new FragmentLandingPage(), false);
-                                    }
+                                    String token_Id = sharedPreferencesUserLogin.getString("tokenid",
+                                            "123");
+                                    String device_Id = sharedPreferencesUserLogin.getString("android_id",
+                                            "123");
+                                    jsonSaveNotification(token_Id, device_Id);
+                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                    CureFull.getInstanse().getFlowInstanse()
+                                            .replace(new FragmentLandingPage(), false);
 
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
@@ -542,9 +535,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
 
     public void jsonSaveNotification(String registrationToken, String deviceId) {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toRegisterUserForNotification(registrationToken, deviceId);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.URL_NOTIFICATION, data,

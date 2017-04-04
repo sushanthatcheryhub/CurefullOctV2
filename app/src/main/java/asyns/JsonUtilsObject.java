@@ -490,12 +490,10 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             JSONArray obj1 = new JSONArray();
             try {
                 for (int i = 0; i < prescriptionImageList.size(); i++) {
-                    if (prescriptionImageList.get(i).getImageNumber() != 000) {
                         JSONObject list1 = new JSONObject();
                         list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
                         list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
                         obj1.put(list1);
-                    }
 
                 }
             } catch (JSONException e1) {
@@ -538,12 +536,10 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             JSONArray obj1 = new JSONArray();
             try {
                 for (int i = 0; i < prescriptionImageList.size(); i++) {
-                    if (prescriptionImageList.get(i).getImageNumber() != 000) {
                         JSONObject list1 = new JSONObject();
                         list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
                         list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
                         obj1.put(list1);
-                    }
 
                 }
             } catch (JSONException e1) {

@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_gradient"
+    android:background="@color/health_light_bg"
     android:clickable="true"
     android:fillViewport="true"
     android:nestedScrollingEnabled="true">
@@ -68,7 +68,8 @@
                         android:layout_height="@dimen/_80dp"
                         android:layout_marginTop="@dimen/_10dp"
                         android:background="@drawable/image_rounded"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                         <ImageView
 
@@ -110,7 +111,6 @@
                         android:orientation="horizontal">
 
 
-
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/grid_list_symptom"
                             android:layout_width="match_parent"
@@ -145,18 +145,18 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="Doctor Name"
-                            android:inputType="textCapSentences"
-                            android:padding="@dimen/_5dp"
                             android:imeOptions="actionNext"
+                            android:inputType="textCapSentences"
                             android:nextFocusRight="@+id/input_disease"
-                            android:textColor="@color/health_login_text"
-                            android:textColorHint="@color/health_hint_color"
+                            android:padding="@dimen/_5dp"
+                            android:textColor="@color/health_dark_gray"
+                            android:textColorHint="@color/health_light_gray"
                             android:textStyle="bold" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/health_edit_line" />
+                            android:background="@color/health_light_gray" />
                     </LinearLayout>
 
 
@@ -176,17 +176,17 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:hint="Disease Name"
+                            android:imeOptions="actionDone"
                             android:inputType="textCapSentences"
                             android:padding="@dimen/_5dp"
-                            android:imeOptions="actionDone"
-                            android:textColor="@color/health_login_text"
-                            android:textColorHint="@color/health_hint_color"
+                            android:textColor="@color/health_dark_gray"
+                            android:textColorHint="@color/health_light_gray"
                             android:textStyle="bold" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/health_edit_line" />
+                            android:background="@color/health_light_gray" />
                     </LinearLayout>
 
 
@@ -211,8 +211,8 @@
                             android:orientation="horizontal">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
-                                style="@style/textView_dark_grey_normal_micro"
                                 android:id="@+id/txt_pre_date"
+                                style="@style/textView_dark_grey_normal_micro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
@@ -220,7 +220,7 @@
                                 android:paddingTop="@dimen/_5dp"
                                 android:singleLine="true"
                                 android:text="Prescription Date"
-                                android:textColor="@color/health_login_text"
+                                android:textColor="@color/health_dark_gray"
                                 android:textStyle="bold" />
 
 
@@ -249,7 +249,7 @@
                                     android:background="@android:color/transparent"
                                     android:padding="@dimen/_4dp"
                                     android:text="Select Date"
-                                    android:textColor="@color/health_login_text" />
+                                    android:textColor="@color/health_light_gray" />
 
                                 <ImageView
                                     android:layout_width="0dp"
@@ -263,7 +263,7 @@
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="@color/health_edit_line" />
+                                android:background="@color/health_light_gray" />
 
                         </LinearLayout>
                     </LinearLayout>
@@ -290,7 +290,7 @@
                             android:paddingRight="@dimen/_35dp"
                             android:paddingTop="@dimen/_5dp"
                             android:text="Done"
-                            android:textColor="@color/health_yellow" />
+                            android:textColor="@color/white" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

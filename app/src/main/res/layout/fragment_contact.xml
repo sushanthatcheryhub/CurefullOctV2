@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/login_gradient"
+    android:background="@color/white"
     android:clickable="true"
     android:focusableInTouchMode="true">
 
@@ -36,7 +36,7 @@
                     android:elevation="@dimen/_10dp"
                     android:padding="@dimen/_2dp"
                     android:text="Contact"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_dark_gray" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/login_gradient"
+                android:background="@color/white"
                 android:orientation="vertical">
 
 
@@ -81,7 +81,7 @@
                             android:id="@+id/linearView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/login_gradient"
+                            android:background="@color/white"
                             android:gravity="center_vertical"
                             android:orientation="vertical"
                             android:visibility="visible">
@@ -118,7 +118,7 @@
                                                 android:paddingTop="@dimen/_5dp"
                                                 android:singleLine="true"
                                                 android:text="Title"
-                                                android:textColor="@color/health_yellow" />
+                                                android:textColor="@color/health_mid_gray" />
 
                                             <customsTextViews.CustomTextViewOpenSanRegular
                                                 style="@style/textView_dark_grey_normal_micro_mini"
@@ -163,8 +163,8 @@
                                                     android:nextFocusDown="@id/edt_deatils"
                                                     android:padding="@dimen/_4dp"
                                                     android:singleLine="true"
-                                                    android:textColor="@color/health_yellow"
-                                                    android:textColorHint="@color/health_yellow" />
+                                                    android:textColor="@color/health_light_gray"
+                                                    android:textColorHint="@color/health_light_gray" />
 
                                             </LinearLayout>
 
@@ -190,7 +190,7 @@
                                         android:paddingTop="@dimen/_5dp"
                                         android:singleLine="true"
                                         android:text="Details"
-                                        android:textColor="@color/health_yellow" />
+                                        android:textColor="@color/health_mid_gray" />
 
                                     <LinearLayout
                                         android:layout_width="match_parent"
@@ -218,8 +218,8 @@
                                                 android:marqueeRepeatLimit="marquee_forever"
                                                 android:padding="@dimen/_4dp"
                                                 android:singleLine="true"
-                                                android:textColor="@color/health_yellow"
-                                                android:textColorHint="@color/health_yellow" />
+                                                android:textColor="@color/health_light_gray"
+                                                android:textColorHint="@color/health_light_gray" />
 
 
                                         </LinearLayout>
@@ -239,7 +239,7 @@
                                             android:paddingRight="@dimen/_15dp"
                                             android:paddingTop="@dimen/_2dp"
                                             android:text="Done"
-                                            android:textColor="@color/health_red_drawer" />
+                                            android:textColor="@color/white" />
 
                                     </LinearLayout>
                                 </LinearLayout>

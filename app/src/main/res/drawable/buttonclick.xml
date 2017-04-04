@@ -2,11 +2,11 @@
     android:shape="rectangle"
     android:thickness="1dp" >
 
-    <solid android:color="@color/health_yellow" />
+    <solid android:color="@color/transprent_new" />
 
     <stroke
         android:width="1dp"
-        android:color="@color/health_yellow" />
+        android:color="@color/health_light_gray" />
 
 
 </shape>

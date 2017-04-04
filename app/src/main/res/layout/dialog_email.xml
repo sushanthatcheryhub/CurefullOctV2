@@ -14,14 +14,14 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/login_gradient"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/topbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#d9534f"
+            android:background="@color/health_light_bg"
             android:orientation="horizontal">
 
             <customsTextViews.CustomTextViewOpenSanRegular
@@ -33,7 +33,7 @@
                 android:padding="10dp"
                 android:text="Success"
                 android:textAllCaps="true"
-                android:textColor="#ffffff"
+                android:textColor="@color/health_yellow"
                 android:textStyle="bold" />
 
 
@@ -81,7 +81,7 @@
                     android:gravity="center"
                     android:padding="@dimen/_10dp"
                     android:text="Done"
-                    android:textColor="@color/cure_full_text" />
+                    android:textColor="@color/white" />
 
                 <ImageView
                     android:layout_width="match_parent"

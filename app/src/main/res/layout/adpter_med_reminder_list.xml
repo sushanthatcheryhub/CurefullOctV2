@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_60dp"
             android:orientation="horizontal"
             android:padding="@dimen/_5dp">
 
@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="right"
                     android:text="Combiflame"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_dark_gray" />
 
                 <customsTextViews.CustomTextViewOpenSanRegular
                     android:id="@+id/txt_meal"
@@ -59,14 +59,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="right"
                     android:text="Meal"
-                    android:textColor="@color/health_yellow" />
+                    android:textColor="@color/health_light_gray" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/health_yellow" />
+                android:background="@color/health_light_gray" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -91,7 +91,7 @@
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:text="Health"
-                        android:textColor="@color/health_yellow" />
+                        android:textColor="@color/health_light_gray" />
 
 
                     <ImageView
@@ -109,7 +109,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/health_yellow" />
+                    android:background="@color/health_light_gray" />
             </LinearLayout>
 
 

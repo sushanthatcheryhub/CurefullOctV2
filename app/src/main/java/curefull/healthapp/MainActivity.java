@@ -1,5 +1,8 @@
 package curefull.healthapp;
 
+import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -28,7 +31,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,15 +38,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -71,8 +70,11 @@ import java.util.List;
 import java.util.Map;
 
 import ElasticVIews.ElasticAction;
+import asyns.JsonUtilsObject;
+import awsgcm.AlarmReceiver;
 import awsgcm.MessageReceivingService;
 import dialog.DialogEmailMessage;
+import dialog.DialogRedmiMessage;
 import fragment.healthapp.FragmentEditGoal;
 import fragment.healthapp.FragmentHealthAppNewProgress;
 import fragment.healthapp.FragmentHealthNote;
@@ -85,6 +87,7 @@ import fragment.healthapp.FragmentReminderDoctorVisit;
 import fragment.healthapp.FragmentReminderLabTest;
 import fragment.healthapp.FragmentReminderMedicine;
 import fragment.healthapp.FragmentSignUp;
+import stepcounter.MessengerService;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CircularImageView;
@@ -109,12 +112,12 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     private TextView txt_doctor_name_edu;
     private ImageView img_drawer, img_share;
     private CircularImageView circularImageView;
-    private int REQUEST_CODE_PICKERPROFILE = 2001;
+
     private NavigationView navigationView;
     SharedPreferences preferences;
     private static final int CAPTURE_MEDIA = 368;
+    private int REQUEST_CODE_PICKERPROFILE = 2001;
     private File myPath;
-    private RequestQueue requestQueue;
     String encodedImage;
     private View view1;
     private ProgressBar progressBar;
@@ -131,14 +134,14 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         CureFull.getInstanse().initActivity(this);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            Drawable background = this.getResources().getDrawable(R.drawable.login_gradient);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
-//            window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
-            window.setBackgroundDrawable(background);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = this.getWindow();
+//            Drawable background = this.getResources().getDrawable(R.drawable.login_gradient);
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+////            window.setNavigationBarColor(getResources().getColor(android.R.color.transparent));
+//            window.setBackgroundDrawable(background);
+//        }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -180,6 +183,8 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         txt_bottom_reports.setOnClickListener(this);
 
         img_share = (ImageView) findViewById(R.id.img_share);
+        int color = Color.parseColor("#FFFFFF"); //The color u want
+        img_share.setColorFilter(color);
         img_drawer = (ImageView) findViewById(R.id.img_drawer_open);
         progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -204,7 +209,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         disableDrawer();
         changeTitle("cureFull");
         startService(new Intent(this, MessageReceivingService.class));
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
 
 //        Intent serviceIntent = new Intent(this, LocationService.class);
@@ -231,31 +236,29 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
                     showLogo(false);
                     String type = getIntent().getExtras().getString("type");
+                    String id = getIntent().getExtras().getString("perDayDosageDetailsId");
                     if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                        jsonUploadLabTest(CureFull.getInstanse().getActivityIsntanse(), id, action);
                         img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderLabTest(), false);
                     } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                        jsonUploadDoctorVist(CureFull.getInstanse().getActivityIsntanse(), id, action);
                         img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
                         img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderDoctorVisit(), false);
                     } else {
+                        jsonUploadMedicine(CureFull.getInstanse().getActivityIsntanse(), id, action);
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderMedicine(), false);
                     }
@@ -327,6 +330,16 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 //                Log.e("data", "" + data.toString());
 //            }
 //        }
+        String manufacturer = "xiaomi";
+        if (manufacturer.equalsIgnoreCase(android.os.Build.MANUFACTURER)) {
+            if (preferences.getBoolean("redmi", true)) {
+                preferences.edit().putBoolean("redmi", false).commit();
+                DialogRedmiMessage dialogRedmiMessage = new DialogRedmiMessage(this);
+                dialogRedmiMessage.show();
+            }
+        }
+
+
     }
 
 
@@ -336,6 +349,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         System.exit(0);
         finish();
         preferences.edit().putBoolean("isDestroy", true).commit();
+
     }
 
     public void selectedNav(int i) {
@@ -543,9 +557,9 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     private void getUpdateEmailId(String id, final String emailId, String tokenId) {
         if (CheckNetworkState.isNetworkAvailable(this)) {
             showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(this);
-            }
+//            if (requestQueue == null) {
+//                requestQueue = Volley.newRequestQueue(this);
+//            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.EMAIL_ID_UPDATE + id + "&email=" + emailId + "&token=" + tokenId + "&type=UPDATE_EMAIL_ID",
                     new Response.Listener<String>() {
                         @Override
@@ -561,7 +575,10 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                             }
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 AppPreference.getInstance().setUserID(emailId);
-                                CureFull.getInstanse().getiOnEmailUpdate().optEmailUpdate();
+                                preferences.edit().putString("email_id", emailId).commit();
+                                if (CureFull.getInstanse().getiOnEmailUpdate() != null) {
+                                    CureFull.getInstanse().getiOnEmailUpdate().optEmailUpdate();
+                                }
                                 DialogEmailMessage dialogEmailMessage = new DialogEmailMessage(MainActivity.this);
                                 dialogEmailMessage.show();
                             } else {
@@ -596,7 +613,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             if (action.equalsIgnoreCase("android.intent.action.VIEW")) {
                 Uri uri = intent.getData();
                 try {
-                    Log.e("id","id "+uri.getQueryParameter("id"));
+                    Log.e("id", "id " + uri.getQueryParameter("email"));
                     getUpdateEmailId(uri.getQueryParameter("id"), uri.getQueryParameter("email"), uri.getQueryParameter("token"));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -606,32 +623,30 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                 if (!action.equalsIgnoreCase("steps")) {
                     if (AppPreference.getInstance().isLogin()) {
                         showLogo(false);
+                        String id = intent.getExtras().getString("perDayDosageDetailsId");
                         String type = intent.getExtras().getString("type");
                         if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                            liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                            liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
+                            jsonUploadLabTest(CureFull.getInstanse().getActivityIsntanse(), id, action);
                             img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                            txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                            txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                             img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                             img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentReminderLabTest(), false);
                         } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                            liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                            liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                            liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                            jsonUploadDoctorVist(CureFull.getInstanse().getActivityIsntanse(), id, action);
                             img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                            txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                            txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                             img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                            txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
                             img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                            txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentReminderDoctorVisit(), false);
                         } else {
+                            jsonUploadMedicine(CureFull.getInstanse().getActivityIsntanse(), id, action);
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentReminderMedicine(), false);
                         }
@@ -652,7 +667,6 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-
 
         switch (requestCode) {
             case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
@@ -741,6 +755,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             fos.flush();
             fos.close();
             MediaStore.Images.Media.insertImage(getContentResolver(), b, "Screen", "screen");
+            shareClick();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -794,15 +809,12 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     if (!AppPreference.getInstance().isFragmentMedicine()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                             ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         img_medicine.setImageResource(R.drawable.medicine_icon_red);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
                         img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderMedicine(), false);
                     }
@@ -813,15 +825,12 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     if (!AppPreference.getInstance().isFragmentDoctorVisit()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                             ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
                         img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
                         img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderDoctorVisit(), false);
                     }
@@ -832,15 +841,12 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     if (!AppPreference.getInstance().isFragmentLabTs()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                             ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-                        liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                        liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
                         img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                        txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                        txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                         img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                        txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentReminderLabTest(), false);
                     }
@@ -935,7 +941,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         protected String doInBackground(String... params) {
 
             takeScreenShot(view1);
-            shareClick();
+
 
             return "";
         }
@@ -961,37 +967,28 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             top_view.setVisibility(View.GONE);
         } else {
             if (name.equalsIgnoreCase("doctor")) {
-                liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendinic_click);
-                liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 img_doctor_visit.setImageResource(R.drawable.doctor_icon_red);
-                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
                 img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 top_view.setVisibility(View.VISIBLE);
             } else if (name.equalsIgnoreCase("lab")) {
-                liner_medincine.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                liner_lab_test.setBackgroundResource(R.drawable.button_mendinic_click);
                 img_medicine.setImageResource(R.drawable.medicine_icon_yellow);
-                txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_med.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 img_lab_test.setImageResource(R.drawable.lab_icon_red);
-                txt_lab_test.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
                 top_view.setVisibility(View.VISIBLE);
             } else {
-                liner_medincine.setBackgroundResource(R.drawable.button_mendinic_click);
-                liner_doctor_visit.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                liner_lab_test.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 img_medicine.setImageResource(R.drawable.medicine_icon_red);
-                txt_med.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_med.setTextColor(getResources().getColor(R.color.health_yellow));
                 img_doctor_visit.setImageResource(R.drawable.doctor_icon_yellow);
-                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_doctor_visit.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 img_lab_test.setImageResource(R.drawable.lab_icon_yellow);
-                txt_lab_test.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_lab_test.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 top_view.setVisibility(View.VISIBLE);
             }
 
@@ -1007,46 +1004,26 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendinic_click);
                 txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
-                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
-                img_health_pre.setImageResource(R.drawable.footer_ehr_red);
-                img_health_report.setImageResource(R.drawable.footer_report_yellow);
             } else if (check.equalsIgnoreCase("Lab Reports")) {
                 txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_reports.setBackgroundResource(R.drawable.button_mendinic_click);
-                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
-                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
-                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
-                img_health_report.setImageResource(R.drawable.footer_report_red);
             } else if (check.equalsIgnoreCase("Health App")) {
                 txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendinic_click);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                img_health_app.setImageResource(R.drawable.footer_healthapp_red);
-                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
-                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
-                img_health_report.setImageResource(R.drawable.footer_report_yellow);
             } else if (check.equalsIgnoreCase("Note")) {
                 txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendinic_click);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
-                img_health_note.setImageResource(R.drawable.footer_healthnote_red);
-                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
-                img_health_report.setImageResource(R.drawable.footer_report_yellow);
             } else {
                 txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                img_health_app.setImageResource(R.drawable.footer_healthapp_yellow);
-                img_health_note.setImageResource(R.drawable.footer_healthnote_yellow);
-                img_health_pre.setImageResource(R.drawable.footer_ehr_yellow);
-                img_health_report.setImageResource(R.drawable.footer_report_yellow);
             }
             liner_bottom_view.setVisibility(View.VISIBLE);
         }
@@ -1102,6 +1079,172 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             CureFull.getInstanse().getiOnOtpDonePath().optDonePath(images, "", 2002);
         }
 
+
+    }
+
+
+    public void jsonUploadMedicine(final Context context, final String id, String action) {
+//        if (requestQueue == null) {
+//            requestQueue = Volley.newRequestQueue(context);
+//        }
+
+        JSONObject data = JsonUtilsObject.toNotificationMEdincie(id, "complete");
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_MEDICINE, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                            manager.cancel(Integer.parseInt(id));
+                        } else {
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+//        requestQueue.add(jsonObjectRequest);
+
+    }
+
+
+    public void jsonUploadDoctorVist(final Context context, final String id, String action) {
+//        if (requestQueue == null) {
+//            requestQueue = Volley.newRequestQueue(context);
+//        }
+        JSONObject data = JsonUtilsObject.toNotificationDoctor(id, "complete");
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_DOCTOR, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                            manager.cancel(Integer.parseInt(id));
+                        } else {
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+//        requestQueue.add(jsonObjectRequest);
+
+    }
+
+
+    public void jsonUploadLabTest(final Context context, final String id, String action) {
+//        if (requestQueue == null) {
+//            requestQueue = Volley.newRequestQueue(context);
+//        }
+        JSONObject data = JsonUtilsObject.toNotificationLabTest(id, "complete");
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.GET_NOTIFICATION_LAB_TEST, data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                            manager.cancel(Integer.parseInt(id));
+                        } else {
+                            try {
+                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+//        requestQueue.add(jsonObjectRequest);
 
     }
 }

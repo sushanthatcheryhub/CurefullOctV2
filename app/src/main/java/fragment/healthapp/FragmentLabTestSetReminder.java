@@ -57,9 +57,8 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
     private String startFrom = "";
     private RadioGroup radioMeal;
     private RadioButton radioBeforeMeal, radioAfterMeal;
-    private boolean isBeforeMeal = false, isAfterMeal = false;
+    private boolean isBeforeMeal = false, isAfterMeal = false, btnClick = true;
     private String firstTime = "";
-    private RequestQueue requestQueue;
     private String labTestReminderId = "";
     private boolean isNewReminder = true;
 
@@ -174,7 +173,11 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    setMedReminderDetails();
+                    if (btnClick) {
+                        btnClick = false;
+                        setMedReminderDetails();
+                    }
+
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
@@ -201,33 +204,36 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
 
     public void setMedReminderDetails() {
         if (!validateTestName()) {
+            btnClick = true;
             return;
         }
         if (!validateLabName()) {
+            btnClick = true;
             return;
         }
 
         if (!validateDate()) {
+            btnClick = true;
             return;
         }
 
         if (!validateLabTime()) {
+            btnClick = true;
             return;
         }
 
         if (!validateWhen()) {
+            btnClick = true;
             return;
         }
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         JSONObject data = JsonUtilsObject.toSetLabTestReminder(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM, data,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        btnClick = true;
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
@@ -255,6 +261,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                btnClick = true;
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("Remider, URL 3.", "Error: " + error.getMessage());

@@ -86,7 +86,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private LinearLayout liner_date_t, liner_to_time;
     private LinearLayout date_time_picker;
     private String firstDate = "", firstTime = "", toFirstTime = "";
-    private RequestQueue requestQueue;
     private List<HealthNoteItems> healthNoteItemsesDummy;
     private List<HealthNoteItems> healthNoteItemses = new ArrayList<HealthNoteItems>();
     private ExpandableStickyListHeadersListView mListView;
@@ -478,9 +477,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     public void offlineDataSent(List<HealthNoteItems> healthNoteItemsesDummy) {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             JSONObject data = JsonUtilsObject.toAddOfflineHealthNote(healthNoteItemsesDummy);
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LIST_OF_HEALTH_NOTE, data,
                     new Response.Listener<JSONObject>() {
@@ -588,9 +584,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         }
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             JSONObject data = JsonUtilsObject.toAddHealthNote(edt_subject.getText().toString().trim(), edt_deatils.getText().toString().trim(), date, time, toTime);
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.HEALTH_NOTE_ADD, data,
                     new Response.Listener<JSONObject>() {
@@ -728,9 +721,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
     private void getAllHealthList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=15&offset=" + offset,
                     new Response.Listener<String>() {
                         @Override
@@ -806,9 +796,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
                 offset = +offsets;
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                    if (requestQueue == null) {
-                        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-                    }
                     StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.HEALTH_LIST_NOTE + "limit=15&offset=" + offset,
                             new Response.Listener<String>() {
                                 @Override

@@ -17,12 +17,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -60,7 +58,6 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
 
     Context applicationContext;
     List<LabReportImageListView> prescriptionListViews;
-    private RequestQueue requestQueue;
     private String doctorName, id, dieaseName, dates, uploadedBys;
 
 
@@ -212,9 +209,6 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
     private void getPrescriptionDelete(String id, String realId, String name, final int pos) {
 //        Log.e("delete", ":- " + id + " name:- " + name + "pos :- " + pos);
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_LAB_REPORT + id + "&iReportId=" + realId + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override

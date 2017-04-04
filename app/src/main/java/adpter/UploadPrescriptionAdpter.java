@@ -69,7 +69,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
 
     Context applicationContext;
     List<PrescriptionListView> prescriptionListViews;
-    private RequestQueue requestQueue;
     private FragmentPrescriptionCheckNew prescriptionCheck;
     private Uri uri;
     ArrayList<Uri> files = null;
@@ -254,9 +253,6 @@ public class UploadPrescriptionAdpter extends RecyclerView.Adapter<UploadPrescri
 
     private void getPrescriptionDelete(String id, String name, final int pos) {
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
                 new Response.Listener<String>() {
                     @Override

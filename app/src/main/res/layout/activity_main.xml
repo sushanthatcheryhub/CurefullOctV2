@@ -37,12 +37,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:layout_marginLeft="@dimen/_5dp"
-            android:background="@color/health_yellow_drawer"
+            android:background="@color/white"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header_main"
             app:itemBackground="@drawable/nav_item_background"
-            app:itemIconTint="@drawable/navigation_text_color"
-            app:itemTextColor="@drawable/navigation_text_color"
+            app:itemIconTint="@drawable/navigation_text_color_new"
+            app:itemTextColor="@drawable/navigation_text_color_new"
             app:menu="@menu/activity_main_drawer">
 
         </android.support.design.widget.NavigationView>

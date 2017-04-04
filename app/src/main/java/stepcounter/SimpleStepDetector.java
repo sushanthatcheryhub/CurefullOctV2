@@ -16,15 +16,18 @@
 
 package stepcounter;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 /**
  * Receives sensor updates and alerts a StepListener when a step has been detected.
  */
 public class SimpleStepDetector {
 
-  private static final int ACCEL_RING_SIZE = 90;
-  private static final int VEL_RING_SIZE = 90;
-  private static final float STEP_THRESHOLD = 10f;
-  private static final int STEP_DELAY_NS = 350000000;
+    private static final int ACCEL_RING_SIZE = 90;
+    private static final int VEL_RING_SIZE = 90;
+    private static final float STEP_THRESHOLD = 10f;
+    private static final int STEP_DELAY_NS = 350000000;
 
 //    private static final int ACCEL_RING_SIZE = 200;
 //    private static final int VEL_RING_SIZE = 200;
@@ -39,11 +42,12 @@ public class SimpleStepDetector {
     private float[] velRing = new float[VEL_RING_SIZE];
     private long lastStepTimeNs = 0;
     private float oldVelocityEstimate = 0;
-
+    SharedPreferences preferences;
     private StepListener listener;
 
-    public void registerListener(StepListener listener) {
+    public void registerListener(MessengerService messengerService, StepListener listener) {
         this.listener = listener;
+        preferences = PreferenceManager.getDefaultSharedPreferences(messengerService);
     }
 
     /**
@@ -82,6 +86,7 @@ public class SimpleStepDetector {
 
         if (velocityEstimate > STEP_THRESHOLD && oldVelocityEstimate <= STEP_THRESHOLD
                 && (timeNs - lastStepTimeNs > STEP_DELAY_NS)) {
+            preferences.edit().putBoolean("saveSteps", true).commit();
             listener.step(timeNs);
             lastStepTimeNs = timeNs;
         }

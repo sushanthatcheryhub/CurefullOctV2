@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -28,12 +27,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,7 +68,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
 
     private View rootView;
     private RelativeLayout relative_bottom_next, realtive_today, rel_set_reminder, liner_filter_by, realtive_notesShort;
-    private RequestQueue requestQueue;
     private RecyclerView recyclerView_doctor, recyclerView_self;
     private Reminder_Lab_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_Lab_Self_ListAdpter reminder_medicine_self_listAdpter;
@@ -202,8 +198,8 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
         });
         txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
         txt_filter_status.setBackgroundResource(R.color.transprent_new);
-        txt_reminder.setTextColor(getResources().getColor(R.color.health_red_drawer));
-        txt_status.setTextColor(getResources().getColor(R.color.health_yellow));
+        txt_reminder.setTextColor(getResources().getColor(R.color.white));
+        txt_status.setTextColor(getResources().getColor(R.color.health_dark_gray));
         radioReminder.setVisibility(View.VISIBLE);
         radioStatus.setVisibility(View.GONE);
         String[] dateAll = Utils.getTodayDate().split("-");
@@ -246,7 +242,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     AdapterView.OnItemClickListener popUpItemClickUserList = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.e("yes user", "yes user");
+//            Log.e("yes user", "yes user");
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
             if (LabDoctorName != null && LabDoctorName.size() > 0) {
@@ -305,16 +301,16 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             case R.id.txt_filter_reminder:
                 txt_filter_reminder.setBackgroundResource(R.color.health_yellow);
                 txt_filter_status.setBackgroundResource(R.color.transprent_new);
-                txt_reminder.setTextColor(getResources().getColor(R.color.health_red_drawer));
-                txt_status.setTextColor(getResources().getColor(R.color.health_yellow));
+                txt_reminder.setTextColor(getResources().getColor(R.color.white));
+                txt_status.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 radioReminder.setVisibility(View.VISIBLE);
                 radioStatus.setVisibility(View.GONE);
                 break;
             case R.id.txt_filter_status:
                 txt_filter_reminder.setBackgroundResource(R.color.transprent_new);
                 txt_filter_status.setBackgroundResource(R.color.health_yellow);
-                txt_reminder.setTextColor(getResources().getColor(R.color.health_yellow));
-                txt_status.setTextColor(getResources().getColor(R.color.health_red_drawer));
+                txt_reminder.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_status.setTextColor(getResources().getColor(R.color.white));
                 radioReminder.setVisibility(View.GONE);
                 radioStatus.setVisibility(View.VISIBLE);
                 break;
@@ -377,9 +373,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
         isChecked = true;
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-            }
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_OF_LAB_TEST + "cfuuhId=" + AppPreference.getInstance().getcf_uuhid() + "&date=" + date + "&status=" + status + "&reminderType=" + reminder + "&doctorName=" + doctorName,
                     new Response.Listener<String>() {
                         @Override
@@ -610,9 +603,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     }
 
     private void getDoctorName() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
-        }
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_LAB_TEST + "" + AppPreference.getInstance().getcf_uuhid(),
                 new Response.Listener<String>() {
                     @Override

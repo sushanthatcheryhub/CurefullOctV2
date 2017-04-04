@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,13 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyLog;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,12 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import awsgcm.AlarmReceiver;
 import fragment.healthapp.FragmentContact;
 import fragment.healthapp.FragmentLandingPage;
 import fragment.healthapp.FragmentLogin;
 import fragment.healthapp.FragmentProfile;
 import fragment.healthapp.FragmentReminderMedicine;
-import fragment.healthapp.FragmentSettingPage;
 import fragment.healthapp.FragmentTermCondition;
 import fragment.healthapp.FragmentUHID;
 import utils.AppPreference;
@@ -53,12 +49,11 @@ public class BaseMainActivity extends AppCompatActivity
 
     private int _backBtnCount = 0;
     SharedPreferences preferences;
-    private RequestQueue requestQueue;
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         int id = item.getItemId();
         if (id == R.id.nav_home) {
             CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
@@ -83,7 +78,8 @@ public class BaseMainActivity extends AppCompatActivity
             // ek ye simple method hota hai.
             //
             //stopService(new Intent(BaseMainActivity.this, MessengerService.class));
-//            FragmentLandingPage.stopStepService();
+            FragmentLandingPage fragmentLandingPage = new FragmentLandingPage();
+            fragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
             jsonLogout();
         } else if (id == R.id.nav_policy) {
@@ -110,13 +106,13 @@ public class BaseMainActivity extends AppCompatActivity
 //                    .replace(new FragmentSettingPage(), true);
 //        }
 
-//        else if (id == R.id.nav_reminder) {
-//            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
-//            CureFull.getInstanse().cancel();
-//            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-//            CureFull.getInstanse().getFlowInstanse()
-//                    .replace(new FragmentReminderMedicine(), false);
-//        }
+        else if (id == R.id.nav_reminder) {
+            CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
+            CureFull.getInstanse().cancel();
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentReminderMedicine(), false);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -163,7 +159,6 @@ public class BaseMainActivity extends AppCompatActivity
                 if (_backBtnCount == 2) {
                     preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     preferences.edit().putBoolean("destroy", true).commit();
-//                    CureFull.getInstanse().getActivityIsntanse().startFitService();
                     System.exit(0);
                     finish();
                     return;
@@ -291,7 +286,6 @@ public class BaseMainActivity extends AppCompatActivity
 
 
     public void jsonLogout() {
-        requestQueue = Volley.newRequestQueue(CureFull.getInstanse().getActivityIsntanse());
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.LOGOUT, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -305,7 +299,9 @@ public class BaseMainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                         if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            preferences.edit().putBoolean("logout", true).commit();
                             AppPreference.getInstance().setIsFirstTimeSteps(false);
+                            preferences.edit().putBoolean("resetStepFirstTime", true).commit();
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentLogin(), false);
@@ -335,8 +331,9 @@ public class BaseMainActivity extends AppCompatActivity
         try {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
+//            share.setType("image/jpeg");
             i.putExtra(Intent.EXTRA_SUBJECT, "CureFull");
-            String sAux = "\nCurefull has made 24*7 personalized mobile health monitoring a reality\nWant to track your Daily physical activity? Keep record of Daily health issues ? Manage Digital\n\nJust a click away! ";
+            String sAux = "Curefull has made 24*7 personalized mobile health monitoring a reality\nWant to track your Daily physical activity? Keep record of Daily health issues ? Manage Digital\n\nJust a click away! ";
             sAux = sAux + "https://play.google.com/store/apps/details?id=com.curefull \n\n";
             i.putExtra(Intent.EXTRA_TEXT, sAux);
             startActivity(Intent.createChooser(i, "choose one"));
