@@ -1,5 +1,6 @@
 package awsgcm;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -80,6 +82,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 DbOperations operations = new DbOperations();
                 operations.insertStepsCounts(context, cv);
             }
+        } else if (action.equalsIgnoreCase("stepsService")) {
+            if (isMyServiceRunning(context, MessengerService.class)) {
+            } else {
+                Intent background = new Intent(context, MessengerService.class);
+                context.startService(background);
+            }
         } else {
             String id = intent.getExtras().getString("perDayDosageDetailsId");
             String type = intent.getExtras().getString("type");
@@ -95,6 +103,19 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     }
 
+    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+        if (services != null) {
+            for (int i = 0; i < services.size(); i++) {
+                if ((serviceClass.getName()).equals(services.get(i).service.getClassName()) && services.get(i).pid != 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public void jsonUploadMedicine(final Context context, final String id, String action) {
         if (requestQueue == null) {

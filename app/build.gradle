@@ -7,8 +7,8 @@ android {
         applicationId "com.curefull"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 34
-        versionName "1.1.4"
+        versionCode 35
+        versionName "1.1.5"
     }
     lintOptions {
         checkReleaseBuilds false

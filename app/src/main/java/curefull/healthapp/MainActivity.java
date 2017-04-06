@@ -1,6 +1,8 @@
 package curefull.healthapp;
 
+import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -65,6 +67,7 @@ import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,17 +322,8 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             }
         });
 
+        startServiceFromAlarm();
 
-//        Intent intent = getIntent();
-//        if (intent != null) {
-//            String action = intent.getAction();
-//            Uri data = intent.getData();
-//
-//            Log.e("action", "" + action);
-//            if (data != null) {
-//                Log.e("data", "" + data.toString());
-//            }
-//        }
         String manufacturer = "xiaomi";
         if (manufacturer.equalsIgnoreCase(android.os.Build.MANUFACTURER)) {
             if (preferences.getBoolean("redmi", true)) {
@@ -1247,4 +1241,18 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 //        requestQueue.add(jsonObjectRequest);
 
     }
+
+
+    public void startServiceFromAlarm() {
+        if (Build.VERSION.SDK_INT == 19) {
+            long interval = 1000 * 5;
+            Intent intent = new Intent(this, AlarmReceiver.class);
+            intent.setAction("stepsService");
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    this.getApplicationContext(), 234324243, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        }
+    }
+
 }

@@ -22,9 +22,9 @@ public class BootCompleteReceiver extends BroadcastReceiver {
             preferences = PreferenceManager.getDefaultSharedPreferences(context);
             preferences.edit().putBoolean("resetStepFirstTime", true).commit();
             preferences.edit().putBoolean("resetStepReboot", false).commit();
+            preferences.edit().putBoolean("firstReboot", true).commit();
             Intent service = new Intent(context, MessengerService.class);
             context.startService(service);
-
             Intent service1 = new Intent(context, MessageReceivingService.class);
             context.startService(service1);
         }

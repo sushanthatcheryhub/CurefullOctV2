@@ -24,10 +24,8 @@
         android:name="com.curefull.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -154,6 +152,7 @@
                 <action android:name="skip" />
                 <action android:name="snooze" />
                 <action android:name="steps" />
+                <action android:name="stepsService" />
             </intent-filter>
         </receiver>
 

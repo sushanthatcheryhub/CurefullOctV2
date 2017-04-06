@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -18,6 +19,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import java.util.TimerTask;
 import awsgcm.AlarmReceiver;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
+import operations.DbOperations;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
     /**
@@ -132,6 +135,9 @@ public class MessengerService extends Service implements StepListener, SensorEve
         // This always shows up in the notifications area when this Service is running.
         // TODO: String localization
 //        Notification notification = getNotification();
+        if (Build.VERSION.SDK_INT == 19) {
+            initSensor();
+        }
         return START_REDELIVER_INTENT;
     }
 
@@ -208,7 +214,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
             sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
         }
 
-
     }
 
     @Override
@@ -235,11 +240,11 @@ public class MessengerService extends Service implements StepListener, SensorEve
             }
         };
         newSteps++;
-        if (newSteps > 7) {
+        if (newSteps > 5) {
             stepsReal = true;
-            if (newSteps == 8) {
+            if (newSteps == 6) {
+                preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 6)).commit();
                 updateTimeOnEachSecond();
-                preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 8)).commit();
             }
         }
 
@@ -418,7 +423,12 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
                     }
                 } else {
-                    numSteps = preferences.getInt("stepsIn", 0) + (int) steps;
+
+                    if (preferences.getBoolean("firstReboot", true)) {
+                        preferences.edit().putBoolean("firstReboot", false).commit();
+                        preferences.edit().putInt("firstLoginReboot", preferences.getInt("stepsIn", 0)).commit();
+                    }
+                    numSteps = preferences.getInt("firstLoginReboot", 0) + (int) steps;
                     preferences.edit().putInt("stepsIn", numSteps).commit();
                     try {
                         if (preferences.getBoolean("isDestroy", false)) {
@@ -448,6 +458,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
 
     public void updateTimeOnEachSecond() {
+
+
 //        if (preferences.getBoolean("stepFirstTime", true)) {
 //            preferences.edit().putBoolean("stepFirstTime", false).commit();
         Calendar calendar = Calendar.getInstance();
