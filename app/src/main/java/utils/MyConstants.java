@@ -9,7 +9,7 @@ public class MyConstants {
 
         boolean isLogCheck = false;
 
-//                String HOST_IP = "http://lp.hatcheryhub.com";
+        //                String HOST_IP = "http://lp.hatcheryhub.com";
         String HOST_IP = "http://hatcheryhub.com";
         //                                String HOST_IP = "http://192.168.0.82:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
@@ -227,6 +227,7 @@ public class MyConstants {
         String TABLE_PRESCRIPTION = "tbl_prescription";
         String TABLE_OFFLINE_NOTE = "offline_note_master";
         String TABLE_STEPS = "tbl_steps";
+        String TABLE_STEPS_STATUS = "tbl_steps_count";
     }
 
 

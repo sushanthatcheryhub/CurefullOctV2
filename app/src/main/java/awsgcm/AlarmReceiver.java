@@ -28,11 +28,15 @@ import java.util.Locale;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
+import curefull.healthapp.CureFull;
+import item.property.StepsCountsStatus;
+import item.property.UserInfo;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.NotificationUtils;
+import utils.Utils;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -68,20 +72,31 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 preferences.edit().putBoolean("resetStepReboot", true).commit();
             }
             preferences.edit().putBoolean("resetStepFirstTime", true).commit();
-            if (CheckNetworkState.isNetworkAvailable(context)) {
-                jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
-            } else {
-                ContentValues cv = new ContentValues();
-                cv.put("steps_count", stepsCount);
-                cv.put("runing", 0);
-                cv.put("cycling", 0);
-                cv.put("calories", "" + caloriesBurnt);
-                cv.put("dateTime", "" + getTodayDateTime());
-                cv.put("waterTake", waterin);
-                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-                DbOperations operations = new DbOperations();
-                operations.insertStepsCounts(context, cv);
+            StepsCountsStatus stepsStatus = DbOperations.getStepStatusList(context, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+            if (stepsStatus.getStatus() == 0 && stepsStatus.getDateTime().equalsIgnoreCase(Utils.getTodayDate())) {
+                ContentValues cv1 = new ContentValues();
+                cv1.put("status", 1);
+                cv1.put("date", "" + Utils.getTodayDate());
+                DbOperations operations1 = new DbOperations();
+                operations1.insertStepStaus(context, cv1, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+
+                if (CheckNetworkState.isNetworkAvailable(context)) {
+                    jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("steps_count", stepsCount);
+                    cv.put("runing", 0);
+                    cv.put("cycling", 0);
+                    cv.put("calories", "" + caloriesBurnt);
+                    cv.put("dateTime", "" + getTodayDateTime());
+                    cv.put("waterTake", waterin);
+                    cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    DbOperations operations = new DbOperations();
+                    operations.insertStepsCounts(context, cv);
+                }
             }
+
+
         } else if (action.equalsIgnoreCase("stepsService")) {
             if (isMyServiceRunning(context, MessengerService.class)) {
             } else {

@@ -14,6 +14,7 @@ import curefull.healthapp.CureFull;
 import item.property.GoalInfo;
 import item.property.HealthNoteItems;
 import item.property.StepsCountsItems;
+import item.property.StepsCountsStatus;
 import item.property.UserInfo;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -400,6 +401,69 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
             long id = database.insert(TABLE_STEPS, null, cv);
 //                Log.e("insertLoginList", "Qurery Enty number-" + id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
+    public static StepsCountsStatus getStepStatusList(Context context, String primaryId, String date) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new StepsCountsStatus();
+        StepsCountsStatus listApps = null;
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT * FROM " + TABLE_STEPS_STATUS + " Where cf_uuhid ='" + primaryId + "'" + " AND date = '" + date + "'";
+
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    listApps = new StepsCountsStatus(cursor);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
+    public static void insertStepStaus(Context context, ContentValues cv, String cf_uuhid, String date) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_STEPS_STATUS + " Where cf_uuhid ='" + cf_uuhid + "'" + " AND date = '" + date + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_STEPS_STATUS, cv, CF_UUHID + "='" + cf_uuhid + "'" + " AND date = '" + date + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_STEPS_STATUS, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

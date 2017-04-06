@@ -32,6 +32,7 @@ import awsgcm.AlarmReceiver;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
 import operations.DbOperations;
+import utils.Utils;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
     /**
@@ -281,6 +282,17 @@ public class MessengerService extends Service implements StepListener, SensorEve
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            ContentValues cv = new ContentValues();
+            cv.put("steps_count", preferences.getString("stepsIn", ""));
+            cv.put("runing", 0);
+            cv.put("cycling", 0);
+            cv.put("calories", "" + preferences.getString("CaloriesCount", ""));
+            cv.put("date", "" + Utils.getTodayDate());
+            cv.put("waterTake", preferences.getString("waterTake", ""));
+            cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+            cv.put("status", 0);
+            DbOperations operations = new DbOperations();
+            operations.insertStepStaus(this, cv, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
         }
 
     }
@@ -444,7 +456,17 @@ public class MessengerService extends Service implements StepListener, SensorEve
                     }
                 }
 
-
+                ContentValues cv = new ContentValues();
+                cv.put("steps_count", preferences.getString("stepsIn", ""));
+                cv.put("runing", 0);
+                cv.put("cycling", 0);
+                cv.put("calories", "" + preferences.getString("CaloriesCount", ""));
+                cv.put("date", "" + Utils.getTodayDate());
+                cv.put("waterTake", preferences.getString("waterTake", ""));
+                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                cv.put("status", 0);
+                DbOperations operations = new DbOperations();
+                operations.insertStepStaus(this, cv, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
             }
         } else {
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {

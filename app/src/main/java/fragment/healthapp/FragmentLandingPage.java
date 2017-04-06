@@ -74,6 +74,7 @@ import dialog.DialogHintScreenaLandingQution;
 import dialog.DialogHintScreenaPrescriptions;
 import item.property.HealthNoteItems;
 import item.property.StepsCountsItems;
+import item.property.StepsCountsStatus;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
@@ -321,6 +322,13 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         txt_date_time.setText("     ");
         txt_time.setText("      ");
         txt_to_time.setText("      ");
+
+
+        StepsCountsStatus stepsStatus = DbOperations.getStepStatusList(getActivity(), preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+        if (stepsStatus.getStatus() == 0 && stepsStatus.getDateTime().equalsIgnoreCase(Utils.getTodayDate())) {
+            Log.e("check Status", " " + stepsStatus.getStatus());
+        }
+
 
         return rootView;
     }
