@@ -27,6 +27,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
             context.startService(service);
             Intent service1 = new Intent(context, MessageReceivingService.class);
             context.startService(service1);
+            
         }
 
 
