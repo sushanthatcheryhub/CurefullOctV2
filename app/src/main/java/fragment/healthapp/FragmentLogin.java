@@ -12,8 +12,11 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -22,17 +25,15 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
@@ -59,6 +60,7 @@ import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import awsgcm.MessageReceivingService;
 import curefull.healthapp.CureFull;
+import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
 import dialog.DialogTCFullView;
 import item.property.UserInfo;
@@ -72,13 +74,13 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentLogin extends Fragment implements
+public class FragmentLogin extends AppCompatActivity implements
         View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
     private ProgressDialog mProgressDialog;
-    private View rootView;
+    //private View rootView;
     TextView login_button, btn_create_new, btn_click_forgot, sign_out_button_facebook, txt_term_conditions;
     private boolean showPwd = false;
     private AutoCompleteTextView edtInputEmail;
@@ -86,29 +88,31 @@ public class FragmentLogin extends Fragment implements
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
-
+    private CoordinatorLayout coordinatorLayout;
+    private ProgressBar progress_bar;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_login,
-                container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.fragment_login);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        CureFull.getInstanse().getActivityIsntanse().showLogo(true);
+        //CureFull.getInstanse().getActivityIsntanse().showLogo(true); by sourav
         CureFull.getInstanse().getActivityIsntanse().showRelativeActionBar(false);
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
                 .getSharedPreferences("Login", 0);
-        txt_term_conditions = (TextView) rootView.findViewById(R.id.txt_term_conditions);
-        edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
-        edtInputPassword = (EditText) rootView.findViewById(R.id.input_password);
-        sign_out_button_facebook = (TextView) rootView.findViewById(R.id.sign_out_button_facebook);
-        btn_create_new = (TextView) rootView.findViewById(R.id.btn_create_new);
-        btn_click_forgot = (TextView) rootView.findViewById(R.id.btn_click_forgot);
-        login_button = (TextView) rootView.findViewById(R.id.btn_login);
+        txt_term_conditions = (TextView) findViewById(R.id.txt_term_conditions);
+        edtInputEmail = (AutoCompleteTextView) findViewById(R.id.input_email);
+        edtInputPassword = (EditText) findViewById(R.id.input_password);
+        sign_out_button_facebook = (TextView) findViewById(R.id.sign_out_button_facebook);
+        btn_create_new = (TextView) findViewById(R.id.btn_create_new);
+        btn_click_forgot = (TextView) findViewById(R.id.btn_click_forgot);
+        login_button = (TextView) findViewById(R.id.btn_login);
+        progress_bar=(ProgressBar)findViewById(R.id.progress_bar);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         sign_out_button_facebook.setOnClickListener(this);
         login_button.setOnClickListener(this);
 
@@ -124,13 +128,13 @@ public class FragmentLogin extends Fragment implements
         String meassgeTxt = comma + gameName;
 
         Spannable sb = new SpannableString(meassgeTxt);
-        Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "facebook-letter-faces.ttf");
-        sb.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        Typeface font = Typeface.createFromAsset(getAssets(), "facebook-letter-faces.ttf");
+        sb.setSpan(new ForegroundColorSpan(getResources()
                         .getColor(R.color.health_login_text)), meassgeTxt.indexOf(comma),
                 meassgeTxt.indexOf(comma) + comma.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new CustomTypefaceSpan("", font), 11, 19, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb.setSpan(new ForegroundColorSpan(getResources()
                         .getColor(R.color.blue_interpid)), meassgeTxt.indexOf(gameName),
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -145,18 +149,18 @@ public class FragmentLogin extends Fragment implements
         String meassgeNew = you + termCondtiions + submit;
 
         Spannable sb1 = new SpannableString(meassgeNew);
-        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb1.setSpan(new ForegroundColorSpan(getResources()
                         .getColor(R.color.health_light_gray)), meassgeNew.indexOf(you),
                 meassgeNew.indexOf(you) + you.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb1.setSpan(new ForegroundColorSpan(getResources()
                         .getColor(R.color.health_yellow)), meassgeNew.indexOf(termCondtiions),
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb1.setSpan(new UnderlineSpan(), meassgeNew.indexOf(termCondtiions),
                 meassgeNew.indexOf(termCondtiions) + termCondtiions.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb1.setSpan(new ForegroundColorSpan(getActivity().getResources()
+        sb1.setSpan(new ForegroundColorSpan(getResources()
                         .getColor(R.color.health_light_gray)), meassgeNew.indexOf(submit),
                 meassgeNew.indexOf(submit) + submit.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -165,7 +169,7 @@ public class FragmentLogin extends Fragment implements
         txt_term_conditions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogTCFullView dialogProfileFullView = new DialogTCFullView(CureFull.getInstanse().getActivityIsntanse());
+                DialogTCFullView dialogProfileFullView = new DialogTCFullView(FragmentLogin.this);
                 dialogProfileFullView.show();
             }
         });
@@ -227,21 +231,22 @@ public class FragmentLogin extends Fragment implements
             }
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (HandlePermission.checkPermissionReadContact(CureFull.getInstanse().getActivityIsntanse())) {
+            if (HandlePermission.checkPermissionReadContact(this)) {
                 addAdapterToViews();
             }
         }
 
 //        AppPreference.getInstance().clearAllData();
         AppPreference.getInstance().setIsLogin(false);
-        return rootView;
+
     }
+
 
     private boolean validateEmail() {
         String email = edtInputEmail.getText().toString().trim();
 
         if (email.isEmpty()) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id / Mobile number cannot be left blank.");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Email Id / Mobile number cannot be left blank.");
             return false;
         }
         return true;
@@ -254,7 +259,7 @@ public class FragmentLogin extends Fragment implements
 
     private boolean validatePassword() {
         if (edtInputPassword.getText().toString().trim().isEmpty()) {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Enter Password");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Please Enter Password");
             return false;
         }
 
@@ -270,7 +275,7 @@ public class FragmentLogin extends Fragment implements
 
     private void showProgressDialog() {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog = new ProgressDialog(FragmentLogin.this);
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
@@ -280,6 +285,7 @@ public class FragmentLogin extends Fragment implements
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.hide();
+
         }
     }
 
@@ -293,14 +299,17 @@ public class FragmentLogin extends Fragment implements
             case R.id.btn_create_new:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                CureFull.getInstanse().getFlowInstanse()
+                CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentSignUp.class));
+                /*CureFull.getInstanse().getFlowInstanse()
                         .addWithBottomTopAnimation(new FragmentSignUp(), null, true);
+               */
                 break;
             case R.id.btn_click_forgot:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                CureFull.getInstanse().getFlowInstanse()
-                        .addWithBottomTopAnimation(new FragmentResetPassword(), null, true);
+                CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentResetPassword.class));
+                /*CureFull.getInstanse().getFlowInstanse()
+                        .addWithBottomTopAnimation(new FragmentResetPassword(), null, true);*/
                 break;
             case R.id.btn_login:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
@@ -339,12 +348,14 @@ public class FragmentLogin extends Fragment implements
             login_button.setEnabled(true);
             return;
         }
-        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        if (CheckNetworkState.isNetworkAvailable(FragmentLogin.this)) {
+            //showProgressDialog();
+            progress_bar.setVisibility(View.VISIBLE);
+//            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
             jsonLoginCheck();
         } else {
             login_button.setEnabled(true);
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
         }
 
@@ -379,7 +390,9 @@ public class FragmentLogin extends Fragment implements
                     public void onResponse(JSONObject response) {
 //                        Log.e("res", "" + response.toString());
                         login_button.setEnabled(true);
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+//                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        //hideProgressDialog();
+                        progress_bar.setVisibility(View.GONE);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -399,7 +412,7 @@ public class FragmentLogin extends Fragment implements
                                             "123").equalsIgnoreCase("123")) {
                                         sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
                                         CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
-                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                                         return;
                                     }
 
@@ -451,14 +464,17 @@ public class FragmentLogin extends Fragment implements
                                         AppPreference.getInstance().setIsFirstTimeNotifictaion(false);
                                         jsonSaveNotification(token_Id, device_Id);
                                     }
+
+
                                     CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                    CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentLandingPage(), false);
+                                    CureFull.getInstanse().getFlowInstanse().replaceLoss(new FragmentLandingPage(), false);
+                                    finish();
+
 //                                    }
 
                                 } else {
                                     login_button.setEnabled(true);
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 
                                 }
 
@@ -468,7 +484,7 @@ public class FragmentLogin extends Fragment implements
                             try {
                                 JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                 JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -483,7 +499,7 @@ public class FragmentLogin extends Fragment implements
 //                Log.e("error", "" + error.getMessage());
                 login_button.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
@@ -572,7 +588,7 @@ public class FragmentLogin extends Fragment implements
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                     JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -586,7 +602,7 @@ public class FragmentLogin extends Fragment implements
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
@@ -603,5 +619,15 @@ public class FragmentLogin extends Fragment implements
             }
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        //a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+
     }
 }

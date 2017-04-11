@@ -13,16 +13,44 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <RelativeLayout
+            android:id="@+id/relative_logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/home_background"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/logo" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/relative_reclyview"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_140dp"
-            android:layout_below="@+id/top_view"
+            android:layout_below="@+id/relative_logo"
             android:layout_marginLeft="@dimen/_15dp"
             android:layout_marginRight="@dimen/_15dp"
             android:layout_marginTop="@dimen/_15dp"
             android:orientation="vertical">
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_we"
+                style="@style/textView_dark_grey_normal_small_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/_10dp"
+                android:layout_marginRight="@dimen/_10dp"
+                android:elevation="@dimen/_10dp"
+                android:padding="@dimen/_2dp"
+                android:text="We have found matching recodrs with .Please select if recods to you otherwise skip."
+                android:textColor="@color/health_yellow" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView_notes"
@@ -45,6 +73,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_above="@+id/relative_reclyview"
+            android:layout_below="@+id/relative_logo"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -53,19 +83,6 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/_5dp"
                 android:gravity="center_vertical">
-
-                <customsTextViews.CustomTextViewOpenSanRegular
-                    android:id="@+id/txt_we"
-                    style="@style/textView_dark_grey_normal_small_one"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/_15dp"
-                    android:layout_marginRight="@dimen/_15dp"
-                    android:elevation="@dimen/_10dp"
-                    android:padding="@dimen/_2dp"
-                    android:text="We have found matching recodrs with .Please select if recods to you otherwise skip."
-                    android:textColor="@color/health_yellow" />
 
 
             </RelativeLayout>

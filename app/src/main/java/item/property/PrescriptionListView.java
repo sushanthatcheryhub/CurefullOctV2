@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -24,6 +26,7 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
     private String countOfFiles;
     private String uploadedBy;
     private String dateOfUpload;
+    private String common_id;
     private ArrayList<PrescriptionImageFollowUpListView> prescriptionImageFollowUpListViews;
 
     public PrescriptionListView() {
@@ -47,6 +50,44 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
         }
     }
 
+    public void getInsertingValue(JSONObject json) {
+        try {
+            JSONObject jsonResponse1 = json.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
+            ContentValues values = new ContentValues();
+            values.put(CFUUHIDs, jsonResponse1.getString(CFUUHIDs));
+            values.put(PRESCRIPTION_ID, jsonResponse1.getString(PRESCRIPTION_ID));
+            values.put(PRESCRIPTION_DATE, jsonResponse1.getString(PRESCRIPTION_DATE));
+            values.put(DOCTOR_NAME, jsonResponse1.getString(DOCTOR_NAME));
+            values.put(COUNT_OF_FILES, jsonResponse1.getString(COUNT_OF_FILES));
+            values.put(UPLOAD_BY, jsonResponse1.getString(UPLOAD_BY));
+            values.put(COMMON_ID, jsonResponse1.getString(COMMON_ID));
+            setCommonID(jsonResponse1.getString(PRESCRIPTION_ID));
+            DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew());
+
+            ContentValues values1 = new ContentValues();
+            JSONObject jsonResponse2 = json.getJSONObject(MyConstants.JsonUtils.PRESCRIPTION_FOLLOWUPLIST);
+            values1.put(COUNT_OF_FILES, jsonResponse2.getString(COUNT_OF_FILES));
+            values1.put(PRESCRIPTION_DATE, jsonResponse2.getString(PRESCRIPTION_DATE));
+            values1.put(PRESCRIPTION_IMAGEFOLLOWUP_ID, jsonResponse2.getString(PRESCRIPTION_IMAGEFOLLOWUP_ID));
+            values1.put(COMMON_ID, getCommonID());
+            DbOperations.insertPrescriptionFollowUPList(CureFull.getInstanse().getActivityIsntanse(), values1, getCommonID());
+
+            ContentValues values2 = new ContentValues();
+            JSONObject jsonResponse3 = json.getJSONObject(MyConstants.JsonUtils.PRESCRIPTION_RESPONSE_LIST);
+            values2.put(IMAGE_NUMBER, jsonResponse3.getString(IMAGE_NUMBER));
+            values2.put(PRESCRIPTION_IMAGE, jsonResponse3.getString(PRESCRIPTION_IMAGE));
+            values2.put(PRESCRIPTION_IMAGEPARTID, jsonResponse3.getString(PRESCRIPTION_IMAGEPARTID));
+            values2.put(COMMON_ID, getCommonID());
+            DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, getCommonID());
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+    }
 
     public String getCfUuhid() {
         return cfUuhid;
@@ -71,7 +112,12 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
     public void setPrescriptionDate(String prescriptionDate) {
         this.prescriptionDate = prescriptionDate;
     }
-
+    public void setCommonID(String common_id) {
+        this.common_id = common_id;
+    }
+    public String getCommonID() {
+        return common_id;
+    }
     public String getDoctorName() {
         return doctorName;
     }

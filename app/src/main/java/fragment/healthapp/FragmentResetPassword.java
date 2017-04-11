@@ -1,9 +1,13 @@
 package fragment.healthapp;
 
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -37,31 +41,30 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentResetPassword extends Fragment {
+public class FragmentResetPassword extends AppCompatActivity {
 
-
-    private View rootView;
+    private CoordinatorLayout coordinatorLayout;
+    //private View rootView;
     private EditText input_mobile_number;
     private TextView btn_reset_password;
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_reset_password,
-                container, false);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_reset_password);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        CureFull.getInstanse().getActivityIsntanse().showLogo(true);
-        input_mobile_number = (EditText) rootView.findViewById(R.id.input_mobile_number);
-        btn_reset_password = (TextView) rootView.findViewById(R.id.btn_reset_password);
-
+        //CureFull.getInstanse().getActivityIsntanse().showLogo(true);  by sourav
+        input_mobile_number = (EditText) findViewById(R.id.input_mobile_number);
+        btn_reset_password = (TextView) findViewById(R.id.btn_reset_password);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         btn_reset_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(view, 400, 0.9f, 0.9f);
+                    ElasticAction.doAction(view, 400, 0.9f, 0.9f);
 //                if (!isValidEmail(input_mobile_number.getText().toString().trim()) || !isValidPhoneNumber(input_mobile_number.getText().toString().trim())) {
 //                    return;
 //                }
@@ -85,7 +88,7 @@ public class FragmentResetPassword extends Fragment {
 
             }
         });
-        if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
+        if (HandlePermission.checkPermissionSMS(this)) {
 
         }
         input_mobile_number.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -105,7 +108,6 @@ public class FragmentResetPassword extends Fragment {
             }
         });
 
-        return rootView;
     }
 
 
@@ -120,18 +122,18 @@ public class FragmentResetPassword extends Fragment {
                             JSONObject jsonObject = new JSONObject(response);
                             if (jsonObject.getString("responseStatus").equalsIgnoreCase("100")) {
                                 if (jsonObject.getBoolean("payload")) {
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email sent please your email id.");
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Email sent please your email id.");
                                     Bundle bundle = new Bundle();
                                     bundle.putString("email", "yes");
                                     CureFull.getInstanse().getFlowInstanse()
                                             .addWithBottomTopAnimation(new FragmentResetNewPassword(), bundle, true);
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id does not exist");
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Email Id does not exist");
                                 }
                             } else {
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id does not exist");
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Email Id does not exist");
                             }
 
 
@@ -170,11 +172,11 @@ public class FragmentResetPassword extends Fragment {
                                     sendOTPService();
                                 } else {
                                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile number does not exist");
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile number does not exist");
                                 }
                             } else {
                                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile number does not exist");
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile number does not exist");
                             }
 
 
@@ -189,7 +191,7 @@ public class FragmentResetPassword extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         btn_reset_password.setEnabled(true);
-                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         error.printStackTrace();
                     }
@@ -210,11 +212,16 @@ public class FragmentResetPassword extends Fragment {
                     public void onResponse(String response) {
 //                        Log.e("getSymptomsList, URL 1.", response);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Bundle bundle = new Bundle();
+                        /*Bundle bundle = new Bundle();
                         bundle.putInt("otp", n);
                         bundle.putString("MOBILE", input_mobile_number.getText().toString().trim());
                         CureFull.getInstanse().getFlowInstanse()
-                                .addWithBottomTopAnimation(new FragmentOTPCheckForgot(), bundle, true);
+                                .addWithBottomTopAnimation(new FragmentOTPCheckForgot(), bundle, true);*/
+                        Intent intent_otpchkforgot = new Intent(FragmentResetPassword.this, FragmentOTPCheckForgot.class);
+                        intent_otpchkforgot.putExtra("otp", n);
+                        intent_otpchkforgot.putExtra("MOBILE", input_mobile_number.getText().toString().trim());
+                        startActivity(intent_otpchkforgot);
+                        finish();
                     }
                 },
                 new Response.ErrorListener() {
@@ -250,9 +257,9 @@ public class FragmentResetPassword extends Fragment {
 
         if (email.isEmpty() || email.length() != 10) {
             if (email.length() < 10 && email.length() > 1) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be less than 10 numbers.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile Number cannot be less than 10 numbers.");
             } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be left blank.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile Number cannot be left blank.");
             }
             return false;
 

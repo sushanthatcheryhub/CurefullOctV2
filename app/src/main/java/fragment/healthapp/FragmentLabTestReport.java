@@ -80,6 +80,7 @@ import java.util.Map;
 import ElasticVIews.ElasticAction;
 import adpter.Filter_Reports_ListAdpter;
 import adpter.UploadLabTestReportAdpter;
+import adpter.UploadPrescriptionAdpterNew;
 import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
@@ -97,6 +98,7 @@ import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionImageList;
 import item.property.UHIDItems;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.HandlePermission;
@@ -112,7 +114,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class FragmentLabTestReport extends BaseBackHandlerFragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage, PopupWindow.OnDismissListener, IOnOtpDonePath {
 
-
+    private List<UHIDItems> uhiditemslocal;
     private View rootView;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT = 1778;
@@ -378,6 +380,23 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     listPopupWindow4.setOnDismissListener(FragmentLabTestReport.this);
                     listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
                     listPopupWindow4.show();
+                }else{
+                    if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                        checkDialog = "img_user_name";
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(uhiditemslocal)));
+
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_sort_user_name));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._110dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentLabTestReport.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
                 }
 
             }
@@ -464,9 +483,64 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
             }
+
+            if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                getAllUserList(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                getSelectedUserList(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                txt_sort_user_name.setText("" + getUserAsStringList(uhiditemslocal).get(position));
+                AppPreference.getInstance().setcf_uuhidNeew(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                if (isOpenUploadNew) {
+                    isOpenUploadNew = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                } else if (isOpenShortBy) {
+                    isOpenShortBy = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
+                } else if (isOpenFilter) {
+                    isOpenFilter = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterFilterBy(rootView);
+                        }
+                    });
+                }
+                isButtonRest = true;
+                clickDoctorName = "";
+                clickDiseaseName = "";
+                clickDates = "";
+                clickUploadBy = "";
+                AppPreference.getInstance().setFilterDate("");
+                AppPreference.getInstance().setFilterDoctor("");
+                AppPreference.getInstance().setFilterDiese("");
+                AppPreference.getInstance().setFilterUploadBy("");
+                getAllFilterData();
+                getLabReportList();
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.white));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+
+            }
         }
     };
-
+    private void getAllUserList(String cfUuhid) {
+        ParseJsonData.getInstance().getUHIDUpdate(cfUuhid);//update selected in local db
+        DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+    }
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -1488,10 +1562,31 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         public void onErrorResponse(VolleyError error) {
                             isRest = true;
                             dialogLoader.hide();
-                            img_btn_refresh.setVisibility(View.VISIBLE);
+
+                            String response = DbOperations.getLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+                            if (!response.equalsIgnoreCase("")) {
+                                labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
+                                isList = true;
+                                labReportListViews = new ArrayList<>();
+                                labReportListViews.addAll(labReportListViewsDummy);
+                                labReportItemView.setVisibility(View.VISIBLE);
+                                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                                        labReportListViews);
+                                labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                uploadLabTestReportAdpter.notifyDataSetChanged();
+                                txt_no_prescr.setVisibility(View.GONE);
+                                img_btn_refresh.setVisibility(View.GONE);
+                            }else{
+                                labReportItemView.setVisibility(View.GONE);
+                                txt_no_prescr.setVisibility(View.VISIBLE);
+                                txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                            }
+
+                            /*img_btn_refresh.setVisibility(View.VISIBLE);
                             txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
                             labReportItemView.setVisibility(View.GONE);
-                            txt_no_prescr.setVisibility(View.VISIBLE);
+                            txt_no_prescr.setVisibility(View.VISIBLE);*/
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -1514,10 +1609,33 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
             isRest = true;
-            labReportItemView.setVisibility(View.GONE);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            //labReportItemView.setVisibility(View.GONE);
+            //by sourav
+            String response = DbOperations.getLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+            if (!response.equalsIgnoreCase("")) {
+                labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
+                isList = true;
+                labReportListViews = new ArrayList<>();
+                labReportListViews.addAll(labReportListViewsDummy);
+                labReportItemView.setVisibility(View.VISIBLE);
+                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                        labReportListViews);
+                labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                uploadLabTestReportAdpter.notifyDataSetChanged();
+                txt_no_prescr.setVisibility(View.GONE);
+                img_btn_refresh.setVisibility(View.GONE);
+            }else{
+                labReportItemView.setVisibility(View.GONE);
+                txt_no_prescr.setVisibility(View.VISIBLE);
+                txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+            }
+            isRest = true;
+
+
+            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);*/
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         }
 
@@ -1590,8 +1708,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            txt_no_prescr.setText("No Reports Yet.");
-                            txt_no_prescr.setVisibility(View.VISIBLE);
+                            /*txt_no_prescr.setText("No Reports Yet.");
+                            txt_no_prescr.setVisibility(View.VISIBLE);*/
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -1683,8 +1801,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                         preferences.edit().putBoolean("logout", true).commit();
                                         AppPreference.getInstance().setIsFirstTimeSteps(false);
                                         CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                        CureFull.getInstanse().getFlowInstanse()
-                                                .replace(new FragmentLogin(), false);
+                                        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(getActivity(),FragmentLogin.class));
+                                       /* CureFull.getInstanse().getFlowInstanse()
+                                                .replace(new FragmentLogin(), false);*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -1719,10 +1838,30 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+
+                uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+               if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                    for (int i = 0; i < uhiditemslocal.size(); i++) {
+                        if (uhiditemslocal.get(i).isSelected()) {
+
+
+                            //AppPreference.getInstance().setcf_uuhidNeew(uhidItemses.get(i).getCfUuhid());
+                            txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
+                        } else {
+                            if (uhiditemslocal.get(i).isDefaults())
+                                txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
+                        }
+                    }
+                }
+                img_btn_refresh.setVisibility(View.GONE);
+
+            getLabReportList();
+            getAllFilterData();
+
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);*/
         }
 
     }
@@ -1917,9 +2056,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+                            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
                             txt_no_prescr.setVisibility(View.VISIBLE);
-                            img_btn_refresh.setVisibility(View.VISIBLE);
+                            img_btn_refresh.setVisibility(View.VISIBLE);*/
                         }
                     }
             ) {
@@ -1940,9 +2079,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);*/
         }
 
     }

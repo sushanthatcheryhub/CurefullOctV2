@@ -128,7 +128,9 @@ public class FlowOrganizer {
     public void replace(Fragment toFragment, boolean isAllowBack) {
         replace(toFragment, null, isAllowBack);
     }
-
+    public void replaceLoss(Fragment toFragment, boolean isAllowBack) {
+        replaceLoss(toFragment, null, isAllowBack);
+    }
     /**
      * @param toFragment  Fragment support v4
      * @param bundle      Bundle
@@ -158,11 +160,39 @@ public class FlowOrganizer {
                     isAllowBack, FragmentType.REPLACE));
         }
         _fragment_transiction.replace(_id_parent_frame_view, toFragment,
-                toFragment.getClass().getName()).commit();
+                toFragment.getClass().getName()).commit();//.commitAllowingStateLoss();
         _last_fragment_name = toFragment.getClass().getName();
         _list_back_state.clear();
     }
 
+
+    public void replaceLoss(Fragment toFragment, Bundle bundle, boolean isAllowBack) {
+        hideKeyboard();
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+        if (toFragment == null)
+            return;
+
+        if (isPaused) {
+            _list_instant_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+            return;
+        }
+        if (bundle != null) {
+            toFragment.setArguments(bundle);
+        }
+
+        FragmentTransaction _fragment_transiction = _fragmnet_manager
+                .beginTransaction();
+        if (isAllowBack) {
+            _fragment_transiction.addToBackStack(_last_fragment_name);
+            _list_back_state.add(new InstanseState(toFragment, bundle,
+                    isAllowBack, FragmentType.REPLACE));
+        }
+        _fragment_transiction.replace(_id_parent_frame_view, toFragment,
+                toFragment.getClass().getName()).commitAllowingStateLoss();
+        _last_fragment_name = toFragment.getClass().getName();
+        _list_back_state.clear();
+    }
 
     public void replaceWithTopBottomAnimation(Fragment toFragment, Bundle bundle,
                                               boolean isAllowBack) {

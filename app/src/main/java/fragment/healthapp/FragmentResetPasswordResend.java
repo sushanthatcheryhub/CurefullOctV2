@@ -48,7 +48,7 @@ public class FragmentResetPasswordResend extends Fragment {
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        CureFull.getInstanse().getActivityIsntanse().showLogo(true);
+        //CureFull.getInstanse().getActivityIsntanse().showLogo(true);
         txt_top = (TextView) rootView.findViewById(R.id.txt_top);
         txt_below = (TextView) rootView.findViewById(R.id.txt_below);
         btn_next = (TextView) rootView.findViewById(R.id.btn_next);

@@ -5,8 +5,8 @@
       <root url="jar://$PROJECT_DIR$/sandriosCamera/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.android/build-cache/4a99380758c7837d40ad2a1da1f77e6057e2942b/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/4a99380758c7837d40ad2a1da1f77e6057e2942b/output/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/55c4f3280b35f8070ce0d63732d51811a26fda8b/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/55c4f3280b35f8070ce0d63732d51811a26fda8b/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

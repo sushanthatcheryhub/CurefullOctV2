@@ -9,7 +9,7 @@ public class MyConstants {
 
         boolean isLogCheck = false;
 
-        //                String HOST_IP = "http://lp.hatcheryhub.com";
+//                        String HOST_IP = "http://lp.hatcheryhub.com";
         String HOST_IP = "http://hatcheryhub.com";
         //                                String HOST_IP = "http://192.168.0.82:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
@@ -132,6 +132,8 @@ public class MyConstants {
         //        String ISSUES_WITH_SERVER = "Server Not reachable.Try again in a moment.";
         String ISSUES_WITH_SERVER = "Oops server on maintenance, give us a minute, Please try later!!";
         String OFFLINE_MODE = "You are in Offline Mode!!";
+        String NO_REPORT = "No Report Yet.";
+        String NO_PRESCRIPTION = "No Prescription Yet.";
     }
 
 
@@ -166,15 +168,18 @@ public class MyConstants {
         String CFUUHIDs = "cfUuhid";
         String PRESCRIPTION_ID = "prescriptionId";
         String PRESCRIPTION_DATE = "prescriptionDate";
+        String PRESCRIPTION_IMAGEFOLLOWUP_ID="prescriptonImageFollowupId";
         String DOCTOR_NAME = "doctorName";
         String PRESCRIPTION_RESPONSE_LIST = "prescriptionResponseList";
         String LAB_REPORT_LIST = "reportImageList";
         String IMAGE_NUMBER = "imageNumber";
         String PRESCRIPTION_IMAGE = "prescriptionImage";
+        String PRESCRIPTION_IMAGEPARTID="prescriptionImagePartId";
         String REPORT_IMAGE = "reportImage";
         String DISEASE_NAME = "diseaseName";
         String COUNT_OF_FILES = "countOfFiles";
         String UPLOAD_BY = "uploadedBy";
+        String COMMON_ID = "common_id";
         String DATE_OF_UPLOAD = "dateOfUpload";
 
         String REPORT_ID = "reportId";
@@ -191,6 +196,7 @@ public class MyConstants {
         String A_T = "a_t";
         String R_T = "r_t";
         String CF_UUHID = "cf_uuhid";
+        String CFUUHID_LOCAL="cfUuhid";
         String HEADERS = "headers";
         String USER_ID = "user_id";
         String USERNAME = "user_name";
@@ -198,7 +204,11 @@ public class MyConstants {
         String INSTITUTE_TYPE = "instituteType";
         String YEAR = "year";
         String JSON_KEY_PAYLOAD = "payload";
+        String PRESCRIPTION_FOLLOWUPLIST="prescriptionFollowupList";
         String OK = "OK";
+        String DEFAULT="default";
+        String DEFAULT_USER="default_user";
+        String SELECTED="selected";
     }
 
     public interface IResponseCode {
@@ -225,9 +235,14 @@ public class MyConstants {
         String TABLE_EDIT_GOAL = "tbl_edit_goal";
         String TABLE_GRAPH = "tbl_graph";
         String TABLE_PRESCRIPTION = "tbl_prescription";
+        String TABLE_LABTESTREPORT = "tbl_labtestreport";
+        String TABLE_PRESCRIPTION_MAIN = "tbl_prescription_main";
+        String TABLE_PRESCRIPTION_FOLLOWUPLIST = "tbl_prescription_followuplist";
+        String TABLE_PRESCRIPTION_RESPONSELIST = "tbl_prescription_response_list";
         String TABLE_OFFLINE_NOTE = "offline_note_master";
         String TABLE_STEPS = "tbl_steps";
         String TABLE_STEPS_STATUS = "tbl_steps_count";
+        String TABLE_UHID="tbl_uhid";
     }
 
 

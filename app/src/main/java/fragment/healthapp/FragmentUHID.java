@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,7 @@ import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import item.property.UHIDItems;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
@@ -60,6 +62,7 @@ public class FragmentUHID extends BaseBackHandlerFragment {
     private EditText input_name, edt_phone;
     private TextView btn_add, txt_no_prescr;
     private RelativeLayout realtive_notes;
+    private List<UHIDItems> uhiditemslocal;
 
 
 //    @Override
@@ -134,7 +137,9 @@ public class FragmentUHID extends BaseBackHandlerFragment {
     public void getcheck() {
         getAllUserList();
     }
-
+    public void getcheck(String cfUuhid) {
+        getAllUserList(cfUuhid);
+    }
 
     private boolean validateName() {
         if (input_name.getText().toString().trim().isEmpty()) {
@@ -186,6 +191,15 @@ public class FragmentUHID extends BaseBackHandlerFragment {
         }
     }
 
+    public void showAdpterLocal() {
+        if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+            realtive_notes.setVisibility(View.GONE);
+            recyclerView_notes.setVisibility(View.VISIBLE);
+            uhid_listAdpter = new UHID_ListAdpter(FragmentUHID.this, CureFull.getInstanse().getActivityIsntanse(), uhiditemslocal);
+            recyclerView_notes.setAdapter(uhid_listAdpter);
+            uhid_listAdpter.notifyDataSetChanged();
+        }
+    }
 
     private void getAllUserList() {
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
@@ -216,9 +230,11 @@ public class FragmentUHID extends BaseBackHandlerFragment {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
-                            realtive_notes.setVisibility(View.VISIBLE);
-                            txt_no_prescr.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                            //by sourav
+                            uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+                            showAdpterLocal();
+                            /*realtive_notes.setVisibility(View.VISIBLE);
+                            txt_no_prescr.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);*/
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -240,9 +256,23 @@ public class FragmentUHID extends BaseBackHandlerFragment {
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            realtive_notes.setVisibility(View.VISIBLE);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            //by sourav
+            //no internet access
+            uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+            showAdpterLocal();
+
+
+/* realtive_notes.setVisibility(View.VISIBLE);
+            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);*/
         }
+
+    }
+    private void getAllUserList(String cfUuhid) {
+
+            ParseJsonData.getInstance().getUHIDUpdate(cfUuhid);//update selected in local db
+            uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+            showAdpterLocal();
+
 
     }
 

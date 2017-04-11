@@ -186,7 +186,11 @@ public class AppPreference implements MyConstants.JsonUtils {
             return _prefrence.getString("cf_uuhid", "");
         return "";
     }
-
+    public String getcf_uuhidLocal() {
+        if (_prefrence != null)
+            return _prefrence.getString("cfUuhid", "");
+        return "";
+    }
 
     public void setHintScreen(String className) {
         if (_prefrence != null)

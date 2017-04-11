@@ -148,6 +148,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     private ImageView imgg_question_white, imgg_question_red;
     private List<StepsCountsItems> stepsCountsItemses;
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -166,7 +170,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 
         CureFull.getInstanse().getActivityIsntanse().activateDrawer();
         CureFull.getInstanse().getActivityIsntanse().showUpButton(false);
-        CureFull.getInstanse().getActivityIsntanse().showLogo(false);
+        //CureFull.getInstanse().getActivityIsntanse().showLogo(false);
         CureFull.getInstanse().getActivityIsntanse().selectedNav(0);
         AppPreference.getInstance().setFragmentHealthApp(false);
         AppPreference.getInstance().setFragmentHealthNote(false);
@@ -324,10 +328,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         txt_to_time.setText("      ");
 
 
-        StepsCountsStatus stepsStatus = DbOperations.getStepStatusList(getActivity(), preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+        /*StepsCountsStatus stepsStatus = DbOperations.getStepStatusList(getActivity(), preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
         if (stepsStatus.getStatus() == 0 && stepsStatus.getDateTime().equalsIgnoreCase(Utils.getTodayDate())) {
             Log.e("check Status", " " + stepsStatus.getStatus());
-        }
+        }*/
 
 
         return rootView;
@@ -1132,9 +1136,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                     if (json12.getInt("errorCode") == 110001) {
                                         preferences.edit().putBoolean("logout", true).commit();
                                         AppPreference.getInstance().setIsFirstTimeSteps(false);
-                                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                        CureFull.getInstanse().getFlowInstanse()
-                                                .replace(new FragmentLogin(), false);
+                                        /*CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(new Intent(CureFull.getInstanse().getActivityIsntanse(),FragmentLogin.class)));
+                                        *//*CureFull.getInstanse().getFlowInstanse()
+                                                .replace(new FragmentLogin(), false);*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -1269,9 +1274,10 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                         if (json12.getInt("errorCode") == 110001) {
                                             preferences.edit().putBoolean("logout", true).commit();
                                             AppPreference.getInstance().setIsFirstTimeSteps(false);
-                                            CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                            CureFull.getInstanse().getFlowInstanse()
-                                                    .replace(new FragmentLogin(), false);
+                                           /* CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                            CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(CureFull.getInstanse().getActivityIsntanse(), FragmentLogin.class));
+                                           */ /*CureFull.getInstanse().getFlowInstanse()
+                                                    .replace(new FragmentLogin(), false);*/
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -1503,9 +1509,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                                 if (json12.getInt("errorCode") == 110001) {
                                     preferences.edit().putBoolean("logout", true).commit();
                                     AppPreference.getInstance().setIsFirstTimeSteps(false);
-                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                    CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentLogin(), false);
+                                   /* CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                    CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(CureFull.getInstanse().getActivityIsntanse(), FragmentLogin.class));*/
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

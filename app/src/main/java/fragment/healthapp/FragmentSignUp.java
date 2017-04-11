@@ -4,12 +4,16 @@ package fragment.healthapp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -21,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -56,10 +61,11 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnClickListener {
+public class FragmentSignUp extends AppCompatActivity implements View.OnClickListener {
 
 
-    private View rootView;
+    //private View rootView;
+    private CoordinatorLayout coordinatorLayout;
     private TextView btn_signup;
     private AutoCompleteTextView edtInputEmail;
     private EditText edtInput_name, edt_phone;
@@ -67,8 +73,8 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
     private TextInputLayout input_layout_name, inputLayoutEmail;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private ArrayList<UHIDItemsCheck> uhidItemsChecks;
-
-
+    private ProgressBar progress_bar;
+/*
     @Override
     public boolean onBackPressed() {
         edtInputEmail.setFocusableInTouchMode(true);
@@ -76,63 +82,63 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
 
         return super.onBackPressed();
-    }
+    }*/
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_signup,
-                container, false);
-        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
-        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        input_layout_name = (TextInputLayout) rootView.findViewById(R.id.input_layout_name);
-        inputLayoutEmail = (TextInputLayout) rootView.findViewById(R.id.input_layout_email);
-        edt_phone = (EditText) rootView.findViewById(R.id.edt_phone);
-        edtInput_name = (EditText) rootView.findViewById(R.id.input_name);
-        edtInputEmail = (AutoCompleteTextView) rootView.findViewById(R.id.input_email);
-        btn_signup = (TextView) rootView.findViewById(R.id.btn_signup);
-        btn_signup.setOnClickListener(this);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_signup);
+
+            CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+            CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+            input_layout_name = (TextInputLayout)findViewById(R.id.input_layout_name);
+            inputLayoutEmail = (TextInputLayout)findViewById(R.id.input_layout_email);
+            edt_phone = (EditText)findViewById(R.id.edt_phone);
+            edtInput_name = (EditText)findViewById(R.id.input_name);
+            edtInputEmail = (AutoCompleteTextView)findViewById(R.id.input_email);
+            coordinatorLayout=(CoordinatorLayout)findViewById(R.id.coordinatorLayout);
+            btn_signup = (TextView)findViewById(R.id.btn_signup);
+            progress_bar=(ProgressBar)findViewById(R.id.progress_bar);
+            btn_signup.setOnClickListener(this);
 
 
-        edtInputEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    btn_signup.setEnabled(false);
-                    submitForm();
+            edtInputEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        btn_signup.setEnabled(false);
+                        submitForm();
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (HandlePermission.checkPermissionSMS(CureFull.getInstanse().getActivityIsntanse())) {
-                try {
-                    Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
-                    if (c != null) {
-                        c.moveToFirst();
-                        TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-                        edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
-                        if (tMgr.getLine1Number() != null) {
-                            edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
-                        }
-                        addAdapterToViews();
+            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (HandlePermission.checkPermissionSMS(this)) {
+                    try {
+                        Cursor c = getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                        if (c != null) {
+                            c.moveToFirst();
+                            TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                            edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
+                            if (tMgr.getLine1Number() != null) {
+                                edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));
+                            }
+                            addAdapterToViews();
 //        edtInputEmail.setText("" + getAllAccount());
-                        c.close();
+                            c.close();
+                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-
             }
-        }
 
 
-        return rootView;
     }
-
 
     @Override
     public void onClick(View view) {
@@ -239,9 +245,9 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
         if (email.isEmpty() || email.length() != 10) {
             if (email.length() < 10 && email.length() > 1) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be less than 10 numbers.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile Number cannot be less than 10 numbers.");
             } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Mobile Number cannot be left blank.");
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Mobile Number cannot be left blank.");
             }
             requestFocus(edt_phone);
             return false;
@@ -265,13 +271,13 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
 
         if (!validateName()) {
             btn_signup.setEnabled(true);
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Name cannot be left blank.");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Name cannot be left blank.");
             return;
         }
 
         if (!validateEmail()) {
             btn_signup.setEnabled(true);
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Email Id cannot be left blank.");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Email Id cannot be left blank.");
             return;
         }
 
@@ -282,12 +288,13 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
         }
 
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            progress_bar.setVisibility(View.VISIBLE);
             jsonUHIDCheck();
 //            sendOTPService();
         } else {
             btn_signup.setEnabled(true);
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
         }
 
@@ -317,14 +324,24 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                         edtInputEmail.setFocusableInTouchMode(false);
                         edtInputEmail.setFocusable(false);
                         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        Bundle bundle = new Bundle();
+                        /*Bundle bundle = new Bundle();
                         bundle.putString("NAME", edtInput_name.getText().toString().trim());
                         bundle.putString("EMAIL", edtInputEmail.getText().toString().trim());
                         bundle.putString("MOBILE", edt_phone.getText().toString().trim());
                         bundle.putInt("otp", n);
-                        bundle.putString("UHID", "");
-                        CureFull.getInstanse().getFlowInstanse()
-                                .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);
+                        bundle.putString("UHID", "");*/
+
+                        Intent intent_otpchk=new Intent(FragmentSignUp.this,FragmentOTPCheck.class);
+                        intent_otpchk.putExtra("NAME", edtInput_name.getText().toString().trim());
+                        intent_otpchk.putExtra("EMAIL", edtInputEmail.getText().toString().trim());
+                        intent_otpchk.putExtra("MOBILE", edt_phone.getText().toString().trim());
+                        intent_otpchk.putExtra("otp", n);
+                        intent_otpchk.putExtra("UHID", "");
+                        intent_otpchk.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent_otpchk.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent_otpchk);
+                       /* CureFull.getInstanse().getFlowInstanse()
+                                .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);*/
                     }
                 },
                 new Response.ErrorListener() {
@@ -363,7 +380,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
     }
 
     private String getAllAccount() {
-        AccountManager am = AccountManager.get(getActivity());
+        AccountManager am = AccountManager.get(CureFull.getInstanse().getActivityIsntanse());
         Account[] accounts = am.getAccounts();
         String acname = "";
         String mobile_no = "";
@@ -397,7 +414,8 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                     @Override
                     public void onResponse(JSONObject response) {
                         btn_signup.setEnabled(true);
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        progress_bar.setVisibility(View.GONE);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -409,20 +427,29 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
                                     sendOTPService();
                                 } else {
                                     uhidItemsChecks = ParseJsonData.getInstance().getUHIDCheck(response.toString());
-                                    Bundle bundle = new Bundle();
+                                    /*Bundle bundle = new Bundle();
                                     bundle.putString("NAME", edtInput_name.getText().toString().trim());
                                     bundle.putString("EMAIL", edtInputEmail.getText().toString().trim());
                                     bundle.putString("MOBILE", edt_phone.getText().toString().trim());
                                     bundle.putParcelableArrayList("UHID", uhidItemsChecks);
                                     CureFull.getInstanse().getFlowInstanse()
                                             .addWithBottomTopAnimation(new FragmentUHIDSignUp(), bundle, true);
+*/
+                                    Intent intent_otpchk1=new Intent(FragmentSignUp.this,FragmentUHIDSignUp.class);
+                                    intent_otpchk1.putExtra("NAME", edtInput_name.getText().toString().trim());
+                                    intent_otpchk1.putExtra("EMAIL", edtInputEmail.getText().toString().trim());
+                                    intent_otpchk1.putExtra("MOBILE", edt_phone.getText().toString().trim());
+                                    intent_otpchk1.putParcelableArrayListExtra("UHID", uhidItemsChecks);
+                                    startActivity(intent_otpchk1);
+
+
                                 }
                             } else {
                                 btn_signup.setEnabled(true);
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                     JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -439,7 +466,7 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
             public void onErrorResponse(VolleyError error) {
                 btn_signup.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
             }
         }) {
 
@@ -455,10 +482,10 @@ public class FragmentSignUp extends BaseBackHandlerFragment implements View.OnCl
             case HandlePermission.MY_PERMISSIONS_REQUEST_READ_SMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     try {
-                        Cursor c = getActivity().getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
+                        Cursor c = getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
                         if (c != null) {
                             c.moveToFirst();
-                            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                            TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
                             edtInput_name.setText("" + c.getString(c.getColumnIndex("display_name")));
                             if (tMgr.getLine1Number() != null) {
                                 edt_phone.setText("" + tMgr.getLine1Number().replace("+91", ""));

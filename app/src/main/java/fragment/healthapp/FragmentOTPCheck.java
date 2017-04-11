@@ -9,8 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -64,10 +67,10 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
+public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickListener {
 
 
-    private View rootView;
+    //private View rootView;
     private TextView btn_done, btn_click_resend_otp;
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private int OTP;
@@ -77,35 +80,36 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
     private SharedPreferences sharedPreferencesUserLogin;
     private SharedPreferences preferences;
     private boolean isSending = false, isCancel = false;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_otp_check,
-                container, false);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_otp_check);
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
         sharedPreferencesUserLogin = CureFull.getInstanse().getActivityIsntanse()
                 .getSharedPreferences("Login", 0);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        inputLayoutPassword = (TextInputLayout) rootView.findViewById(R.id.input_layout_password);
-        input_layout_confirm_password = (TextInputLayout) rootView.findViewById(R.id.input_layout_confirm_password);
-        edt_otp_password = (EditText) rootView.findViewById(R.id.edt_otp_password);
-        edt_confirm_password = (EditText) rootView.findViewById(R.id.edt_confirm_password);
-        btn_click_resend_otp = (TextView) rootView.findViewById(R.id.btn_click_resend_otp);
-        btn_done = (TextView) rootView.findViewById(R.id.btn_done);
+        inputLayoutPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
+        input_layout_confirm_password = (TextInputLayout) findViewById(R.id.input_layout_confirm_password);
+        edt_otp_password = (EditText) findViewById(R.id.edt_otp_password);
+        edt_confirm_password = (EditText) findViewById(R.id.edt_confirm_password);
+        btn_click_resend_otp = (TextView) findViewById(R.id.btn_click_resend_otp);
+        btn_done = (TextView) findViewById(R.id.btn_done);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         btn_done.setOnClickListener(this);
         btn_click_resend_otp.setOnClickListener(this);
-        edtInputPassword = (EditText) rootView.findViewById(R.id.edt_password);
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            health_name = bundle.getString("NAME");
-            health_email = bundle.getString("EMAIL");
-            health_mobile = bundle.getString("MOBILE");
-            OTP = bundle.getInt("otp");
+        edtInputPassword = (EditText) findViewById(R.id.edt_password);
+
+        //Bundle bundle = getArguments();
+        if (getIntent().getExtras() != null) {
+            health_name = getIntent().getExtras().getString("NAME");
+            health_email = getIntent().getExtras().getString("EMAIL");
+            health_mobile = getIntent().getExtras().getString("MOBILE");
+            OTP = getIntent().getExtras().getInt("otp");
 //            edt_otp_password.setText(""+OTP);
-            realUHID = bundle.getString("UHID");
+            realUHID = getIntent().getExtras().getString("UHID");
         }
 
 //        btn_click_resend_otp.setText("" + OTP);
@@ -237,7 +241,6 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
         }.start();
 
 
-        return rootView;
     }
 
 
@@ -348,10 +351,10 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                 jsonLoginCheck();
             } else {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
             }
         } else {
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid OTP Please check again");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Invalid OTP Please check again");
 
         }
 
@@ -412,7 +415,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                             "123").equalsIgnoreCase("123")) {
                                         sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
                                         CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
-                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                                         return;
                                     }
                                     AppPreference.getInstance().setPassword("" + edtInputPassword.getText().toString().trim());
@@ -448,12 +451,12 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                     String device_Id = sharedPreferencesUserLogin.getString("android_id",
                                             "123");
                                     jsonSaveNotification(token_Id, device_Id);
-                                    CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                 /*   CureFull.getInstanse().getFlowInstanse().clearBackStack();*/
                                     CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentLandingPage(), false);
-
+                                            .replaceLoss(new FragmentLandingPage(), false);
+                                    finish();
                                 } else {
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Internet Issues");
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Internet Issues");
                                 }
 
                             }
@@ -461,7 +464,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                             try {
                                 JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                 JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -475,7 +478,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
             public void onErrorResponse(VolleyError error) {
                 btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
@@ -555,7 +558,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                     JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -569,7 +572,7 @@ public class FragmentOTPCheck extends Fragment implements View.OnClickListener {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {

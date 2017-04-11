@@ -3,6 +3,7 @@ package curefull.healthapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -81,6 +82,7 @@ public class BaseMainActivity extends AppCompatActivity
             FragmentLandingPage fragmentLandingPage = new FragmentLandingPage();
             fragmentLandingPage.stopStepService();
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
             jsonLogout();
         } else if (id == R.id.nav_policy) {
             CureFull.getInstanse().getActivityIsntanse().setshareVisibilty(true);
@@ -191,6 +193,7 @@ public class BaseMainActivity extends AppCompatActivity
 
     }
 
+
     public static String getTodayDate() {
         String formattedDate = null;
         try {
@@ -290,6 +293,7 @@ public class BaseMainActivity extends AppCompatActivity
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -302,9 +306,15 @@ public class BaseMainActivity extends AppCompatActivity
                             preferences.edit().putBoolean("logout", true).commit();
                             AppPreference.getInstance().setIsFirstTimeSteps(false);
                             preferences.edit().putBoolean("resetStepFirstTime", true).commit();
+                           /* CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                            CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(BaseMainActivity.this,FragmentLogin.class));*/
                             CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                            CureFull.getInstanse().getFlowInstanse()
-                                    .replace(new FragmentLogin(), false);
+                           Intent intent=new Intent(BaseMainActivity.this,FragmentLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            /*CureFull.getInstanse().getFlowInstanse()
+                                    .replace(new FragmentLogin(), false);*/
                         }
                     }
                 }, new Response.ErrorListener() {

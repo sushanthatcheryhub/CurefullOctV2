@@ -15,6 +15,7 @@ import item.property.GoalInfo;
 import item.property.HealthNoteItems;
 import item.property.StepsCountsItems;
 import item.property.StepsCountsStatus;
+import item.property.UHIDItems;
 import item.property.UserInfo;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -24,7 +25,7 @@ import utils.MyConstants;
  */
 public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstants.IDataBaseTableKeys, MyConstants.JsonUtils {
     static Cursor cursor = null;
-
+    static Cursor cursor_reset = null;
     public static List<HealthNoteItems> getNoteList(Context context) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -55,7 +56,35 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return listApps;
     }
 
-
+    public static List<UHIDItems> getUHIDListLocal(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<UHIDItems>();
+        List<UHIDItems> listApps = new ArrayList<UHIDItems>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+// LIMIT 0,10
+            String query = "SELECT P.* FROM " + TABLE_UHID
+                    + " P WHERE P.cfhid_user = '" + AppPreference.getInstance().getcf_uuhid() + "'";
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    UHIDItems content = new UHIDItems(cursor);
+                    listApps.add(content);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
     public static List<StepsCountsItems> getOfflineSteps(Context context, String cfhuid) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -261,6 +290,33 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return response;
     }
 
+    public static String getLabTestReportList(Context context, String cf_uuhid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return "";
+        String response = "";
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT P.* FROM " + TABLE_LABTESTREPORT
+                    + " P WHERE P.cf_uuhid = '" + cf_uuhid + "'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                response = cursor.getString(cursor.getColumnIndex("labtest_data"));
+//                cursor.moveToNext();
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return response;
+    }
+
 
     public static void insertEmailList(Context context, ContentValues cv, String emailID) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
@@ -383,6 +439,82 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
+
+    public static void insertUHIDListLocal(Context context, ContentValues cv, String primaryId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_UHID + " Where cfUuhid ='" + primaryId + "'";
+
+            cursor = database.rawQuery(query, null);
+//            AppPreference.getInstance().setcf_uuhid(primaryId);
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_UHID, cv, CFUUHID_LOCAL + "='" + primaryId + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_UHID, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+// for selected (update 0 to all and then in case of selected is 1);
+    public static void insertUHIDListLocalUpdateSelected(Context context, ContentValues cv, String primaryId,ContentValues cv0) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+            String query_reset = "SELECT * FROM " + TABLE_UHID + "";
+            String query = "SELECT * FROM " + TABLE_UHID + " Where cfUuhid ='" + primaryId + "'";
+
+            cursor_reset = database.rawQuery(query_reset, null);
+            cursor = database.rawQuery(query, null);
+
+            //reset all
+            if (cursor_reset.getCount() > 0) {
+                cursor_reset.moveToFirst();
+                for (int i = 0; i < cursor_reset.getCount(); i++) {
+                    database.update(TABLE_UHID, cv0, null, null);
+                    cursor_reset.moveToNext();
+                }
+                cursor_reset.close();
+            }
+
+
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_UHID, cv, CFUUHID_LOCAL + "='" + primaryId + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
     public static void insertStepsCounts(Context context, ContentValues cv) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
@@ -519,15 +651,15 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_PRESCRIPTION + " Where cf_uuhid ='" + cf_uuhid + "'";
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where cf_uuhid ='" + cf_uuhid + "'";
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                database.update(TABLE_PRESCRIPTION, cv, CF_UUHID + "='" + cf_uuhid + "'",
+                database.update(TABLE_PRESCRIPTION_MAIN, cv, CF_UUHID + "='" + cf_uuhid + "'",
                         null);
 //                Log.e("updateLoginList", "Qurery Enty number-");
             } else {
-                long id = database.insert(TABLE_PRESCRIPTION, null, cv);
+                long id = database.insert(TABLE_PRESCRIPTION_MAIN, null, cv);
 //                Log.e("insertLoginList", "Qurery Enty number-" + id);
             }
 
@@ -539,7 +671,101 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
+    public static void insertPrescriptionFollowUPList(Context context, ContentValues cv, String common_id) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
 
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_FOLLOWUPLIST + " Where common_id ='" + common_id + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_PRESCRIPTION_FOLLOWUPLIST, cv, COMMON_ID + "='" + common_id + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_PRESCRIPTION_FOLLOWUPLIST, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+    public static void insertPrescriptionResponseList(Context context, ContentValues cv, String common_id) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_RESPONSELIST + " Where common_id ='" + common_id + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_PRESCRIPTION_RESPONSELIST, cv, COMMON_ID + "='" + common_id + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_PRESCRIPTION_RESPONSELIST, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+    public static void insertLabTestReportList(Context context, ContentValues cv, String cf_uuhid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LABTESTREPORT + " Where cf_uuhid ='" + cf_uuhid + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_LABTESTREPORT, cv, CF_UUHID + "='" + cf_uuhid + "'",
+                        null);
+//                Log.e("updateLoginList", "Qurery Enty number-");
+            } else {
+                long id = database.insert(TABLE_LABTESTREPORT, null, cv);
+//                Log.e("insertLoginList", "Qurery Enty number-" + id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
     public static void insertEditGoalList(Context context, ContentValues cv, String primaryId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);

@@ -3,12 +3,16 @@ package fragment.healthapp;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -53,175 +57,172 @@ import utils.MyConstants;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentOTPCheckForgot extends Fragment implements View.OnClickListener {
+public class FragmentOTPCheckForgot extends AppCompatActivity implements View.OnClickListener {
 
 
-    private View rootView;
+    //private View rootView;
     private TextView btn_done, btn_click_resend_otp;
     private EditText edt_otp_password, edtInputPassword, edt_confirm_password;
     private int OTP;
     private String health_mobile, health_password;
     private TextInputLayout input_layout_otp, inputLayoutPassword, input_layout_confirm_password;
     private boolean showPwd = false, isResendPassword = false, isCancel = false;
-
+    private CoordinatorLayout coordinatorLayout;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_otp_check,
-                container, false);
-        CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
-        CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        inputLayoutPassword = (TextInputLayout) rootView.findViewById(R.id.input_layout_password);
-        input_layout_confirm_password = (TextInputLayout) rootView.findViewById(R.id.input_layout_confirm_password);
-        edt_otp_password = (EditText) rootView.findViewById(R.id.edt_otp_password);
-        edt_confirm_password = (EditText) rootView.findViewById(R.id.edt_confirm_password);
-        btn_click_resend_otp = (TextView) rootView.findViewById(R.id.btn_click_resend_otp);
-        btn_done = (TextView) rootView.findViewById(R.id.btn_done);
-        btn_done.setOnClickListener(this);
-        btn_click_resend_otp.setOnClickListener(this);
-        edtInputPassword = (EditText) rootView.findViewById(R.id.edt_password);
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            health_mobile = bundle.getString("MOBILE");
-            OTP = bundle.getInt("otp");
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_otp_check);
+            CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
+            CureFull.getInstanse().getActivityIsntanse().disableDrawer();
+            inputLayoutPassword = (TextInputLayout)findViewById(R.id.input_layout_password);
+            input_layout_confirm_password = (TextInputLayout)findViewById(R.id.input_layout_confirm_password);
+            edt_otp_password = (EditText)findViewById(R.id.edt_otp_password);
+            edt_confirm_password = (EditText)findViewById(R.id.edt_confirm_password);
+            coordinatorLayout=(CoordinatorLayout)findViewById(R.id.coordinatorLayout);
+            btn_click_resend_otp = (TextView)findViewById(R.id.btn_click_resend_otp);
+            btn_done = (TextView)findViewById(R.id.btn_done);
+            btn_done.setOnClickListener(this);
+            btn_click_resend_otp.setOnClickListener(this);
+            edtInputPassword = (EditText)findViewById(R.id.edt_password);
+            //Bundle bundle = getArguments();
+            if (getIntent().getExtras() != null) {
+                health_mobile = getIntent().getExtras().getString("MOBILE");
+                OTP = getIntent().getExtras().getInt("otp");
 //            edt_otp_password.setText("" + OTP);
-        }
+            }
 
 //        btn_click_resend_otp.setText("" + OTP);
-        btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            btn_click_resend_otp.setPaintFlags(btn_click_resend_otp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
 
-        edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
-                final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
+            edtInputPassword.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    final int DRAWABLE_LEFT = 0;
+                    final int DRAWABLE_TOP = 1;
+                    final int DRAWABLE_RIGHT = 2;
+                    final int DRAWABLE_BOTTOM = 3;
 
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (edtInputPassword.getRight() - edtInputPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        // your action here
-                        if (edtInputPassword.getText().toString().length() > 0) {
-                            if (!showPwd) {
-                                showPwd = true;
-                                edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-                                edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                edtInputPassword.setTextSize(14f);
-                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
-                            } else {
-                                showPwd = false;
-                                edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                                edtInputPassword.setSelection(edtInputPassword.getText().length());
-                                edtInputPassword.setTextSize(14f);
-                                edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (edtInputPassword.getRight() - edtInputPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                            // your action here
+                            if (edtInputPassword.getText().toString().length() > 0) {
+                                if (!showPwd) {
+                                    showPwd = true;
+                                    edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+                                    edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                    edtInputPassword.setTextSize(14f);
+                                    edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                                } else {
+                                    showPwd = false;
+                                    edtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                    edtInputPassword.setSelection(edtInputPassword.getText().length());
+                                    edtInputPassword.setTextSize(14f);
+                                    edtInputPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
-                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                                    //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                                }
                             }
+                            return true;
                         }
-                        return true;
                     }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
-        IncomingSms.bindListener(new SmsListener() {
-            @Override
-            public void messageReceived(String messageText) {
+            IncomingSms.bindListener(new SmsListener() {
+                @Override
+                public void messageReceived(String messageText) {
 //                Log.e("message", ": " + messageText);
-                isCancel = true;
-                edt_otp_password.setText("");
-                String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
-                String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
-                edt_otp_password.setText("" + again);
-            }
-        });
+                    isCancel = true;
+                    edt_otp_password.setText("");
+                    String mgs = messageText.replace("Dear User ,\n" + "Your verification code is ", "");
+                    String again = mgs.replace("\nThanx for using Curefull. Stay Relief.", "");
+                    edt_otp_password.setText("" + again);
+                }
+            });
 
-        edt_confirm_password.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
-                final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
+            edt_confirm_password.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    final int DRAWABLE_LEFT = 0;
+                    final int DRAWABLE_TOP = 1;
+                    final int DRAWABLE_RIGHT = 2;
+                    final int DRAWABLE_BOTTOM = 3;
 
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (edt_confirm_password.getRight() - edt_confirm_password.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        // your action here
-                        if (edt_confirm_password.getText().toString().length() > 0) {
-                            if (!showPwd) {
-                                showPwd = true;
-                                edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT);
-                                edt_confirm_password.setSelection(edt_confirm_password.getText().length());
-                                edt_confirm_password.setTextSize(14f);
-                                edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
-                            } else {
-                                showPwd = false;
-                                edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                                edt_confirm_password.setSelection(edt_confirm_password.getText().length());
-                                edt_confirm_password.setTextSize(14f);
-                                edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (edt_confirm_password.getRight() - edt_confirm_password.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                            // your action here
+                            if (edt_confirm_password.getText().toString().length() > 0) {
+                                if (!showPwd) {
+                                    showPwd = true;
+                                    edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT);
+                                    edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                    edt_confirm_password.setTextSize(14f);
+                                    edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_visible, 0);
+                                } else {
+                                    showPwd = false;
+                                    edt_confirm_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                    edt_confirm_password.setSelection(edt_confirm_password.getText().length());
+                                    edt_confirm_password.setTextSize(14f);
+                                    edt_confirm_password.setCompoundDrawablesWithIntrinsicBounds(R.drawable.password_icon, 0, R.drawable.password_hide, 0);
 
-                                //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                                    //confirmPassImage.setImageResource(R.drawable.username);//change Image here
+                                }
                             }
+                            return true;
                         }
-                        return true;
                     }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
-        edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    edt_confirm_password.requestFocus();
+            edtInputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                        edt_confirm_password.requestFocus();
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
-        edt_confirm_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    btn_done.setEnabled(false);
-                    submitForm();
+            edt_confirm_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        btn_done.setEnabled(false);
+                        submitForm();
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
-        new CountDownTimer(30000, 1000) {
+            new CountDownTimer(30000, 1000) {
 
-            public void onTick(long millisUntilFinished) {
-                if (isCancel) {
-                    onFinish();
-                    cancel();
-                } else {
-                    isResendPassword = true;
-                    btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                public void onTick(long millisUntilFinished) {
+                    if (isCancel) {
+                        onFinish();
+                        cancel();
+                    } else {
+                        isResendPassword = true;
+                        btn_click_resend_otp.setText("00:" + millisUntilFinished / 1000);
+                    }
+                    //here you can have your logic to set text to edittext
                 }
-                //here you can have your logic to set text to edittext
-            }
 
-            public void onFinish() {
+                public void onFinish() {
 //                Log.e("k", "k");
-                isResendPassword = false;
-                btn_click_resend_otp.setText("Resend OTP");
-                isCancel = false;
-            }
+                    isResendPassword = false;
+                    btn_click_resend_otp.setText("Resend OTP");
+                    isCancel = false;
+                }
 
-        }.start();
+            }.start();
 
 
-        return rootView;
+
     }
-
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -328,12 +329,12 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
                 jsonLoginCheck();
             } else {
                 btn_done.setEnabled(true);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
             }
         } else {
             btn_done.setEnabled(true);
-            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Invalid OTP Please check again");
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Invalid OTP Please check again");
 
         }
 
@@ -383,15 +384,15 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
 
                             if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
                                 if (json.getBoolean("payload")) {
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Password Changed Successfully");
-                                    CureFull.getInstanse().getFlowInstanse()
-                                            .replace(new FragmentLogin(), false);
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "Password Changed Successfully");
+                                    CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(CureFull.getInstanse().getActivityIsntanse(), FragmentLogin.class));
+                                    finish();
                                 }
                             } else if (responseStatus == 101) {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
                                     JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "" + json12.getString("message"));
+                                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, "" + json12.getString("message"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -408,7 +409,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
             public void onErrorResponse(VolleyError error) {
                 btn_done.setEnabled(true);
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 //                VolleyLog.e("FragmentLogin, URL 3.", "Error: " + error.getMessage());
             }
         }) {
@@ -441,7 +442,7 @@ public class FragmentOTPCheckForgot extends Fragment implements View.OnClickList
     }
 
     private String getAllAccount() {
-        AccountManager am = AccountManager.get(getActivity());
+        AccountManager am = AccountManager.get(FragmentOTPCheckForgot.this);
         Account[] accounts = am.getAccounts();
         String acname = "";
         String mobile_no = "";

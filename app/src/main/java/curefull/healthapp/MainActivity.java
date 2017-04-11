@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -108,7 +109,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     //    private Toolbar toolbar;
     private DrawerLayout drawer;
     public static final String TAG = "MainActivity";
-    private RelativeLayout relative_logo, relative_action_bar;
+    private RelativeLayout /*relative_logo,*/ relative_action_bar;
     private ActionBarDrawerToggle toggle;
     private ProgressBar progress_bar;
     private boolean mToolBarNavigationListenerIsRegistered = false;
@@ -193,7 +194,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
         relative_action_bar = (RelativeLayout) findViewById(R.id.relative_action_bar);
-        relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);
+       // relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);  by sourav
 //        setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -226,7 +227,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     try {
 //                        URL url = new URL(uri.getScheme(), uri.getHost(), uri.getq);
                         getUpdateEmailId(uri.getQueryParameter("id"), uri.getQueryParameter("email"), uri.getQueryParameter("token"));
-                        showLogo(false);
+                        //showLogo(false);
                         CureFull.getInstanse().getFlowInstanse().clearBackStack();
                         CureFull.getInstanse().getFlowInstanse()
                                 .replace(new FragmentProfile(), false);
@@ -237,7 +238,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                 } else {
                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerProfilePic(AppPreference.getInstance().getProfileImage());
                     CureFull.getInstanse().getActivityIsntanse().setActionDrawerHeading(AppPreference.getInstance().getUserName() + "-" + AppPreference.getInstance().getcf_uuhid(), AppPreference.getInstance().getUserID());
-                    showLogo(false);
+                    //showLogo(false);
                     String type = getIntent().getExtras().getString("type");
                     String id = getIntent().getExtras().getString("perDayDosageDetailsId");
                     if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
@@ -269,9 +270,18 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
 
             } else {
-                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                //startActivity(new Intent(MainActivity.this, FragmentLogin.class));
+
+                Intent intent=new Intent(MainActivity.this,FragmentLogin.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                //CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentLogin.class));
+/*
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLogin(), false);
+*/
             }
 
 //            CureFull.getInstanse().getFlowInstanse().clearBackStack();
@@ -284,9 +294,13 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLandingPage(), false);
             } else {
-                CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentLogin(), false);
+                Intent intent=new Intent(MainActivity.this,FragmentLogin.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                /*CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentLogin(), false);*/
             }
         }
 
@@ -492,15 +506,15 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         // ......
         // To re-iterate, the order in which you enable and disable views IS important #dontSimplify.
     }
-
-    public void showLogo(boolean b) {
+//by sourav
+    /*public void showLogo(boolean b) {
         if (b) {
             relative_logo.setVisibility(View.VISIBLE);
         } else {
             relative_logo.setVisibility(View.GONE);
         }
 
-    }
+    }*/
 
 
     public void showRelativeActionBar(boolean b) {
@@ -616,7 +630,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
                 if (!action.equalsIgnoreCase("steps")) {
                     if (AppPreference.getInstance().isLogin()) {
-                        showLogo(false);
+                       // showLogo(false);
                         String id = intent.getExtras().getString("perDayDosageDetailsId");
                         String type = intent.getExtras().getString("type");
                         if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
@@ -658,6 +672,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     }
 
 
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -731,6 +746,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         }
 
     }
+*/
 
 
     private void takeScreenShot(View view) {
@@ -1254,5 +1270,12 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
     }
+
+   /* public void test(){
+        CureFull.getInstanse().getFlowInstanse().clearBackStack();
+        CureFull.getInstanse().getFlowInstanse()
+                .replace(new FragmentLandingPage(),false);
+        //Toast.makeText(MainActivity.this,"Test",Toast.LENGTH_LONG).show();
+    }*/
 
 }

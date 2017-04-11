@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.animation.Animator;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -107,7 +108,7 @@ import utils.SpacesItemDecoration;
  */
 public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implements View.OnClickListener, IOnAddMoreImage, IOnDoneMoreImage, PopupWindow.OnDismissListener, IOnOtpDonePath {
 
-
+    private List<UHIDItems> uhiditemslocal;
     private View rootView;
     private int REQUEST_CODE_PICKER = 2002;
     public static final int CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE = 1777;
@@ -363,8 +364,10 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     checkDialog = "img_user_name";
                     rotatePhoneClockwise(img_user_name);
                     listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+
                     listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
                             R.layout.adapter_list_doctor_data, getUserAsStringList(uhidItemses)));
+
                     listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_sort_user_name));
                     listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._110dp));
 //                listPopupWindow.setHeight(400);
@@ -372,6 +375,23 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                     listPopupWindow4.setOnDismissListener(FragmentPrescriptionCheckNew.this);
                     listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
                     listPopupWindow4.show();
+                } else {
+                    if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                        checkDialog = "img_user_name";
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(uhiditemslocal)));
+
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_sort_user_name));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._110dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentPrescriptionCheckNew.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
                 }
 
             }
@@ -458,9 +478,66 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
 
             }
+            if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                //for update
+                getAllUserList(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                getSelectedUserList(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                txt_sort_user_name.setText("" + getUserAsStringList(uhiditemslocal).get(position));
+                AppPreference.getInstance().setcf_uuhidNeew(getUserAsStringListUFHID(uhiditemslocal).get(position));
+                if (isOpenUploadNew) {
+                    isOpenUploadNew = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                } else if (isOpenShortBy) {
+                    isOpenShortBy = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
+                } else if (isOpenFilter) {
+                    isOpenFilter = false;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterFilterBy(rootView);
+                        }
+                    });
+                }
+                isButtonRest = true;
+                clickDoctorName = "";
+                clickDiseaseName = "";
+                clickDates = "";
+                clickUploadBy = "";
+                AppPreference.getInstance().setFilterDate("");
+                AppPreference.getInstance().setFilterDoctor("");
+                AppPreference.getInstance().setFilterDiese("");
+                AppPreference.getInstance().setFilterUploadBy("");
+                getAllFilterData();
+                getPrescriptionList();
+                liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                txt_date.setTextColor(getResources().getColor(R.color.white));
+                txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+
+            }
+
         }
     };
 
+    private void getAllUserList(String cfUuhid) {
+        ParseJsonData.getInstance().getUHIDUpdate(cfUuhid);//update selected in local db
+        DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+    }
 
     @Override
     public void onClick(View view) {
@@ -640,7 +717,7 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (isList) {
-                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    /*if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {*/
                         if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                             liner_upload_new.post(new Runnable() {
                                 @Override
@@ -649,10 +726,10 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                                 }
                             });
                         }
-                    } else {
+                    /*} else {
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
 
-                    }
+                    }*/
                 }
 
 
@@ -1364,10 +1441,6 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                                 getFilenameDeleteDialog();
                                 prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
                                 if (prescriptionListViewsDummy != null && prescriptionListViewsDummy.size() > 0) {
-//                                    ContentValues cv = new ContentValues();
-//                                    cv.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-//                                    cv.put("prescription_data", response.toString());
-//                                    DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
 
                                     isList = true;
                                     prescriptionListViews.addAll(prescriptionListViewsDummy);
@@ -1409,10 +1482,32 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 //                            Log.e("error", "error");
                             isRest = true;
                             dialogLoader.hide();
-                            prescriptionItemView.setVisibility(View.GONE);
+                            String response = DbOperations.getPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+                            if (!response.equalsIgnoreCase("")) {
+                                prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
+                                isList = true;
+                                prescriptionListViews = new ArrayList<>();
+                                prescriptionListViews.addAll(prescriptionListViewsDummy);
+                                prescriptionItemView.setVisibility(View.VISIBLE);
+                                uploadPrescriptionAdpter = new UploadPrescriptionAdpterNew(FragmentPrescriptionCheckNew.this, CureFull.getInstanse().getActivityIsntanse(),
+                                        prescriptionListViews);
+                                //prescriptionItemView.removeAllViews();//setAdapter(null);
+                                prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
+                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                uploadPrescriptionAdpter.notifyDataSetChanged();
+                                txt_no_prescr.setVisibility(View.GONE);
+                                img_btn_refresh.setVisibility(View.GONE);
+                            }else{
+                                prescriptionItemView.setVisibility(View.GONE);
+                                txt_no_prescr.setVisibility(View.VISIBLE);
+                                txt_no_prescr.setText(MyConstants.CustomMessages.NO_PRESCRIPTION);
+                            }
+
+
+                           /* prescriptionItemView.setVisibility(View.GONE);
                             txt_no_prescr.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                             txt_no_prescr.setVisibility(View.VISIBLE);
-                            img_btn_refresh.setVisibility(View.VISIBLE);
+                            img_btn_refresh.setVisibility(View.VISIBLE);*/
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -1434,23 +1529,36 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-//            String response = DbOperations.getPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
-//            if (!response.equalsIgnoreCase("")) {
-//                prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
-//                isList = true;
-//                prescriptionListViews.addAll(prescriptionListViewsDummy);
-//                prescriptionItemView.setVisibility(View.VISIBLE);
-//                uploadPrescriptionAdpter = new UploadPrescriptionAdpterNew(FragmentPrescriptionCheckNew.this, CureFull.getInstanse().getActivityIsntanse(),
-//                        prescriptionListViews);
-//                prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
-//                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-//                uploadPrescriptionAdpter.notifyDataSetChanged();
-//            }
+            //by sourav
+
+            String response = DbOperations.getPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+            if (!response.equalsIgnoreCase("")) {
+                prescriptionListViewsDummy = ParseJsonData.getInstance().getPrescriptionList(response);
+                isList = true;
+                prescriptionListViews = new ArrayList<>();
+                prescriptionListViews.addAll(prescriptionListViewsDummy);
+
+                prescriptionItemView.setVisibility(View.VISIBLE);
+                uploadPrescriptionAdpter = new UploadPrescriptionAdpterNew(FragmentPrescriptionCheckNew.this, CureFull.getInstanse().getActivityIsntanse(),
+                        prescriptionListViews);
+                //prescriptionItemView.removeAllViews();//setAdapter(null);
+                prescriptionItemView.setAdapter(uploadPrescriptionAdpter);
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                uploadPrescriptionAdpter.notifyDataSetChanged();
+                txt_no_prescr.setVisibility(View.GONE);
+                img_btn_refresh.setVisibility(View.GONE);
+            }else{
+                prescriptionItemView.setVisibility(View.GONE);
+                txt_no_prescr.setVisibility(View.VISIBLE);
+                txt_no_prescr.setText(MyConstants.CustomMessages.NO_PRESCRIPTION);
+            }
             isRest = true;
-            prescriptionItemView.setVisibility(View.GONE);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
-            txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+
+
+            //prescriptionItemView.setVisibility(View.GONE);
+            //txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            //txt_no_prescr.setVisibility(View.VISIBLE);
+            //img_btn_refresh.setVisibility(View.VISIBLE);
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         }
 
@@ -1618,8 +1726,9 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
                                         preferences.edit().putBoolean("logout", true).commit();
                                         AppPreference.getInstance().setIsFirstTimeSteps(false);
                                         CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                        CureFull.getInstanse().getFlowInstanse()
-                                                .replace(new FragmentLogin(), false);
+                                        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(getActivity(), FragmentLogin.class));
+                                        /*CureFull.getInstanse().getFlowInstanse()
+                                                .replace(new FragmentLogin(), false);*/
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -1655,12 +1764,32 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+            uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+            //  uhidItemses = ParseJsonData.getInstance().getUHID(response);
+
+            if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                for (int i = 0; i < uhiditemslocal.size(); i++) {
+                    if (uhiditemslocal.get(i).isSelected()) {
+
+
+                        //AppPreference.getInstance().setcf_uuhidNeew(uhidItemses.get(i).getCfUuhid());
+                        txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
+                    } else {
+                        if (uhiditemslocal.get(i).isDefaults())
+                            txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
+                    }
+                }
+            }
+            img_btn_refresh.setVisibility(View.GONE);
+            getPrescriptionList();
+            getAllFilterData();
 
 
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+            //by sourav
+           /* txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);*/
         }
 
     }
@@ -1743,9 +1872,9 @@ public class FragmentPrescriptionCheckNew extends BaseBackHandlerFragment implem
 
         } else {
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
+         /*   txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
             txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);
+            img_btn_refresh.setVisibility(View.VISIBLE);*/
         }
     }
 

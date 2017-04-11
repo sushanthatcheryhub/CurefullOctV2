@@ -29,6 +29,7 @@ import item.property.UHIDItems;
 import item.property.UHIDItemsCheck;
 import item.property.UserInfo;
 import operations.DbOperations;
+import utils.AppPreference;
 import utils.MyConstants;
 
 /**
@@ -74,6 +75,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
         }
         return user;
     }
+
 
 //    public SignUpInfo getSignUpData(String response) {
 //        SignUpInfo user = null;
@@ -133,6 +135,12 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                         JSONObject jsonObject = jsonPayload.getJSONObject(i);
                         details = new UHIDItems(jsonObject);
                         detailListing.add(details);
+
+                        ContentValues cv = details.getInsertingUHIDValue(jsonObject);
+                        String primaryId = details.getPrimaryId();
+                        DbOperations operations = new DbOperations();
+                        operations.insertUHIDListLocal(CureFull.getInstanse().getActivityIsntanse(), cv, primaryId);
+
                     }
                 } else {
                     detailListing = new ArrayList<UHIDItems>();
@@ -142,9 +150,29 @@ public class ParseJsonData implements MyConstants.JsonUtils {
 
             }
         }
+
+
         return detailListing;
     }
 
+    public void getUHIDUpdate(String cfUuhid) {
+
+        if (cfUuhid != null) {
+            try {
+                ContentValues values = new ContentValues();
+                ContentValues values0 = new ContentValues();
+                values.put(SELECTED, 1);
+                DbOperations operations = new DbOperations();
+                //operations.insertUHIDListLocal(CureFull.getInstanse().getActivityIsntanse(), values, cfUuhid);
+                values0.put(SELECTED, 0);
+                operations.insertUHIDListLocalUpdateSelected(CureFull.getInstanse().getActivityIsntanse(), values, cfUuhid, values0);
+
+            } catch (Exception e) {
+
+            }
+        }
+
+    }
 
     public ArrayList<UHIDItemsCheck> getUHIDCheck(String response) {
         UHIDItemsCheck details = null;
@@ -189,6 +217,16 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                         JSONObject jsonObject = jord.getJSONObject(i);
                         details = new PrescriptionListView(jsonObject);
                         detailListing.add(details);
+
+                        //by sourav
+                        /*ContentValues cv = new ContentValues();
+                        cv.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                        cv.put("prescription_data", response.toString());
+                        DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
+                        */
+                        details.getInsertingValue(jsonObject);//for local db
+
+
                     }
                 }
 
@@ -216,6 +254,15 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                         JSONObject jsonObject = jord.getJSONObject(i);
                         details = new LabReportListView(jsonObject);
                         detailListing.add(details);
+
+                        //by sourav
+                        ContentValues cv = new ContentValues();
+                        cv.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
+                        cv.put("labtest_data", response.toString());
+                        // DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
+                        DbOperations.insertLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
+
+
                     }
                 } else {
                     detailListing = new ArrayList<LabReportListView>();

@@ -50,7 +50,7 @@ public class FragmentResetNewPassword extends Fragment {
                 container, false);
         CureFull.getInstanse().getActivityIsntanse().showActionBarToggle(false);
         CureFull.getInstanse().getActivityIsntanse().disableDrawer();
-        CureFull.getInstanse().getActivityIsntanse().showLogo(true);
+       // CureFull.getInstanse().getActivityIsntanse().showLogo(true);
         input_layout_mobile = (TextInputLayout) rootView.findViewById(R.id.input_layout_mobile);
         input_layout_email = (TextInputLayout) rootView.findViewById(R.id.input_layout_email);
         input_email = (EditText) rootView.findViewById(R.id.input_email);

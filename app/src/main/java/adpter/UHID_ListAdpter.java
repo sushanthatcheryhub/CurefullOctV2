@@ -29,6 +29,7 @@ import fragment.healthapp.FragmentUHID;
 import interfaces.IOnOtpDoneDelete;
 import item.property.UHIDItems;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
@@ -149,7 +150,8 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
 
 
     private void getSelectedUserList(String cfUuhid) {
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())){
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
         StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECTED_USER_LIST + cfUuhid,
                 new Response.Listener<String>() {
                     @Override
@@ -192,6 +194,10 @@ public class UHID_ListAdpter extends RecyclerView.Adapter<UHID_ListAdpter.ItemVi
         };
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }else
+    {
+        fragmentUHIDs.getcheck(cfUuhid);
+    }
     }
 
 
