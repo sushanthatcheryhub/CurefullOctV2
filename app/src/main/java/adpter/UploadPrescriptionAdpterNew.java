@@ -105,11 +105,11 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
-        if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
-            img_delete.setVisibility(View.GONE);
-        } else {
-            img_delete.setVisibility(View.VISIBLE);
-        }
+    if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
+        img_delete.setVisibility(View.GONE);
+    } else {
+        img_delete.setVisibility(View.VISIBLE);
+    }
 
         String date = prescriptionListViews.get(position).getPrescriptionDate();
         if (!date.equalsIgnoreCase("")) {
@@ -126,35 +126,38 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         }
         txt_count_file.setText(prescriptionListViews.get(position).getCountOfFiles());
         text_doctor_name.setText("" + prescriptionListViews.get(position).getDoctorName());
-        if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews() != null && prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
+        try {
+            if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews() != null && prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
 
-            Collections.sort(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews());
-            Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage())
-                    .thumbnail(0.1f)
-                    .crossFade()
-                    .override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
-                    .priority(Priority.HIGH)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            return false;
-                        }
+                Collections.sort(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews());
+                Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage())
+                        .thumbnail(0.1f)
+                        .crossFade()
+                        .override((int) applicationContext.getResources().getDimension(R.dimen._140dp), (int) applicationContext.getResources().getDimension(R.dimen._140dp))
+                        .priority(Priority.HIGH)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                return false;
+                            }
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            progressBar.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(image_item);
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                progressBar.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .into(image_item);
 //            try {
 //                CureFull.getInstanse().getSmallImageLoader().startLazyLoading(prescriptionListViews.get(position).getPrescriptionImageListViews().get(0).getPrescriptionImage(), image_item);
 //            } catch (Exception e) {
 //
 //            }
+            }
+        }catch (Exception e){
+            e.getMessage();
         }
-
 
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override

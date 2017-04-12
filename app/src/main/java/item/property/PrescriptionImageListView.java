@@ -7,6 +7,8 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -31,6 +33,18 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
             setPrescriptionImagePartId(jsonObject.getString("prescriptionImagePartId"));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public PrescriptionImageListView(Cursor cur) {
+        if (cur == null)
+            return;
+        try {
+            setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
+            setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
+            setPrescriptionImagePartId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEPARTID)));
+        }catch (Exception e){
+            e.getMessage();
         }
     }
 
@@ -93,5 +107,18 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
     @Override
     public int compareTo(PrescriptionImageListView o) {
         return imageNumber.compareTo(o.getImageNumber());
+    }
+
+    public void getInsertingValue(JSONObject jsonobject1, String commonID) {
+try {
+    ContentValues values2 = new ContentValues();
+    values2.put(IMAGE_NUMBER, jsonobject1.getString(IMAGE_NUMBER));
+    values2.put(PRESCRIPTION_IMAGE, jsonobject1.getString(PRESCRIPTION_IMAGE));
+    values2.put(PRESCRIPTION_IMAGEPARTID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
+    values2.put(COMMON_ID, commonID);
+    DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, commonID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
+}catch (Exception e){
+
+}
     }
 }

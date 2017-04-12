@@ -170,7 +170,7 @@ public class MyConstants {
         String PRESCRIPTION_DATE = "prescriptionDate";
         String PRESCRIPTION_IMAGEFOLLOWUP_ID="prescriptonImageFollowupId";
         String DOCTOR_NAME = "doctorName";
-        String PRESCRIPTION_RESPONSE_LIST = "prescriptionResponseList";
+        String PRESCRIPTION_RESPONSE_LIST = "prescriptionResponseList";//prescriptionResponseList
         String LAB_REPORT_LIST = "reportImageList";
         String IMAGE_NUMBER = "imageNumber";
         String PRESCRIPTION_IMAGE = "prescriptionImage";

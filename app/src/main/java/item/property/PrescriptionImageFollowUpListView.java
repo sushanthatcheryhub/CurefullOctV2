@@ -1,13 +1,20 @@
 package item.property;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Exchanger;
 
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -23,6 +30,20 @@ public class PrescriptionImageFollowUpListView implements Parcelable, MyConstant
 
     public PrescriptionImageFollowUpListView() {
 
+    }
+
+    public PrescriptionImageFollowUpListView(Cursor cur,String common_id) {
+
+        if (cur == null)
+            return;
+        try {
+            setPrescriptonImageFollowupId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEFOLLOWUP_ID)));
+            ArrayList<PrescriptionImageListView> prescriptionImageListViews=DbOperations.setPrescriptionResponseListViewsLocal(CureFull.getInstanse().getActivityIsntanse(),common_id);
+            setPrescriptionImageListViews(prescriptionImageListViews);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
     }
 
     public PrescriptionImageFollowUpListView(JSONObject jsonObject) {
@@ -124,5 +145,40 @@ public class PrescriptionImageFollowUpListView implements Parcelable, MyConstant
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public void setPrescriptionImageListViewsLocal(JSONArray symptomslistArray,String commonID) {
+        if (symptomslistArray == null)
+            return;
+        PrescriptionImageListView card = null;
+        this.prescriptionImageListViews = new ArrayList<PrescriptionImageListView>();
+        for (int i = 0; i < symptomslistArray.length(); i++) {
+            try {
+                card = new PrescriptionImageListView(symptomslistArray.getJSONObject(i));
+                this.prescriptionImageListViews.add(card);
+
+                card.getInsertingValue(symptomslistArray.getJSONObject(i),commonID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void getInsertingValue(JSONObject jsonobject,String commonID) {
+        try {
+            ContentValues values1 = new ContentValues();
+
+            values1.put(COUNT_OF_FILES, jsonobject.getString(COUNT_OF_FILES));
+            values1.put(PRESCRIPTION_DATE, jsonobject.getString(PRESCRIPTION_DATE));
+            values1.put(PRESCRIPTION_IMAGEFOLLOWUP_ID, jsonobject.getString(PRESCRIPTION_IMAGEFOLLOWUP_ID));
+            values1.put(COMMON_ID, commonID);
+            DbOperations.insertPrescriptionFollowUPList(CureFull.getInstanse().getActivityIsntanse(), values1, commonID, jsonobject.getString(PRESCRIPTION_IMAGEFOLLOWUP_ID));
+
+            setPrescriptionImageListViewsLocal(jsonobject.getJSONArray(PRESCRIPTION_RESPONSE_LIST),commonID);
+        }catch (Exception e){
+
+        }
+
     }
 }

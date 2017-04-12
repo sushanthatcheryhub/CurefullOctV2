@@ -232,7 +232,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
 
 
             } catch (Exception e) {
-
+            e.getMessage();
             }
         }
         return detailListing;

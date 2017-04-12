@@ -2,13 +2,18 @@ package item.property;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import curefull.healthapp.CureFull;
+import operations.DatabaseHelper;
 import operations.DbOperations;
 import utils.AppPreference;
 import utils.MyConstants;
@@ -28,6 +33,47 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
     private String dateOfUpload;
     private String common_id;
     private ArrayList<PrescriptionImageFollowUpListView> prescriptionImageFollowUpListViews;
+
+    /*private String prescriptonImageFollowupId;
+
+    private String imageNumber;
+
+    private String prescriptionImage;
+    private String prescriptionImagePartId;*/
+
+   /* public void setImageNumber(String imageNumber) {
+        this.imageNumber = imageNumber;
+    }
+
+    public void setPrescriptionImagePartId(String prescriptionImagePartId) {
+        this.prescriptionImagePartId = prescriptionImagePartId;
+    }
+
+    public String getImageNumber() {
+        return imageNumber;
+    }
+
+    public String getPrescriptionImagePartId() {
+        return prescriptionImagePartId;
+    }
+
+
+
+    public String getPrescriptionImage() {
+        return prescriptionImage;
+    }
+
+    public String getPrescriptonImageFollowupId() {
+        return prescriptonImageFollowupId;
+    }
+
+    public void setPrescriptionImage(String prescriptionImage) {
+        this.prescriptionImage = prescriptionImage;
+    }
+
+    public void setPrescriptonImageFollowupId(String prescriptonImageFollowupId) {
+        this.prescriptonImageFollowupId = prescriptonImageFollowupId;
+    }*/
 
     public PrescriptionListView() {
     }
@@ -50,39 +96,50 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
         }
     }
 
-    public void getInsertingValue(JSONObject json) {
+    public PrescriptionListView(Cursor cur) {
+        if (cur == null)
+            return;
         try {
-            JSONObject jsonResponse1 = json.getJSONObject(MyConstants.JsonUtils.JSON_KEY_PAYLOAD);
-            ContentValues values = new ContentValues();
-            values.put(CFUUHIDs, jsonResponse1.getString(CFUUHIDs));
-            values.put(PRESCRIPTION_ID, jsonResponse1.getString(PRESCRIPTION_ID));
-            values.put(PRESCRIPTION_DATE, jsonResponse1.getString(PRESCRIPTION_DATE));
-            values.put(DOCTOR_NAME, jsonResponse1.getString(DOCTOR_NAME));
-            values.put(COUNT_OF_FILES, jsonResponse1.getString(COUNT_OF_FILES));
-            values.put(UPLOAD_BY, jsonResponse1.getString(UPLOAD_BY));
-            values.put(COMMON_ID, jsonResponse1.getString(COMMON_ID));
-            setCommonID(jsonResponse1.getString(PRESCRIPTION_ID));
-            DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew());
+            setCfUuhid(cur.getString(cur.getColumnIndex(CFUUHIDs)));
+            setPrescriptionId(cur.getString(cur.getColumnIndex(PRESCRIPTION_ID)));
+            setPrescriptionDate(cur.getString(cur.getColumnIndex(PRESCRIPTION_DATE)));
+            setDoctorName(cur.getString(cur.getColumnIndex(DOCTOR_NAME)));
+            setCountOfFiles(cur.getString(cur.getColumnIndex(COUNT_OF_FILES)));
+            setUploadedBy(cur.getString(cur.getColumnIndex(UPLOAD_BY)));
+            setCommonID(cur.getString(cur.getColumnIndex(COMMON_ID)));
 
-            ContentValues values1 = new ContentValues();
-            JSONObject jsonResponse2 = json.getJSONObject(MyConstants.JsonUtils.PRESCRIPTION_FOLLOWUPLIST);
-            values1.put(COUNT_OF_FILES, jsonResponse2.getString(COUNT_OF_FILES));
-            values1.put(PRESCRIPTION_DATE, jsonResponse2.getString(PRESCRIPTION_DATE));
-            values1.put(PRESCRIPTION_IMAGEFOLLOWUP_ID, jsonResponse2.getString(PRESCRIPTION_IMAGEFOLLOWUP_ID));
-            values1.put(COMMON_ID, getCommonID());
-            DbOperations.insertPrescriptionFollowUPList(CureFull.getInstanse().getActivityIsntanse(), values1, getCommonID());
+            ArrayList<PrescriptionImageFollowUpListView> prescriptionImageFollowUpListViews=DbOperations.setPrescriptionImageFollowUpListViewsLocal(CureFull.getInstanse().getActivityIsntanse(),cur.getString(cur.getColumnIndex(COMMON_ID)));
+            setPrescriptionImageFollowUpListViews(prescriptionImageFollowUpListViews);
+            //setPrescriptionImageFollowUpListViewsLocal(prescriptionImageFollowUpListViews);
+            /*setPrescriptonImageFollowupId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEFOLLOWUP_ID)));
 
-            ContentValues values2 = new ContentValues();
-            JSONObject jsonResponse3 = json.getJSONObject(MyConstants.JsonUtils.PRESCRIPTION_RESPONSE_LIST);
-            values2.put(IMAGE_NUMBER, jsonResponse3.getString(IMAGE_NUMBER));
-            values2.put(PRESCRIPTION_IMAGE, jsonResponse3.getString(PRESCRIPTION_IMAGE));
-            values2.put(PRESCRIPTION_IMAGEPARTID, jsonResponse3.getString(PRESCRIPTION_IMAGEPARTID));
-            values2.put(COMMON_ID, getCommonID());
-            DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, getCommonID());
-
-
+            setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
+            setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
+            setPrescriptionImagePartId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEPARTID)));*/
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void getInsertingValue(JSONObject json) throws JSONException {
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CFUUHIDs, json.getString(CFUUHIDs));
+            values.put(PRESCRIPTION_ID, json.getString(PRESCRIPTION_ID));
+            values.put(PRESCRIPTION_DATE, json.getString(PRESCRIPTION_DATE));
+            values.put(DOCTOR_NAME, json.getString(DOCTOR_NAME));
+            values.put(COUNT_OF_FILES, json.getString(COUNT_OF_FILES));
+            values.put(UPLOAD_BY, json.getString(UPLOAD_BY));
+            setCommonID(json.getString(PRESCRIPTION_ID));
+            values.put(COMMON_ID, getCommonID());
+            DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew(),getCommonID());
+
+            setPrescriptionImageFollowUpListViewsLocal(json.getJSONArray(PRESCRIPTION_FOLLOWUPLIST),getCommonID());
+
+            } catch (Exception e) {
             e.printStackTrace();
 
         }
@@ -175,6 +232,26 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
             try {
                 card = new PrescriptionImageFollowUpListView(symptomslistArray.getJSONObject(i));
                 this.prescriptionImageFollowUpListViews.add(card);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    public void setPrescriptionImageFollowUpListViewsLocal(JSONArray symptomslistArray, String commonID) {
+        if (symptomslistArray == null)
+            return;
+        PrescriptionImageFollowUpListView card = null;
+        this.prescriptionImageFollowUpListViews = new ArrayList<PrescriptionImageFollowUpListView>();
+        for (int i = 0; i < symptomslistArray.length(); i++) {
+            try {
+                card = new PrescriptionImageFollowUpListView(symptomslistArray.getJSONObject(i));
+                this.prescriptionImageFollowUpListViews.add(card);
+
+                card.getInsertingValue(symptomslistArray.getJSONObject(i),commonID);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

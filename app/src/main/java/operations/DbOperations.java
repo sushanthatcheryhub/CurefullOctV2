@@ -7,12 +7,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
 import item.property.GoalInfo;
 import item.property.HealthNoteItems;
+import item.property.PrescriptionImageFollowUpListView;
+import item.property.PrescriptionImageListView;
+import item.property.PrescriptionListView;
 import item.property.StepsCountsItems;
 import item.property.StepsCountsStatus;
 import item.property.UHIDItems;
@@ -26,6 +30,7 @@ import utils.MyConstants;
 public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstants.IDataBaseTableKeys, MyConstants.JsonUtils {
     static Cursor cursor = null;
     static Cursor cursor_reset = null;
+
     public static List<HealthNoteItems> getNoteList(Context context) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -85,6 +90,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         return listApps;
     }
+
     public static List<StepsCountsItems> getOfflineSteps(Context context, String cfhuid) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -290,6 +296,143 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return response;
     }
 
+    public static List<PrescriptionListView> getPrescriptionListALL(Context context, String cf_uuhid) {
+        Cursor cursorprivate=null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionListView>();
+
+        List<PrescriptionListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id from tbl_prescription_main as pm";//where pm.cfUuhid='"+cf_uuhid+"'
+            //select * from table name where  prescriptionDate order by desc/asc(this is varialble) limit 0,10;
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    PrescriptionListView content = new PrescriptionListView(cursorprivate);
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static List<PrescriptionListView> getPrescriptionListALLSort(Context context, String cf_uuhid,String clickShortBy,int offset) {
+        Cursor cursorprivate=null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionListView>();
+
+        List<PrescriptionListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        String query ="";
+        try {
+            database = DatabaseHelper.openDataBase();
+            if(clickShortBy.equalsIgnoreCase("DESC")) {
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id from tbl_prescription_main as pm order by pm.pre_id ASC";// limit 0,10";
+            }else{
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id from tbl_prescription_main as pm order by pm.pre_id DESC";// limit 0,10";
+            }
+            //select * from table name where  prescriptionDate order by desc/asc(this is varialble) limit 0,10;
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    PrescriptionListView content = new PrescriptionListView(cursorprivate);
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<PrescriptionImageFollowUpListView> setPrescriptionImageFollowUpListViewsLocal(Context context, String common_id) {
+        Cursor cursorprivate1=null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionImageFollowUpListView>();
+
+        ArrayList<PrescriptionImageFollowUpListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "select pfl.prescriptonImageFollowupId from tbl_prescription_followuplist as pfl where pfl.common_id ='" + common_id + "'";
+            cursorprivate1 = database.rawQuery(query, null);
+            if (cursorprivate1.getCount() > 0) {
+                cursorprivate1.moveToFirst();
+                int ss = cursorprivate1.getCount();
+                for (int i = 0; i < ss; i++) {
+                    PrescriptionImageFollowUpListView content = new PrescriptionImageFollowUpListView(cursorprivate1, common_id);
+                    listApps.add(content);
+                    cursorprivate1.moveToNext();
+                }
+
+            }
+            cursorprivate1.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<PrescriptionImageListView> setPrescriptionResponseListViewsLocal(Context context, String common_id) {
+        Cursor cursorprivate2=null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionImageListView>();
+
+        ArrayList<PrescriptionImageListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "select prl.imageNumber,prl.prescriptionImage,prl.prescriptionImagePartId from tbl_prescription_response_list as prl where prl.common_id ='" + common_id + "'";
+
+            cursorprivate2 = database.rawQuery(query, null);
+            if (cursorprivate2.getCount() > 0) {
+                cursorprivate2.moveToFirst();
+                int ss = cursorprivate2.getCount();
+                for (int i = 0; i < ss; i++) {
+                    PrescriptionImageListView content = new PrescriptionImageListView(cursorprivate2);
+                    listApps.add(content);
+                    cursorprivate2.moveToNext();
+                }
+
+            }
+            cursorprivate2.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
     public static String getLabTestReportList(Context context, String cf_uuhid) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -472,8 +615,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         database.close();
     }
-// for selected (update 0 to all and then in case of selected is 1);
-    public static void insertUHIDListLocalUpdateSelected(Context context, ContentValues cv, String primaryId,ContentValues cv0) {
+
+    // for selected (update 0 to all and then in case of selected is 1);
+    public static void insertUHIDListLocalUpdateSelected(Context context, ContentValues cv, String primaryId, ContentValues cv0) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -501,7 +645,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             }
 
 
-
             if (cursor.getCount() > 0) {
                 database.update(TABLE_UHID, cv, CFUUHID_LOCAL + "='" + primaryId + "'",
                         null);
@@ -515,6 +658,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         database.close();
     }
+
     public static void insertStepsCounts(Context context, ContentValues cv) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
@@ -639,7 +783,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
-    public static void insertPrescriptionList(Context context, ContentValues cv, String cf_uuhid) {
+    public static void insertPrescriptionList(Context context, ContentValues cv, String cf_uuhid,String common_id) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -651,11 +795,11 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where cf_uuhid ='" + cf_uuhid + "'";
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where common_id='"+common_id+"'";//cfUuhid ='" + cf_uuhid + "' and
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                database.update(TABLE_PRESCRIPTION_MAIN, cv, CF_UUHID + "='" + cf_uuhid + "'",
+                database.update(TABLE_PRESCRIPTION_MAIN, cv, "common_id" + "='" + common_id + "'",
                         null);
 //                Log.e("updateLoginList", "Qurery Enty number-");
             } else {
@@ -671,7 +815,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
-    public static void insertPrescriptionFollowUPList(Context context, ContentValues cv, String common_id) {
+    public static void insertPrescriptionFollowUPList(Context context, ContentValues cv, String common_id, String prescriptonImageFollowupId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -683,7 +827,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_FOLLOWUPLIST + " Where common_id ='" + common_id + "'";
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_FOLLOWUPLIST + " Where common_id ='" + common_id + "' and prescriptonImageFollowupId='" + prescriptonImageFollowupId + "'";
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
@@ -703,7 +847,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
-    public static void insertPrescriptionResponseList(Context context, ContentValues cv, String common_id) {
+    public static void insertPrescriptionResponseList(Context context, ContentValues cv, String common_id, String PRESCRIPTION_IMAGEPARTID) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -715,7 +859,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_RESPONSELIST + " Where common_id ='" + common_id + "'";
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_RESPONSELIST + " Where common_id ='" + common_id + "' and prescriptionImagePartId='" + PRESCRIPTION_IMAGEPARTID + "'";
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
@@ -766,6 +910,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         database.close();
     }
+
     public static void insertEditGoalList(Context context, ContentValues cv, String primaryId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
