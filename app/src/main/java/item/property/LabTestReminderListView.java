@@ -1,5 +1,8 @@
 package item.property;
 
+import android.database.Cursor;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -38,6 +43,24 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
         }
     }
 
+
+    public LabTestReminderListView(Cursor cur,String date) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews= DbOperations.getLabTestReportReminder11(CureFull.getInstanse().getActivityIsntanse(),date);
+            setReminder_selfListViews(labReportImageListViews);
+            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("labTestReminderByDoctor"));
+            //setReminderDoctorNames(jsonToMap(jsonObject1));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public ArrayList<Lab_Test_Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
     }
@@ -56,12 +79,26 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
             try {
                 card = new Lab_Test_Reminder_SelfListView(symptomslistArray.getJSONObject(i));
                 this.reminder_selfListViews.add(card);
+                card.getInsertingValue(symptomslistArray.getJSONObject(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-
+   /* public void setReminder_selfListViews(Cursor symptomslistArray) {
+        if (symptomslistArray == null)
+            return;
+        Lab_Test_Reminder_SelfListView card = null;
+        this.reminder_selfListViews = new ArrayList<Lab_Test_Reminder_SelfListView>();
+        for (int i = 0; i < symptomslistArray.getCount(); i++) {
+            try {
+                card = new Lab_Test_Reminder_SelfListView(symptomslistArray);
+                this.reminder_selfListViews.add(card);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
 
     public void setReminderDoctorNames(Map<String, Object> stringObjectMap) {
         if (stringObjectMap == null)

@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,10 +42,21 @@ import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
+
+import static utils.MyConstants.JsonUtils.CFUUHIDs;
+import static utils.MyConstants.JsonUtils.COMMON_ID;
+import static utils.MyConstants.JsonUtils.COUNT_OF_FILES;
+import static utils.MyConstants.JsonUtils.DATE_OF_UPLOAD;
+import static utils.MyConstants.JsonUtils.DOCTOR_NAME;
+import static utils.MyConstants.JsonUtils.REPORT_DATE;
+import static utils.MyConstants.JsonUtils.REPORT_ID;
+import static utils.MyConstants.JsonUtils.TEST_NAME;
+import static utils.MyConstants.JsonUtils.UPLOAD_BY;
 
 
 /**
@@ -61,7 +73,8 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
     private String firstTime = "";
     private String labTestReminderId = "";
     private boolean isNewReminder = true;
-
+    private boolean chklabreminderid=false;
+    private String commonid="";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -120,6 +133,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
             firstTime = newTime[0];
             isNewReminder = false;
             labTestReminderId = vBundle.getString("labTestReminderId");
+            chklabreminderid=true;
             if (vBundle.getBoolean("isAfterMeal")) {
                 isAfterMeal = true;
                 radioAfterMeal.setChecked(true);
@@ -179,10 +193,73 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                     }
 
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                    commonid=String.valueOf(System.currentTimeMillis());
+                    insertRemiderLabDetailsLocal(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal,commonid);
+                    //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
                 break;
         }
+    }
+
+    private void insertRemiderLabDetailsLocal(String st_doctor_name, String st_test_name, String st_lab_name, String startFrom, String firstTime, String labTestReminderId, boolean NewReminder, boolean AfterMeal,String commonid) {
+        if (!validateTestName()) {
+            btnClick = true;
+            return;
+        }
+        if (!validateLabName()) {
+            btnClick = true;
+            return;
+        }
+
+        if (!validateDate()) {
+            btnClick = true;
+            return;
+        }
+
+        if (!validateLabTime()) {
+            btnClick = true;
+            return;
+        }
+
+        if (!validateWhen()) {
+            btnClick = true;
+            return;
+        }
+
+        String[] datee=startFrom.split("-");
+        String dayy=datee[2];
+        String monthh=datee[1];
+        String yearr=datee[0];
+
+        String[] timee=firstTime.split(":");
+        String hourr=timee[0];
+        String minute=timee[1];
+        ContentValues values = new ContentValues();
+
+        values.put("doctorName", st_doctor_name);
+        values.put("testName", st_test_name);
+        values.put("labName",st_lab_name);
+        values.put("dayOfMonth", dayy);
+        values.put("monthValue", monthh);
+        values.put("year", yearr);
+        values.put("hour", hourr);
+        values.put("minute", minute);
+        if (chklabreminderid == true) {
+            commonid=labTestReminderId;
+            values.put("labTestReminderId", commonid);//
+            chklabreminderid=false;
+        }else{
+            values.put("labTestReminderId", commonid);//labTestReminderId
+        }
+        values.put("labTestStatus","pending");//NewReminder   changes after reminder notification
+        values.put("afterMeal", AfterMeal);
+        values.put("cfuuhId",AppPreference.getInstance().getcf_uuhid());
+        values.put("isUploaded","1");
+
+        DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values,commonid);
+        CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+
+
     }
 
     @Override

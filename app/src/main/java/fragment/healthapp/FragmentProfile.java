@@ -227,7 +227,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
                     .dontAnimate()
                     .placeholder(R.drawable.profile_avatar)
                     .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {

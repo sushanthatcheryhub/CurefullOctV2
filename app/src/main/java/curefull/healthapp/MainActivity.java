@@ -408,7 +408,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                     .dontAnimate()
                     .placeholder(R.drawable.profile_avatar)
                     .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -944,6 +944,8 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
     }
 
+
+
     private class LongOperation extends AsyncTask<String, Void, String> {
 
 
@@ -1260,15 +1262,15 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
 
     public void startServiceFromAlarm() {
-        if (Build.VERSION.SDK_INT == 19) {
-            long interval = 1000 * 5;
+
+            long interval = 10000 * 5;
             Intent intent = new Intent(this, AlarmReceiver.class);
             intent.setAction("stepsService");
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this.getApplicationContext(), 234324243, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-        }
+
     }
 
    /* public void test(){

@@ -1,5 +1,7 @@
 package item.property;
 
+import android.database.Cursor;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +23,43 @@ public class FilterDataReports {
 
 
     }
+    public FilterDataReports(Cursor cur, String date) {
+        if (cur == null)
+            return;
+        try {
+            if (date.equalsIgnoreCase("pm.reportDate")) {
+                setDateList(cur);
+            } else if(date.equalsIgnoreCase("pm.doctorName")){
+                setDoctorNameList(cur);
 
+            }else if(date.equalsIgnoreCase("pm.testName")) {
+                setDiseaseNameList(cur);
+            }
+            else if(date.equalsIgnoreCase("doctor")) {
+                setDoctorNameList(cur);
+            }else if(date.equalsIgnoreCase("date")) {
+                setDateList(cur);
+            }
+            else if(date.equalsIgnoreCase("disease")) {
+                setDateList(cur);
+            }else if(date.equalsIgnoreCase("datedoctor")){
+                setDiseaseNameList(cur);
+            }else if(date.equalsIgnoreCase("datetest")) {
+                setDoctorNameList(cur);
+            }else if(date.equalsIgnoreCase("doctortest")){
+                setDateList(cur);
+            }
+            else if(date.equalsIgnoreCase("pm.uploadedBy"))
+            {
+                setUploadedByList(cur);
+            }
+
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+    }
     public FilterDataReports(JSONObject jord) {
         try {
             setDateList(jord.getJSONArray("dateList"));
@@ -92,6 +130,65 @@ public class FilterDataReports {
         for (int i = 0; i < symptomslistArray.length(); i++) {
             try {
                 this.diseaseNameList.add(symptomslistArray.get(i).toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+//cursor
+    public void setDateList(Cursor cur) {
+        if (cur == null)
+            return;
+        this.dateList = new ArrayList<String>();
+        cur.moveToFirst();
+        for (int i = 0; i < cur.getCount(); i++) {
+            try {
+                this.dateList.add(cur.getString(cur.getColumnIndex("reportDate")));
+                cur.moveToNext();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setDoctorNameList(Cursor cur) {
+        if (cur == null)
+            return;
+        this.doctorNameList = new ArrayList<String>();
+        cur.moveToFirst();
+        for (int i = 0; i < cur.getCount(); i++) {
+            try {
+                this.doctorNameList.add(cur.getString(cur.getColumnIndex("doctorName")));
+                cur.moveToNext();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void setDiseaseNameList(Cursor cur) {
+        if (cur == null)
+            return;
+        this.diseaseNameList = new ArrayList<String>();
+        cur.moveToFirst();
+        for (int i = 0; i < cur.getCount(); i++) {
+            try {
+                this.diseaseNameList.add(cur.getString(cur.getColumnIndex("testName")));
+                cur.moveToNext();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void setUploadedByList(Cursor cur) {
+        if (cur == null)
+            return;
+        this.uploadedByList = new ArrayList<String>();
+        cur.moveToFirst();
+        for (int i = 0; i < cur.getCount(); i++) {
+            try {
+                this.uploadedByList.add(cur.getString(cur.getColumnIndex("uploadedBy")));
+                cur.moveToNext();
             } catch (Exception e) {
                 e.printStackTrace();
             }

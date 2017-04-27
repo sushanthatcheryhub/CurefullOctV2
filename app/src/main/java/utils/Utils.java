@@ -239,7 +239,19 @@ public class Utils {
         return formattedDate;
     }
 
-
+    public static String getPreviousDate(String date) {
+        String dt = date;  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+            c.add(Calendar.DATE, -7);  // number of days to add
+            dt = sdf.format(c.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dt;
+    }
     public static String updateTime(int hours, int mins) {
 
 

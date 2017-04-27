@@ -9,12 +9,12 @@ public class MyConstants {
 
         boolean isLogCheck = false;
 
-//                        String HOST_IP = "http://lp.hatcheryhub.com";
-        String HOST_IP = "http://hatcheryhub.com";
+                        String HOST_IP = "http://lp.hatcheryhub.com";
+//        String HOST_IP = "http://hatcheryhub.com";
         //                                String HOST_IP = "http://192.168.0.82:8080";
         //                        String HOST_IP = "http://" + AppPreference.getInstance().get_ip() + ":8080";
         String HOST_LOCATION = "/api/v1/";
-        //                                String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
+//                                        String HOST_LOCATION = "/CurefullRestService-0.0.1/api/v1/";
         String URL = HOST_IP + HOST_LOCATION;
         String API = "&project-app-key=rj8u5a826ilhk9rg1ghlxym6";
         String PRECRIPTION_IMAGE_PATH = "http://hatcheryhub.com/images/prescription/";
@@ -108,22 +108,22 @@ public class MyConstants {
     }
 
     //
-    public interface AWSType {
-        String BUCKET_NAME = "cure.ehr";
-        String BUCKET_PROFILE_NAME = "cure.user.profile";
-        String FOLDER_PRECREPTION_NAME = "/prescription";
-        String FOLDER_LAB_REPORT_NAME = "/labReport";
-        String FOLDER_PROFILE_NAME = "/profileImages";
-    }
-//
 //    public interface AWSType {
-//        String BUCKET_NAME = "cure.ehr.lp";
-//        String BUCKET_PROFILE_NAME = "cure.user.profile.lp";
+//        String BUCKET_NAME = "cure.ehr";
+//        String BUCKET_PROFILE_NAME = "cure.user.profile";
 //        String FOLDER_PRECREPTION_NAME = "/prescription";
 //        String FOLDER_LAB_REPORT_NAME = "/labReport";
 //        String FOLDER_PROFILE_NAME = "/profileImages";
-//
 //    }
+//
+    public interface AWSType {
+        String BUCKET_NAME = "cure.ehr.lp";
+        String BUCKET_PROFILE_NAME = "cure.user.profile.lp";
+        String FOLDER_PRECREPTION_NAME = "/prescription";
+        String FOLDER_LAB_REPORT_NAME = "/labReport";
+        String FOLDER_PROFILE_NAME = "/profileImages";
+
+    }
 
     public interface CustomMessages {
         String No_INTERNET_USAGE = "The internet seems Unhealthy! Check connections";
@@ -205,10 +205,16 @@ public class MyConstants {
         String YEAR = "year";
         String JSON_KEY_PAYLOAD = "payload";
         String PRESCRIPTION_FOLLOWUPLIST="prescriptionFollowupList";
+        String REPORT_IMAGELIST="reportImageList";
         String OK = "OK";
         String DEFAULT="default";
         String DEFAULT_USER="default_user";
         String SELECTED="selected";
+
+        String DATELIST="dateList";
+        String DOCTORNAMELIST="doctorNameList";
+        String UPLOADEDBYLIST="uploadedByList";
+        String PRESCRIPTIONIMAGEPARTID="prescriptionImagePartId";
     }
 
     public interface IResponseCode {
@@ -237,12 +243,26 @@ public class MyConstants {
         String TABLE_PRESCRIPTION = "tbl_prescription";
         String TABLE_LABTESTREPORT = "tbl_labtestreport";
         String TABLE_PRESCRIPTION_MAIN = "tbl_prescription_main";
+        String TABLE_PRESCRIPTION_FILTER_DATA = "tbl_prescription_filter_data";
         String TABLE_PRESCRIPTION_FOLLOWUPLIST = "tbl_prescription_followuplist";
         String TABLE_PRESCRIPTION_RESPONSELIST = "tbl_prescription_response_list";
+
+        String TABLE_LABTESTREPORT_MAIN = "tbl_labtestreprort_main";
+        String TABLE_LABTESTREPORT_RESPONSELIST = "tbl_labtestreport_response_list";
+        String TABLE_PRESCRIPTION_IMAGE = "tbl_prescription_image";
         String TABLE_OFFLINE_NOTE = "offline_note_master";
         String TABLE_STEPS = "tbl_steps";
         String TABLE_STEPS_STATUS = "tbl_steps_count";
         String TABLE_UHID="tbl_uhid";
+
+        String TABLE_LAB_REMINDER = "tbl_lab_reminder";
+        String TABLE_LAB_REMINDER_SELF = "tbl_lab_reminder_self";
+        String TABLE_DOCTOR_REMINDER_SELF = "tbl_doctor_reminder_self";
+        String TABLE_MEDICINE_REMINDER_SELF = "tbl_medicine_reminder_self";
+        String TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE = "tbl_medicine_reminder_self_dosageperDateResponse";
+        String TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE = "tbl_medicine_reminder_self_alarmdetailresponse";
+        //
+        String TABLE_LAB_REMINDER_DOCTOR_NAME = "tbl_lab_reminder_doctor";
     }
 
 

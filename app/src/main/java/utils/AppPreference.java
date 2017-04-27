@@ -698,6 +698,16 @@ public class AppPreference implements MyConstants.JsonUtils {
         return false;
     }
 
+   /* public void setDateClicked(boolean isDateClicked) {
+        if (_prefrence != null)
+            _prefrence.edit().putBoolean("delete", isDateClicked).commit();
+    }
+
+    public boolean getDateClicked() {
+        if (_prefrence != null)
+            return _prefrence.getBoolean("delete", true);
+        return false;
+    }*/
 
     public void setFilterDoctor(String className) {
         if (_prefrence != null)

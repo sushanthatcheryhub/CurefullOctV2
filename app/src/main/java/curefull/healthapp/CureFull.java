@@ -189,4 +189,5 @@ public class CureFull extends Application {
     public void setiOnEmailUpdate(IOnEmailUpdate iOnEmailUpdate) {
         this.iOnEmailUpdate = iOnEmailUpdate;
     }
+
 }

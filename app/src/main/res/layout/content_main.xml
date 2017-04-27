@@ -12,7 +12,7 @@
         android:background="@color/white"
         android:elevation="@dimen/_15dp"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/liner_medincine"

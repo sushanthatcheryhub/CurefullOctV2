@@ -1,5 +1,6 @@
 package item.property;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -7,13 +8,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import curefull.healthapp.CureFull;
 import okhttp3.RequestBody;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -24,7 +28,8 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
     private ArrayList<Reminder_SelfListView> reminder_selfListViews;
 
     private ArrayList<ReminderDoctorName> reminderDoctorNames;
-
+  //  private ArrayList<Reminder_SelfListView> medicineReminderBySelf;
+  //  Reminder_SelfListView  reminder_selfListViews1;
     public MedicineReminderListView() {
     }
 
@@ -40,13 +45,31 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
         }
     }
 
+    public MedicineReminderListView(Cursor cursorprivate,String datee) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminder_selfListViews= DbOperations.getMedicineReportReminder11(CureFull.getInstanse().getActivityIsntanse(),datee);//,datee,commonid_from_innerquery
+            Log.e("test",reminder_selfListViews.toString());
+            //setReminder_selfListViews(labReportImageListViews);
+
+            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("listOfFollowupRemiderByDoctor"));
+            //setReminderDoctorNames(jsonToMap(jsonObject1));
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
     public ArrayList<Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
     }
 
-    public void setReminder_selfListViews(ArrayList<Reminder_SelfListView> reminder_selfListViews) {
-        this.reminder_selfListViews = reminder_selfListViews;
-    }
+  /*  public void setReminder_selfListViews(ArrayList<Reminder_SelfListView> reminder_selfListViews) {
+        this.reminder_selfListViews1 = reminder_selfListViews1;
+    }*/
 
 
     public void setReminder_selfListViews(JSONArray symptomslistArray) {
@@ -58,6 +81,8 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
             try {
                 card = new Reminder_SelfListView(symptomslistArray.getJSONObject(i));
                 this.reminder_selfListViews.add(card);
+
+                card.getInsertingValue(symptomslistArray.getJSONObject(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }

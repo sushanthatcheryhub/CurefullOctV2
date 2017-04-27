@@ -44,7 +44,7 @@ public class NotificationUtils {
     public void notificationMedicine(String name, String text, String id, String type) {
         // Prepare intent which is triggered if the
         // notification is selected
-
+//ashwani tiwari    //Sushant , your lab test for Lab Notu is due on 2017-04-26. Do visit. Stay healthy  //33//LAB_TEST_REMINDER
 //        if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
 //            name = "Dr." + name;
 //        }
@@ -112,7 +112,11 @@ public class NotificationUtils {
             noti.defaults |= Notification.DEFAULT_SOUND;
             noti.defaults |= Notification.DEFAULT_LIGHTS;
             noti.flags |= Notification.FLAG_SHOW_LIGHTS;
-            notificationManager.notify(Integer.parseInt(id), noti);
+            try {
+                notificationManager.notify(Integer.parseInt(id), noti);
+            }catch (Exception e){
+                notificationManager.notify((int)Long.parseLong(id), noti);
+            }
         } else {
 
             Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
@@ -135,7 +139,11 @@ public class NotificationUtils {
             noti.defaults |= Notification.DEFAULT_SOUND;
             noti.defaults |= Notification.DEFAULT_LIGHTS;
             noti.flags |= Notification.FLAG_SHOW_LIGHTS;
-            notificationManager.notify(Integer.parseInt(id), noti);
+            try {
+                notificationManager.notify(Integer.parseInt(id), noti);
+            }catch (Exception e){
+                notificationManager.notify((int)Long.parseLong(id), noti);
+            }
         }
 
 

@@ -1,5 +1,7 @@
 package item.property;
 
+import android.database.Cursor;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
 import utils.MyConstants;
 
 /**
@@ -36,6 +40,22 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
         }
     }
 
+    public DoctorVistReminderListView(Cursor cursorprivate, String datee) {
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            ArrayList<Doctor_Visit_Reminder_SelfListView> labReportImageListViews= DbOperations.getDoctorReportReminder11(CureFull.getInstanse().getActivityIsntanse(),datee);
+            setReminder_selfListViews(labReportImageListViews);
+
+            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("listOfFollowupRemiderByDoctor"));
+            //setReminderDoctorNames(jsonToMap(jsonObject1));
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
     public ArrayList<Doctor_Visit_Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
     }
@@ -54,6 +74,7 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
             try {
                 card = new Doctor_Visit_Reminder_SelfListView(symptomslistArray.getJSONObject(i));
                 this.reminder_selfListViews.add(card);
+                card.getInsertingValue(symptomslistArray.getJSONObject(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }

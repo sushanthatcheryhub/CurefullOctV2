@@ -24,6 +24,7 @@ import item.property.LabTestReminderListView;
 import item.property.MedicineReminderListView;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
+import item.property.PrescriptionImageList;
 import item.property.PrescriptionListView;
 import item.property.UHIDItems;
 import item.property.UHIDItemsCheck;
@@ -239,6 +240,15 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     }
 
 
+    public List<PrescriptionListView> getPrescriptionListImage(String prescriptionDate, String doctorName, String dieaseName, List<PrescriptionImageList> prescriptionImageListss, int countofFileslocal, String uploadedBy) {
+        ArrayList<PrescriptionListView> arr_preslist=new ArrayList<>();
+        PrescriptionListView imagelist=new PrescriptionListView();
+        imagelist.uploadFilelocal(prescriptionDate, doctorName, dieaseName, AppPreference.getInstance().getcf_uuhidNeew(),prescriptionImageListss,countofFileslocal,"self");
+        arr_preslist.add(imagelist);
+        return arr_preslist;
+    }
+
+
     public List<LabReportListView> getLabTestReportList(String response) {
         LabReportListView details = null;
         ArrayList<LabReportListView> detailListing = null;
@@ -254,15 +264,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                         JSONObject jsonObject = jord.getJSONObject(i);
                         details = new LabReportListView(jsonObject);
                         detailListing.add(details);
-
-                        //by sourav
-                        ContentValues cv = new ContentValues();
-                        cv.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                        cv.put("labtest_data", response.toString());
-                        // DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
-                        DbOperations.insertLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhidNeew());
-
-
+                        details.getInsertingValue(jsonObject);
                     }
                 } else {
                     detailListing = new ArrayList<LabReportListView>();
@@ -352,8 +354,11 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                 JSONArray jord = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
                 detailListing = new ArrayList<LabDoctorName>();
                 for (int i = 0; i < jord.length(); i++) {
+
                     details = new LabDoctorName(jord.get(i).toString());
                     detailListing.add(details);
+                    //insert local
+                   // details.getInsertingValue(jord.get(i).toString());
                 }
             } catch (Exception e) {
 
@@ -411,6 +416,8 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                 setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
                 JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
                 details = new FilterDataPrescription(jord);
+
+                //details.getInsertingValue(jord);
             } catch (Exception e) {
 
             }
@@ -466,6 +473,8 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                 if (!json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("null") || !json.getString(JSON_KEY_PAYLOAD).equalsIgnoreCase("")) {
                     JSONObject jord = new JSONObject(json.getString(JSON_KEY_PAYLOAD));
                     details = new LabTestReminderListView(jord);
+
+
                 }
 
             } catch (Exception e) {

@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 
+import operations.DbOperations;
+
 public class ExternalReceiver extends BroadcastReceiver {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -14,6 +16,7 @@ public class ExternalReceiver extends BroadcastReceiver {
         if (intent != null) {
             Bundle extras = intent.getExtras();
             MessageReceivingService.saveToLog(extras, context);
+
         }
     }
 }

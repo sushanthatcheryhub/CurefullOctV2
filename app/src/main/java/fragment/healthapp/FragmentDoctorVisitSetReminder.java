@@ -4,6 +4,7 @@ package fragment.healthapp;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
@@ -63,6 +65,8 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
     private ListPopupWindow listPopupWindow;
     private boolean isNewReminder = true, btnClick = true;
     private String doctorFollowupReminderId = "";
+    private boolean chkdoctorFollowupReminderId = false;
+    private String commonid = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,6 +128,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
 
             isNewReminder = false;
             doctorFollowupReminderId = vBundle.getString("doctorFollowupReminderId");
+            chkdoctorFollowupReminderId = true;
         }
 
 
@@ -185,12 +190,71 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
                     }
 
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                    commonid = String.valueOf(System.currentTimeMillis());
+                    //edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder
+                    insertRemiderDoctorDetailsLocal(edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder, commonid);
+
 
                 }
 
                 break;
         }
+    }
+
+    private void insertRemiderDoctorDetailsLocal(String doctorname, String hospitalname, String startFrom, String firstTime, String doctorFollowupReminderId, boolean isNewReminder, String commonid) {
+        if (!validateTestName()) {
+            btnClick = true;
+            return;
+        }
+        if (!validateLabName()) {
+            btnClick = true;
+            return;
+        }
+
+        if (!validateDate()) {
+            btnClick = true;
+            return;
+        }
+
+        if (!validateLabTime()) {
+            btnClick = true;
+            return;
+        }
+
+        String[] datee = startFrom.split("-");
+        String dayy = datee[2];
+        String monthh = datee[1];
+        String yearr = datee[0];
+
+        String[] timee = firstTime.split(":");
+        String hourr = timee[0];
+        String minute = timee[1];
+        ContentValues values = new ContentValues();
+
+        values.put("doctorName", doctorname);
+        values.put("hospitalName", hospitalname);
+
+        values.put("dayOfMonth", dayy);
+        values.put("monthValue", monthh);
+        values.put("year", yearr);
+        values.put("hour", hourr);
+        values.put("minute", minute);
+        if (chkdoctorFollowupReminderId == true) {
+            commonid = doctorFollowupReminderId;
+            values.put("doctorFollowupReminderId", commonid);
+            chkdoctorFollowupReminderId = false;
+        } else {
+            values.put("doctorFollowupReminderId", commonid);
+        }
+        values.put("status","pending");//isNewReminder   changes after reminder notification
+
+        values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+        values.put("isUploaded", "1");
+
+        DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid);
+        CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+
+
     }
 
     @Override

@@ -34,6 +34,7 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentReminderSetMedicine;
 import interfaces.IOnOtpDoneDelete;
 import item.property.Reminder_SelfListView;
+import operations.DbOperations;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -181,6 +182,12 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
             getDoctorVisitDelete(healthNoteItemses.get(pos).getMedicineReminderId(), pos, true, false);
+            try {
+                DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getMedicineReminderId(), healthNoteItemses.get(pos).getDoctorName(), "medicinereminder");
+            }catch (Exception e){
+                e.getMessage();
+            }
+
         }
     }
 

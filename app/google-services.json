@@ -1,27 +1,35 @@
 {
   "project_info": {
-    "project_number": "753846434644",
-    "firebase_url": "https://curefull-2d5c8.firebaseio.com",
-    "project_id": "curefull-2d5c8",
-    "storage_bucket": "curefull-2d5c8.appspot.com"
+    "project_number": "1079942567480",
+    "firebase_url": "https://curefull-50aaf.firebaseio.com",
+    "project_id": "curefull-50aaf",
+    "storage_bucket": "curefull-50aaf.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:753846434644:android:14c18535bc24c348",
+        "mobilesdk_app_id": "1:1079942567480:android:76dd9cef6e3ccd66",
         "android_client_info": {
-          "package_name": "com.curefull"
+          "package_name": "curefull.healthapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "753846434644-vjv0r0n9k2iqp90lu4tmueshibv8mvom.apps.googleusercontent.com",
+          "client_id": "1079942567480-0n1f5cqg21ogmohqu35dttn8e9vu67vj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "curefull.healthapp",
+            "certificate_hash": "DB787BE81E4A42995288FFF9BA07F6A2B4EF4230"
+          }
+        },
+        {
+          "client_id": "1079942567480-o8s479h4lpubpk9le485nbg3boaeg9oj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD-xqo6G2MP5qM-Za9LHyx63fGEhAApNcU"
+          "current_key": "AIzaSyCLu68TYr66feqesXkCKtmWBcTC2trQmLk"
         }
       ],
       "services": {
@@ -32,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "753846434644-vjv0r0n9k2iqp90lu4tmueshibv8mvom.apps.googleusercontent.com",
+              "client_id": "1079942567480-o8s479h4lpubpk9le485nbg3boaeg9oj.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

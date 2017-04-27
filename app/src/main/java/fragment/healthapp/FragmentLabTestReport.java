@@ -92,11 +92,13 @@ import dialog.DialogUploadNewPrescription;
 import interfaces.IOnAddMoreImage;
 import interfaces.IOnDoneMoreImage;
 import interfaces.IOnOtpDonePath;
+import item.property.FilterDataPrescription;
 import item.property.FilterDataReports;
 import item.property.LabReportListView;
 import item.property.PrescriptionDiseaseName;
 import item.property.PrescriptionDoctorName;
 import item.property.PrescriptionImageList;
+import item.property.PrescriptionListView;
 import item.property.UHIDItems;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -132,6 +134,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private int valueUpload = 0;
     boolean flagShort = true;
     boolean flagFilter = true;
+    boolean sortby_apply_flag = false;
     private Animation alphaAnimation;
     private ImageView img_upload, img_gallery, img_camera, img_upload_animation;
     private RecyclerView labReportItemView;
@@ -175,6 +178,8 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
     private ArrayList<Image> images = null;
     private int REQUEST_CODE_PICKER = 2002;
     static SharedPreferences preferences;
+    private FilterDataReports responsefilter = null;
+    boolean isApplyFilter = false;
 
     @Override
     public boolean onBackPressed() {
@@ -380,7 +385,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     listPopupWindow4.setOnDismissListener(FragmentLabTestReport.this);
                     listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
                     listPopupWindow4.show();
-                }else{
+                } else {
                     if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
                         checkDialog = "img_user_name";
                         rotatePhoneClockwise(img_user_name);
@@ -537,10 +542,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             }
         }
     };
+
     private void getAllUserList(String cfUuhid) {
         ParseJsonData.getInstance().getUHIDUpdate(cfUuhid);//update selected in local db
         DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -551,6 +558,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                         launchTwitterShort(rootView);
                     }
                 });
+                sortby_apply_flag = true;
                 getLabReportList();
                 break;
 
@@ -589,6 +597,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
                 clickDates = AppPreference.getInstance().getFilterDateReports();
                 clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
+                isApplyFilter = true;
                 getLabReportList();
                 getAllFilterData();
                 break;
@@ -601,8 +610,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
                 txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
-                    showAdpter(filterDataReports.getDateList(), "date");
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (filterDataReports.getDateList() != null && filterDataReports.getDateList().size() > 0) {
+                        showAdpter(filterDataReports.getDateList(), "date");
+                    }
+                } else {
+                    filterbyDate();
                 }
                 break;
             case R.id.txt_filter_doctor:
@@ -614,8 +627,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
                 txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
-                    showAdpter(filterDataReports.getDoctorNameList(), "doctor");
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (filterDataReports.getDoctorNameList() != null && filterDataReports.getDoctorNameList().size() > 0) {
+                        showAdpter(filterDataReports.getDoctorNameList(), "doctor");
+                    }
+                } else {
+                    filterbyDoctor();
                 }
                 break;
             case R.id.txt_filter_disease:
@@ -627,8 +644,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_diease.setTextColor(getResources().getColor(R.color.white));
                 liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
                 txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
-                    showAdpter(filterDataReports.getDiseaseNameList(), "disease");
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (filterDataReports.getDiseaseNameList() != null && filterDataReports.getDiseaseNameList().size() > 0) {
+                        showAdpter(filterDataReports.getDiseaseNameList(), "disease");
+                    }
+                } else {
+                    filterbyTestName();
                 }
                 break;
 
@@ -641,8 +662,12 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
                 txt_uploadby.setTextColor(getResources().getColor(R.color.white));
-                if (filterDataReports.getUploadedByList() != null && filterDataReports.getUploadedByList().size() > 0) {
-                    showAdpter(filterDataReports.getUploadedByList(), "uploadBy");
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (filterDataReports.getUploadedByList() != null && filterDataReports.getUploadedByList().size() > 0) {
+                        showAdpter(filterDataReports.getUploadedByList(), "uploadBy");
+                    }
+                } else {
+                    filterbyUplodedby();
                 }
                 break;
 
@@ -666,9 +691,11 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     liner_filter_date.setBackgroundResource(R.color.health_yellow);
                     liner_filter_disease.setBackgroundResource(R.color.transprent_new);
                     liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                    liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
                     txt_date.setTextColor(getResources().getColor(R.color.white));
                     txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
                     txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
 
                 }
 
@@ -677,18 +704,18 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (isList) {
-                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                            liner_upload_new.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    launchTwitterShort(rootView);
-                                }
-                            });
-                        }
-                    } else {
-                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                    /*if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {*/
+                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                        liner_upload_new.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchTwitterShort(rootView);
+                            }
+                        });
                     }
+                    /*} else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                    }*/
                 }
 
 
@@ -698,18 +725,18 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                 if (isList) {
-                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                        if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                            liner_upload_new.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    launchTwitterFilterBy(rootView);
-                                }
-                            });
-                        }
-                    } else {
-                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                    /*if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {*/
+                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                        liner_upload_new.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                launchTwitterFilterBy(rootView);
+                            }
+                        });
                     }
+                    /*} else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                    }*/
                 }
 
                 break;
@@ -729,7 +756,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             case R.id.liner_upload_new:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         isUploadClick = true;
                         liner_upload_new.post(new Runnable() {
@@ -739,9 +766,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                             }
                         });
                     }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-                }
+
                 break;
             case R.id.liner_camera:
                 if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
@@ -1135,120 +1160,249 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
          MARGIN_RIGHT = 16;
          FAB_BUTTON_RADIUS = 28;
          */
-        if (isOpenUploadNew) {
-            launchTwitter(view);
-        }
-        if (isOpenShortBy) {
-            launchTwitterShort(view);
-        }
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            if (isOpenUploadNew) {
+                launchTwitter(view);
+            }
+            if (isOpenShortBy) {
+                launchTwitterShort(view);
+            }
 
-        int x = realtive_notesFilter.getLeft();
-        int y = realtive_notesFilter.getTop();
-        x -= ((28 * pixelDensity) + (16 * pixelDensity));
-        int hypotenuse = (int) Math.hypot(realtive_notesFilter.getWidth(), realtive_notesFilter.getHeight());
-        try {
-            if (flagFilter) {
-                isOpenFilter = true;
-                if (labReportListViews != null && labReportListViews.size() > 0) {
-                    txt_pre_total.setText("Lab Reports (" + labReportListViews.size() + ")");
-                }
+            int x = realtive_notesFilter.getLeft();
+            int y = realtive_notesFilter.getTop();
+            x -= ((28 * pixelDensity) + (16 * pixelDensity));
+            int hypotenuse = (int) Math.hypot(realtive_notesFilter.getWidth(), realtive_notesFilter.getHeight());
+            try {
+                if (flagFilter) {
+                    isOpenFilter = true;
+                    if (labReportListViews != null && labReportListViews.size() > 0) {
+                        txt_pre_total.setText("Lab Reports (" + labReportListViews.size() + ")");
+                    }
 
-                if (filterDataReports.getDateList() != null) {
-                    liner_filter_date.setBackgroundResource(R.color.health_yellow);
-                    liner_filter_disease.setBackgroundResource(R.color.transprent_new);
-                    liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
-                    txt_date.setTextColor(getResources().getColor(R.color.white));
-                    txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                    txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                    txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
-                    showAdpter(filterDataReports.getDateList(), "date");
-                }
+                    if (filterDataReports.getDateList() != null) {
+                        liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                        liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                        txt_date.setTextColor(getResources().getColor(R.color.white));
+                        txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        showAdpter(filterDataReports.getDateList(), "date");
+                    }
 
 //            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
 //            imageButton.setImageResource(R.drawable.image_cancel);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
-                            revealViewFilter.getLayoutParams();
-                    parameters.height = realtive_notesFilter.getHeight();
-                    revealViewFilter.setLayoutParams(parameters);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                                revealViewFilter.getLayoutParams();
+                        parameters.height = realtive_notesFilter.getHeight();
+                        revealViewFilter.setLayoutParams(parameters);
 
-                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, 0, hypotenuse);
-                    anim.setDuration(700);
+                        Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, 0, hypotenuse);
+                        anim.setDuration(700);
 
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-                            layoutButtonsFilter.setVisibility(View.VISIBLE);
-                        }
+                        anim.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+                                layoutButtonsFilter.setVisibility(View.VISIBLE);
+                            }
 
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
 
-                        }
-                    });
+                            }
+                        });
 
-                    revealViewFilter.setVisibility(View.VISIBLE);
-                    anim.start();
+                        revealViewFilter.setVisibility(View.VISIBLE);
+                        anim.start();
+                    } else {
+                        revealViewFilter.setVisibility(View.VISIBLE);
+                        layoutButtonsFilter.setVisibility(View.VISIBLE);
+                    }
+
+
+                    flagFilter = false;
                 } else {
-                    revealViewFilter.setVisibility(View.VISIBLE);
-                    layoutButtonsFilter.setVisibility(View.VISIBLE);
-                }
-
-
-                flagFilter = false;
-            } else {
-                isOpenFilter = false;
+                    isOpenFilter = false;
 //            imageButton.setBackgroundResource(R.drawable.rounded_button);
 //            imageButton.setImageResource(R.drawable.twitter_logo);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, hypotenuse, 0);
-                    anim.setDuration(400);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, hypotenuse, 0);
+                        anim.setDuration(400);
 
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
+                        anim.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            revealViewFilter.setVisibility(View.GONE);
-                            layoutButtonsFilter.setVisibility(View.GONE);
-                        }
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                revealViewFilter.setVisibility(View.GONE);
+                                layoutButtonsFilter.setVisibility(View.GONE);
+                            }
 
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
 
-                        }
-                    });
+                            }
+                        });
 
-                    anim.start();
-                } else {
-                    revealViewFilter.setVisibility(View.GONE);
-                    layoutButtonsFilter.setVisibility(View.GONE);
+                        anim.start();
+                    } else {
+                        revealViewFilter.setVisibility(View.GONE);
+                        layoutButtonsFilter.setVisibility(View.GONE);
+                    }
+
+                    flagFilter = true;
                 }
+            } catch (Exception e) {
 
-                flagFilter = true;
             }
-        } catch (Exception e) {
+        } else {
+            //local
+
+            if (isOpenUploadNew) {
+                launchTwitter(view);
+            }
+            if (isOpenShortBy) {
+                launchTwitterShort(view);
+            }
+
+            int x = realtive_notesFilter.getLeft();
+            int y = realtive_notesFilter.getTop();
+            x -= ((28 * pixelDensity) + (16 * pixelDensity));
+            int hypotenuse = (int) Math.hypot(realtive_notesFilter.getWidth(), realtive_notesFilter.getHeight());
+            try {
+                if (flagFilter) {
+                    isOpenFilter = true;
+                    if (labReportListViews != null && labReportListViews.size() > 0) {
+                        txt_pre_total.setText("Lab Reports (" + labReportListViews.size() + ")");
+                    }
+                    clickDoctorName = "";
+                    clickDiseaseName = "";
+                    clickUploadBy = "";
+                    clickDates = "";
+                    AppPreference.getInstance().setFilterDateReports("");
+                    AppPreference.getInstance().setFilterDoctorReports("");
+                    AppPreference.getInstance().setFilterDieseReports("");
+
+                    filterbyDate();
+
+                    if (responsefilter.getDateList() != null) {
+                        liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                        liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+                        txt_date.setTextColor(getResources().getColor(R.color.white));
+                        txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        //showAdpter(responsefilter.getDateList(), "date");
+                    }
+
+//            imageButton.setBackgroundResource(R.drawable.rounded_cancel_button);
+//            imageButton.setImageResource(R.drawable.image_cancel);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams)
+                                revealViewFilter.getLayoutParams();
+                        parameters.height = realtive_notesFilter.getHeight();
+                        revealViewFilter.setLayoutParams(parameters);
+
+                        Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, 0, hypotenuse);
+                        anim.setDuration(700);
+
+                        anim.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+                                layoutButtonsFilter.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+
+                        revealViewFilter.setVisibility(View.VISIBLE);
+                        anim.start();
+                    } else {
+                        revealViewFilter.setVisibility(View.VISIBLE);
+                        layoutButtonsFilter.setVisibility(View.VISIBLE);
+                    }
+
+
+                    flagFilter = false;
+                } else {
+                    isOpenFilter = false;
+//            imageButton.setBackgroundResource(R.drawable.rounded_button);
+//            imageButton.setImageResource(R.drawable.twitter_logo);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Animator anim = ViewAnimationUtils.createCircularReveal(revealViewFilter, x, y, hypotenuse, 0);
+                        anim.setDuration(400);
+
+                        anim.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                revealViewFilter.setVisibility(View.GONE);
+                                layoutButtonsFilter.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+
+                        anim.start();
+                    } else {
+                        revealViewFilter.setVisibility(View.GONE);
+                        layoutButtonsFilter.setVisibility(View.GONE);
+                    }
+
+                    flagFilter = true;
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+
 
         }
-
 
     }
 
@@ -1397,7 +1551,10 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                         jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
                     } else {
-                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                       //work offline
+                        LabReportListView imagelist=new LabReportListView();
+                        imagelist.uploadFilelocal(prescriptionDate, doctorName, dieaseName, AppPreference.getInstance().getcf_uuhidNeew(),prescriptionImageListss,prescriptionImageListss.size(),"self");
+                        getLabReportList();
                         dialogLoader.hide();
                     }
 //                    new LongOperation().execute(prescriptionImageListss);
@@ -1536,7 +1693,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                     img_btn_refresh.setVisibility(View.GONE);
                                     labReportItemView.setVisibility(View.VISIBLE);
                                     uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
-                                            labReportListViews);
+                                            labReportListViews, rootView);
                                     labReportItemView.setAdapter(uploadLabTestReportAdpter);
                                     uploadLabTestReportAdpter.notifyDataSetChanged();
                                 } else {
@@ -1560,33 +1717,58 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            isRest = true;
                             dialogLoader.hide();
+                            if (sortby_apply_flag) {
 
-                            String response = DbOperations.getLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
-                            if (!response.equalsIgnoreCase("")) {
-                                labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
-                                isList = true;
-                                labReportListViews = new ArrayList<>();
-                                labReportListViews.addAll(labReportListViewsDummy);
-                                labReportItemView.setVisibility(View.VISIBLE);
-                                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
-                                        labReportListViews);
-                                labReportItemView.setAdapter(uploadLabTestReportAdpter);
-                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                                uploadLabTestReportAdpter.notifyDataSetChanged();
-                                txt_no_prescr.setVisibility(View.GONE);
-                                img_btn_refresh.setVisibility(View.GONE);
-                            }else{
-                                labReportItemView.setVisibility(View.GONE);
-                                txt_no_prescr.setVisibility(View.VISIBLE);
-                                txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                                List<LabReportListView> response = DbOperations.getLabTestReportListALLSort(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew(), clickShortBy);
+
+                                if (response.size() > 0) {
+                                    isList = true;
+                                    labReportListViews = null;
+                                    labReportListViews = new ArrayList<>();
+                                    labReportListViews.addAll(response);
+                                    labReportItemView.setVisibility(View.VISIBLE);
+                                    uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                                            labReportListViews, rootView);
+                                    labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    uploadLabTestReportAdpter.notifyDataSetChanged();
+                                    txt_no_prescr.setVisibility(View.GONE);
+                                    img_btn_refresh.setVisibility(View.GONE);
+                                } else {
+                                    isList = false;
+                                    img_btn_refresh.setVisibility(View.GONE);
+                                    labReportItemView.setVisibility(View.GONE);
+                                    txt_no_prescr.setVisibility(View.VISIBLE);
+                                    txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                                }
+                            } else {
+                                List<LabReportListView> response = DbOperations.getLabTestReportListALL(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+
+                                if (response.size() > 0) {
+                                    isList = true;
+                                    labReportListViews = null;
+                                    labReportListViews = new ArrayList<>();
+                                    labReportListViews.addAll(response);
+                                    labReportItemView.setVisibility(View.VISIBLE);
+                                    uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                                            labReportListViews, rootView);
+                                    labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    uploadLabTestReportAdpter.notifyDataSetChanged();
+                                    txt_no_prescr.setVisibility(View.GONE);
+                                    img_btn_refresh.setVisibility(View.GONE);
+                                } else {
+                                    isList = false;
+                                    img_btn_refresh.setVisibility(View.GONE);
+                                    labReportItemView.setVisibility(View.GONE);
+                                    txt_no_prescr.setVisibility(View.VISIBLE);
+                                    txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                                }
                             }
+                            sortby_apply_flag = false;
+                            isRest = true;
 
-                            /*img_btn_refresh.setVisibility(View.VISIBLE);
-                            txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
-                            labReportItemView.setVisibility(View.GONE);
-                            txt_no_prescr.setVisibility(View.VISIBLE);*/
                             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                             error.printStackTrace();
                         }
@@ -1607,40 +1789,97 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else if (isApplyFilter) {
+            isApplyFilter = false;
+            allfilter();
+
         } else {
-            isRest = true;
-            //labReportItemView.setVisibility(View.GONE);
             //by sourav
-            String response = DbOperations.getLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
-            if (!response.equalsIgnoreCase("")) {
-                labReportListViewsDummy = ParseJsonData.getInstance().getLabTestReportList(response);
-                isList = true;
-                labReportListViews = new ArrayList<>();
-                labReportListViews.addAll(labReportListViewsDummy);
-                labReportItemView.setVisibility(View.VISIBLE);
-                uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
-                        labReportListViews);
-                labReportItemView.setAdapter(uploadLabTestReportAdpter);
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                uploadLabTestReportAdpter.notifyDataSetChanged();
-                txt_no_prescr.setVisibility(View.GONE);
-                img_btn_refresh.setVisibility(View.GONE);
-            }else{
-                labReportItemView.setVisibility(View.GONE);
-                txt_no_prescr.setVisibility(View.VISIBLE);
-                txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+            if (sortby_apply_flag) {
+
+                List<LabReportListView> response = DbOperations.getLabTestReportListALLSort(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew(), clickShortBy);
+
+                if (response.size() > 0) {
+                    isList = true;
+                    labReportListViews = null;
+                    labReportListViews = new ArrayList<>();
+                    labReportListViews.addAll(response);
+                    labReportItemView.setVisibility(View.VISIBLE);
+                    uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                            labReportListViews, rootView);
+                    labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                    uploadLabTestReportAdpter.notifyDataSetChanged();
+                    txt_no_prescr.setVisibility(View.GONE);
+                    img_btn_refresh.setVisibility(View.GONE);
+                } else {
+                    isList = false;
+                    img_btn_refresh.setVisibility(View.GONE);
+                    labReportItemView.setVisibility(View.GONE);
+                    txt_no_prescr.setVisibility(View.VISIBLE);
+                    txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                }
+            } else {
+                List<LabReportListView> response = DbOperations.getLabTestReportListALL(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew());
+
+                if (response.size() > 0) {
+                    isList = true;
+                    labReportListViews = null;
+                    labReportListViews = new ArrayList<>();
+                    labReportListViews.addAll(response);
+                    labReportItemView.setVisibility(View.VISIBLE);
+                    uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                            labReportListViews, rootView);
+                    labReportItemView.setAdapter(uploadLabTestReportAdpter);
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                    uploadLabTestReportAdpter.notifyDataSetChanged();
+                    txt_no_prescr.setVisibility(View.GONE);
+                    img_btn_refresh.setVisibility(View.GONE);
+                } else {
+                    isList = false;
+                    img_btn_refresh.setVisibility(View.GONE);
+                    labReportItemView.setVisibility(View.GONE);
+                    txt_no_prescr.setVisibility(View.VISIBLE);
+                    txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+                }
             }
+            sortby_apply_flag = false;
             isRest = true;
-
-
-            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
-            txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);*/
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         }
 
     }
 
+    private void allfilter() {
+        clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
+        clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
+        clickDates = AppPreference.getInstance().getFilterDateReports();
+        clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
+
+        List<LabReportListView> response = DbOperations.getLabTestReportListAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew(), clickDates, clickDoctorName, clickDiseaseName, clickUploadBy);
+
+        if (response != null) {
+            isList = true;
+            labReportListViews = null;
+            labReportListViews = new ArrayList<>();
+            labReportListViews.addAll(response);
+            labReportItemView.setVisibility(View.VISIBLE);
+            uploadLabTestReportAdpter = new UploadLabTestReportAdpter(FragmentLabTestReport.this, CureFull.getInstanse().getActivityIsntanse(),
+                    labReportListViews, rootView);
+            labReportItemView.setAdapter(uploadLabTestReportAdpter);
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+            uploadLabTestReportAdpter.notifyDataSetChanged();
+            txt_no_prescr.setVisibility(View.GONE);
+            img_btn_refresh.setVisibility(View.GONE);
+        } else {
+            labReportItemView.setVisibility(View.GONE);
+            txt_no_prescr.setVisibility(View.VISIBLE);
+            txt_no_prescr.setText(MyConstants.CustomMessages.NO_REPORT);
+        }
+
+
+        //}
+    }
 
     public void callWebServiceAgain(int offsets) {
         if (isloadMore) {
@@ -1801,7 +2040,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                                         preferences.edit().putBoolean("logout", true).commit();
                                         AppPreference.getInstance().setIsFirstTimeSteps(false);
                                         CureFull.getInstanse().getFlowInstanse().clearBackStack();
-                                        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(getActivity(),FragmentLogin.class));
+                                        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(getActivity(), FragmentLogin.class));
                                        /* CureFull.getInstanse().getFlowInstanse()
                                                 .replace(new FragmentLogin(), false);*/
                                     }
@@ -1839,21 +2078,21 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
 
-                uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
-               if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
-                    for (int i = 0; i < uhiditemslocal.size(); i++) {
-                        if (uhiditemslocal.get(i).isSelected()) {
+            uhiditemslocal = DbOperations.getUHIDListLocal(CureFull.getInstanse().getActivityIsntanse());
+            if (uhiditemslocal != null && uhiditemslocal.size() > 0) {
+                for (int i = 0; i < uhiditemslocal.size(); i++) {
+                    if (uhiditemslocal.get(i).isSelected()) {
 
 
-                            //AppPreference.getInstance().setcf_uuhidNeew(uhidItemses.get(i).getCfUuhid());
+                        //AppPreference.getInstance().setcf_uuhidNeew(uhidItemses.get(i).getCfUuhid());
+                        txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
+                    } else {
+                        if (uhiditemslocal.get(i).isDefaults())
                             txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
-                        } else {
-                            if (uhiditemslocal.get(i).isDefaults())
-                                txt_sort_user_name.setText("" + uhiditemslocal.get(i).getName());
-                        }
                     }
                 }
-                img_btn_refresh.setVisibility(View.GONE);
+            }
+            img_btn_refresh.setVisibility(View.GONE);
 
             getLabReportList();
             getAllFilterData();
@@ -2078,14 +2317,186 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
+            boolean isdatdoc = false;
+            boolean isdatetest = false;//date disease
+            boolean isdoctortest = false;
+            String doublechk = "0";
             CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-            /*txt_no_prescr.setText(MyConstants.CustomMessages.No_INTERNET_USAGE);
-            txt_no_prescr.setVisibility(View.VISIBLE);
-            img_btn_refresh.setVisibility(View.VISIBLE);*/
+            clickDoctorName = AppPreference.getInstance().getFilterDoctorReports();
+            clickDiseaseName = AppPreference.getInstance().getFilterDieseReports();
+            clickDates = AppPreference.getInstance().getFilterDateReports();
+            clickUploadBy = AppPreference.getInstance().getFilterUploadBy();
+            if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
+                isdatdoc = true;
+            }
+            if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
+                isdatetest = true;
+                doublechk = "1";
+            }
+            if (!clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
+                isdoctortest = true;
+                doublechk = "1";
+            }
+
+            if (isdoctortest) {
+                if (!clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
+                    responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "doctortest", clickDates, clickDoctorName, clickDiseaseName);
+
+                    if (responsefilter != null) {
+                        showAdpter(responsefilter.getDateList(), "date");//"doctor""uploadBy"
+
+                        liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
+                        liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                        txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_doctor.setTextColor(getResources().getColor(R.color.white));
+                        txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    }
+                }
+            }
+
+
+            if (isdatetest) {
+                if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
+                    responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "datetest", clickDates, clickDoctorName, clickDiseaseName);
+
+                    if (responsefilter != null) {
+                        showAdpter(responsefilter.getDoctorNameList(), "doctor");//"doctor""uploadBy"
+
+                        liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
+                        liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                        txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_doctor.setTextColor(getResources().getColor(R.color.white));
+                        txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    }
+                }
+            }
+
+            if (isdatdoc) {
+                if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
+                    responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "datedoctor", clickDates, clickDoctorName, clickDiseaseName);
+
+                    if (responsefilter != null) {
+                        showAdpter(responsefilter.getDiseaseNameList(), "disease");//"doctor""uploadBy"
+
+                        liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_disease.setBackgroundResource(R.color.health_yellow);
+                        liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                        liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                        txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        txt_diease.setTextColor(getResources().getColor(R.color.white));
+                        txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                    }
+                }
+            }
+
+            if (doublechk.equalsIgnoreCase("0")) {
+                if (!isdatdoc) {
+                    if (!clickDates.equalsIgnoreCase("")) {
+                        responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "doctor", clickDates, clickDoctorName, clickDiseaseName);
+                        if (responsefilter != null) {
+                            showAdpter(responsefilter.getDoctorNameList(), "doctor");//"doctor""uploadBy"
+
+                            liner_filter_date.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_doctor.setBackgroundResource(R.color.health_yellow);
+                            liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                            txt_date.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_doctor.setTextColor(getResources().getColor(R.color.white));
+                            txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        }
+                    }
+                    if (!clickDoctorName.equalsIgnoreCase("")) {
+                        responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "date", clickDates, clickDoctorName, clickDiseaseName);
+                        if (responsefilter != null) {
+                            showAdpter(responsefilter.getDateList(), "date");
+
+                            liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                            liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                            txt_date.setTextColor(getResources().getColor(R.color.white));
+                            txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        }
+                    }
+
+                    if (!clickDiseaseName.equalsIgnoreCase("")) {
+                        responsefilter = DbOperations.getFilLabTestDateClick(CureFull.getInstanse().getActivityIsntanse(), "disease", clickDates, clickDoctorName, clickDiseaseName);
+                        if (responsefilter != null) {
+                            showAdpter(responsefilter.getDateList(), "date");
+
+                            liner_filter_date.setBackgroundResource(R.color.health_yellow);
+                            liner_filter_disease.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_doctor.setBackgroundResource(R.color.transprent_new);
+                            liner_filter_uploadby.setBackgroundResource(R.color.transprent_new);
+
+                            txt_date.setTextColor(getResources().getColor(R.color.white));
+                            txt_doctor.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_diease.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                            txt_uploadby.setTextColor(getResources().getColor(R.color.health_dark_gray));
+                        }
+
+                    }
+                }
+            }
+            if (isButtonRest) {
+                isButtonRest = false;
+                filterbyDate();
+            }
+
         }
 
     }
 
+    private void filterbyDate() {
+        responsefilter = DbOperations.getFilterDataReports(CureFull.getInstanse().getActivityIsntanse(), "pm.reportDate", AppPreference.getInstance().getcf_uuhidNeew());
+        if (responsefilter != null) {
+            showAdpter(responsefilter.getDateList(), "date");
+
+        }
+    }
+
+    private void filterbyDoctor() {
+        //pm.doctorName,pm.reportDate
+        responsefilter = DbOperations.getFilterDataReports(CureFull.getInstanse().getActivityIsntanse(), "pm.doctorName", AppPreference.getInstance().getcf_uuhidNeew());
+        if (responsefilter != null) {
+            showAdpter(responsefilter.getDoctorNameList(), "doctor");
+
+        }
+    }
+
+    private void filterbyUplodedby() {
+        responsefilter = DbOperations.getFilterDataReports(CureFull.getInstanse().getActivityIsntanse(), "pm.uploadedBy", AppPreference.getInstance().getcf_uuhidNeew());
+
+        if (responsefilter != null) {
+            showAdpter(responsefilter.getUploadedByList(), "uploadBy");
+
+        }
+    }
+
+    private void filterbyTestName() {
+        responsefilter = DbOperations.getFilterDataReports(CureFull.getInstanse().getActivityIsntanse(), "pm.testName", AppPreference.getInstance().getcf_uuhidNeew());
+
+        if (responsefilter != null) {
+            showAdpter(responsefilter.getDiseaseNameList(), "disease");
+        }
+    }
+
+    //filterbyTestName
     public void showAdpter(ArrayList<String> strings, String filterName) {
         if (strings != null && strings.size() > 0) {
             filter_prescription_listAdpter = null;
@@ -2241,8 +2652,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
 
     public void uploadFile(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final List<PrescriptionImageList> imageFile) {
 
-        String imageUploadUrl = null;
-
         BasicSessionCredentials credentials =
                 new BasicSessionCredentials(accessKeyID,
                         secretAccessKey,
@@ -2314,17 +2723,6 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 e.printStackTrace();
             }
 
-
-//        TransferObserver observer = transferUtility.download(
-//                "curefull.storage.test/cure.ehr",
-//                "",
-//                imageFile
-//        );
-
-//        for (Bucket bucket : s3client.listBuckets()) {
-//            Log.e("Bucket list - ", bucket.getName());
-//        }
-//            observer.refresh();
         }
 
     }

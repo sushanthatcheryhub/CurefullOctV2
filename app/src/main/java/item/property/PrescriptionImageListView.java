@@ -7,6 +7,8 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import curefull.healthapp.CureFull;
 import operations.DbOperations;
 import utils.MyConstants;
@@ -43,7 +45,7 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
             setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
             setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
             setPrescriptionImagePartId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEPARTID)));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
     }
@@ -110,15 +112,53 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
     }
 
     public void getInsertingValue(JSONObject jsonobject1, String commonID) {
-try {
-    ContentValues values2 = new ContentValues();
-    values2.put(IMAGE_NUMBER, jsonobject1.getString(IMAGE_NUMBER));
-    values2.put(PRESCRIPTION_IMAGE, jsonobject1.getString(PRESCRIPTION_IMAGE));
-    values2.put(PRESCRIPTION_IMAGEPARTID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
-    values2.put(COMMON_ID, commonID);
-    DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, commonID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
-}catch (Exception e){
+        try {
+            ContentValues values2 = new ContentValues();
+            values2.put(IMAGE_NUMBER, jsonobject1.getString(IMAGE_NUMBER));
+            values2.put(PRESCRIPTION_IMAGE, jsonobject1.getString(PRESCRIPTION_IMAGE));
+            values2.put(PRESCRIPTION_IMAGEPARTID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
+            values2.put(COMMON_ID, commonID);
+            DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, commonID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
+        } catch (Exception e) {
 
-}
+        }
     }
+
+//data from local
+    public void setInsertingValue(List<PrescriptionImageList> imageFile,String commonid) {
+        try {
+
+            for (int ii=0;ii<imageFile.size();ii++) {
+                String imagenum = String.valueOf(imageFile.get(ii).getImageNumber());
+                ContentValues values2 = new ContentValues();
+                values2.put(IMAGE_NUMBER, imagenum);
+                values2.put(PRESCRIPTION_IMAGE, imageFile.get(ii).getPrescriptionImage());
+                values2.put(PRESCRIPTION_IMAGEPARTID, commonid);
+                values2.put(COMMON_ID, commonid);
+                DbOperations.insertPrescriptionResponseListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid,imagenum);
+
+            }
+        } catch (Exception e) {
+
+        }
+    }
+   /* public void setInsertingValueLab(List<PrescriptionImageList> imageFile,String commonid) {
+        try {
+
+            for (int ii=0;ii<imageFile.size();ii++) {
+                String imagenum = String.valueOf(imageFile.get(ii).getImageNumber());
+                ContentValues values2 = new ContentValues();
+                values2.put(IMAGE_NUMBER, imagenum);
+                values2.put("reportImage", imageFile.get(ii).getPrescriptionImage());
+                values2.put("reportImageId", commonid);
+                values2.put(COMMON_ID, commonid);
+                DbOperations.insertLabReportResponseListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid,imagenum);
+
+            }
+        } catch (Exception e) {
+
+        }
+    }*/
+
+
 }

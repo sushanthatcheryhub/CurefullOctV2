@@ -32,7 +32,9 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLabTestSetReminder;
 import interfaces.IOnOtpDoneDelete;
 import item.property.Lab_Test_Reminder_SelfListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
@@ -43,11 +45,12 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
 
     Context applicationContext;
     List<Lab_Test_Reminder_SelfListView> healthNoteItemses;
-
+    View rootView;
     public Reminder_Lab_Self_ListAdpter(Context applicationContexts,
-                                        List<Lab_Test_Reminder_SelfListView> healthNoteItemses) {
+                                        List<Lab_Test_Reminder_SelfListView> healthNoteItemses, View rootView) {
         this.healthNoteItemses = healthNoteItemses;
         this.applicationContext = applicationContexts;
+        this.rootView=rootView;
     }
 
     @Override
@@ -90,12 +93,16 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
         img_editm_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
-                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab test reminder ?", "Lab Test", position);
-                dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Lab_Self_ListAdpter.this);
-                dialogDeleteAll.show();
 
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
+                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab test reminder ?", "Lab Test", position);
+                    dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Lab_Self_ListAdpter.this);
+                    dialogDeleteAll.show();
+                }else{
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                }
             }
         });
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +149,11 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
             getDoctorVisitDelete(healthNoteItemses.get(pos).getLabTestReminderId(), pos, true, false);
+            try {
+                DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getLabTestReminderId(), healthNoteItemses.get(pos).getDoctorName(), "labreminder");
+            }catch (Exception e){
+                e.getMessage();
+            }
         }
     }
 

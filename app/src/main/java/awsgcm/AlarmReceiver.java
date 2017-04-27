@@ -29,6 +29,7 @@ import java.util.Map;
 
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
+import curefull.healthapp.SchedulingService;
 import item.property.StepsCountsStatus;
 import item.property.UserInfo;
 import operations.DbOperations;
@@ -54,8 +55,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String action = intent.getAction();
 
-//        NotificationUtils notificationUtils = new NotificationUtils(context);
-//        notificationUtils.allGetNotfication("sdd", "ds", "123", "sdd");
+       // NotificationUtils notificationUtils = new NotificationUtils(context);
+        // notificationUtils.allGetNotfication("sdd", "ds", "123", "sdd");
 
         if (action.equalsIgnoreCase("steps")) {
             String stepsCount = "" + preferences.getInt("stepsIn", 0);
@@ -98,6 +99,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 
         } else if (action.equalsIgnoreCase("stepsService")) {
+            Intent background1 = new Intent(context, SchedulingService.class);
+            context.startService(background1);
             if (isMyServiceRunning(context, MessengerService.class)) {
             } else {
                 Intent background = new Intent(context, MessengerService.class);
@@ -107,12 +110,43 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             String id = intent.getExtras().getString("perDayDosageDetailsId");
             String type = intent.getExtras().getString("type");
             if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                jsonUploadLabTest(context, id, action);
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    jsonUploadLabTest(context, id, action);
+                }else{
+                    ContentValues cv=new ContentValues();
+                    cv.put("labTestReminderId",id);
+                    cv.put("labTestStatus",action);
+                    DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,id);
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    }catch (Exception e){
+                        manager.cancel(Integer.parseInt(id));
+                    }
+                }
             } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                jsonUploadDoctorVist(context, id, action);
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    jsonUploadDoctorVist(context, id, action);
+                }else{
+                    ContentValues cv=new ContentValues();
+                    cv.put("doctorFollowupReminderId",id);
+                    cv.put("status",action);
+                    DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,id);
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    }catch (Exception e){
+                        manager.cancel(Integer.parseInt(id));
+                    }
+                }
             } else {
-                jsonUploadMedicine(context, id, action);
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    jsonUploadMedicine(context, id, action);
+                }else{
+
+                }
             }
+
         }
 
 

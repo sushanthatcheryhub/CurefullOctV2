@@ -101,8 +101,8 @@
     <string name="lines_of_message_count">LinesOfMessageCount</string>
     <string name="preferences">PreferencesFile</string>
     <string name="notification_number">1337</string>
-    <!--<string name="project_number">1079942567480</string>-->
-    <string name="project_number">753846434644</string>
+    <string name="project_number">1079942567480</string>
+    <!--<string name="project_number">753846434644</string>-->
 
 
 

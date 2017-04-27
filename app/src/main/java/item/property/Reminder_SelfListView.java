@@ -1,5 +1,7 @@
 package item.property;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -7,6 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import curefull.healthapp.CureFull;
+import operations.DbOperations;
+import utils.AppPreference;
+
+import static utils.MyConstants.JsonUtils.COMMON_ID;
+import static utils.MyConstants.JsonUtils.DOCTOR_NAME;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
@@ -29,6 +38,109 @@ public class Reminder_SelfListView implements Parcelable {
     private String type;
     private String status;
     private ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePers;
+    private String common_id;
+    private String isUploaded;
+    private String cfuuhId;
+    private String currentdate;
+    private String edit;
+
+    public String getCfuuhId() {
+        return cfuuhId;
+    }
+
+    public void setCfuuhId(String cfuuhId) {
+
+        this.cfuuhId = cfuuhId;
+    }
+
+    public String getCommon_id() {
+        return common_id;
+    }
+
+    public String getIsUploaded() {
+        return isUploaded;
+    }
+
+    public void setCommon_id(String common_id) {
+        this.common_id = common_id;
+    }
+
+    public void setIsUploaded(String isUploaded) {
+        this.isUploaded = isUploaded;
+    }
+
+    public String getCurrentDate() {
+        return currentdate;
+    }
+
+    public void setCurrentDate(String currentdate) {
+
+        this.currentdate = currentdate;
+    }
+    public void setEdit(String edit) {
+
+        this.edit = edit;
+    }
+    public String getEdit() {
+        return edit;
+    }
+    public Reminder_SelfListView(Cursor cur) {
+        if (cur == null) {
+            return;
+        }
+        try {
+
+            setRemMedicineName(cur.getString(cur.getColumnIndex("medicineName")));
+            setDoctorName(cur.getString(cur.getColumnIndex("doctorName")));
+            setQuantity(cur.getInt(cur.getColumnIndex("quantity")));
+            setNoOfDays(cur.getInt(cur.getColumnIndex("noOfDays")));
+            setInterval(cur.getInt(cur.getColumnIndex("interval")));
+            setNoOfDosage(cur.getInt(cur.getColumnIndex("noOfDosage")));
+            setType(cur.getString(cur.getColumnIndex("type")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setNoOfDaysInWeek(cur.getString(cur.getColumnIndex("noOfDaysInWeek")));
+            setMedicineReminderId(cur.getString(cur.getColumnIndex("medicineReminderId")));
+            if (cur.getInt(cur.getColumnIndex("beforeMeal")) == 1) {
+                setBeforeMeal(true);
+            } else {
+                setBeforeMeal(false);
+            }
+
+            if (cur.getInt(cur.getColumnIndex("afterMeal")) == 1) {
+                setAfterMeal(true);
+            } else {
+                setAfterMeal(false);
+            }
+            setYear(cur.getInt(cur.getColumnIndex("year")));
+            setDate(cur.getInt(cur.getColumnIndex("dayOfMonth")));
+            setMonth(cur.getInt(cur.getColumnIndex("monthValue")));
+
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setCfuuhId(cur.getString(cur.getColumnIndex("cfuuhId")));
+            setCommonID(cur.getString(cur.getColumnIndex("common_id")));
+            setCurrentDate(cur.getString(cur.getColumnIndex("currentdate")));
+            setEdit(cur.getString(cur.getColumnIndex("edit")));
+           // setReminderMedicnceTimes(jsonObject.getJSONArray("dosagePerDateResponse")));
+            reminderMedicnceDoagePers= DbOperations.setReminderMedicineDosageLocal(CureFull.getInstanse().getActivityIsntanse(),cur.getString(cur.getColumnIndex(COMMON_ID)),cur.getString(cur.getColumnIndex("currentdate")));
+
+
+
+
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    public String getCommonID() {
+        return common_id;
+    }
+
+    public void setCommonID(String common_id) {
+
+        this.common_id = common_id;
+    }
 
     public Reminder_SelfListView() {
 
@@ -46,6 +158,7 @@ public class Reminder_SelfListView implements Parcelable {
             setNoOfDosage(jsonObject.getInt("noOfDosage"));
             setType(jsonObject.getString("type"));
             setStatus(jsonObject.getString("status"));
+
             setNoOfDaysInWeek(jsonObject.getString("noOfDaysInWeek"));
             setMedicineReminderId(jsonObject.getString("medicineReminderId"));
             setBeforeMeal(jsonObject.getBoolean("beforeMeal"));
@@ -55,6 +168,7 @@ public class Reminder_SelfListView implements Parcelable {
             setYear(jsonObject3.getInt("year"));
             setDate(jsonObject3.getInt("dayOfMonth"));
             setMonth(jsonObject3.getInt("monthValue"));
+            setCurrentDate(jsonObject.getString("date"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,6 +321,23 @@ public class Reminder_SelfListView implements Parcelable {
         }
     }
 
+
+    public void setReminderMedicnceTimesLocal(JSONArray symptomslistArray, String commonID) {
+        if (symptomslistArray == null)
+            return;
+        ReminderMedicnceDoagePer card = null;
+        this.reminderMedicnceDoagePers = new ArrayList<ReminderMedicnceDoagePer>();
+        for (int i = 0; i < symptomslistArray.length(); i++) {
+            try {
+                card = new ReminderMedicnceDoagePer(symptomslistArray.getJSONObject(i));
+                this.reminderMedicnceDoagePers.add(card);
+                card.getInsertingValue(symptomslistArray.getJSONObject(i), commonID, i);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -228,4 +359,57 @@ public class Reminder_SelfListView implements Parcelable {
             return new Reminder_SelfListView[size];
         }
     };
+
+    public void getInsertingValue(JSONObject jsonObject) {
+        try {
+            ContentValues values = new ContentValues();
+            values.put("medicineName", jsonObject.getString("medicineName"));
+            values.put("doctorName", jsonObject.getString("doctorName"));
+            values.put("quantity", jsonObject.getInt("quantity"));
+            values.put("noOfDays", jsonObject.getInt("noOfDays"));
+//
+            values.put("interval", jsonObject.getInt("interval"));
+            values.put("noOfDosage", jsonObject.getInt("noOfDosage"));
+            values.put("type", jsonObject.getString("type"));
+            values.put("status", jsonObject.getString("status"));
+
+            values.put("noOfDaysInWeek", jsonObject.getString("noOfDaysInWeek"));
+            values.put("medicineReminderId", jsonObject.getString("medicineReminderId"));
+            // values.put("beforeMeal", jsonObject.getString("beforeMeal"));//getInt
+            //values.put("afterMeal", jsonObject.getString("afterMeal"));//getInt
+            if (jsonObject.getBoolean("beforeMeal")) {
+                values.put("beforeMeal", 1);
+            } else {
+                values.put("beforeMeal", 0);
+            }
+            if (jsonObject.getBoolean("afterMeal")) {
+                values.put("afterMeal", 1);
+            } else {
+                values.put("afterMeal", 0);
+            }
+            //values.put("dosagePerDateResponse", jsonObject.getString("dosagePerDateResponse"));
+
+            JSONObject jsonObject3 = new JSONObject(jsonObject.getString("dateOfMedicineTake"));
+            values.put("year", jsonObject3.getInt("year"));
+            values.put("dayOfMonth", jsonObject3.getInt("dayOfMonth"));
+            values.put("monthValue", jsonObject3.getInt("monthValue"));
+
+            values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+            values.put("isUploaded", "0");//card.getInsertingValue(symptomslistArray.getJSONObject(i));
+            values.put("currentdate", jsonObject.getString("date"));
+            values.put("edit", "0");
+            setCommonID(jsonObject.getString("medicineReminderId"));
+            values.put(COMMON_ID, getCommonID());
+
+            DbOperations.insertMedicineRemiderReport(CureFull.getInstanse().getActivityIsntanse(), values, jsonObject.getString("medicineReminderId"),jsonObject.getString("date"));
+
+            setReminderMedicnceTimesLocal(jsonObject.getJSONArray("dosagePerDateResponse"), getCommonID());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+
+    }
 }

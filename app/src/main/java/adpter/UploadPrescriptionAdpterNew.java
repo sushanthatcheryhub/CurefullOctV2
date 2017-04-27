@@ -57,7 +57,9 @@ import fragment.healthapp.FragmentPrescriptionImageFullView;
 import fragment.healthapp.FragmentPrescriptionImageView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.PrescriptionListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -74,12 +76,13 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     ArrayList<Uri> files = null;
     int size = 1;
     int pos;
-
+    private View rootView;
     public UploadPrescriptionAdpterNew(FragmentPrescriptionCheckNew fragmentPrescriptionCheck, Context applicationContexts,
-                                       List<PrescriptionListView> prescriptionListViews) {
+                                       List<PrescriptionListView> prescriptionListViews,View rootView) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.prescriptionCheck = fragmentPrescriptionCheck;
+        this.rootView=rootView;
     }
 
     @Override
@@ -130,6 +133,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
             if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews() != null && prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
 
                 Collections.sort(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews());
+
                 Glide.with(applicationContext).load(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(0).getPrescriptionImage())
                         .thumbnail(0.1f)
                         .crossFade()
@@ -162,38 +166,45 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
-                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
-                dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
-                dialogDeleteAll.show();
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
+                    dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
+                    dialogDeleteAll.show();
+                }else{
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                }
             }
         });
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                size = 1;
-                if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
-                    files = new ArrayList<Uri>();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
-                    pos = position;
-                    for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size(); i++) {
-                        if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
-                            new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
+                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    size = 1;
+                    if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
+                        files = new ArrayList<Uri>();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                            ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
+                        pos = position;
+                        for (int i = 0; i < prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size(); i++) {
+                            if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
+                                new LongOperation().execute(prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage());
 
-                        } else {
-                            files.add(Uri.fromFile(new File("" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage())));
-                            if (size == prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size()) {
-                                prepareShareIntent(files);
+                            } else {
+                                files.add(Uri.fromFile(new File("" + prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().get(i).getPrescriptionImage())));
+                                if (size == prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size()) {
+                                    prepareShareIntent(files);
+                                }
+                                size += 1;
                             }
-                            size += 1;
                         }
+
                     }
-
+                }else{
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                 }
-
 
 //                shareClick(prescriptionListViews.get(position).getPrescriptionImageListViews());
             }
@@ -257,6 +268,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
+            DbOperations.clearLabDataFromLocal(prescriptionListViews.get(pos).getPrescriptionId(),prescriptionListViews.get(pos).getDoctorName(),"pres");
             getPrescriptionDelete(prescriptionListViews.get(pos).getPrescriptionId(), prescriptionListViews.get(pos).getDoctorName(), pos);
         }
 

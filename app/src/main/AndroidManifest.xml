@@ -17,11 +17,11 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
-    <uses-permission android:name="com.curefull.permission.C2D_MESSAGE" />
+    <uses-permission android:name="curefull.healthapp.permission.C2D_MESSAGE" />
 
 
     <permission
-        android:name="com.curefull.permission.C2D_MESSAGE"
+        android:name="curefull.healthapp.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -144,7 +144,7 @@
         <activity
             android:name=".PopupActivity"
             android:theme="@style/TranslucentActivity" />
-
+        <service android:name="curefull.healthapp.SchedulingService" android:enabled="true"/>
 
         <receiver android:name=".BootCompleteReceiver">
             <intent-filter>
@@ -230,8 +230,8 @@
             android:name="awsgcm.MessageReceivingService"
             android:label="awsgcm.MessageReceivingService">
             <intent-filter>
-                <action android:name="com.curefull.ExternalReceiver" />
-                <category android:name="com.curefull" />
+                <action android:name="curefull.healthapp.ExternalReceiver" />
+                <category android:name="curefull.healthapp" />
             </intent-filter>
         </service>
 
@@ -243,7 +243,7 @@
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <action android:name="com.google.android.c2dm.intent.REGISTER" />
 
-                <category android:name="com.curefull" />
+                <category android:name="curefull.healthapp" />
             </intent-filter>
         </receiver>
 

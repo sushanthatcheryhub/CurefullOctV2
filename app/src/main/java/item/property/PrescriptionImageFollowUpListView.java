@@ -27,7 +27,7 @@ public class PrescriptionImageFollowUpListView implements Parcelable, MyConstant
     private String prescriptionDate;
     private String countOfFiles;
     private ArrayList<PrescriptionImageListView> prescriptionImageListViews;
-
+    private List<PrescriptionImageList> imageFile;
     public PrescriptionImageFollowUpListView() {
 
     }
@@ -179,6 +179,55 @@ public class PrescriptionImageFollowUpListView implements Parcelable, MyConstant
         }catch (Exception e){
 
         }
+
+    }
+
+    //generate from local
+    /*public void setInsertingValue(String countoffilis,String prescriptionDate,String prescriptonImageFollowupId,String commonid,List<PrescriptionImageList> imageFile) {
+        try {
+
+
+
+                ContentValues values2 = new ContentValues();
+                values2.put(COUNT_OF_FILES, countoffilis);
+                values2.put(PRESCRIPTION_DATE, prescriptionDate);
+                values2.put(PRESCRIPTION_IMAGEFOLLOWUP_ID, prescriptonImageFollowupId);
+                values2.put(COMMON_ID, commonid);
+
+
+                DbOperations.insertPrescriptionFollowUPListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid);
+
+                PrescriptionImageListView imagelist=new PrescriptionImageListView();
+                imagelist.setInsertingValue(imageFile,commonid);
+
+
+        } catch (Exception e) {
+
+        }
+    }
+*/
+
+    public void setPrescriptionImageListViews(List<PrescriptionImageList> imageFile) {
+        this.imageFile=imageFile;
+    }
+
+    public List<PrescriptionImageList>  getPrescriptionImageList()
+    {
+        return imageFile;
+    }
+    public void setInsertingValue(ArrayList<PrescriptionImageFollowUpListView> followup) {
+
+        ContentValues values2 = new ContentValues();
+        values2.put(COUNT_OF_FILES, followup.get(0).getCountOfFiles());
+        values2.put(PRESCRIPTION_DATE,followup.get(0).getPrescriptionDate());
+        values2.put(PRESCRIPTION_IMAGEFOLLOWUP_ID, followup.get(0).getPrescriptonImageFollowupId());
+        values2.put(COMMON_ID, followup.get(0).getPrescriptonImageFollowupId());
+
+
+        DbOperations.insertPrescriptionFollowUPListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, followup.get(0).getPrescriptonImageFollowupId());
+
+        PrescriptionImageListView imagelist=new PrescriptionImageListView();
+        imagelist.setInsertingValue(imageFile,followup.get(0).getPrescriptonImageFollowupId());
 
     }
 }

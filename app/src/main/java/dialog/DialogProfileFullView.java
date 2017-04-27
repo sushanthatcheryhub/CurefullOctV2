@@ -47,7 +47,7 @@ public class DialogProfileFullView extends Dialog {
                 .priority(Priority.HIGH)
                 .dontAnimate()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(img_full_view);
 
     }

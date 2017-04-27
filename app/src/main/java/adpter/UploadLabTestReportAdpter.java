@@ -56,7 +56,9 @@ import fragment.healthapp.FragmentLabReportImageView;
 import fragment.healthapp.FragmentLabTestReport;
 import interfaces.IOnOtpDoneDelete;
 import item.property.LabReportListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -73,12 +75,14 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     ArrayList<Uri> files = null;
     int size = 1;
     int pos;
+    private View rootView;
 
     public UploadLabTestReportAdpter(FragmentLabTestReport fragmentLabTestReport, Context applicationContexts,
-                                     List<LabReportListView> labReportListViews) {
+                                     List<LabReportListView> labReportListViews, View rootView) {
         this.labReportListViews = labReportListViews;
         this.applicationContext = applicationContexts;
         this.fragmentLabTestReports = fragmentLabTestReport;
+        this.rootView = rootView;
     }
 
     @Override
@@ -159,38 +163,45 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
-                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
-                dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
-                dialogDeleteAll.show();
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
+                    dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
+                    dialogDeleteAll.show();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                }
             }
         });
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-                if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
-                    files = new ArrayList<Uri>();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
-                    pos = position;
-                    for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
-                        if (labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
-                            new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
-                        } else {
-                            files.add(Uri.fromFile(new File("" + labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage())));
-                            if (size == labReportListViews.get(pos).getLabReportImageListViews().size()) {
-                                prepareShareIntent(files);
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+                    if (labReportListViews.get(position).getLabReportImageListViews().size() > 0) {
+                        files = new ArrayList<Uri>();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                            ElasticAction.doAction(img_share, 400, 0.9f, 0.9f);
+                        pos = position;
+                        for (int i = 0; i < labReportListViews.get(position).getLabReportImageListViews().size(); i++) {
+                            if (labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage().contains("https://s3.ap-south-1.amazonaws.com/")) {
+                                new LongOperation().execute(labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage());
+                            } else {
+                                files.add(Uri.fromFile(new File("" + labReportListViews.get(position).getLabReportImageListViews().get(i).getReportImage())));
+                                if (size == labReportListViews.get(pos).getLabReportImageListViews().size()) {
+                                    prepareShareIntent(files);
+                                }
+                                size += 1;
                             }
-                            size += 1;
+
+
                         }
 
-
                     }
-
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                 }
-
             }
         });
 
@@ -236,7 +247,9 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
+            DbOperations.clearLabDataFromLocal(labReportListViews.get(pos).getReportId(),labReportListViews.get(pos).getDoctorName(),"labreport");
             getPrescriptionDelete(labReportListViews.get(pos).getReportId(), labReportListViews.get(pos).getDoctorName(), pos);
+
         }
     }
 
