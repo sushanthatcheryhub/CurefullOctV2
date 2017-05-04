@@ -1,7 +1,9 @@
 package item.property;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -12,8 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
+import operations.DatabaseHelper;
 import operations.DbOperations;
+import utils.CheckNetworkState;
 import utils.MyConstants;
+
+import static utils.MyConstants.IDataBaseTableKeys.TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE;
 
 /**
  * Simple container object for contact data
@@ -27,6 +33,17 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
     private int hour;
     private int minute;
     private String common_id;
+   // private String sr_id;
+    private String dosagePerDayDetailsId;
+
+    public String getDosagePerDayDetailsId() {
+        return dosagePerDayDetailsId;
+    }
+
+    public void setDosagePerDayDetailsId(String dosagePerDayDetailsId) {
+
+        this.dosagePerDayDetailsId = dosagePerDayDetailsId;
+    }
 
     public ReminderMedicnceTime(JSONObject jsonObject) {
         try {
@@ -37,6 +54,7 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
 
     }
 
@@ -53,6 +71,14 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
         this.common_id = common_id;
     }
 
+ /*   public void setSr_id(String sr_id) {
+        this.sr_id = sr_id;
+    }
+
+    public String getSr_id() {
+        return sr_id;
+    }*/
+
     public ReminderMedicnceTime(Cursor cursorprivate2) {
         if(cursorprivate2==null){
         return;
@@ -62,6 +88,8 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
             setHour(cursorprivate2.getInt(cursorprivate2.getColumnIndex("hour")));
             setMinute(cursorprivate2.getInt(cursorprivate2.getColumnIndex("minute")));
             setCommon_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("common_id")));
+           //  setSr_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")));
+            setDosagePerDayDetailsId(cursorprivate2.getString(cursorprivate2.getColumnIndex("dosagePerDayDetailsId")));//
         }catch (Exception e){
 
         }
@@ -130,31 +158,58 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
             values.put("hour",jsonObject1.getInt("hour"));
             values.put("minute",jsonObject1.getInt("minute"));
             values.put("common_id",commonID);
-            values.put("data_id",i);
-            DbOperations.insertMedicineRemiderAlarmDetailResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID,i);
+            values.put("data_id",i);//
+            values.put("dosagePerDayDetailsId",jsonObject1.getString("dosagePerDayDetailsId"));
+            DbOperations.insertMedicineRemiderAlarmDetailResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID,i,jsonObject1.getString("dosagePerDayDetailsId"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void setInsertingValueLab(String newTime, String commonid) {
+    public void setInsertingValueLab(String newTime, String commonid,String dosagePerDayDetailsId,int data_id,String hour,String minute) {
 
-        String[] newTimesplit=newTime.split(",");
-
-
-        for (int i=0;i<newTimesplit.length;i++) {
-            String[] time=newTimesplit[i].split(":");
-            String hour=time[0];
-            String minute=time[1];
             ContentValues values = new ContentValues();
             values.put("status", "pending");
             values.put("hour",hour);
             values.put("minute",minute);
             values.put("common_id",commonid);
-            values.put("data_id",i);
-            DbOperations.insertMedicineRemiderAlaramDetailResponseLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid,i);
+            values.put("data_id",data_id);
+            values.put("dosagePerDayDetailsId",dosagePerDayDetailsId);
+            DbOperations.insertMedicineRemiderAlaramDetailResponseLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid,data_id,dosagePerDayDetailsId);
 
-        }
     }
+
+    public void setInsertingValueNotification(String newTime, String commonid,String status,Context context,String sr_id) {
+        String[] time=newTime.split(":");
+        String hour=time[0];
+        String minute=time[1];
+
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        Cursor cursor;
+
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+        }catch (Exception e){
+            e.getMessage();
+        }
+        String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " where common_id='" + commonid + "' and hour='"+hour+"' and minute='"+minute+"' and dosagePerDayDetailsId='"+sr_id+"'";
+        cursor = database.rawQuery(query, null);
+            if(cursor.getCount()>0) {
+                ContentValues values = new ContentValues();
+                values.put("status", status);
+                values.put("hour", hour);
+                values.put("minute", minute);
+                values.put("common_id", commonid);
+                values.put("dosagePerDayDetailsId",sr_id);
+                DbOperations.insertMedicineRemiderAlaramDetailResponseLocalNotification(CureFull.getInstanse().getActivityIsntanse(), values, commonid, hour,minute,sr_id);
+            }
+
+    }
+
 }

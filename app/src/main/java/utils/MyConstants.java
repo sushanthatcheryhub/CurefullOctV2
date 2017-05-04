@@ -257,12 +257,15 @@ public class MyConstants {
 
         String TABLE_LAB_REMINDER = "tbl_lab_reminder";
         String TABLE_LAB_REMINDER_SELF = "tbl_lab_reminder_self";
+        String TABLE_LAB_REMINDER_DOCTOR = "tbl_lab_reminder_doctor";
         String TABLE_DOCTOR_REMINDER_SELF = "tbl_doctor_reminder_self";
+        String TABLE_DOCTOR_REMINDER_CUREFULL = "tbl_doctor_reminder_curefull";
         String TABLE_MEDICINE_REMINDER_SELF = "tbl_medicine_reminder_self";
         String TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE = "tbl_medicine_reminder_self_dosageperDateResponse";
         String TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE = "tbl_medicine_reminder_self_alarmdetailresponse";
         //
         String TABLE_LAB_REMINDER_DOCTOR_NAME = "tbl_lab_reminder_doctor";
+        String TABLE_DOCTOR_NAME = "tbl_doctor_name";
     }
 
 

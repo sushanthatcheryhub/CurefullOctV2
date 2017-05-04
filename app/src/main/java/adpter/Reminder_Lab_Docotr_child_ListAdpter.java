@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
 import item.property.LabTestReminderDoctorName;
+import item.property.Lab_Test_Reminder_DoctorListView;
 import item.property.ReminderDoctorName;
 
 /**
@@ -28,6 +31,7 @@ public class Reminder_Lab_Docotr_child_ListAdpter extends RecyclerView.Adapter<R
         this.healthNoteItemses = healthNoteItemses;
         this.applicationContext = applicationContexts;
     }
+
 
     @Override
     public int getItemCount() {

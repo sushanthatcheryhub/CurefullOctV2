@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
@@ -131,9 +132,21 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
                 if (checkBox.isChecked()) {
                     Log.e("check", ":- isChecked");
                     getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, true);
+                    ContentValues cv = new ContentValues();
+                    cv.put("doctorFollowupReminderId", healthNoteItemses.get(position).getDoctorFollowupReminderId());
+                    cv.put("status", "activate");
+                    cv.put("isUploaded","1");
+                    DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getDoctorFollowupReminderId());
+
                 } else {
                     getDoctorVisitDelete(healthNoteItemses.get(position).getDoctorFollowupReminderId(), position, false, false);
                     Log.e("check", ":- not");
+
+                    ContentValues cv = new ContentValues();
+                    cv.put("doctorFollowupReminderId", healthNoteItemses.get(position).getDoctorFollowupReminderId());
+                    cv.put("status", "deactivate");
+                    cv.put("isUploaded","1");
+                    DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getDoctorFollowupReminderId());
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
 

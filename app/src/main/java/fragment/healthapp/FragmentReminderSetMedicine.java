@@ -62,6 +62,7 @@ import customsTextViews.CustomTextViewOpenSanRegular;
 import item.property.LabReportImageListView;
 import item.property.MedicineReminderItem;
 import item.property.ReminderMedicnceDoagePer;
+import item.property.ReminderMedicnceTime;
 import operations.DbOperations;
 import toggle.button.MultiSelectToggleGroup;
 import toggle.button.ToggleButtonGroup;
@@ -98,6 +99,8 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
     private ImageView img_rotate;
     private ScrollView scrollView;
     private String commonid;
+    private String dosagePerDayDetailsId1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -273,8 +276,11 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
                 }
                 multiSelect.setCheckedPositions(singlesSet);
             }
-
-
+            try {
+                dosagePerDayDetailsId1 = vBundle.getString("dosagePerDayDetailsId");
+            } catch (Exception e) {
+                e.getMessage();
+            }
         } else {
             setReminderMediceList();
         }
@@ -372,12 +378,12 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
                     if (btnClick) {
                         btnClick = false;
-                        /*if (isEdit) {
-                            setMedReminderDetailsEdit();
+                        if (isEdit) {
+                            setMedReminderDetailsEditLocal();
                         } else {
-*/
+
                             setMedReminderDetailsLocal();
-                        //}
+                        }
                     }
                     //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
@@ -411,6 +417,147 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
 
 
         }
+    }
+
+    private void setMedReminderDetailsEditLocal() {
+        for (int i = 0; i < listCurrent.size(); i++) {
+            if (listCurrent.get(i).getType().equalsIgnoreCase("")) {
+                btnClick = true;
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Type");
+                return;
+            } else if (listCurrent.get(i).getDoctorName().equalsIgnoreCase("")) {
+                btnClick = true;
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Doctor Name");
+                return;
+            } else if (listCurrent.get(i).getMedicineName().equalsIgnoreCase("")) {
+                btnClick = true;
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Fill Medicine Name");
+                return;
+            } else if (listCurrent.get(i).getInterval() == 0) {
+                btnClick = true;
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Quantity");
+                return;
+            } else if (listCurrent.get(i).isBaMealBefore() == false && listCurrent.get(i).isBaMealAfter() == false) {
+                btnClick = true;
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please Select Meal");
+                return;
+            }
+        }
+        if (!validateDate()) {
+            btnClick = true;
+            return;
+        }
+        if (!validateDuration()) {
+            btnClick = true;
+            return;
+        }
+        if (!validateDays()) {
+            btnClick = true;
+            return;
+        }
+        if (!validateDoages()) {
+            btnClick = true;
+            return;
+        }
+        String newTime = "";
+        String hello = "";
+
+        for (int i = 0; i < view_text_page.length; i++) {
+            hello = "" + view_text_page[i].getText();
+            if (i == (view_text_page.length - 1)) {
+                newTime += get24hrsFormat(hello.substring(0, hello.length() - 1));
+            } else {
+                if (hello.endsWith(" am | ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
+                } else if (hello.endsWith(" pm | ")) {
+                    newTime += get24hrsFormat(hello.substring(0, hello.length() - 2)) + ",";
+                }
+            }
+
+        }
+
+        String[] datee = startFrom.split("-");
+        String dayy = datee[2];
+        String monthh = datee[1];
+        String yearr = datee[0];
+
+        for (int i = 0; i < listCurrent.size(); i++) {
+            commonid = String.valueOf(System.currentTimeMillis());
+            int days = Integer.parseInt(duration);
+            String date = startFrom;
+
+
+            ContentValues values = new ContentValues();
+
+
+            values.put("medicineName", listCurrent.get(i).getMedicineName());
+            values.put("doctorName", listCurrent.get(i).getDoctorName());
+            values.put("quantity", listCurrent.get(i).getInterval());
+            values.put("noOfDays", duration);
+            values.put("interval", interval);
+            values.put("noOfDosage", doages);
+            values.put("type", listCurrent.get(i).getType());
+            values.put("status", "pending");///doubt
+            values.put("noOfDaysInWeek", addDays);
+            if (isEdit) {
+
+                commonid = medicineReminderId;
+                values.put("medicineReminderId", commonid);
+                values.put("edit", "1");
+            } else {
+                values.put("medicineReminderId", commonid);
+                values.put("edit", "0");
+            }
+
+
+            if (listCurrent.get(i).isBaMealAfter() == true) {
+                values.put("afterMeal", 1);
+            } else {
+                values.put("afterMeal", 0);
+            }
+            if (listCurrent.get(i).isBaMealBefore() == true) {
+                values.put("beforeMeal", 1);
+            } else {
+                values.put("beforeMeal", 0);
+            }
+            values.put("dayOfMonth", dayy);
+            values.put("monthValue", monthh);
+            values.put("year", yearr);
+            values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+            values.put("isUploaded", "1");
+            values.put("common_id", commonid);
+
+            values.put("currentdate", date);//current date ya any other date confusion //Utils.getTodayDate()
+
+            DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid, date);
+
+            String dosagePerDayDetailsId;
+            if (isEdit) {
+                isEdit = false;
+                dosagePerDayDetailsId = dosagePerDayDetailsId1;//dosagePerDayDetailsId
+
+            } else {
+                dosagePerDayDetailsId = String.valueOf(System.currentTimeMillis());//dosagePerDayDetailsId
+            }
+            ReminderMedicnceDoagePer imageListView = new ReminderMedicnceDoagePer();
+            imageListView.setInsertingValueLab(newTime, commonid, i, date, duration, dosagePerDayDetailsId);
+            date = Utils.getNextDate(startFrom);//for next date
+
+
+            String[] newTimesplit = newTime.split(",");
+            for (int i2 = 0; i2 < newTimesplit.length; i2++) {
+                String[] time = newTimesplit[i2].split(":");
+                String hour = time[0];
+                String minute = time[1];
+                ReminderMedicnceTime reminder_medicine_time = new ReminderMedicnceTime();
+                reminder_medicine_time.setInsertingValueLab(newTime, commonid, dosagePerDayDetailsId, i2, hour, minute);
+            }
+
+
+        }
+        CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+
+
     }
 
     private void setMedReminderDetailsLocal() {
@@ -477,51 +624,78 @@ public class FragmentReminderSetMedicine extends Fragment implements View.OnClic
         String yearr = datee[0];
 
         for (int i = 0; i < listCurrent.size(); i++) {
-            ContentValues values = new ContentValues();
-
             commonid = String.valueOf(System.currentTimeMillis());
-            values.put("medicineName", listCurrent.get(i).getMedicineName());
-            values.put("doctorName", listCurrent.get(i).getDoctorName());
-            values.put("quantity", listCurrent.get(i).getInterval());
-            values.put("noOfDays", duration);
-            values.put("interval", interval);
-            values.put("noOfDosage", doages);
-            values.put("type",listCurrent.get(i).getType());
-            values.put("status","pending");///doubt
-            values.put("noOfDaysInWeek", addDays);
-            if (isEdit) {
-                isEdit=false;
-                commonid=medicineReminderId;
-                values.put("medicineReminderId", commonid);
-                values.put("edit", "1");
-            }else{
-                values.put("medicineReminderId", commonid);
-                values.put("edit", "0");
+            int days = Integer.parseInt(duration);
+            String date = startFrom;
+
+            for (int i1 = 0; i1 < days; i1++) {
+                ContentValues values = new ContentValues();
+
+
+                values.put("medicineName", listCurrent.get(i).getMedicineName());
+                values.put("doctorName", listCurrent.get(i).getDoctorName());
+                values.put("quantity", listCurrent.get(i).getInterval());
+                values.put("noOfDays", duration);
+                values.put("interval", interval);
+                values.put("noOfDosage", doages);
+                values.put("type", listCurrent.get(i).getType());
+                values.put("status", "pending");///doubt
+                values.put("noOfDaysInWeek", addDays);
+                if (isEdit) {
+
+                    commonid = medicineReminderId;
+                    values.put("medicineReminderId", commonid);
+                    values.put("edit", "1");
+                } else {
+                    values.put("medicineReminderId", commonid);
+                    values.put("edit", "0");
+                }
+
+
+                if (listCurrent.get(i).isBaMealAfter() == true) {
+                    values.put("afterMeal", 1);
+                } else {
+                    values.put("afterMeal", 0);
+                }
+                if (listCurrent.get(i).isBaMealBefore() == true) {
+                    values.put("beforeMeal", 1);
+                } else {
+                    values.put("beforeMeal", 0);
+                }
+                values.put("dayOfMonth", dayy);
+                values.put("monthValue", monthh);
+                values.put("year", yearr);
+                values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+                values.put("isUploaded", "1");
+                values.put("common_id", commonid);
+
+                values.put("currentdate", date);//current date ya any other date confusion //Utils.getTodayDate()
+
+                DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid, date);
+
+                String dosagePerDayDetailsId;
+                if (isEdit) {
+                    isEdit = false;
+                    dosagePerDayDetailsId = dosagePerDayDetailsId1;
+
+                } else {
+                    dosagePerDayDetailsId = String.valueOf(System.currentTimeMillis());
+                }
+                ReminderMedicnceDoagePer imageListView = new ReminderMedicnceDoagePer();
+                imageListView.setInsertingValueLab(newTime, commonid, i, date, duration, dosagePerDayDetailsId);
+                date = Utils.getNextDate(startFrom);//for next date
+
+
+                String[] newTimesplit = newTime.split(",");
+                for (int i2 = 0; i2 < newTimesplit.length; i2++) {
+                    String[] time = newTimesplit[i2].split(":");
+                    String hour = time[0];
+                    String minute = time[1];
+                    ReminderMedicnceTime reminder_medicine_time = new ReminderMedicnceTime();
+                    reminder_medicine_time.setInsertingValueLab(newTime, commonid, dosagePerDayDetailsId, i2, hour, minute);
+                }
+
             }
-
-
-            if(listCurrent.get(i).isBaMealAfter()==true){
-                values.put("afterMeal", 1);
-            }else{
-                values.put("afterMeal", 0);
-            }
-            if(listCurrent.get(i).isBaMealBefore()==true) {
-                values.put("beforeMeal", 1);
-            }else{
-                values.put("beforeMeal", 0);
-            }
-            values.put("dayOfMonth", dayy);
-            values.put("monthValue", monthh);
-            values.put("year", yearr);
-            values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
-            values.put("isUploaded", "1");
-            values.put("common_id", commonid);
-            values.put("currentdate",startFrom);//current date ya any other date confusion //Utils.getTodayDate()
-
-            DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid,startFrom);
-
-            ReminderMedicnceDoagePer imageListView=new ReminderMedicnceDoagePer();
-            imageListView.setInsertingValueLab(newTime,commonid,i,startFrom);
         }
         CureFull.getInstanse().getActivityIsntanse().onBackPressed();
 

@@ -7,6 +7,8 @@ import android.provider.Settings;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import curefull.healthapp.CureFull;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -31,7 +33,7 @@ public class LabDoctorName implements MyConstants.JsonUtils {
             return;
         }
         try{
-            setDoctorName(cursor.getColumnName(cursor.getColumnIndex(DOCTOR_NAME)));
+            setDoctorName(cursor.getString(cursor.getColumnIndex(DOCTOR_NAME)));
 
         }catch (Exception e){
 
@@ -48,17 +50,20 @@ public class LabDoctorName implements MyConstants.JsonUtils {
     }
 
     // insert through online
-    public void getInsertingValue(String json) throws JSONException {
+    public void getInsertingValue(ArrayList<LabDoctorName> json) throws JSONException {
         try {
-            String common_id= String.valueOf(System.currentTimeMillis());
-            ContentValues values = new ContentValues();
-            values.put(DOCTOR_NAME, json);
-            values.put("isUploaded", "0");
-            values.put("cfuuhid", AppPreference.getInstance().getcf_uuhid());
-            values.put("common_id",common_id);
+            for (int i1=0;i1<json.size();i1++) {
+                String common_id = String.valueOf(System.currentTimeMillis());
+                ContentValues values = new ContentValues();
+                values.put(DOCTOR_NAME, json.get(i1).getDoctorName());//.getString("doctorName")
+                values.put("isUploaded", "0");
+                values.put("cfuuhid", AppPreference.getInstance().getcf_uuhid());
+                values.put("common_id", common_id);
+                values.put("case_id", "3");//not in use   //1-medicine reminder doctor name   2-doctor reminder doctor name  3-lab reminder doctor name
 
-            DbOperations.insertLabReminderDoctorName(CureFull.getInstanse().getActivityIsntanse(), values,common_id, AppPreference.getInstance().getcf_uuhid());
-
+                DbOperations.insertDoctorName(CureFull.getInstanse().getActivityIsntanse(), values, common_id, AppPreference.getInstance().getcf_uuhid());
+                //DbOperations.insertLabReminderDoctorName(CureFull.getInstanse().getActivityIsntanse(), values,common_id, AppPreference.getInstance().getcf_uuhid());
+            }
         } catch (Exception e) {
             e.printStackTrace();
 

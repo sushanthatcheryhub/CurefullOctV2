@@ -70,11 +70,14 @@ public class Reminder_doctor_Lab_ListAdpter extends RecyclerView.Adapter<Reminde
         txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
         txt_med_name.setText("Dr. " + healthNoteItemses.get(position).getDoctorName());
         txt_hospital.setText("" + healthNoteItemses.get(position).getRemMedicineName());
+
+        img_edit_rem.setVisibility(View.GONE);
+        checkBox.setVisibility(View.GONE);
         if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
-            img_edit_rem.setVisibility(View.GONE);
+            //img_edit_rem.setVisibility(View.GONE);
             txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            img_edit_rem.setVisibility(View.VISIBLE);
+           // img_edit_rem.setVisibility(View.VISIBLE);
         }
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
             @Override

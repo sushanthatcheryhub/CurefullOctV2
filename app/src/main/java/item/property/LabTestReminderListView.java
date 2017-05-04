@@ -25,6 +25,7 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
     private ArrayList<Lab_Test_Reminder_SelfListView> reminder_selfListViews;
 
     private ArrayList<LabTestReminderDoctorName> reminderDoctorNames;
+    private ArrayList<Lab_Test_Reminder_DoctorListView> reminderDoctorNamesLocal;
 
     public LabTestReminderListView() {
     }
@@ -60,6 +61,45 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
         }
     }
 
+    public LabTestReminderListView(Cursor cur,String status,String NIU,String NIU1) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews= DbOperations.getLabTestReportReminder11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+            setReminder_selfListViews(labReportImageListViews);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public LabTestReminderListView(Cursor cur,String date,String doctor) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews= DbOperations.getLabTestReportReminderDoctor11(CureFull.getInstanse().getActivityIsntanse(),date);
+            Log.e("doc_labtest",""+labReportImageListViews);
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public LabTestReminderListView(Cursor cur,String status,String doctor,String NIU,String NIU1) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews= DbOperations.getLabTestReportReminderDoctor11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+            Log.e("doc_labtest",""+labReportImageListViews);
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public ArrayList<Lab_Test_Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
@@ -80,6 +120,7 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
                 card = new Lab_Test_Reminder_SelfListView(symptomslistArray.getJSONObject(i));
                 this.reminder_selfListViews.add(card);
                 card.getInsertingValue(symptomslistArray.getJSONObject(i));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -109,6 +150,7 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
             try {
                 card = new LabTestReminderDoctorName(o.toString(), stringObjectMap.get(o));
                 this.reminderDoctorNames.add(card);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -124,6 +166,14 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
 
     public void setReminderDoctorNames(ArrayList<LabTestReminderDoctorName> reminderDoctorNames) {
         this.reminderDoctorNames = reminderDoctorNames;
+    }
+
+    public ArrayList<Lab_Test_Reminder_DoctorListView> getReminderDoctorNamesLocal() {
+        return reminderDoctorNamesLocal;
+    }
+
+    public void setReminderDoctorNamesLocal(ArrayList<Lab_Test_Reminder_DoctorListView> reminderDoctorNamesLocal) {
+        this.reminderDoctorNamesLocal = reminderDoctorNamesLocal;
     }
 
     public static Map<String, Object> jsonToMap(JSONObject json) throws JSONException {

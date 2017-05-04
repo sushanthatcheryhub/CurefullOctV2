@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
@@ -33,7 +34,9 @@ import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLabTestSetReminder;
 import item.property.Lab_Test_Reminder_DoctorListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
@@ -44,6 +47,18 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
 
     Context applicationContext;
     List<Lab_Test_Reminder_DoctorListView> healthNoteItemses;
+    String doctorName;
+    String remMedicineName;
+    int hour;
+    int mintue;
+    String status;
+    boolean afterMeal;
+    String labTestReminderId;
+    String labName;
+    int date;
+    int month;
+    int year;
+    int sizee;
 
     public Reminder_visit_Lab_ListAdpter(Context applicationContexts,
                                          List<Lab_Test_Reminder_DoctorListView> healthNoteItemses) {
@@ -51,9 +66,30 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
         this.applicationContext = applicationContexts;
     }
 
+   /* public Reminder_visit_Lab_ListAdpter(Context applicationContext, String doctorName, String remMedicineName, int hour, int mintue, String status, boolean afterMeal, String labTestReminderId, String labName, int date, int month, int year, int sizee) {
+        this.applicationContext = applicationContext;
+        this.doctorName = doctorName;
+        this.remMedicineName = remMedicineName;
+        this.hour = hour;
+        this.mintue = mintue;
+        this.status = status;
+        this.afterMeal = afterMeal;
+        this.labTestReminderId = labTestReminderId;
+        this.labName = labName;
+        this.date = date;
+        this.month = month;
+        this.year = year;
+        this.sizee = sizee;
+    }*/
+
+
     @Override
     public int getItemCount() {
-        return (null != healthNoteItemses ? healthNoteItemses.size() : 0);
+        /*if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {*/
+            return (null != healthNoteItemses ? healthNoteItemses.size() : 0);
+        /*}else{
+            return sizee;
+        }*/
     }
 
     @Override
@@ -70,65 +106,133 @@ public class Reminder_visit_Lab_ListAdpter extends RecyclerView.Adapter<Reminder
         TextView txt_hospital = holder.txt_hospital;
         final ImageView img_edit_rem = holder.img_edit_rem;
         final CheckBox checkBox = holder.checkbox;
+        /*if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {*/
 
+            txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
+            txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName());
 
-        txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
-        txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName());
-
-
-        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
-            img_edit_rem.setVisibility(View.GONE);
-            txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-        } else {
-            img_edit_rem.setVisibility(View.VISIBLE);
-        }
-
-        if (healthNoteItemses.get(position).isAfterMeal()) {
-            txt_hospital.setText("After Meal");
-        } else {
-            txt_hospital.setText("Before Meal");
-        }
-
-        img_edit_rem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
-                Bundle bundle = new Bundle();
-                bundle.putString("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
-                bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
-                bundle.putString("labName", "" + healthNoteItemses.get(position).getLabName());
-                bundle.putString("testName", "" + healthNoteItemses.get(position).getRemMedicineName());
-                bundle.putBoolean("isAfterMeal", healthNoteItemses.get(position).isAfterMeal());
-                bundle.putString("time", "" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
-                bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentLabTestSetReminder(), bundle, true);
+        img_edit_rem.setVisibility(View.GONE);
+        checkBox.setVisibility(View.GONE);
+           if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("complete")) {
+               // img_edit_rem.setVisibility(View.GONE);
+                txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                //img_edit_rem.setVisibility(View.VISIBLE);
             }
-        });
 
-        if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
-            checkBox.setChecked(false);
-        } else {
-            checkBox.setChecked(true);
-        }
+            if (healthNoteItemses.get(position).isAfterMeal()) {
+                txt_hospital.setText("After Meal");
+            } else {
+                txt_hospital.setText("Before Meal");
+            }
 
-
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checkBox.isChecked()) {
-                    Log.e("check", ":- isChecked");
-                    getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, true);
-                } else {
-                    getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, false);
-                    Log.e("check", ":- not");
-//                    healthNoteItemses.get(position).setSelected(false);
+            img_edit_rem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
+                    bundle.putString("doctorName", "" + healthNoteItemses.get(position).getDoctorName());
+                    bundle.putString("labName", "" + healthNoteItemses.get(position).getLabName());
+                    bundle.putString("testName", "" + healthNoteItemses.get(position).getRemMedicineName());
+                    bundle.putBoolean("isAfterMeal", healthNoteItemses.get(position).isAfterMeal());
+                    bundle.putString("time", "" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(healthNoteItemses.get(position).getHour(), healthNoteItemses.get(position).getMintue()));
+                    bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentLabTestSetReminder(), bundle, true);
                 }
+            });
 
+            if (healthNoteItemses.get(position).getStatus().equalsIgnoreCase("deactivate")) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
             }
-        });
 
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkBox.isChecked()) {
+                        Log.e("check", ":- isChecked");
+                        getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, true);
+                        /*ContentValues cv = new ContentValues();
+                        cv.put("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
+                        cv.put("labTestStatus", "activate");
+                        DbOperations.insertLabReminderDoctorName(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getLabTestReminderId(),AppPreference.getInstance().getcf_uuhid());*/
+
+                    } else {
+                        getDoctorVisitDelete(healthNoteItemses.get(position).getLabTestReminderId(), position, false, false);
+                        Log.e("check", ":- not");
+                       /* ContentValues cv = new ContentValues();
+                        cv.put("labTestReminderId", healthNoteItemses.get(position).getLabTestReminderId());
+                        cv.put("labTestStatus", "deactivate");
+                        DbOperations.insertLabReminderDoctorName(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getLabTestReminderId(),AppPreference.getInstance().getcf_uuhid());*/
+//                    healthNoteItemses.get(position).setSelected(false);
+                    }
+
+                }
+            });
+       /* } else {
+            txt_med_time.setText("" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hour, mintue));
+            txt_med_name.setText("" + remMedicineName);
+
+
+            if (status.equalsIgnoreCase("complete")) {
+                img_edit_rem.setVisibility(View.GONE);
+                txt_med_time.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                img_edit_rem.setVisibility(View.VISIBLE);
+            }
+
+            if (afterMeal) {
+                txt_hospital.setText("After Meal");
+            } else {
+                txt_hospital.setText("Before Meal");
+            }
+
+            img_edit_rem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        ElasticAction.doAction(img_edit_rem, 400, 0.9f, 0.9f);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("labTestReminderId", labTestReminderId);
+                    bundle.putString("doctorName", "" + doctorName);
+                    bundle.putString("labName", "" + labName);
+                    bundle.putString("testName", "" + remMedicineName);
+                    bundle.putBoolean("isAfterMeal", afterMeal);
+                    bundle.putString("time", "" + CureFull.getInstanse().getActivityIsntanse().updateTimeSpace(hour, mintue));
+                    bundle.putString("date", "" + (date < 10 ? "0" + date : date) + "/" + (month < 10 ? "0" + month : month) + "/" + year);
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentLabTestSetReminder(), bundle, true);
+                }
+            });
+
+            if (status.equalsIgnoreCase("deactivate")) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkBox.isChecked()) {
+                        Log.e("check", ":- isChecked");
+                        getDoctorVisitDelete(labTestReminderId, position, false, true);
+                    } else {
+                        getDoctorVisitDelete(labTestReminderId, position, false, false);
+                        Log.e("check", ":- not");
+//                    healthNoteItemses.get(position).setSelected(false);
+                    }
+
+                }
+            });
+
+        }*/
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

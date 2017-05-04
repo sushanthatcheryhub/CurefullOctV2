@@ -45,6 +45,9 @@ public class LabTestReminderDoctorName implements MyConstants.JsonUtils {
             try {
                 card = new Lab_Test_Reminder_DoctorListView(value.get(i));
                 this.reminder_doctorListViews.add(card);
+
+                card.getInsertingValue(value.get(i));
+                //local work
             } catch (Exception e) {
                 e.printStackTrace();
             }

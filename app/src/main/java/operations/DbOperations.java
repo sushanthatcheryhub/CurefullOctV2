@@ -5,15 +5,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import curefull.healthapp.CureFull;
-import fragment.healthapp.FragmentPrescriptionCheckNew;
+
 import item.property.DoctorVistReminderListView;
+import item.property.Doctor_Visit_Reminder_DoctorListView;
 import item.property.Doctor_Visit_Reminder_SelfListView;
 import item.property.FilterDataPrescription;
 import item.property.FilterDataReports;
@@ -23,6 +24,7 @@ import item.property.LabDoctorName;
 import item.property.LabReportImageListView;
 import item.property.LabReportListView;
 import item.property.LabTestReminderListView;
+import item.property.Lab_Test_Reminder_DoctorListView;
 import item.property.Lab_Test_Reminder_SelfListView;
 import item.property.MedicineReminderListView;
 import item.property.PrescriptionImageFollowUpListView;
@@ -35,6 +37,7 @@ import item.property.StepsCountsItems;
 import item.property.StepsCountsStatus;
 import item.property.UHIDItems;
 import item.property.UserInfo;
+
 import utils.AppPreference;
 import utils.MyConstants;
 import utils.NotificationUtils;
@@ -46,8 +49,10 @@ import utils.Utils;
 public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstants.IDataBaseTableKeys, MyConstants.JsonUtils {
     static Cursor cursor = null;
     static Cursor cursor_reset = null;
+    static SharedPreferences preferences;
 
     public static List<HealthNoteItems> getNoteList(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<HealthNoteItems>();
@@ -55,9 +60,10 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
+
 // LIMIT 0,10
             String query = "SELECT P.* FROM " + TABLE_NOTE
-                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.dateOfNote DESC";
+                    + " P WHERE P.cf_uuhid = '" + preferences.getString("cf_uuhid", "") + "' ORDER BY P.dateOfNote DESC";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -78,6 +84,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
     public static List<UHIDItems> getUHIDListLocal(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<UHIDItems>();
@@ -87,7 +94,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
 // LIMIT 0,10
             String query = "SELECT P.* FROM " + TABLE_UHID
-                    + " P WHERE P.cfhid_user = '" + AppPreference.getInstance().getcf_uuhid() + "'";
+                    + " P WHERE P.cfhid_user = '" + preferences.getString("cf_uuhid", "") + "'";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -109,6 +116,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
     //List<LabDoctorName>
     public static List<LabDoctorName> getLabDoctorReminderListLocal(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<LabDoctorName>();
@@ -116,12 +124,12 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-// LIMIT 0,10
-            String query = "SELECT P.* FROM " + TABLE_LAB_REMINDER_DOCTOR_NAME
-                    + " P WHERE P.cfuuhid = '" + AppPreference.getInstance().getcf_uuhid() + "'";
+
+            String query = "SELECT * FROM " + TABLE_DOCTOR_NAME + " WHERE cfuuhid='" + preferences.getString("cf_uuhid", "") + "'";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
+                int aa=cursor.getCount();
                 for (int i = 0; i < cursor.getCount(); i++) {
                     LabDoctorName content = new LabDoctorName(cursor);
                     listApps.add(content);
@@ -139,6 +147,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
     public static List<StepsCountsItems> getOfflineSteps(Context context, String cfhuid) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<StepsCountsItems>();
@@ -170,6 +179,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
 
     public static List<HealthNoteItems> getOfflineNoteList(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<HealthNoteItems>();
@@ -179,7 +189,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
 // LIMIT 0,10
             String query = "SELECT P.* FROM " + TABLE_OFFLINE_NOTE
-                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' AND P.isSent='0'";
+                    + " P WHERE P.cf_uuhid = '" + preferences.getString("cf_uuhid", "") + "' AND P.isSent='0'";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -200,6 +210,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
     public static List<HealthNoteItems> getNoteListLanding(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<HealthNoteItems>();
@@ -209,7 +220,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
 // LIMIT 0,10
             String query = "SELECT P.* FROM " + TABLE_NOTE
-                    + " P WHERE P.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY P.year DESC LIMIT 4";
+                    + " P WHERE P.cf_uuhid = '" + preferences.getString("cf_uuhid", "") + "' ORDER BY P.year DESC LIMIT 4";
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -231,6 +242,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
 
     public static List<String> getEmailList(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<String>();
@@ -260,6 +272,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
     public static UserInfo getLoginList(Context context) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new UserInfo();
@@ -268,7 +281,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {
             database = DatabaseHelper.openDataBase();
             String query = "SELECT L.* FROM " + TABLE_LOGIN
-                    + " L WHERE L.cf_uuhid = '" + AppPreference.getInstance().getcf_uuhid() + "'";
+                    + " L WHERE L.cf_uuhid = '" + preferences.getString("cf_uuhid", "") + "'";
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
@@ -446,6 +459,119 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return content;
     }
 
+
+    public static LabTestReminderListView getLabTestReportReminderAfterSelection(Context context, String cf_uuhid, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new LabTestReminderListView();
+
+        LabTestReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+           /* String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "'";
+            } else {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "' and labTestStatus='" + status + "'";
+            }
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new LabTestReminderListView(cursorprivate, status, "", "");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
+
+    public static LabTestReminderListView getLabTestReportReminderDoctor(Context context, String cf_uuhid, String datee) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new LabTestReminderListView();
+
+        //List<LabReportListView> listApps = new ArrayList<>();
+        LabTestReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+            String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];
+
+            database = DatabaseHelper.openDataBase();
+            //"SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " Where labTestReminderId='" + labTestReminderId + "'
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + cf_uuhid + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new LabTestReminderListView(cursorprivate, datee, "doc");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
+    public static LabTestReminderListView getLabTestReportReminderDoctorAfterSelection(Context context, String cf_uuhid, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new LabTestReminderListView();
+
+        //List<LabReportListView> listApps = new ArrayList<>();
+        LabTestReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+           /* String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + cf_uuhid + "'";
+            } else {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + cf_uuhid + "' and labTestStatus='" + status + "'";
+            }
+            //query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + cf_uuhid + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new LabTestReminderListView(cursorprivate, status, "doc", "", "");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
     public static DoctorVistReminderListView getDoctorReportReminder(Context context, String cf_uuhid, String datee) {
         Cursor cursorprivate = null;
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
@@ -480,6 +606,117 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         return content;
     }
+
+    public static DoctorVistReminderListView getDoctorReportReminderAfterSelection(Context context, String cf_uuhid, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new DoctorVistReminderListView();
+
+        DoctorVistReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+           /* String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            //"SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " Where labTestReminderId='" + labTestReminderId + "'
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "'";
+            } else {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "' and status='" + status + "'";
+            }
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new DoctorVistReminderListView(cursorprivate, status, "", "");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
+    public static DoctorVistReminderListView getDoctorReportReminderCurefull(Context context, String cf_uuhid, String datee) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new DoctorVistReminderListView();
+
+        DoctorVistReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+            String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];
+
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + cf_uuhid + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new DoctorVistReminderListView(cursorprivate, datee, "curefull");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
+    public static DoctorVistReminderListView getDoctorReportReminderCurefullAftreSelection(Context context, String cf_uuhid, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new DoctorVistReminderListView();
+
+        DoctorVistReminderListView content = null;
+        SQLiteDatabase database = null;
+        try {
+           /* String[] date = datee.split("-");
+            String year = date[0];
+            String month = date[1];
+            String dayy = date[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + cf_uuhid + "' ";//and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            } else {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + cf_uuhid + "' and status='" + status + "'";
+            }
+
+            cursorprivate = database.rawQuery(query, null);
+            int aa = cursorprivate.getCount();
+            if (cursorprivate.getCount() > 0) {
+
+                content = new DoctorVistReminderListView(cursorprivate, status, "curefull","","");
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return content;
+    }
+
 
     public static MedicineReminderListView getMedicineReportReminder(Context context, String cf_uuhid, String datee) {
         Cursor cursorprivate = null;
@@ -534,12 +771,12 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             String year = date[0];
             String month = date[1];
             String dayy = date[2];*/
-            String currentdate=Utils.getTodayDate();
-            String previousdate=Utils.getPreviousDate(currentdate);
+            String currentdate = Utils.getTodayDate();
+            String previousdate = Utils.getPreviousDate(currentdate);
             database = DatabaseHelper.openDataBase();
 
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "' and currentdate BETWEEN '"+previousdate+"' AND '"+currentdate+"'";//dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where cfuuhId='" + cf_uuhid + "' and currentdate BETWEEN '" + previousdate + "' AND '" + currentdate + "'";//dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
             cursorprivate = database.rawQuery(query, null);//
             int aa = cursorprivate.getCount();
             if (cursorprivate.getCount() > 0) {
@@ -560,6 +797,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
     public static ArrayList<Reminder_SelfListView> getMedicineReportReminder11(Context context, String datee) {//, String datee, String commonid_from_innerquery
         Cursor cursorprivate = null;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<Reminder_SelfListView>();
@@ -575,7 +813,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where cfuuhId='" + AppPreference.getInstance().getcf_uuhid() + "' and currentdate='" + datee + "'";// and common_id='" + commonid_from_innerquery + "'    //dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and currentdate='" + datee + "'";// and common_id='" + commonid_from_innerquery + "'    //dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
             cursorprivate = database.rawQuery(query, null);
             int aa = cursorprivate.getCount();
             if (cursorprivate.getCount() > 0) {
@@ -598,8 +836,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return content;
     }
 
-    public static ArrayList<Lab_Test_Reminder_SelfListView> getLabTestReportReminder11(Context context, String date) {
+    public static ArrayList<Lab_Test_Reminder_SelfListView> getLabTestReportReminder11AfterSelection(Context context, String status) {
         Cursor cursorprivate = null;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
             return new ArrayList<Lab_Test_Reminder_SelfListView>();
@@ -609,14 +848,19 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
 
         try {
-            String[] date1 = date.split("-");
+           /* String[] date1 = date.split("-");
             String year = date1[0];
             String month = date1[1];
-            String dayy = date1[2];
+            String dayy = date1[2];*/
 
             database = DatabaseHelper.openDataBase();
+            String query = "";
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "'";
+            } else {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and labTestStatus='" + status + "'";
+            }
 
-            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + AppPreference.getInstance().getcf_uuhid() + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
             cursorprivate = database.rawQuery(query, null);
             if (cursorprivate.getCount() > 0) {
                 cursorprivate.moveToFirst();
@@ -639,6 +883,133 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
+    public static ArrayList<Lab_Test_Reminder_SelfListView> getLabTestReportReminder11(Context context, String date) {
+        Cursor cursorprivate = null;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Lab_Test_Reminder_SelfListView>();
+
+        ArrayList<Lab_Test_Reminder_SelfListView> listApps = new ArrayList<>();
+        Lab_Test_Reminder_SelfListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+            String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];
+
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Lab_Test_Reminder_SelfListView(cursorprivate);
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<Lab_Test_Reminder_DoctorListView> getLabTestReportReminderDoctor11(Context context, String date) {
+        Cursor cursorprivate = null;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Lab_Test_Reminder_DoctorListView>();
+
+        ArrayList<Lab_Test_Reminder_DoctorListView> listApps = new ArrayList<>();
+        Lab_Test_Reminder_DoctorListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+            String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];
+
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Lab_Test_Reminder_DoctorListView(cursorprivate, "notinuse");
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<Lab_Test_Reminder_DoctorListView> getLabTestReportReminderDoctor11AfterSelection(Context context, String status) {
+        Cursor cursorprivate = null;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Lab_Test_Reminder_DoctorListView>();
+
+        ArrayList<Lab_Test_Reminder_DoctorListView> listApps = new ArrayList<>();
+        Lab_Test_Reminder_DoctorListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+           /* String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "'";// and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            } else {
+                query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and labTestStatus='" + status + "'";// and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            }
+
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Lab_Test_Reminder_DoctorListView(cursorprivate, "notinuse");
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
     public static ArrayList<Doctor_Visit_Reminder_SelfListView> getDoctorReportReminder11(Context context, String date) {
         Cursor cursorprivate = null;
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
@@ -656,8 +1027,8 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             String dayy = date1[2];
 
             database = DatabaseHelper.openDataBase();
-
-            String query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + AppPreference.getInstance().getcf_uuhid() + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            String query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
             cursorprivate = database.rawQuery(query, null);
             if (cursorprivate.getCount() > 0) {
                 cursorprivate.moveToFirst();
@@ -679,6 +1050,137 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return listApps;
     }
 
+    public static ArrayList<Doctor_Visit_Reminder_SelfListView> getDoctorReportReminder11AfterSelection(Context context, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Doctor_Visit_Reminder_SelfListView>();
+
+        ArrayList<Doctor_Visit_Reminder_SelfListView> listApps = new ArrayList<>();
+        Doctor_Visit_Reminder_SelfListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+           /* String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];*/
+            String query = "";
+            database = DatabaseHelper.openDataBase();
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            if (status.equalsIgnoreCase("N/A")) {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' ";//and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'
+            } else {
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_SELF + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and status='" + status + "'";
+            }
+
+
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Doctor_Visit_Reminder_SelfListView(cursorprivate);
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
+    public static ArrayList<Doctor_Visit_Reminder_DoctorListView> getDoctorReportReminder11Curefull(Context context, String date) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Doctor_Visit_Reminder_DoctorListView>();
+
+        ArrayList<Doctor_Visit_Reminder_DoctorListView> listApps = new ArrayList<>();
+        Doctor_Visit_Reminder_DoctorListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+            String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];
+
+            database = DatabaseHelper.openDataBase();
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            String query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and dayOfMonth='" + dayy + "' and monthValue='" + month + "' and year='" + year + "'";
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Doctor_Visit_Reminder_DoctorListView(cursorprivate, "notinuse");
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+    public static ArrayList<Doctor_Visit_Reminder_DoctorListView> getDoctorReportReminder11CurefullAfterSelection(Context context, String status) {
+        Cursor cursorprivate = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Doctor_Visit_Reminder_DoctorListView>();
+
+        ArrayList<Doctor_Visit_Reminder_DoctorListView> listApps = new ArrayList<>();
+        Doctor_Visit_Reminder_DoctorListView content = null;
+        SQLiteDatabase database = null;
+
+        try {
+            /*String[] date1 = date.split("-");
+            String year = date1[0];
+            String month = date1[1];
+            String dayy = date1[2];*/
+            String query="";
+            database = DatabaseHelper.openDataBase();
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            if(status.equalsIgnoreCase("N/A")){
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "'";
+            }else{
+                query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " where cfuuhId='" + preferences.getString("cf_uuhid", "") + "' and status='"+status+"'";
+            }
+
+            cursorprivate = database.rawQuery(query, null);
+            if (cursorprivate.getCount() > 0) {
+                cursorprivate.moveToFirst();
+                int ss = cursorprivate.getCount();
+                for (int i = 0; i < ss; i++) {
+                    content = new Doctor_Visit_Reminder_DoctorListView(cursorprivate, "notinuse");
+                    listApps.add(content);
+                    cursorprivate.moveToNext();
+                }
+
+            }
+            cursorprivate.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
 
     public static List<LabReportListView> getLabTestReportListALLSort(Context context, String cf_uuhid, String clickShortBy) {
         Cursor cursorprivate = null;
@@ -884,7 +1386,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         String query = "";
         try {
-
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
             database = DatabaseHelper.openDataBase();
             if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
                 query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm";//GROUP BY " + date;
@@ -896,7 +1398,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.doctorName='" + clickDoctorName + "'"; //GROUP BY " + date;
             }
             if (!clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + AppPreference.getInstance().getcf_uuhidNeew() + "'"; //GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "'"; //GROUP BY " + date; ///chhh new wala
             }
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
                 query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "'";// GROUP BY " + date;
@@ -941,6 +1443,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         List<LabReportListView> listAlls = new ArrayList<>();
         SQLiteDatabase database = null;
         String query = "";
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         try {
             // select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id from tbl_labtestreprort_main as pm
             database = DatabaseHelper.openDataBase();
@@ -956,7 +1459,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "'";
             }
             if (!clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + AppPreference.getInstance().getcf_uuhidNeew() + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "'";  //newwchfuuid
             }
 
             if (!clickDiseaseName.equalsIgnoreCase("")) {
@@ -1161,7 +1664,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
     //ReminderMedicnceDoagePer
-    public static ArrayList<ReminderMedicnceDoagePer> setReminderMedicineDosageLocal(Context context, String common_id,String date) {
+    public static ArrayList<ReminderMedicnceDoagePer> setReminderMedicineDosageLocal(Context context, String common_id, String date) {
         Cursor cursorprivate2 = null;
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -1171,7 +1674,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "select status,date,common_id,data_id from tbl_medicine_reminder_self_dosageperDateResponse where common_id ='" + common_id + "' and date='"+date+"'";
+            String query = "select status,date,common_id,data_id from tbl_medicine_reminder_self_dosageperDateResponse where common_id ='" + common_id + "' and date='" + date + "'";//,sr_id
 
             cursorprivate2 = database.rawQuery(query, null);
             if (cursorprivate2.getCount() > 0) {
@@ -1194,7 +1697,40 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return listApps;
     }
 
-    public static ArrayList<ReminderMedicnceTime> setReminderMedicinealarmdetailres(Context context, String common_id) {
+    public static ArrayList<ReminderMedicnceDoagePer> setReminderMedicineDosageLocal1(Context context, String common_id, String date) {
+        Cursor cursorprivate2 = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<ReminderMedicnceDoagePer>();
+
+        ArrayList<ReminderMedicnceDoagePer> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "select status,date,common_id,data_id from tbl_medicine_reminder_self_dosageperDateResponse where common_id ='" + common_id + "' and date='" + date + "'";
+
+            cursorprivate2 = database.rawQuery(query, null);
+            if (cursorprivate2.getCount() > 0) {
+                cursorprivate2.moveToFirst();
+                int ss = cursorprivate2.getCount();
+                for (int i = 0; i < ss; i++) {
+                    ReminderMedicnceDoagePer content = new ReminderMedicnceDoagePer(cursorprivate2);
+                    listApps.add(content);
+                    cursorprivate2.moveToNext();
+                }
+
+            }
+            cursorprivate2.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<ReminderMedicnceTime> setReminderMedicinealarmdetailres(Context context, String common_id, String dosagePerDayDetailsId) {//,String sr_id
         Cursor cursorprivate2 = null;
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -1204,7 +1740,40 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "select status,hour,minute,common_id,data_id from tbl_medicine_reminder_self_alarmdetailresponse where common_id ='" + common_id + "'";
+            String query = "select status,hour,minute,common_id,data_id,dosagePerDayDetailsId from tbl_medicine_reminder_self_alarmdetailresponse where common_id ='" + common_id + "' and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "'";// and sr_id='"+sr_id+"'
+
+            cursorprivate2 = database.rawQuery(query, null);
+            if (cursorprivate2.getCount() > 0) {
+                cursorprivate2.moveToFirst();
+                int ss = cursorprivate2.getCount();
+                for (int i = 0; i < ss; i++) {
+                    ReminderMedicnceTime content = new ReminderMedicnceTime(cursorprivate2);
+                    listApps.add(content);
+                    cursorprivate2.moveToNext();
+                }
+
+            }
+            cursorprivate2.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<ReminderMedicnceTime> setReminderMedicinealarmdetailresLocal(Context context, String common_id) {
+        Cursor cursorprivate2 = null;
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<ReminderMedicnceTime>();
+
+        ArrayList<ReminderMedicnceTime> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "select status,hour,minute,common_id,data_id from tbl_medicine_reminder_self_alarmdetailresponse where common_id ='" + common_id + "'";// and sr_id='"+sr_id+"'
 
             cursorprivate2 = database.rawQuery(query, null);
             if (cursorprivate2.getCount() > 0) {
@@ -1785,7 +2354,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " Where isUploaded ='" + isUploaded + "'" + "";
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " Where isUploaded ='" + isUploaded + "'";
 
 
             cursor = database.rawQuery(query, null);
@@ -1874,6 +2443,39 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         database.close();
     }
+
+    public static void insertDoctorName(Context context, ContentValues cv, String common_id, String cf_uuhid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_DOCTOR_NAME + " Where cfuuhid='" + cf_uuhid + "' and common_id='"+common_id+"'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_DOCTOR_NAME, cv, "cfuuhid" + "='" + cf_uuhid + "'",
+                        null);//
+
+            } else {
+                long id = database.insert(TABLE_DOCTOR_NAME, null, cv);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
 
     public static void insertLabTestReportList(Context context, ContentValues cv, String cf_uuhid, String common_id) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
@@ -2161,6 +2763,37 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
+    public static void insertLabTestRemiderReportbyDoctor(Context context, ContentValues cv, String labTestReminderId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_DOCTOR + " Where labTestReminderId='" + labTestReminderId + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_LAB_REMINDER_DOCTOR, cv, "labTestReminderId" + "='" + labTestReminderId + "'",
+                        null);
+            } else {
+                long id = database.insert(TABLE_LAB_REMINDER_DOCTOR, null, cv);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
     public static void insertDoctorRemiderReport(Context context, ContentValues cv, String doctorFollowupReminderId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
@@ -2192,6 +2825,38 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
+    //insert doctor reminder curefull data in local
+    public static void insertDoctorRemiderByCurefull(Context context, ContentValues cv, String doctorFollowupReminderId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_DOCTOR_REMINDER_CUREFULL + " Where doctorFollowupReminderId='" + doctorFollowupReminderId + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+                database.update(TABLE_DOCTOR_REMINDER_CUREFULL, cv, "doctorFollowupReminderId" + "='" + doctorFollowupReminderId + "'",
+                        null);
+            } else {
+                long id = database.insert(TABLE_DOCTOR_REMINDER_CUREFULL, null, cv);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+
     //medicine reminder
     public static void insertMedicineRemiderReport(Context context, ContentValues cv, String medicineReminderId, String date) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
@@ -2205,7 +2870,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " Where medicineReminderId='" + medicineReminderId + "'  and currentdate='"+ date +"'";//
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " Where medicineReminderId='" + medicineReminderId + "'  and currentdate='" + date + "'";//
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
@@ -2235,11 +2900,11 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " Where common_id='" + commonID + "' and data_id='" + i + "' and date='"+ date +"'";// and date='"+ date +"'
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " Where common_id='" + commonID + "' and data_id='" + i + "' and date='" + date + "'";// and date='"+ date +"'
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                database.update(TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE, cv, "common_id" + "='" + commonID + "' and data_id='" + i + "' and date='"+date+"'",
+                database.update(TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE, cv, "common_id" + "='" + commonID + "' and data_id='" + i + "' and date='" + date + "'",
                         null);
             } else {
                 long id = database.insert(TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE, null, cv);
@@ -2253,7 +2918,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
-    public static void insertMedicineRemiderAlarmDetailResponse(Context context, ContentValues cv, String commonID, int i) {
+    public static void insertMedicineRemiderAlarmDetailResponse(Context context, ContentValues cv, String commonID, int i, String dosagePerDayDetailsId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -2265,11 +2930,11 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " Where common_id='" + commonID + "' and data_id='" + i + "'";
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " Where common_id='" + commonID + "' and data_id='" + i + "' and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "'";
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                database.update(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, cv, "common_id" + "='" + commonID + "' and data_id='" + i + "'",
+                database.update(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, cv, "common_id" + "='" + commonID + "' and data_id='" + i + "'  and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "'",
                         null);
             } else {
                 long id = database.insert(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, null, cv);
@@ -2321,9 +2986,10 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         GoalInfo listApps = null;
         SQLiteDatabase database = null;
         try {
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
             database = DatabaseHelper.openDataBase();
             String query = "SELECT L.* FROM " + TABLE_EDIT_GOAL
-                    + " L WHERE L.edit_id = '" + AppPreference.getInstance().getcf_uuhid() + "' ORDER BY L.edit_id DESC ";
+                    + " L WHERE L.edit_id = '" + preferences.getString("cf_uuhid", "") + "' ORDER BY L.edit_id DESC ";
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
@@ -2541,13 +3207,81 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
             if (cursor.getCount() > 0) {
 
-                long id1=  database.update(TABLE_LAB_REMINDER_SELF, cv, "labTestReminderId "+"='"+commonid+"' ",
+                long id1 = database.update(TABLE_LAB_REMINDER_SELF, cv, "labTestReminderId " + "='" + commonid + "' ",
                         null);//isUploaded" + "='" + a + "' and
-                Log.e("",""+id1);
+                Log.e("", "" + id1);
 
             } else {
                 long id = database.insert(TABLE_LAB_REMINDER_SELF, null, cv);
-                Log.e("",""+id);
+                Log.e("", "" + id);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
+
+    /*public static ArrayList<Lab_Test_Reminder_SelfListView> getLabReminderbySelfNotificationStatus(Context context, String labTestReminderId) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<Lab_Test_Reminder_SelfListView>();
+        ArrayList<Lab_Test_Reminder_SelfListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " Where labTestReminderId ='" + labTestReminderId + "'" + "";
+
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    Lab_Test_Reminder_SelfListView list = new Lab_Test_Reminder_SelfListView(cursor);
+                    listApps.add(list);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }*/
+
+
+    public static void insertLabTestRemiderLocalONOFF(Context context, ContentValues cv, String commonid) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_LAB_REMINDER_SELF + " where labTestReminderId='" + commonid + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+
+                long id1 = database.update(TABLE_LAB_REMINDER_SELF, cv, "labTestReminderId " + "='" + commonid + "' ",
+                        null);//isUploaded" + "='" + a + "' and
+                Log.e("", "" + id1);
+
+            } else {
+                long id = database.insert(TABLE_LAB_REMINDER_SELF, null, cv);
+                Log.e("", "" + id);
             }
 
 
@@ -2575,7 +3309,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-               // String a = "0";
+                // String a = "0";
                 database.update(TABLE_DOCTOR_REMINDER_SELF, cv, "doctorFollowupReminderId" + "='" + commonid + "'",
                         null);// and isUploaded" + "='" + a + "'
 
@@ -2594,7 +3328,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
-    public static void insertMedicineRemiderLocal(Context context, ContentValues cv, String commonid,String selectedDate) {
+    public static void insertMedicineRemiderLocal(Context context, ContentValues cv, String commonid, String selectedDate) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -2606,12 +3340,12 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where medicineReminderId='" + commonid + "' and currentdate='"+selectedDate+"'" ;//
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF + " where medicineReminderId='" + commonid + "' and currentdate='" + selectedDate + "'";//
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
                 String a = "0";
-                database.update(TABLE_MEDICINE_REMINDER_SELF, cv, "medicineReminderId" +"='"+commonid+"'",
+                database.update(TABLE_MEDICINE_REMINDER_SELF, cv, "medicineReminderId" + "='" + commonid + "'",
                         null);//"isUploaded" + "='" + a + "'"
 
             } else {
@@ -2628,7 +3362,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
-    public static void insertMedicineRemiderDosagePerLocal(Context context, ContentValues cv, String commonid,String selectedDate) {
+    public static void insertMedicineRemiderDosagePerLocal(Context context, ContentValues cv, String commonid, String selectedDate, String dosagePerDayDetailsId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -2640,12 +3374,12 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + commonid + "' and date='"+selectedDate+"'";//'
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + commonid + "' and date='" + selectedDate + "' and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "' ";//'
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
                 //String a = "0";
-                database.update(TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE, cv, "common_id" + "='" + commonid + "'",
+                database.update(TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE, cv, "common_id" + "='" + commonid + "' and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "'",
                         null);
 
             } else {
@@ -2663,7 +3397,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
-    public static void insertMedicineRemiderAlaramDetailResponseLocal(Context context, ContentValues cv, String commonid, int i) {
+    public static void insertMedicineRemiderAlaramDetailResponseLocal(Context context, ContentValues cv, String commonid, int i, String dosagePerDayDetailsId) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);
         if (cv == null)
@@ -2675,12 +3409,12 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             dbhelperShopCart.createDataBase();
             database = DatabaseHelper.openDataBase();
 
-            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " where common_id='" + commonid + "' and data_id='" + i + "'";
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " where common_id='" + commonid + "' and data_id='" + i + "' and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "'";
             cursor = database.rawQuery(query, null);
 
             if (cursor.getCount() > 0) {
-                String a = "0";
-                database.update(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, cv, "common_id" + "='" + commonid + "'",
+
+                database.update(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, cv, "common_id" + "='" + commonid + "'  and dosagePerDayDetailsId='" + dosagePerDayDetailsId + "' and data_id='" + i + "'",
                         null);//isUploaded" + "='" + a + "'
 
             } else {
@@ -2697,6 +3431,40 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
+    public static void insertMedicineRemiderAlaramDetailResponseLocalNotification(Context context, ContentValues cv, String commonid, String hour, String minute, String sr_id) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                .getDatabaseHelperInstance(context);
+        if (cv == null)
+            return;
+        if (dbhelperShopCart == null)
+            return;
+        SQLiteDatabase database = null;
+        try {
+            dbhelperShopCart.createDataBase();
+            database = DatabaseHelper.openDataBase();
+
+            String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " where common_id='" + commonid + "' and hour='" + hour + "' and minute='" + minute + "' and dosagePerDayDetailsId='" + sr_id + "'";
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.getCount() > 0) {
+
+                long id1 = database.update(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, cv, "common_id" + "='" + commonid + "'  and hour='" + hour + "' and minute='" + minute + "' and dosagePerDayDetailsId='" + sr_id + "'",
+                        null);//isUploaded" + "='" + a + "'
+                Log.e("alrm details", "id11");
+
+            } else {
+                long id = database.insert(TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE, null, cv);
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        database.close();
+    }
 
     ////delete doctor reminder from local
     public static void clearDoctorReminderFromLocal(String reportID, String doctorName, String check_text) {
@@ -2708,7 +3476,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 database.delete(TABLE_DOCTOR_REMINDER_SELF, "doctorFollowupReminderId " + "=? AND " + "doctorName" + "=?", new String[]{reportID, doctorName});
             } else if (check_text.equalsIgnoreCase("labreminder")) {
                 database.delete(TABLE_LAB_REMINDER_SELF, "labTestReminderId " + "=? AND " + "doctorName" + "=?", new String[]{reportID, doctorName});
-            }else if(check_text.equalsIgnoreCase("medicinereminder")){
+            } else if (check_text.equalsIgnoreCase("medicinereminder")) {
                 database.delete(TABLE_MEDICINE_REMINDER_SELF, "medicineReminderId " + "=? AND " + "doctorName" + "=?", new String[]{reportID, doctorName});
             }
 
@@ -2718,7 +3486,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database.close();
         }
     }
-
 
 
 }

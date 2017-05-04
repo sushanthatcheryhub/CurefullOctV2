@@ -2,6 +2,7 @@ package curefull.healthapp;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,7 @@ import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
@@ -54,13 +56,11 @@ import item.property.LabReportListView;
 import item.property.LabTestReminderListView;
 import item.property.Lab_Test_Reminder_SelfListView;
 import item.property.MedicineReminderItem;
-import item.property.PrescriptionImageFollowUpListView;
-import item.property.PrescriptionImageList;
 import item.property.PrescriptionImageListView;
 import item.property.PrescriptionListView;
 import item.property.Reminder_SelfListView;
 import operations.DbOperations;
-import utils.AppPreference;
+
 import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.NotificationUtils;
@@ -73,7 +73,7 @@ import utils.Utils;
 
 public class SchedulingService extends IntentService {
     private int valueUpload = 0;
-
+    SharedPreferences preferences;
     public SchedulingService() {
         super("SchedulingService");
     }
@@ -81,12 +81,11 @@ public class SchedulingService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-            //Toast.makeText(this,"testtt",Toast.LENGTH_SHORT).show();
-            //  Log.e("testtt","serviceee");
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (CheckNetworkState.isNetworkAvailable(this)) {
             DbOperations db = new DbOperations();
             //for prescription
-            final List<PrescriptionListView> prescriptionData = db.getPrescriptionData(CureFull.getInstanse().getActivityIsntanse(), "1");
+            final List<PrescriptionListView> prescriptionData = db.getPrescriptionData(this, "1");
             for (int i = 0; i < prescriptionData.size(); i++) {
 
                 JSONObject data = JsonUtilsObject.toSaveUploadPrescriptionMetadata(prescriptionData.get(i).getPrescriptionDate(), prescriptionData.get(i).getDoctorName(), prescriptionData.get(i).getDiseaseName());
@@ -107,7 +106,7 @@ public class SchedulingService extends IntentService {
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
                                         String prescriptionId = json1.getString("prescriptionId");
                                         String cfUuhidId = json1.getString("cfUuhidId");
-                                        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                        if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                             getSaveUploadPrescriptionMetadata(prescriptionId, cfUuhidId, prescriptionData.get(finalI).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews(), prescriptionData.get(finalI).getCommonID(), prescriptionData.get(finalI).getIsUploaded());
                                         }
                                     } else {
@@ -130,19 +129,20 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                        //this.showSnackbar(rootView, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
 
                     }
                 }) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("a_t", AppPreference.getInstance().getAt());
-                        headers.put("r_t", AppPreference.getInstance().getRt());
-                        headers.put("user_name", AppPreference.getInstance().getUserName());
-                        headers.put("email_id", AppPreference.getInstance().getUserID());
-                        headers.put("cf_uuhid", prescriptionData.get(finalI).getCfUuhid());
-                        headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                        headers.put("a_t", preferences.getString("a_t", ""));
+                        headers.put("r_t", preferences.getString("r_t", ""));
+                        headers.put("user_name", preferences.getString("user_name", ""));
+                        headers.put("email_id", preferences.getString("email_id", ""));
+                        headers.put("cf_uuhid",prescriptionData.get(finalI).getCfUuhid());
+                        headers.put("user_id", preferences.getString("user_id", ""));
+
                         return headers;
                     }
                 };
@@ -151,7 +151,7 @@ public class SchedulingService extends IntentService {
 
 
 //for lab report
-            final List<LabReportListView> labData = db.getLabData(CureFull.getInstanse().getActivityIsntanse(), "1");
+            final List<LabReportListView> labData = db.getLabData(this, "1");
             for (int ilab = 0; ilab < labData.size(); ilab++) {
 
                 JSONObject data = JsonUtilsObject.toSaveUploadLabReposrtMetadata(labData.get(ilab).getReportDate(), labData.get(ilab).getDoctorName(), labData.get(ilab).getTestName());
@@ -173,7 +173,7 @@ public class SchedulingService extends IntentService {
                                         JSONObject json1 = new JSONObject(json.getString("payload"));
                                         String prescriptionId = json1.getString("labReportId");
                                         String cfUuhidId = json1.getString("cfUuhidId");
-                                        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                        if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                             getSaveUploadLabMetadata(prescriptionId, cfUuhidId, labData.get(finalI).getLabReportImageListViews(), labData.get(finalI).getCommonID(), labData.get(finalI).getIsUploaded());
 
                                         }
@@ -202,12 +202,15 @@ public class SchedulingService extends IntentService {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("a_t", AppPreference.getInstance().getAt());
-                        headers.put("r_t", AppPreference.getInstance().getRt());
-                        headers.put("user_name", AppPreference.getInstance().getUserName());
-                        headers.put("email_id", AppPreference.getInstance().getUserID());
-                        headers.put("cf_uuhid", labData.get(finalI).getCfUuhid());
-                        headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                        headers.put("a_t", preferences.getString("a_t", ""));
+                        headers.put("r_t", preferences.getString("r_t", ""));
+                        headers.put("user_name", preferences.getString("user_name", ""));
+                        headers.put("email_id", preferences.getString("email_id", ""));
+                        headers.put("cf_uuhid",labData.get(finalI).getCfUuhid());
+                        headers.put("user_id", preferences.getString("user_id", ""));
+
+
+
                         return headers;
                     }
                 };
@@ -216,7 +219,7 @@ public class SchedulingService extends IntentService {
 
             }
 //for lab reminder
-            final List<Lab_Test_Reminder_SelfListView> labreminder = db.getLabReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+            final List<Lab_Test_Reminder_SelfListView> labreminder = db.getLabReminderbySelf(this, "1");
             for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
                 boolean isNewReminder = false;
                 String monthh = "";
@@ -224,11 +227,12 @@ public class SchedulingService extends IntentService {
                 String hour = "";
                 String minute = "";
 
-                if (labreminder.get(ilrs).getStatus().equalsIgnoreCase("1")) {
+                if (labreminder.get(ilrs).getLabTestReminderId().length()>7) {
                     isNewReminder = true;
                 } else {
                     isNewReminder = false;
                 }
+
                 if (labreminder.get(ilrs).getMonth() < 10) {
 
                     monthh = "0" + labreminder.get(ilrs).getMonth();
@@ -265,7 +269,7 @@ public class SchedulingService extends IntentService {
                             @Override
                             public void onResponse(JSONObject response) {
 
-                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                               // this.showProgressBar(false);
                                 int responseStatus = 0;
                                 JSONObject json = null;
                                 try {
@@ -294,18 +298,20 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                       // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                     }
                 }) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("a_t", AppPreference.getInstance().getAt());
-                        headers.put("r_t", AppPreference.getInstance().getRt());
-                        headers.put("user_name", AppPreference.getInstance().getUserName());
-                        headers.put("email_id", AppPreference.getInstance().getUserID());
-                        headers.put("cf_uuhid", labreminder.get(finalIlrs).getCfuuhId());
-                        headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                        headers.put("a_t", preferences.getString("a_t", ""));
+                        headers.put("r_t", preferences.getString("r_t", ""));
+                        headers.put("user_name", preferences.getString("user_name", ""));
+                        headers.put("email_id", preferences.getString("email_id", ""));
+                        headers.put("cf_uuhid",labreminder.get(finalIlrs).getCfuuhId());
+                        headers.put("user_id", preferences.getString("user_id", ""));
+                        //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
                         return headers;
                     }
                 };
@@ -315,18 +321,24 @@ public class SchedulingService extends IntentService {
 
             ///doctor reminder
 
-            final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = db.getDoctorReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+            final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = db.getDoctorReminderbySelf(this, "1");
             for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
                 boolean isNewReminder = false;
                 String monthh = "";
                 String dayy = "";
                 String hour = "";
                 String minute = "";
-                if (doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("1")) {
+
+                if(doctorreminder.get(ilrs).getDoctorFollowupReminderId().length()>7){
+                    isNewReminder = true;
+                }else{
+                   isNewReminder = false;
+                }
+                /*if (doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
                     isNewReminder = true;
                 } else {
                     isNewReminder = false;
-                }
+                }*/
                 if (doctorreminder.get(ilrs).getMonth() < 10) {
 
                     monthh = "0" + doctorreminder.get(ilrs).getMonth();
@@ -362,7 +374,7 @@ public class SchedulingService extends IntentService {
                             @Override
                             public void onResponse(JSONObject response) {
 
-                                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                               // this.showProgressBar(false);
                                 int responseStatus = 0;
                                 JSONObject json = null;
                                 try {
@@ -391,18 +403,21 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                       // this.showProgressBar(false);
                     }
                 }) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("a_t", AppPreference.getInstance().getAt());
-                        headers.put("r_t", AppPreference.getInstance().getRt());
-                        headers.put("user_name", AppPreference.getInstance().getUserName());
-                        headers.put("email_id", AppPreference.getInstance().getUserID());
+
+                        headers.put("a_t", preferences.getString("a_t", ""));
+                        headers.put("r_t", preferences.getString("r_t", ""));
+                        headers.put("user_name", preferences.getString("user_name", ""));
+                        headers.put("email_id", preferences.getString("email_id", ""));
                         headers.put("cf_uuhid", doctorreminder.get(finalIlrs).getCfuuhId());
-                        headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                        headers.put("user_id", preferences.getString("user_id", ""));
+                        //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
                         return headers;
                     }
                 };
@@ -411,7 +426,7 @@ public class SchedulingService extends IntentService {
             }
 
             ////medicine reminder upload
-            final List<Reminder_SelfListView> medicinereminder = db.getMedicineReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+            final List<Reminder_SelfListView> medicinereminder = db.getMedicineReminderbySelf(this, "1");
             //edit : online case (0 - add api , 1 - edit api) and offline case ( remindermdicineid.length>7 && edit is 1 - add api)
             for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
                 String time = "";
@@ -476,7 +491,7 @@ public class SchedulingService extends IntentService {
                                 @Override
                                 public void onResponse(JSONObject response) {
 
-                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
                                     int responseStatus = 0;
                                     JSONObject json = null;
@@ -506,17 +521,21 @@ public class SchedulingService extends IntentService {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                           // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         }
                     }) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("a_t", AppPreference.getInstance().getAt());
-                            headers.put("r_t", AppPreference.getInstance().getRt());
-                            headers.put("user_name", AppPreference.getInstance().getUserName());
-                            headers.put("email_id", AppPreference.getInstance().getUserID());
+
+                            headers.put("a_t", preferences.getString("a_t", ""));
+                            headers.put("r_t", preferences.getString("r_t", ""));
+                            headers.put("user_name", preferences.getString("user_name", ""));
+                            headers.put("email_id", preferences.getString("email_id", ""));
                             headers.put("cf_uuhid", medicinereminder.get(finalI).getCfuuhId());
+                            headers.put("user_id", preferences.getString("user_id", ""));
+                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
                             return headers;
                         }
                     };
@@ -532,7 +551,7 @@ public class SchedulingService extends IntentService {
                                 @Override
                                 public void onResponse(JSONObject response) {
 
-                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                    //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
                                     int responseStatus = 0;
                                     JSONObject json = null;
@@ -562,17 +581,21 @@ public class SchedulingService extends IntentService {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
                         }
                     }) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("a_t", AppPreference.getInstance().getAt());
-                            headers.put("r_t", AppPreference.getInstance().getRt());
-                            headers.put("user_name", AppPreference.getInstance().getUserName());
-                            headers.put("email_id", AppPreference.getInstance().getUserID());
+
+                            headers.put("a_t", preferences.getString("a_t", ""));
+                            headers.put("r_t", preferences.getString("r_t", ""));
+                            headers.put("user_name", preferences.getString("user_name", ""));
+                            headers.put("email_id", preferences.getString("email_id", ""));
                             headers.put("cf_uuhid", medicinereminder.get(finalI).getCfuuhId());
+                            headers.put("user_id", preferences.getString("user_id", ""));
+                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
                             return headers;
                         }
                     };
@@ -589,7 +612,7 @@ public class SchedulingService extends IntentService {
                                 @Override
                                 public void onResponse(JSONObject response) {
 
-                                    CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                                   // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 //                        Log.e("MedRemDetails, URL 3.", response.toString());
                                     int responseStatus = 0;
                                     JSONObject json = null;
@@ -619,19 +642,22 @@ public class SchedulingService extends IntentService {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
                         }
                     }) {
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("a_t", AppPreference.getInstance().getAt());
-                            headers.put("r_t", AppPreference.getInstance().getRt());
-                            headers.put("user_name", AppPreference.getInstance().getUserName());
-                            headers.put("email_id", AppPreference.getInstance().getUserID());
+
+                            headers.put("a_t", preferences.getString("a_t", ""));
+                            headers.put("r_t", preferences.getString("r_t", ""));
+                            headers.put("user_name", preferences.getString("user_name", ""));
+                            headers.put("email_id", preferences.getString("email_id", ""));
                             headers.put("cf_uuhid", medicinereminder.get(finalI1).getCfuuhId());
-                            headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                            headers.put("user_id", preferences.getString("user_id", ""));
+                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
                             return headers;
                         }
                     };
@@ -651,7 +677,7 @@ public class SchedulingService extends IntentService {
     }
 
     private void medicine_notification_from_sqlite() {
-        final List<Reminder_SelfListView> medicinereminder = DbOperations.getMedicineReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+        final List<Reminder_SelfListView> medicinereminder = DbOperations.getMedicineReminderbySelf(this, "1");
         for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
             String hour = "";
             String minute = "";
@@ -671,47 +697,47 @@ public class SchedulingService extends IntentService {
             } else {
                 dayy = "" + medicinereminder.get(i1).getDate();
             }
+            for (int z = 0; z < medicinereminder.get(i1).getReminderMedicnceDoagePers().size(); z++) {
+                int sizee = medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().size();
+                for (int y = 0; y < sizee; y++) {
+                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour() < 10) {
 
-            int sizee = medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().size();
-            for (int y = 0; y < sizee; y++) {
-                if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour() < 10) {
-
-                    hour = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour();
-                } else {
-                    hour = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour();
-                }
-
-                if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute() < 10) {
-
-                    minute = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute();
-                } else {
-                    minute = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute();
-                }
-
-                String local_db_date_time = medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
-                String date = Utils.getTodayDate();
-                String time = Utils.getTodayTime();
-                String date_time = date + " " + time;
-                try {
-                    if (local_db_date_time.equals(date_time)) {
-                        String txt_detail = AppPreference.getInstance().getUserName() + ", please take your dose of " +medicinereminder.get(i1).getRemMedicineName()+". Each dose is important.";
-                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                        notificationUtils.allGetNotfication(AppPreference.getInstance().getUserName(), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER");
+                        hour = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour();
+                    } else {
+                        hour = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour();
                     }
-                }catch (Exception e){
-                    e.getMessage();
+
+                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute() < 10) {
+
+                        minute = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute();
+                    } else {
+                        minute = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute();
+                    }
+
+                    String local_db_date_time = medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
+                    String date = Utils.getTodayDate();
+                    String time = Utils.getTodayTime();
+                    String date_time = date + " " + time;
+                    try {
+                        if (local_db_date_time.equals(date_time)) {
+                            String txt_detail = preferences.getString("user_name", "") + ", please take your dose of " + medicinereminder.get(i1).getRemMedicineName() + ". Each dose is important.";
+                            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute, medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId());
+                        }
+                    } catch (Exception e) {
+                        e.getMessage();
+                    }
+
                 }
 
             }
-
-
 
         }
     }
 
     private void doctor_notification_from_sqlite() {
         //doctor reminder notification from local db;
-        final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = DbOperations.getDoctorReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+        final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = DbOperations.getDoctorReminderbySelf(this, "1");
         for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
             boolean isNewReminder = false;
             String monthh = "";
@@ -754,9 +780,11 @@ public class SchedulingService extends IntentService {
             String date_time = date + " " + time;
             try {
                 if (local_db_date_time.equals(date_time)) {
-                    String txt_detail = AppPreference.getInstance().getUserName() + " ,you have a doctor visit on " + doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy +". Plan your day accordingly";
-                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                    notificationUtils.allGetNotfication(AppPreference.getInstance().getUserName(), txt_detail, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "DOCTOR_FOLLOWUP_REMINDER");
+                    if(doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                        String txt_detail = preferences.getString("user_name", "") + " ,you have a doctor visit on " + doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Plan your day accordingly";
+                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                        notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "DOCTOR_FOLLOWUP_REMINDER");
+                    }
                 }
             } catch (Exception e) {
                 e.getMessage();
@@ -766,7 +794,7 @@ public class SchedulingService extends IntentService {
 
     private void lab_notification_from_sqlite() {
         //lab reminder notification from local db;
-        final List<Lab_Test_Reminder_SelfListView> labreminder = DbOperations.getLabReminderbySelf(CureFull.getInstanse().getActivityIsntanse(), "1");
+        final List<Lab_Test_Reminder_SelfListView> labreminder = DbOperations.getLabReminderbySelf(this, "1");
 
         for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
 
@@ -807,9 +835,11 @@ public class SchedulingService extends IntentService {
             Log.e("dateLAB", date_time);
             try {
                 if (local_db_date_time.equals(date_time)) {
-                    String txt_detail = AppPreference.getInstance().getUserName() + ", your lab test for " + labreminder.get(ilrs).getLabName() + " is due on " + labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Do Visit. Stay Healthy.";
-                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                    notificationUtils.allGetNotfication(AppPreference.getInstance().getUserName(), txt_detail, labreminder.get(ilrs).getLabTestReminderId(), "LAB_TEST_REMINDER");
+                    if(labreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || labreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                        String txt_detail = preferences.getString("user_name", "") + ", your lab test for " + labreminder.get(ilrs).getLabName() + " is due on " + labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Do Visit. Stay Healthy.";
+                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                        notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, labreminder.get(ilrs).getLabTestReminderId(), "LAB_TEST_REMINDER");
+                    }
                 }
             } catch (Exception e) {
                 e.getMessage();
@@ -834,9 +864,9 @@ public class SchedulingService extends IntentService {
                                     String accessKeyID = json1.getString("accessKeyID");
                                     String secretAccessKey = json1.getString("secretAccessKey");
                                     String sessionToken = json1.getString("sessionToken");
-                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                    if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         valueUpload = 0;
-                                        uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + MyConstants.AWSType.FOLDER_PRECREPTION_NAME, file, commonID, isUploaded);
+                                        uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + MyConstants.AWSType.FOLDER_PRECREPTION_NAME, file, commonID, isUploaded);
                                     }
                                 }
 
@@ -859,12 +889,14 @@ public class SchedulingService extends IntentService {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+               // headers.put("cf_uuhid", cfuuhidId);
+                headers.put("user_id", preferences.getString("user_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
                 return headers;
             }
         };
@@ -895,7 +927,7 @@ public class SchedulingService extends IntentService {
         }
 
         for (int i = 0; i < imageFile.size(); i++) {
-            TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+            TransferUtility transferUtility = new TransferUtility(s3client, this);
             // Request server-side encryption.
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
@@ -917,10 +949,10 @@ public class SchedulingService extends IntentService {
                             case "COMPLETED":
                                 valueUpload += 1;
 //                                Log.e("check", " - " + finalI + " size " + imageFile.size() + "value " + valueUpload);
-                                imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/prescription/" + observer.getKey());
+                                imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + "/prescription/" + observer.getKey());
                                 if (valueUpload == (imageFile.size())) {
 //                                    Log.e("call ", "call ");
-                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                    if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile, commonID, isUploaded);
                                     }
                                 }
@@ -955,7 +987,7 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        //this.showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -991,12 +1023,14 @@ public class SchedulingService extends IntentService {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
+
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
                 headers.put("cf_uuhid", cfuuhidId);
-                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                headers.put("user_id", preferences.getString("user_id", ""));
+                //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
                 return headers;
             }
         };
@@ -1019,9 +1053,9 @@ public class SchedulingService extends IntentService {
                                     String accessKeyID = json1.getString("accessKeyID");
                                     String secretAccessKey = json1.getString("secretAccessKey");
                                     String sessionToken = json1.getString("sessionToken");
-                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                    if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         valueUpload = 0;
-                                        uploadFileLab(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file, commomID, isUploaded);
+                                        uploadFileLab(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file, commomID, isUploaded);
                                     }
                                 }
 
@@ -1044,12 +1078,16 @@ public class SchedulingService extends IntentService {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhidNeew());
-                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+
+
+
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
+
                 return headers;
             }
         };
@@ -1080,7 +1118,7 @@ public class SchedulingService extends IntentService {
         }
 
         for (int i = 0; i < imageFile.size(); i++) {
-            TransferUtility transferUtility = new TransferUtility(s3client, CureFull.getInstanse().getActivityIsntanse());
+            TransferUtility transferUtility = new TransferUtility(s3client, this);
             // Request server-side encryption.
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
@@ -1102,10 +1140,10 @@ public class SchedulingService extends IntentService {
                             case "COMPLETED":
                                 valueUpload += 1;
 //
-                                imageFile.get(finalI).setReportImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + AppPreference.getInstance().getcf_uuhidNeew() + "/labReport/" + observer.getKey());
+                                imageFile.get(finalI).setReportImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + "/labReport/" + observer.getKey());
                                 if (valueUpload == (imageFile.size())) {
 //                                    Log.e("call ", "call ");
-                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                                    if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         jsonSaveUploadedLabData(prescriptionId, cfUuhidId, imageFile, commomID, isUploaded);
                                     }
                                 }
@@ -1234,7 +1272,7 @@ public class SchedulingService extends IntentService {
 
         FileOutputStream out = null;
         String filename = "";
-        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+        if (CheckNetworkState.isNetworkAvailable(this)) {
             filename = getFilename();
         } else {
             filename = getFilenameLocal();
@@ -1276,7 +1314,7 @@ public class SchedulingService extends IntentService {
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = CureFull.getInstanse().getActivityIsntanse().getContentResolver().query(contentUri, null, null, null, null);
+        Cursor cursor = this.getContentResolver().query(contentUri, null, null, null, null);
         if (cursor == null) {
             return contentUri.getPath();
         } else {
@@ -1312,7 +1350,7 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                       // this.showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1341,18 +1379,20 @@ public class SchedulingService extends IntentService {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+               // this.showProgressBar(false);
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
                 headers.put("cf_uuhid", cfuuhidId);
-                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
                 return headers;
             }
         };

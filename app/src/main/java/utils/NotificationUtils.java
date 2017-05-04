@@ -40,6 +40,12 @@ public class NotificationUtils {
 
     }
 
+    public void allGetNotficationMedicine(String name, String text, String typeId, String type, String startDate, String time,String dosagePerDayDetailsId) {
+
+        notificationMedicineReminder(name, text, typeId, type, startDate, time,dosagePerDayDetailsId);
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void notificationMedicine(String name, String text, String id, String type) {
         // Prepare intent which is triggered if the
@@ -114,8 +120,8 @@ public class NotificationUtils {
             noti.flags |= Notification.FLAG_SHOW_LIGHTS;
             try {
                 notificationManager.notify(Integer.parseInt(id), noti);
-            }catch (Exception e){
-                notificationManager.notify((int)Long.parseLong(id), noti);
+            } catch (Exception e) {
+                notificationManager.notify((int) Long.parseLong(id), noti);
             }
         } else {
 
@@ -141,14 +147,109 @@ public class NotificationUtils {
             noti.flags |= Notification.FLAG_SHOW_LIGHTS;
             try {
                 notificationManager.notify(Integer.parseInt(id), noti);
-            }catch (Exception e){
-                notificationManager.notify((int)Long.parseLong(id), noti);
+            } catch (Exception e) {
+                notificationManager.notify((int) Long.parseLong(id), noti);
             }
         }
 
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void notificationMedicineReminder(String name, String text, String id, String type, String startDate, String time,String dosagePerDayDetailsId) {
+
+        Intent intent = new Intent();
+        intent.setAction("complete");
+        intent.putExtra("perDayDosageDetailsId", id);
+        intent.putExtra("type", type);
+        intent.putExtra("currentdate", startDate);
+        intent.putExtra("time", time);
+        intent.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+        PendingIntent pIntent = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent intent1 = new Intent();
+        intent1.setAction("skip");
+        intent1.putExtra("perDayDosageDetailsId", id);
+        intent1.putExtra("type", type);
+        intent1.putExtra("currentdate", startDate);
+        intent1.putExtra("time", time);
+        intent1.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+        PendingIntent pIntent2 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        Intent intent11 = new Intent(_context, MainActivity.class);
+        intent11.setAction("open");
+        intent11.putExtra("perDayDosageDetailsId", id);
+        intent11.putExtra("type", type);
+        intent11.putExtra("currentdate", startDate);
+        intent11.putExtra("time", time);
+        intent11.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+        intent11.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        intent11.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pIntent1 = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent11, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        int color = ContextCompat.getColor(_context, R.color.health_red_drawer);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
+                    R.mipmap.app_icons);
+            Notification noti = new Notification.Builder(_context)
+                    .setContentTitle(name)
+                    .setContentText(text)
+                    .setSmallIcon(R.drawable.notification_small)
+                    .setStyle(new Notification.BigTextStyle().bigText(text))
+                    .setColor(color)
+                    .setLargeIcon(icon2)
+//                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.done, "Done", pIntent)
+                    .addAction(R.drawable.skip, "Skip", pIntent2)
+                    .setContentIntent(pIntent1)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
+            // hide the notification after its selected
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+            noti.defaults |= Notification.DEFAULT_SOUND;
+            noti.defaults |= Notification.DEFAULT_LIGHTS;
+            noti.flags |= Notification.FLAG_SHOW_LIGHTS;
+            try {
+                notificationManager.notify(Integer.parseInt(id), noti);
+            } catch (Exception e) {
+                notificationManager.notify((int) Long.parseLong(id), noti);
+            }
+        } else {
+
+            Bitmap icon2 = BitmapFactory.decodeResource(_context.getResources(),
+                    R.mipmap.app_icons);
+            Notification noti = new Notification.Builder(_context)
+                    .setContentTitle(name)
+                    .setContentText(text)
+                    .setSmallIcon(R.drawable.notification_small)
+                    .setStyle(new Notification.BigTextStyle().bigText(text))
+                    .setLargeIcon(icon2)
+//                .setStyle(new Notification.BigTextStyle().bigText("Water can help against backache! Your intervertebral discs depend on sufficient interstitial fluid for proper function. Drinking enough water helps this happen."))
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.done, "Done", pIntent)
+                    .addAction(R.drawable.skip, "Skip", pIntent2)
+                    .setContentIntent(pIntent1)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
+            // hide the notification after its selected
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+            noti.defaults |= Notification.DEFAULT_SOUND;
+            noti.defaults |= Notification.DEFAULT_LIGHTS;
+            noti.flags |= Notification.FLAG_SHOW_LIGHTS;
+            try {
+                notificationManager.notify(Integer.parseInt(id), noti);
+            } catch (Exception e) {
+                notificationManager.notify((int) Long.parseLong(id), noti);
+            }
+        }
+
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void notificationWithImage() {

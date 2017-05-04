@@ -358,8 +358,9 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                     details = new LabDoctorName(jord.get(i).toString());
                     detailListing.add(details);
                     //insert local
-                   // details.getInsertingValue(jord.get(i).toString());
+
                 }
+                details.getInsertingValue(detailListing);
             } catch (Exception e) {
 
             }

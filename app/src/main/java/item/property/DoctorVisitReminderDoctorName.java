@@ -45,6 +45,7 @@ public class DoctorVisitReminderDoctorName implements MyConstants.JsonUtils {
             try {
                 card = new Doctor_Visit_Reminder_DoctorListView(value.get(i));
                 this.reminder_doctorListViews.add(card);
+                card.getInsertingValue(value.get(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }

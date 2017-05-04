@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import curefull.healthapp.CureFull;
 import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 
 import static utils.MyConstants.JsonUtils.COMMON_ID;
 import static utils.MyConstants.JsonUtils.DOCTOR_NAME;
@@ -121,7 +122,8 @@ public class Reminder_SelfListView implements Parcelable {
             setCurrentDate(cur.getString(cur.getColumnIndex("currentdate")));
             setEdit(cur.getString(cur.getColumnIndex("edit")));
            // setReminderMedicnceTimes(jsonObject.getJSONArray("dosagePerDateResponse")));
-            reminderMedicnceDoagePers= DbOperations.setReminderMedicineDosageLocal(CureFull.getInstanse().getActivityIsntanse(),cur.getString(cur.getColumnIndex(COMMON_ID)),cur.getString(cur.getColumnIndex("currentdate")));
+
+                reminderMedicnceDoagePers = DbOperations.setReminderMedicineDosageLocal(CureFull.getInstanse().getActivityIsntanse(), cur.getString(cur.getColumnIndex(COMMON_ID)), cur.getString(cur.getColumnIndex("currentdate")));
 
 
 

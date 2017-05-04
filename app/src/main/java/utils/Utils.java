@@ -327,5 +327,17 @@ public class Utils {
         return formattedDate;
     }
 
-
+    public static String getNextDate(String date) {
+        String dt = date;  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+            c.add(Calendar.DATE, 1);  // number of days to add
+            dt = sdf.format(c.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dt;
+    }
 }

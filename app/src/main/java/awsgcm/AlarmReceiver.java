@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
@@ -20,7 +22,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +34,11 @@ import java.util.Map;
 import asyns.JsonUtilsObject;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.SchedulingService;
+import item.property.Lab_Test_Reminder_SelfListView;
+import item.property.ReminderMedicnceDoagePer;
 import item.property.StepsCountsStatus;
 import item.property.UserInfo;
+import operations.DatabaseHelper;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import utils.CheckNetworkState;
@@ -40,6 +47,8 @@ import utils.NotificationUtils;
 import utils.Utils;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static utils.MyConstants.IDataBaseTableKeys.TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE;
+import static utils.MyConstants.IDataBaseTableKeys.TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE;
 
 /**
  * Created by Curefull on 02-02-2017.
@@ -55,7 +64,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String action = intent.getAction();
 
-       // NotificationUtils notificationUtils = new NotificationUtils(context);
+        // NotificationUtils notificationUtils = new NotificationUtils(context);
         // notificationUtils.allGetNotfication("sdd", "ds", "123", "sdd");
 
         if (action.equalsIgnoreCase("steps")) {
@@ -110,40 +119,89 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             String id = intent.getExtras().getString("perDayDosageDetailsId");
             String type = intent.getExtras().getString("type");
             if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     jsonUploadLabTest(context, id, action);
-                }else{
-                    ContentValues cv=new ContentValues();
-                    cv.put("labTestReminderId",id);
-                    cv.put("labTestStatus",action);
-                    DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,id);
-                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-                    try {
-                        manager.cancel((int) Long.parseLong(id));
-                    }catch (Exception e){
-                        manager.cancel(Integer.parseInt(id));
-                    }
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("labTestReminderId", id);
+                    cv.put("labTestStatus", action);
+                    DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id);
+
+
+                        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                        try {
+                            manager.cancel((int) Long.parseLong(id));
+                        } catch (Exception e) {
+                            manager.cancel(Integer.parseInt(id));
+                        }
+
                 }
             } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     jsonUploadDoctorVist(context, id, action);
-                }else{
-                    ContentValues cv=new ContentValues();
-                    cv.put("doctorFollowupReminderId",id);
-                    cv.put("status",action);
-                    DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,id);
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("doctorFollowupReminderId", id);
+                    cv.put("status", action);
+                    DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id);
                     NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
                     try {
                         manager.cancel((int) Long.parseLong(id));
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         manager.cancel(Integer.parseInt(id));
                     }
                 }
             } else {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                //for medicine
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     jsonUploadMedicine(context, id, action);
-                }else{
+                } else {
+                    //medicineReminderId
+                    String date = intent.getExtras().getString("currentdate");
+                    String time = intent.getExtras().getString("time");
+                    String dosagePerDayDetailsId = intent.getExtras().getString("dosagePerDayDetailsId");
+                    ReminderMedicnceDoagePer imageListView = new ReminderMedicnceDoagePer();
+                    try {
+                        imageListView.setInsertingValueNotificationDoneSkip(context, time, id, date, action, dosagePerDayDetailsId);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//for main table status update
+                    DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
+                            .getDatabaseHelperInstance(context);
+                    Cursor cursor;
+                    Cursor cursor1;
+                    if (dbhelperShopCart == null)
+                        return;
+                    SQLiteDatabase database = null;
+                    try {
+                        dbhelperShopCart.createDataBase();
+                    } catch (Exception e) {
+                        e.getMessage();
+                    }
+                    database = DatabaseHelper.openDataBase();
+                    String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + id + "' and status='complete'";
+                    cursor = database.rawQuery(query, null);
+                    if (cursor.getCount() > 0) {
+                        String query1 = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + id + "'";
+                        cursor1 = database.rawQuery(query1, null);
+                        if (cursor1.getCount() == cursor.getCount()) {
+                            ContentValues cv = new ContentValues();
+                            cv.put("doctorFollowupReminderId", id);
+                            cv.put("status", "complete");
+                            cv.put("currentdate", date);
+                            cv.put("time", time);
+                            DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id, date);
+                        }
+                    }
 
+
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    } catch (Exception e) {
+                        manager.cancel(Integer.parseInt(id));
+                    }
                 }
             }
 

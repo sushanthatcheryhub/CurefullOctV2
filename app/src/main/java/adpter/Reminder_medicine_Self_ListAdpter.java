@@ -95,6 +95,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                         int hrs1 = healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(i).getReminderMedicnceTimes().get(j).getHour();
                         int mins1 = healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(i).getReminderMedicnceTimes().get(j).getMinute();
                         med += CureFull.getInstanse().getActivityIsntanse().updateTime(hrs1, mins1) + " | ";
+
                     }
                 }
 
@@ -145,6 +146,11 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 bundle.putBoolean("beforeMeal", healthNoteItemses.get(position).isBeforeMeal());
                 bundle.putBoolean("afterMeal", healthNoteItemses.get(position).isAfterMeal());
                 bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
+
+                bundle.putString("dosagePerDayDetailsId",healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(0).getDosagePerDayDetailsId());
+
+
+
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentReminderSetMedicine(), bundle, true);
             }

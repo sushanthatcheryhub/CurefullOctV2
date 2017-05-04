@@ -1,6 +1,7 @@
 package item.property;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,8 +23,8 @@ import utils.MyConstants;
 public class DoctorVistReminderListView implements MyConstants.JsonUtils {
 
     private ArrayList<Doctor_Visit_Reminder_SelfListView> reminder_selfListViews;
-
     private ArrayList<DoctorVisitReminderDoctorName> reminderDoctorNames;
+    private ArrayList<Doctor_Visit_Reminder_DoctorListView> reminderDoctorNamesLocal;
 
     public DoctorVistReminderListView() {
     }
@@ -48,12 +49,50 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
             ArrayList<Doctor_Visit_Reminder_SelfListView> labReportImageListViews= DbOperations.getDoctorReportReminder11(CureFull.getInstanse().getActivityIsntanse(),datee);
             setReminder_selfListViews(labReportImageListViews);
 
-            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("listOfFollowupRemiderByDoctor"));
-            //setReminderDoctorNames(jsonToMap(jsonObject1));
         }catch (Exception e){
             e.getMessage();
         }
 
+    }
+//for filter
+    public DoctorVistReminderListView(Cursor cursorprivate, String status,String NIU,String NIU1) {
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            ArrayList<Doctor_Visit_Reminder_SelfListView> labReportImageListViews= DbOperations.getDoctorReportReminder11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+            setReminder_selfListViews(labReportImageListViews);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+
+    public DoctorVistReminderListView(Cursor cur,String datee,String doctor) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Doctor_Visit_Reminder_DoctorListView> labReportImageListViews= DbOperations.getDoctorReportReminder11Curefull(CureFull.getInstanse().getActivityIsntanse(),datee);
+            Log.e("doc_labtest",""+labReportImageListViews);
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public DoctorVistReminderListView(Cursor cur,String status,String doctor,String NIU,String NIU1) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Doctor_Visit_Reminder_DoctorListView> labReportImageListViews= DbOperations.getDoctorReportReminder11CurefullAfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<Doctor_Visit_Reminder_SelfListView> getReminder_selfListViews() {
@@ -106,6 +145,13 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
 
     public void setReminderDoctorNames(ArrayList<DoctorVisitReminderDoctorName> reminderDoctorNames) {
         this.reminderDoctorNames = reminderDoctorNames;
+    }
+
+    public void setReminderDoctorNamesLocal(ArrayList<Doctor_Visit_Reminder_DoctorListView> reminderDoctorNamesLocal) {
+        this.reminderDoctorNamesLocal = reminderDoctorNamesLocal;
+    }
+    public ArrayList<Doctor_Visit_Reminder_DoctorListView> getReminderDoctorNamesLocal() {
+        return reminderDoctorNamesLocal;
     }
 
     public static Map<String, Object> jsonToMap(JSONObject json) throws JSONException {

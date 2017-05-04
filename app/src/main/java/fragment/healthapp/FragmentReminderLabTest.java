@@ -45,6 +45,7 @@ import java.util.Map;
 
 import ElasticVIews.ElasticAction;
 import adpter.Reminder_Lab_Docotr_child_ListAdpter;
+import adpter.Reminder_Lab_Docotr_child_ListAdpter_Localdb;
 import adpter.Reminder_Lab_Self_ListAdpter;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
@@ -53,6 +54,7 @@ import item.property.LabDoctorName;
 import item.property.LabReportListView;
 import item.property.LabTestReminderDoctorName;
 import item.property.LabTestReminderListView;
+import item.property.Lab_Test_Reminder_DoctorListView;
 import item.property.Lab_Test_Reminder_SelfListView;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -72,6 +74,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private RelativeLayout relative_bottom_next, realtive_today, rel_set_reminder, liner_filter_by, realtive_notesShort;
     private RecyclerView recyclerView_doctor, recyclerView_self;
     private Reminder_Lab_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
+    private Reminder_Lab_Docotr_child_ListAdpter_Localdb reminder_medicine_docotr_child_listAdpter_localdb;
     private Reminder_Lab_Self_ListAdpter reminder_medicine_self_listAdpter;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
     boolean flagShort = true, isReset = true, isChecked = true;
@@ -89,7 +92,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private TextView btn_history, btn_next;
     private String startFrom = "";
     List<LabDoctorName> LabDoctorNamelocal = null;
-
+    private boolean apply_flag = false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -349,11 +352,17 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                 if (isReset) {
                     isReset = false;
                     isChecked = false;
+                    apply_flag=false;
                     realtive_today.setVisibility(View.VISIBLE);
                     radioPending.setChecked(false);
                     radioCurefull.setChecked(false);
                     radioDone.setChecked(false);
+                    radioSelf.setChecked(false);
+
+                    radioPending.setSelected(false);
+                    radioCurefull.setSelected(false);
                     radioSelf.setSelected(false);
+                    radioDone.setSelected(false);
                     reminder = "N/A";
                     status = "N/A";
                     doctorName = "N/A";
@@ -367,13 +376,14 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             case R.id.btn_apply:
 //                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
+                apply_flag = true;
                 launchTwitterShort(rootView);
                 getReminderLabTest();
                 break;
             case R.id.liner_filter_by:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+               // if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
                         txt_no_medicine.post(new Runnable() {
                             @Override
@@ -382,10 +392,10 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                             }
                         });
                     }
-                } else {
+                /*} else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
 
-                }
+                }*/
 
 
                 break;
@@ -490,26 +500,12 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             isReset = true;
+                            try {
+                                LabTestReminderListView response = DbOperations.getLabTestReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
 
-                            LabTestReminderListView response = DbOperations.getLabTestReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhidNeew(), date);
-                            if (response != null) {
-                                if (response.getReminderDoctorNames() != null) {
-                                    if (response.getReminderDoctorNames().size() > 0) {
-                                        setDoctorAdpter(response.getReminderDoctorNames());
-                                        recyclerView_doctor.setVisibility(View.VISIBLE);
-                                    } else {
-                                        recyclerView_doctor.setVisibility(View.GONE);
-                                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                            relative_bottom_next.setVisibility(View.GONE);
-                                        }
-                                        txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
-                                        txt_self.setVisibility(View.GONE);
-                                        txt_no_medicine.setVisibility(View.VISIBLE);
-                                    }
-                                }
                                 if (response.getReminder_selfListViews().size() > 0) {
                                     txt_self.setVisibility(View.VISIBLE);
-
+                                    txt_no_medicine.setVisibility(View.GONE);
                                     setSelfMedAdpter(response.getReminder_selfListViews());
                                     recyclerView_self.setVisibility(View.VISIBLE);
                                 } else {
@@ -522,17 +518,26 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                                     txt_self.setVisibility(View.GONE);
                                     txt_no_medicine.setVisibility(View.VISIBLE);
                                 }
-                            } else {
-                                recyclerView_self.setVisibility(View.GONE);
-                                recyclerView_doctor.setVisibility(View.GONE);
-                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                    relative_bottom_next.setVisibility(View.GONE);
-                                }
-                                txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
-                                txt_self.setVisibility(View.GONE);
-                                txt_no_medicine.setVisibility(View.VISIBLE);
-                            }
 
+                                LabTestReminderListView response_doctor = DbOperations.getLabTestReportReminderDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+                                if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                                    if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+                                        setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal());
+                                        recyclerView_doctor.setVisibility(View.VISIBLE);
+                                        txt_no_medicine.setVisibility(View.GONE);
+                                    } else {
+                                        recyclerView_doctor.setVisibility(View.GONE);
+                                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                            relative_bottom_next.setVisibility(View.GONE);
+                                        }
+                                        txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+                                        txt_self.setVisibility(View.GONE);
+                                        txt_no_medicine.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.getMessage();
+                            }
 
                            /* txt_no_medicine.setText(MyConstants.CustomMessages.ISSUES_WITH_SERVER);
                             txt_no_medicine.setVisibility(View.VISIBLE);*/
@@ -557,49 +562,158 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
 
-            LabTestReminderListView response = DbOperations.getLabTestReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
-            if (response != null) {
-                if (response.getReminderDoctorNames() != null) {
-                    if (response.getReminderDoctorNames().size() > 0) {
-                        setDoctorAdpter(response.getReminderDoctorNames());
-                        recyclerView_doctor.setVisibility(View.VISIBLE);
-                        txt_no_medicine.setVisibility(View.GONE);
+            if(apply_flag){
+                //date,reminder,status,doctorName;
+                if(reminder.equalsIgnoreCase("self")) {
+                    LabTestReminderListView response = DbOperations.getLabTestReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response != null) {
+                        if (response.getReminder_selfListViews().size() > 0) {
+                            txt_self.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                            setSelfMedAdpter(response.getReminder_selfListViews());
+                            recyclerView_self.setVisibility(View.VISIBLE);
+                            recyclerView_doctor.setVisibility(View.GONE);
+                        } else {
+                            txt_self.setVisibility(View.GONE);
+                            recyclerView_self.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+
+                    }
+
+                }else if(reminder.equalsIgnoreCase("curefull")){
+                    LabTestReminderListView response_doctor = DbOperations.getLabTestReportReminderDoctorAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response_doctor != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                            if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+                                setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal());
+                                recyclerView_doctor.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                                recyclerView_self.setVisibility(View.GONE);
+                            } else {
+                                recyclerView_doctor.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+                        }
                     } else {
                         recyclerView_doctor.setVisibility(View.GONE);
-                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                            relative_bottom_next.setVisibility(View.GONE);
-                        }
-                        txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
                         txt_self.setVisibility(View.GONE);
-                        txt_no_medicine.setVisibility(View.VISIBLE);
                     }
-                }
-                if (response.getReminder_selfListViews().size() > 0) {
-                    txt_self.setVisibility(View.VISIBLE);
-                    txt_no_medicine.setVisibility(View.GONE);
-                    setSelfMedAdpter(response.getReminder_selfListViews());
-                    recyclerView_self.setVisibility(View.VISIBLE);
-                } else {
-                    txt_self.setVisibility(View.GONE);
-                    recyclerView_self.setVisibility(View.GONE);
-                    if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                        relative_bottom_next.setVisibility(View.GONE);
-                    }
-                    txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
-                    txt_self.setVisibility(View.GONE);
-                    txt_no_medicine.setVisibility(View.VISIBLE);
-                }
-            } else {
-                recyclerView_self.setVisibility(View.GONE);
-                recyclerView_doctor.setVisibility(View.GONE);
-                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                    relative_bottom_next.setVisibility(View.GONE);
-                }
-                txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
-                txt_self.setVisibility(View.GONE);
-                txt_no_medicine.setVisibility(View.VISIBLE);
-            }
+                }else{
+                    //for status
+                    LabTestReminderListView response = DbOperations.getLabTestReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response != null) {
+                        if (response.getReminder_selfListViews().size() > 0) {
+                            txt_self.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                            setSelfMedAdpter(response.getReminder_selfListViews());
+                            recyclerView_self.setVisibility(View.VISIBLE);
+                        } else {
+                            txt_self.setVisibility(View.GONE);
+                            recyclerView_self.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
 
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+
+                    }
+
+                    LabTestReminderListView response_doctor = DbOperations.getLabTestReportReminderDoctorAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response_doctor != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                            if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+                                setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal());
+                                recyclerView_doctor.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                            } else {
+                                recyclerView_doctor.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        txt_self.setVisibility(View.GONE);
+                    }
+
+
+                }
+                    apply_flag=false;
+                    isReset=true;
+
+            }else {
+
+                try {
+                    LabTestReminderListView response = DbOperations.getLabTestReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+                    if (response != null) {
+                        if (response.getReminder_selfListViews().size() > 0) {
+                            txt_self.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                            setSelfMedAdpter(response.getReminder_selfListViews());
+                            recyclerView_self.setVisibility(View.VISIBLE);
+                        } else {
+                            txt_self.setVisibility(View.GONE);
+                            recyclerView_self.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+
+                    }
+                    LabTestReminderListView response_doctor = DbOperations.getLabTestReportReminderDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+                    if (response_doctor != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                            if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+                                setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal());
+                                recyclerView_doctor.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                            } else {
+                                recyclerView_doctor.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        txt_self.setVisibility(View.GONE);
+                    }
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }
         }
 
     }
@@ -611,6 +725,13 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
         reminder_medicine_docotr_child_listAdpter.notifyDataSetChanged();
     }
 
+    public void setDoctorAdpterLocal(ArrayList<Lab_Test_Reminder_DoctorListView> reminder_doctorListViews) {
+
+        reminder_medicine_docotr_child_listAdpter_localdb = new Reminder_Lab_Docotr_child_ListAdpter_Localdb(CureFull.getInstanse().getActivityIsntanse(), reminder_doctorListViews);
+        recyclerView_doctor.setAdapter(reminder_medicine_docotr_child_listAdpter_localdb);
+        reminder_medicine_docotr_child_listAdpter_localdb.notifyDataSetChanged();
+    }
+
     public void setSelfMedAdpter(ArrayList<Lab_Test_Reminder_SelfListView> reminder_doctorListViews) {
         reminder_medicine_self_listAdpter = new Reminder_Lab_Self_ListAdpter(CureFull.getInstanse().getActivityIsntanse(), reminder_doctorListViews, rootView);
         recyclerView_self.setAdapter(reminder_medicine_self_listAdpter);
@@ -618,11 +739,6 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     }
 
     public void launchTwitterShort(View view) {
-        /*
-         MARGIN_RIGHT = 16;
-         FAB_BUTTON_RADIUS = 28;
-         */
-
 
         int x = realtive_notesShort.getLeft();
         int y = realtive_notesShort.getTop();
