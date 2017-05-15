@@ -64,7 +64,9 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
 
         this.common_id = common_id;
     }
-    public ReminderMedicnceDoagePer(){}
+
+    public ReminderMedicnceDoagePer() {
+    }
 
     public ReminderMedicnceDoagePer(JSONObject jsonObject) {
         try {
@@ -80,19 +82,55 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
     }
 
     public ReminderMedicnceDoagePer(Cursor cursorprivate2) {
-        if(cursorprivate2==null){
+        if (cursorprivate2 == null) {
             return;
         }
 
-        try{
+        try {
             setStatus(cursorprivate2.getString(cursorprivate2.getColumnIndex("status")));
             setDate(cursorprivate2.getString(cursorprivate2.getColumnIndex("date")));
             setCommon_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("common_id")));
             setDosagePerDayDetailsId(cursorprivate2.getString(cursorprivate2.getColumnIndex("dosagePerDayDetailsId")));
-           //setSr_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")));
-            reminderMedicnceTimes = DbOperations.setReminderMedicinealarmdetailres(CureFull.getInstanse().getActivityIsntanse(), getCommon_id(),cursorprivate2.getString(cursorprivate2.getColumnIndex("dosagePerDayDetailsId")));//, cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")
+            //setSr_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")));
+            reminderMedicnceTimes = DbOperations.setReminderMedicinealarmdetailres(CureFull.getInstanse().getActivityIsntanse(), getCommon_id(), cursorprivate2.getString(cursorprivate2.getColumnIndex("dosagePerDayDetailsId")));//, cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")
 
-        }catch (Exception e){
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
+    //for scheduling service
+    public ReminderMedicnceDoagePer(Cursor cursorprivate2, int NIU) {
+        if (cursorprivate2 == null) {
+            return;
+        }
+
+        try {
+            setStatus(cursorprivate2.getString(cursorprivate2.getColumnIndex("status")));
+            setDate(cursorprivate2.getString(cursorprivate2.getColumnIndex("date")));
+            setCommon_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("common_id")));
+            setDosagePerDayDetailsId(cursorprivate2.getString(cursorprivate2.getColumnIndex("id")));
+            //setSr_id(cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")));
+            reminderMedicnceTimes = DbOperations.setReminderMedicinealarmdetailres(CureFull.getInstanse().getActivityIsntanse(), getCommon_id(), cursorprivate2.getString(cursorprivate2.getColumnIndex("id")));//, cursorprivate2.getString(cursorprivate2.getColumnIndex("sr_id")
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public ReminderMedicnceDoagePer(Cursor cursorprivate2, String NIU) {
+        if (cursorprivate2 == null) {
+            return;
+        }
+
+        try {
+
+            setDosagePerDayDetailsId(cursorprivate2.getString(cursorprivate2.getColumnIndex("id")));
+
+        } catch (Exception e) {
 
         }
 
@@ -168,7 +206,7 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
         }
     }
 
-    public void setReminderMedicnceTimesLocal(JSONArray symptomslistArray,String commonID) {
+    public void setReminderMedicnceTimesLocal(JSONArray symptomslistArray, String commonID, String dosagePerDayDetailsId) {
         if (symptomslistArray == null)
             return;
         ReminderMedicnceTime card = null;
@@ -177,12 +215,13 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
             try {
                 card = new ReminderMedicnceTime(symptomslistArray.getJSONObject(i));
                 this.reminderMedicnceTimes.add(card);
-                card.getInsertingValue(symptomslistArray.getJSONObject(i),commonID,i);
+                card.getInsertingValue(symptomslistArray.getJSONObject(i), commonID, i, dosagePerDayDetailsId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     public static final Creator<ReminderMedicnceDoagePer> CREATOR = new Creator<ReminderMedicnceDoagePer>() {
         public ReminderMedicnceDoagePer createFromParcel(Parcel in) {
             return new ReminderMedicnceDoagePer(in);
@@ -194,51 +233,63 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
     };
 
     public void getInsertingValue(JSONObject jsonObject, String commonID, int i) {
-    try{
-        ContentValues values=new ContentValues();
-        values.put("status",jsonObject.getString("status"));
-        values.put("date",jsonObject.getString("date"));
-        values.put("common_id",commonID);
-        values.put("data_id",i);
-        DbOperations.insertMedicineRemiderPerDosageDateResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID,i,jsonObject.getString("date"));
-
-        setReminderMedicnceTimesLocal(jsonObject.getJSONArray("medicineReminderAlarmDetailsResponse"),commonID);
-    }catch (Exception e){
-        e.getMessage();
-    }
-
-    }
-
-    public void setInsertingValueLab(String newTime, String commonid,int data_id,String selectedDate,String noOfdays,String dosagePerDayDetailsId) {
-//2
-
-
-       // int days=Integer.parseInt(noOfdays);
-        //for (int i=0;i<days;i++) {
-
+        try {
             ContentValues values = new ContentValues();
+            values.put("status", jsonObject.getString("status"));
+            values.put("date", jsonObject.getString("date"));
+            values.put("common_id", commonID);
+            values.put("data_id", i);
+            values.put("dosagePerDayDetailsId", i);
+            DbOperations.insertMedicineRemiderPerDosageDateResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID, i, jsonObject.getString("date"));
 
-            values.put("status", "pending");
-            values.put("date", selectedDate);//Utils.getTodayDate()
-            values.put("common_id", commonid);
-            values.put("data_id", data_id);
-            values.put("dosagePerDayDetailsId", dosagePerDayDetailsId);
-            DbOperations.insertMedicineRemiderDosagePerLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid, selectedDate,dosagePerDayDetailsId);
+            setReminderMedicnceTimesLocal(jsonObject.getJSONArray("medicineReminderAlarmDetailsResponse"), commonID, String.valueOf(i));
+        } catch (Exception e) {
+            e.getMessage();
+        }
 
+    }
 
-          /*  String[] newTimesplit=newTime.split(",");
-        for (int i=0;i<newTimesplit.length;i++) {
-            String[] time=newTimesplit[i].split(":");
-            String hour=time[0];
-            String minute=time[1];
-            ReminderMedicnceTime reminder_medicine_time = new ReminderMedicnceTime();
-            reminder_medicine_time.setInsertingValueLab(newTime, commonid, sr_id,i,hour,minute);
-        }*/
-        //}
+    public void setInsertingValueLab(String time, String date, String id, Context context, String status) {
+
+        String[] newDate = date.split("-");
+        String year = newDate[0];
+        String month = newDate[1];
+        String day = newDate[2];
+
+        if (Integer.parseInt(month) < 10) {
+
+            month = "0" + Integer.parseInt(month);
+        } else {
+            month = "" + Integer.parseInt(month);
+        }
+
+        if (Integer.parseInt(day) < 10) {
+
+            day = "0" + Integer.parseInt(day);
+        } else {
+            day = "" + Integer.parseInt(day);
+        }
+        String datee = year + "-" + month + "-" + day;
+
+        ContentValues values = new ContentValues();
+
+        values.put("status", "progress");
+        values.put("date", datee);
+        values.put("common_id", id);
+        values.put("data_id", 0);//not in use
+        values.put("dosagePerDayDetailsId", "0");////not in use
+        DbOperations.insertMedicineRemiderDosagePerLocal(CureFull.getInstanse().getActivityIsntanse(), values, id, date, dosagePerDayDetailsId);
+        ArrayList<ReminderMedicnceDoagePer> getID = DbOperations.getReminderMedicineDosageLocal1(context, id, date);
+        if(getID.size()>0) {
+            if (getID.get(0).getDosagePerDayDetailsId() != null) {
+                ReminderMedicnceTime reminder_medicine_time = new ReminderMedicnceTime();
+                reminder_medicine_time.setInsertingValueNotification(time, id, status, getID.get(0).getDosagePerDayDetailsId());
+            }
+        }
     }
 
 //sr_id means 2nd table id
-    public void setInsertingValueNotificationDoneSkip(Context context,String newTime, String commonid, String selectedDate,String status,String dosagePerDayDetailsId) throws IOException {
+   /* public void setInsertingValueNotificationDoneSkip(Context context,String newTime, String commonid, String selectedDate,String status,String dosagePerDayDetailsId) throws IOException {
         String stat="complete";
         String stat1="skip";
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
@@ -277,6 +328,6 @@ public class ReminderMedicnceDoagePer implements MyConstants.JsonUtils, Parcelab
 
         }
 
-    }
+    }*/
 
 }

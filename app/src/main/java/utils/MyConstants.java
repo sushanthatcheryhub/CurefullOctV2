@@ -62,11 +62,15 @@ public class MyConstants {
         String INCRESE_WATER_INTAKE = URL + "endUser/healthapp/addWaterIntake?isWaterIntakeAdd=";
         String ADD_LIST_OF_HEALTH_NOTE = URL + "endUser/healthNote/addListOfHealthNote";
         String ADD_MEDICINE_REM = URL + "enduser/medicineService/addMedicineReminder";
+        String ADD_MEDICINE_REM_LOCAL_SYNC = URL + "enduser/medicineService/syncMedicineReminderData";
         String EDIT_MEDICINE_REM = URL + "enduser/medicineService/editMedicineReminder";
         String GET_LIST_OF_MED = URL + "enduser/medicineService/getListOfMedicineDosageByDate?";
         String ADD_LAB_TEST_REM = URL + "endUser/labTestReminderService/addLabTestReminder";
+        String ADD_LAB_TEST_REM_LOCAL_SYNC = URL + "endUser/labTestReminderService/syncLabReminderData";
+
         String GET_LIST_OF_LAB_TEST = URL + "endUser/labTestReminderService/getListOfLabTestReminder?";
         String ADD_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/addOrEditDoctorFollowupReminder";
+        String ADD_DOCTOR_VISIT_REM_LOCAL_SYNC = URL + "enduser/dotorFollowupService/syncDoctorFollowupReminderData";
         String GET_LIST_DOCTOR_VISIT_REM = URL + "enduser/dotorFollowupService/getDoctorFollowupReminder?";
         String GET_LIST_DOCTOR_NAME_MEDICINE = URL + "enduser/medicineService/getListOfDoctorNameForReminder?cfuuhId=";
         String GET_LIST_DOCTOR_NAME_DOCTOR_VISIT = URL + "enduser/dotorFollowupService/getListOfDoctorNameForFollowup?cfuuhId=";
@@ -261,6 +265,7 @@ public class MyConstants {
         String TABLE_DOCTOR_REMINDER_SELF = "tbl_doctor_reminder_self";
         String TABLE_DOCTOR_REMINDER_CUREFULL = "tbl_doctor_reminder_curefull";
         String TABLE_MEDICINE_REMINDER_SELF = "tbl_medicine_reminder_self";
+        String TABLE_MEDICINE_REMINDER_DOCTOR = "tbl_medicine_reminder_doctor";
         String TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE = "tbl_medicine_reminder_self_dosageperDateResponse";
         String TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE = "tbl_medicine_reminder_self_alarmdetailresponse";
         //

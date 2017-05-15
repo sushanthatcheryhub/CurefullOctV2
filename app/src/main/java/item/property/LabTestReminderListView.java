@@ -45,28 +45,23 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
     }
 
 
-    public LabTestReminderListView(Cursor cur,String date) {
+    public LabTestReminderListView(Cursor cur, String date) {
         if (cur == null)
             return;
         try {
-
-            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews= DbOperations.getLabTestReportReminder11(CureFull.getInstanse().getActivityIsntanse(),date);
+            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews = DbOperations.getLabTestReportReminder11(CureFull.getInstanse().getActivityIsntanse(), date);
             setReminder_selfListViews(labReportImageListViews);
-            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("labTestReminderByDoctor"));
-            //setReminderDoctorNames(jsonToMap(jsonObject1));
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public LabTestReminderListView(Cursor cur,String status,String NIU,String NIU1) {
+    public LabTestReminderListView(Cursor cur, String status, String NIU, String NIU1) {
         if (cur == null)
             return;
         try {
 
-            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews= DbOperations.getLabTestReportReminder11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews = DbOperations.getLabTestReportReminder11AfterSelection(CureFull.getInstanse().getActivityIsntanse(), status);
             setReminder_selfListViews(labReportImageListViews);
 
 
@@ -75,31 +70,59 @@ public class LabTestReminderListView implements MyConstants.JsonUtils {
         }
     }
 
-    public LabTestReminderListView(Cursor cur,String date,String doctor) {
+    public LabTestReminderListView(Cursor cur, String doctorName, String NIU, String NIU1,String NIU2,String NIU3) {
         if (cur == null)
             return;
         try {
 
-            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews= DbOperations.getLabTestReportReminderDoctor11(CureFull.getInstanse().getActivityIsntanse(),date);
-            Log.e("doc_labtest",""+labReportImageListViews);
+            ArrayList<Lab_Test_Reminder_SelfListView> labReportImageListViews = DbOperations.getLabTestReportReminder11BasedDoctor(CureFull.getInstanse().getActivityIsntanse(), doctorName);
+            setReminder_selfListViews(labReportImageListViews);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public LabTestReminderListView(Cursor cur, String date, String doctor) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews = DbOperations.getLabTestReportReminderDoctor11(CureFull.getInstanse().getActivityIsntanse(), date);
+            Log.e("doc_labtest", "" + labReportImageListViews);
             setReminderDoctorNamesLocal(labReportImageListViews);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public LabTestReminderListView(Cursor cur,String status,String doctor,String NIU,String NIU1) {
+    public LabTestReminderListView(Cursor cur, String status, String doctor, String NIU, String NIU1) {
         if (cur == null)
             return;
         try {
 
-            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews= DbOperations.getLabTestReportReminderDoctor11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
-            Log.e("doc_labtest",""+labReportImageListViews);
+            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews = DbOperations.getLabTestReportReminderDoctor11AfterSelection(CureFull.getInstanse().getActivityIsntanse(), status);
+            Log.e("doc_labtest", "" + labReportImageListViews);
             setReminderDoctorNamesLocal(labReportImageListViews);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    //getLabTestReportReminderDoctor11BasedDoctorName
+    public LabTestReminderListView(Cursor cur, String doctor, String NIUU, String NIU, String NIU1,String NIU2,String NIU3) {
+        if (cur == null)
+            return;
+        try {
+
+            ArrayList<Lab_Test_Reminder_DoctorListView> labReportImageListViews = DbOperations.getLabTestReportReminderDoctor11BasedDoctorName(CureFull.getInstanse().getActivityIsntanse(), doctor);
+
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public ArrayList<Lab_Test_Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;

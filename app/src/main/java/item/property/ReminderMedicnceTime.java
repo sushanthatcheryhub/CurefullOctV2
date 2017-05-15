@@ -149,7 +149,7 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
         }
     };
 
-    public void getInsertingValue(JSONObject jsonObject, String commonID, int i) {
+    public void getInsertingValue(JSONObject jsonObject, String commonID, int i,String dosagePerDayDetailsId) {
         try {
 
             ContentValues values=new ContentValues();
@@ -159,8 +159,8 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
             values.put("minute",jsonObject1.getInt("minute"));
             values.put("common_id",commonID);
             values.put("data_id",i);//
-            values.put("dosagePerDayDetailsId",jsonObject1.getString("dosagePerDayDetailsId"));
-            DbOperations.insertMedicineRemiderAlarmDetailResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID,i,jsonObject1.getString("dosagePerDayDetailsId"));
+            values.put("dosagePerDayDetailsId",dosagePerDayDetailsId);//jsonObject1.getString("dosagePerDayDetailsId")
+            DbOperations.insertMedicineRemiderAlarmDetailResponse(CureFull.getInstanse().getActivityIsntanse(), values, commonID,i,dosagePerDayDetailsId);//jsonObject1.getString("dosagePerDayDetailsId")
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -180,35 +180,34 @@ public class ReminderMedicnceTime implements MyConstants.JsonUtils, Parcelable {
 
     }
 
-    public void setInsertingValueNotification(String newTime, String commonid,String status,Context context,String sr_id) {
+    public void setInsertingValueNotification(String newTime, String commonid,String status,String second_table_id) {
         String[] time=newTime.split(":");
         String hour=time[0];
         String minute=time[1];
+        if (Integer.parseInt(hour) < 10) {
 
-        DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
-                .getDatabaseHelperInstance(context);
-        Cursor cursor;
-
-        if (dbhelperShopCart == null)
-            return;
-        SQLiteDatabase database = null;
-        try {
-            dbhelperShopCart.createDataBase();
-            database = DatabaseHelper.openDataBase();
-        }catch (Exception e){
-            e.getMessage();
+            hour = "0" + Integer.parseInt(hour);
+        } else {
+            hour = "" + Integer.parseInt(hour);
         }
-        String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_ALARAMDETAILRESPONSE + " where common_id='" + commonid + "' and hour='"+hour+"' and minute='"+minute+"' and dosagePerDayDetailsId='"+sr_id+"'";
-        cursor = database.rawQuery(query, null);
-            if(cursor.getCount()>0) {
+
+        if (Integer.parseInt(minute) < 10) {
+
+            minute = "0" + Integer.parseInt(minute);
+        } else {
+            minute = "" + Integer.parseInt(minute);
+        }
+
+
                 ContentValues values = new ContentValues();
                 values.put("status", status);
                 values.put("hour", hour);
                 values.put("minute", minute);
                 values.put("common_id", commonid);
-                values.put("dosagePerDayDetailsId",sr_id);
-                DbOperations.insertMedicineRemiderAlaramDetailResponseLocalNotification(CureFull.getInstanse().getActivityIsntanse(), values, commonid, hour,minute,sr_id);
-            }
+                values.put("data_id", 0);
+                values.put("dosagePerDayDetailsId",second_table_id);
+                DbOperations.insertMedicineRemiderAlaramDetailResponseLocalNotification(CureFull.getInstanse().getActivityIsntanse(), values, commonid, hour,minute,second_table_id);
+          //  }
 
     }
 

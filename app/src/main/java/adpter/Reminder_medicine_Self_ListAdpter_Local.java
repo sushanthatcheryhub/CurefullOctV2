@@ -14,12 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,20 +35,21 @@ import interfaces.IOnOtpDoneDelete;
 import item.property.Reminder_SelfListView;
 import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Reminder_medicine_Self_ListAdpter.ItemViewHolder> implements IOnOtpDoneDelete {
+public class Reminder_medicine_Self_ListAdpter_Local extends RecyclerView.Adapter<Reminder_medicine_Self_ListAdpter_Local.ItemViewHolder> implements IOnOtpDoneDelete {
 
 
     Context applicationContext;
     List<Reminder_SelfListView> healthNoteItemses;
     private String checking;
 
-    public Reminder_medicine_Self_ListAdpter(Context applicationContexts,
-                                             List<Reminder_SelfListView> healthNoteItemses, String check) {
+    public Reminder_medicine_Self_ListAdpter_Local(Context applicationContexts,
+                                                   List<Reminder_SelfListView> healthNoteItemses, String check) {
         this.healthNoteItemses = healthNoteItemses;
         this.applicationContext = applicationContexts;
         this.checking = check;
@@ -89,7 +88,20 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
         txt_med_name.setText("" + healthNoteItemses.get(position).getRemMedicineName().trim());
 
         String med = "";
-        if (healthNoteItemses.get(position).getReminderMedicnceDoagePers() != null) {
+        String[] newTimesplit = healthNoteItemses.get(position).getAlarmTime().split(",");
+        if(!newTimesplit[0].equals("null")) {
+            for (int i2 = 0; i2 < newTimesplit.length; i2++) {
+                String[] time = newTimesplit[i2].split(":");
+                int hour = Integer.parseInt(time[0]);
+                int minute = Integer.parseInt(time[1]);
+                med += CureFull.getInstanse().getActivityIsntanse().updateTime(hour, minute) + " | ";
+            }
+            if (med.endsWith(" | ")) {
+                med = med.substring(0, med.length() - 2);
+            }
+            txt_med_time.setText("" + med);
+        }
+       /* if (healthNoteItemses.get(position).getReminderMedicnceDoagePers() != null) {
             for (int i = 0; i < healthNoteItemses.get(position).getReminderMedicnceDoagePers().size(); i++) {
                 if (healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(i).getReminderMedicnceTimes() != null) {
                     for (int j = 0; j < healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(i).getReminderMedicnceTimes().size(); j++) {
@@ -106,7 +118,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
             }
             txt_med_time.setText("" + med);
         }
-
+*/
 
         if (healthNoteItemses.get(position).isAfterMeal()) {
             txt_meal.setText("After Meal");
@@ -121,7 +133,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                 ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                 DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected medicine reminder ?", "Medicine", position);
-                dialogDeleteAll.setiOnOtpDoneDelete(Reminder_medicine_Self_ListAdpter.this);
+                dialogDeleteAll.setiOnOtpDoneDelete(Reminder_medicine_Self_ListAdpter_Local.this);
                 dialogDeleteAll.show();
 
             }
@@ -147,8 +159,9 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                 bundle.putBoolean("beforeMeal", healthNoteItemses.get(position).isBeforeMeal());
                 bundle.putBoolean("afterMeal", healthNoteItemses.get(position).isAfterMeal());
                 bundle.putString("date", "" + (healthNoteItemses.get(position).getDate() < 10 ? "0" + healthNoteItemses.get(position).getDate() : healthNoteItemses.get(position).getDate()) + "/" + (healthNoteItemses.get(position).getMonth() < 10 ? "0" + healthNoteItemses.get(position).getMonth() : healthNoteItemses.get(position).getMonth()) + "/" + healthNoteItemses.get(position).getYear());
-
-                bundle.putString("dosagePerDayDetailsId",healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(0).getDosagePerDayDetailsId());
+                bundle.putString("alarmTime", healthNoteItemses.get(position).getAlarmTime());
+                bundle.putString("enddate", healthNoteItemses.get(position).getEnddate());
+               // bundle.putString("dosagePerDayDetailsId",healthNoteItemses.get(position).getReminderMedicnceDoagePers().get(0).getDosagePerDayDetailsId());
 
 
 
@@ -175,7 +188,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                     cv.put("medicineReminderId", healthNoteItemses.get(position).getMedicineReminderId());
                     cv.put("status", "activate");
                     cv.put("isUploaded","1");
-                    //DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getMedicineReminderId(),healthNoteItemses.get(position).getCurrentDate());
+                    DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getMedicineReminderId());//,healthNoteItemses.get(position).getCurrentDate()
 
                 } else {
                     getDoctorVisitDelete(healthNoteItemses.get(position).getMedicineReminderId(), position, false, false);
@@ -184,7 +197,7 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
                     cv.put("medicineReminderId", healthNoteItemses.get(position).getMedicineReminderId());
                     cv.put("status", "deactivate");
                     cv.put("isUploaded","1");
-                    //DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getMedicineReminderId(),healthNoteItemses.get(position).getCurrentDate());
+                    DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(position).getMedicineReminderId());//,healthNoteItemses.get(position).getCurrentDate()
 //                    healthNoteItemses.get(position).setSelected(false);
                 }
 
@@ -198,15 +211,28 @@ public class Reminder_medicine_Self_ListAdpter extends RecyclerView.Adapter<Remi
 
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
-        if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getMedicineReminderId(), pos, true, false);
-            try {
-                DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getMedicineReminderId(), healthNoteItemses.get(pos).getDoctorName(), "medicinereminder");
-            }catch (Exception e){
-                e.getMessage();
+        //
+            if (messsage.equalsIgnoreCase("OK")) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())){
+                getDoctorVisitDelete(healthNoteItemses.get(pos).getMedicineReminderId(), pos, true, false);
+                try {
+                    DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getMedicineReminderId(), healthNoteItemses.get(pos).getDoctorName(), "medicinereminder");
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+
+            }else{
+                ContentValues cv = new ContentValues();
+                cv.put("medicineReminderId", healthNoteItemses.get(pos).getMedicineReminderId());
+                cv.put("status", "delete");
+                cv.put("isUploaded","1");
+                DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(pos).getMedicineReminderId());
+                healthNoteItemses.remove(pos);
+                notifyDataSetChanged();
             }
 
-        }
+            }
+
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

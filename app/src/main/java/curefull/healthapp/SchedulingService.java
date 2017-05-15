@@ -15,7 +15,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -49,15 +48,16 @@ import java.util.List;
 import java.util.Map;
 
 import asyns.JsonUtilsObject;
-import fragment.healthapp.FragmentPrescriptionCheckNew;
+import item.property.Doctor_Visit_Reminder_DoctorListView;
 import item.property.Doctor_Visit_Reminder_SelfListView;
 import item.property.LabReportImageListView;
 import item.property.LabReportListView;
-import item.property.LabTestReminderListView;
+import item.property.Lab_Test_Reminder_DoctorListView;
 import item.property.Lab_Test_Reminder_SelfListView;
 import item.property.MedicineReminderItem;
 import item.property.PrescriptionImageListView;
 import item.property.PrescriptionListView;
+import item.property.Reminder_DoctorListView;
 import item.property.Reminder_SelfListView;
 import operations.DbOperations;
 
@@ -74,6 +74,7 @@ import utils.Utils;
 public class SchedulingService extends IntentService {
     private int valueUpload = 0;
     SharedPreferences preferences;
+
     public SchedulingService() {
         super("SchedulingService");
     }
@@ -140,7 +141,7 @@ public class SchedulingService extends IntentService {
                         headers.put("r_t", preferences.getString("r_t", ""));
                         headers.put("user_name", preferences.getString("user_name", ""));
                         headers.put("email_id", preferences.getString("email_id", ""));
-                        headers.put("cf_uuhid",prescriptionData.get(finalI).getCfUuhid());
+                        headers.put("cf_uuhid", prescriptionData.get(finalI).getCfUuhid());
                         headers.put("user_id", preferences.getString("user_id", ""));
 
                         return headers;
@@ -206,9 +207,8 @@ public class SchedulingService extends IntentService {
                         headers.put("r_t", preferences.getString("r_t", ""));
                         headers.put("user_name", preferences.getString("user_name", ""));
                         headers.put("email_id", preferences.getString("email_id", ""));
-                        headers.put("cf_uuhid",labData.get(finalI).getCfUuhid());
+                        headers.put("cf_uuhid", labData.get(finalI).getCfUuhid());
                         headers.put("user_id", preferences.getString("user_id", ""));
-
 
 
                         return headers;
@@ -219,459 +219,474 @@ public class SchedulingService extends IntentService {
 
             }
 //for lab reminder
-            final List<Lab_Test_Reminder_SelfListView> labreminder = db.getLabReminderbySelf(this, "1");
-            for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
-                boolean isNewReminder = false;
-                String monthh = "";
-                String dayy = "";
-                String hour = "";
-                String minute = "";
-
-                if (labreminder.get(ilrs).getLabTestReminderId().length()>7) {
-                    isNewReminder = true;
-                } else {
-                    isNewReminder = false;
-                }
-
-                if (labreminder.get(ilrs).getMonth() < 10) {
-
-                    monthh = "0" + labreminder.get(ilrs).getMonth();
-                } else {
-                    monthh = "" + labreminder.get(ilrs).getMonth();
-                }
-
-                if (labreminder.get(ilrs).getDate() < 10) {
-
-                    dayy = "0" + labreminder.get(ilrs).getDate();
-                } else {
-                    dayy = "" + labreminder.get(ilrs).getDate();
-                }
-
-                if (labreminder.get(ilrs).getHour() < 10) {
-
-                    hour = "0" + labreminder.get(ilrs).getHour();
-                } else {
-                    hour = "" + labreminder.get(ilrs).getHour();
-                }
-
-                if (labreminder.get(ilrs).getMintue() < 10) {
-
-                    minute = "0" + labreminder.get(ilrs).getMintue();
-                } else {
-                    minute = "" + labreminder.get(ilrs).getMintue();
-                }
-
-                JSONObject data = JsonUtilsObject.toSetLabTestReminderfromLocal(labreminder.get(ilrs).getDoctorName().toString().trim(), labreminder.get(ilrs).getRemMedicineName().toString().trim(), labreminder.get(ilrs).getLabName().toString().trim(), labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, labreminder.get(ilrs).getLabTestReminderId(), isNewReminder, labreminder.get(ilrs).isAfterMeal(), labreminder.get(ilrs).getCfuuhId());//edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal
-
-                final int finalIlrs = ilrs;
-                final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM, data,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-
-                               // this.showProgressBar(false);
-                                int responseStatus = 0;
-                                JSONObject json = null;
-                                try {
-                                    json = new JSONObject(response.toString());
-                                    responseStatus = json.getInt("responseStatus");
-                                    if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                        DbOperations.clearLabReminderbyself(labreminder.get(finalIlrs).getLabTestReminderId(), "1");
-
-                                    } else {
-                                        try {
-                                            JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                            JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                       // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("a_t", preferences.getString("a_t", ""));
-                        headers.put("r_t", preferences.getString("r_t", ""));
-                        headers.put("user_name", preferences.getString("user_name", ""));
-                        headers.put("email_id", preferences.getString("email_id", ""));
-                        headers.put("cf_uuhid",labreminder.get(finalIlrs).getCfuuhId());
-                        headers.put("user_id", preferences.getString("user_id", ""));
-                        //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-
-                        return headers;
-                    }
-                };
-                CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-
-            }
-
+            lab_notification_sync_self();
+            lab_notification_sync_digitization();
             ///doctor reminder
-
-            final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = db.getDoctorReminderbySelf(this, "1");
-            for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
-                boolean isNewReminder = false;
-                String monthh = "";
-                String dayy = "";
-                String hour = "";
-                String minute = "";
-
-                if(doctorreminder.get(ilrs).getDoctorFollowupReminderId().length()>7){
-                    isNewReminder = true;
-                }else{
-                   isNewReminder = false;
-                }
-                /*if (doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
-                    isNewReminder = true;
-                } else {
-                    isNewReminder = false;
-                }*/
-                if (doctorreminder.get(ilrs).getMonth() < 10) {
-
-                    monthh = "0" + doctorreminder.get(ilrs).getMonth();
-                } else {
-                    monthh = "" + doctorreminder.get(ilrs).getMonth();
-                }
-
-                if (doctorreminder.get(ilrs).getDate() < 10) {
-
-                    dayy = "0" + doctorreminder.get(ilrs).getDate();
-                } else {
-                    dayy = "" + doctorreminder.get(ilrs).getDate();
-                }
-
-                if (doctorreminder.get(ilrs).getHour() < 10) {
-
-                    hour = "0" + doctorreminder.get(ilrs).getHour();
-                } else {
-                    hour = "" + doctorreminder.get(ilrs).getHour();
-                }
-
-                if (doctorreminder.get(ilrs).getMintue() < 10) {
-
-                    minute = "0" + doctorreminder.get(ilrs).getMintue();
-                } else {
-                    minute = "" + doctorreminder.get(ilrs).getMintue();
-                }
-                JSONObject data = JsonUtilsObject.toSetDoctorVisitReminderLocal(doctorreminder.get(ilrs).getDoctorName().toString().trim(), doctorreminder.get(ilrs).getRemMedicineName().toString().trim(), doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), isNewReminder, doctorreminder.get(ilrs).getCfuuhId());//edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder
-
-                final int finalIlrs = ilrs;
-                final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM, data,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-
-                               // this.showProgressBar(false);
-                                int responseStatus = 0;
-                                JSONObject json = null;
-                                try {
-                                    json = new JSONObject(response.toString());
-                                    responseStatus = json.getInt("responseStatus");
-                                    if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                        DbOperations.clearDoctorReminderbyself(doctorreminder.get(finalIlrs).getDoctorFollowupReminderId(), "1");
-
-                                    } else {
-                                        try {
-                                            JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                            JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                       // this.showProgressBar(false);
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<String, String>();
-
-                        headers.put("a_t", preferences.getString("a_t", ""));
-                        headers.put("r_t", preferences.getString("r_t", ""));
-                        headers.put("user_name", preferences.getString("user_name", ""));
-                        headers.put("email_id", preferences.getString("email_id", ""));
-                        headers.put("cf_uuhid", doctorreminder.get(finalIlrs).getCfuuhId());
-                        headers.put("user_id", preferences.getString("user_id", ""));
-                        //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-
-                        return headers;
-                    }
-                };
-                CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-
-            }
-
-            ////medicine reminder upload
-            final List<Reminder_SelfListView> medicinereminder = db.getMedicineReminderbySelf(this, "1");
-            //edit : online case (0 - add api , 1 - edit api) and offline case ( remindermdicineid.length>7 && edit is 1 - add api)
-            for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
-                String time = "";
-                String hour = "";
-                String minute = "";
-                int sizee = medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().size();
-                for (int y = 0; y < sizee; y++) {
-                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour() < 10) {
-
-                        hour = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour();
-                    } else {
-                        hour = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getHour();
-                    }
-
-                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute() < 10) {
-
-                        minute = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute();
-                    } else {
-                        minute = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(0).getReminderMedicnceTimes().get(y).getMinute();
-                    }
-
-                    if (y == (sizee - 1)) {
-                        time += hour + ":" + minute;
-                    } else {
-                        time += hour + ":" + minute + ",";
-                    }
-                }
-                String monthh = "";
-                String dayy = "";
-
-                if (medicinereminder.get(i1).getMonth() < 10) {
-
-                    monthh = "0" + medicinereminder.get(i1).getMonth();
-                } else {
-                    monthh = "" + medicinereminder.get(i1).getMonth();
-                }
-
-                if (medicinereminder.get(i1).getDate() < 10) {
-
-                    dayy = "0" + medicinereminder.get(i1).getDate();
-                } else {
-                    dayy = "" + medicinereminder.get(i1).getDate();
-                }
-                ArrayList<MedicineReminderItem> listCurrent = new ArrayList<>();
-                MedicineReminderItem reminderItem = new MedicineReminderItem();
-
-                reminderItem.setType(medicinereminder.get(i1).getType());
-                reminderItem.setDoctorName(medicinereminder.get(i1).getDoctorName());
-                reminderItem.setMedicineName(medicinereminder.get(i1).getRemMedicineName());
-                reminderItem.setInterval(medicinereminder.get(i1).getInterval());
-                reminderItem.setBaMealAfter(medicinereminder.get(i1).isAfterMeal());
-                reminderItem.setBaMealBefore(medicinereminder.get(i1).isBeforeMeal());
-                listCurrent.add(reminderItem);
-                if (medicinereminder.get(i1).getEdit().equalsIgnoreCase("1") && (medicinereminder.get(i1).getMedicineReminderId().length() > 7)) {
-
-                    JSONObject data = JsonUtilsObject.setRemMedAddLocal(medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy, String.valueOf(medicinereminder.get(i1).getNoOfDays()), String.valueOf(medicinereminder.get(i1).getNoOfDosage()), medicinereminder.get(i1).getNoOfDaysInWeek(), listCurrent, time, medicinereminder.get(i1).getInterval(), medicinereminder.get(i1).getCfuuhId());
-
-
-                    final int finalI = i1;
-                    final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM, data,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-
-                                    //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
-                                    int responseStatus = 0;
-                                    JSONObject json = null;
-                                    try {
-                                        json = new JSONObject(response.toString());
-                                        responseStatus = json.getInt("responseStatus");
-                                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                            //CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                                            DbOperations.clearMedicineReminderbyself(medicinereminder.get(finalI).getMedicineReminderId(), "1");
-                                        } else {
-                                            try {
-                                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-
-                                }
-                            }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                           // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        }
-                    }) {
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<String, String>();
-
-                            headers.put("a_t", preferences.getString("a_t", ""));
-                            headers.put("r_t", preferences.getString("r_t", ""));
-                            headers.put("user_name", preferences.getString("user_name", ""));
-                            headers.put("email_id", preferences.getString("email_id", ""));
-                            headers.put("cf_uuhid", medicinereminder.get(finalI).getCfuuhId());
-                            headers.put("user_id", preferences.getString("user_id", ""));
-                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-
-                            return headers;
-                        }
-                    };
-                    CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-                } else if ((medicinereminder.get(i1).getEdit().equalsIgnoreCase("0"))) {
-
-                    JSONObject data = JsonUtilsObject.setRemMedAddLocal(medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy, String.valueOf(medicinereminder.get(i1).getNoOfDays()), String.valueOf(medicinereminder.get(i1).getNoOfDosage()), medicinereminder.get(i1).getNoOfDaysInWeek(), listCurrent, time, medicinereminder.get(i1).getInterval(), medicinereminder.get(i1).getCfuuhId());
-
-
-                    final int finalI = i1;
-                    final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM, data,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-
-                                    //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
-                                    int responseStatus = 0;
-                                    JSONObject json = null;
-                                    try {
-                                        json = new JSONObject(response.toString());
-                                        responseStatus = json.getInt("responseStatus");
-                                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                            //CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                                            DbOperations.clearMedicineReminderbyself(medicinereminder.get(finalI).getMedicineReminderId(), "1");
-                                        } else {
-                                            try {
-                                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-
-                                }
-                            }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        }
-                    }) {
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<String, String>();
-
-                            headers.put("a_t", preferences.getString("a_t", ""));
-                            headers.put("r_t", preferences.getString("r_t", ""));
-                            headers.put("user_name", preferences.getString("user_name", ""));
-                            headers.put("email_id", preferences.getString("email_id", ""));
-                            headers.put("cf_uuhid", medicinereminder.get(finalI).getCfuuhId());
-                            headers.put("user_id", preferences.getString("user_id", ""));
-                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-
-                            return headers;
-                        }
-                    };
-                    CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-
-
-                } else if (medicinereminder.get(i1).getEdit().equalsIgnoreCase("1")) {
-//
-                    JSONObject data = JsonUtilsObject.setRemMedEdit(medicinereminder.get(i1).getMedicineReminderId(), medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy, String.valueOf(medicinereminder.get(i1).getNoOfDays()), String.valueOf(medicinereminder.get(i1).getNoOfDosage()), medicinereminder.get(i1).getNoOfDaysInWeek(), listCurrent, time, medicinereminder.get(i1).getInterval());//medicineReminderId, startFrom, duration, doages, addDays, listCurrent, newTime, interval
-
-                    final int finalI1 = i1;
-                    final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.EDIT_MEDICINE_REM, data,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-
-                                   // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-//                        Log.e("MedRemDetails, URL 3.", response.toString());
-                                    int responseStatus = 0;
-                                    JSONObject json = null;
-                                    try {
-                                        json = new JSONObject(response.toString());
-                                        responseStatus = json.getInt("responseStatus");
-                                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                            // CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                                            DbOperations.clearMedicineReminderbyself(medicinereminder.get(finalI1).getMedicineReminderId(), "1");
-                                        } else {
-                                            try {
-                                                JSONObject json1 = new JSONObject(json.getString("errorInfo"));
-                                                JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-
-                                }
-                            }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-
-                        }
-                    }) {
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<String, String>();
-
-                            headers.put("a_t", preferences.getString("a_t", ""));
-                            headers.put("r_t", preferences.getString("r_t", ""));
-                            headers.put("user_name", preferences.getString("user_name", ""));
-                            headers.put("email_id", preferences.getString("email_id", ""));
-                            headers.put("cf_uuhid", medicinereminder.get(finalI1).getCfuuhId());
-                            headers.put("user_id", preferences.getString("user_id", ""));
-                            //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-
-                            return headers;
-                        }
-                    };
-                    CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
-
-                }
-
-            }
+            doctor_notification_sync_self();
+            doctor_notification_sync_digitization();
+
+            medicine_notification_sync_self();
+            medicine_notification_sync_digitization();
 
         } else {
             //for sqlite notification
             lab_notification_from_sqlite();
+            lab_notification_from_digitization();
+
             doctor_notification_from_sqlite();
+            doctor_notification_from_digitization();
+
             medicine_notification_from_sqlite();
+            medicine_notification_from_digitization();
+
+
+        }
+    }
+
+    private void medicine_notification_sync_digitization() {
+        final List<Reminder_DoctorListView> medicinereminder = DbOperations.getMedicineReminderbyDigitization(this, "1");
+
+        JSONObject data = JsonUtilsObject.setRemMedAddDigitization(medicinereminder, "0");//medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy, String.valueOf(medicinereminder.get(i1).getNoOfDays()), String.valueOf(medicinereminder.get(i1).getNoOfDosage()), medicinereminder.get(i1).getNoOfDaysInWeek(), listCurrent, time, medicinereminder.get(i1).getInterval(), medicinereminder.get(i1).getCfuuhId(),medicinereminder.get(i1).getStatus(),medicinereminder.get(i1).getMedicineReminderId(),medicinereminder.get(i1).getReminderMedicnceDoagePers(),
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
+                                        DbOperations.clearMedicineReminderbyself(medicinereminder.get(i1).getMedicineReminderId(), "1", "digitization");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        }
+    }
+
+    private void medicine_notification_sync_self() {
+        ////medicine reminder upload
+        final List<Reminder_SelfListView> medicinereminder = DbOperations.getMedicineReminderbySelf(this, "1");
+
+        JSONObject data = JsonUtilsObject.setRemMedAddLocal(medicinereminder, "1");//medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy, String.valueOf(medicinereminder.get(i1).getNoOfDays()), String.valueOf(medicinereminder.get(i1).getNoOfDosage()), medicinereminder.get(i1).getNoOfDaysInWeek(), listCurrent, time, medicinereminder.get(i1).getInterval(), medicinereminder.get(i1).getCfuuhId(),medicinereminder.get(i1).getStatus(),medicinereminder.get(i1).getMedicineReminderId(),medicinereminder.get(i1).getReminderMedicnceDoagePers(),
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_MEDICINE_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            //CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
+                                        DbOperations.clearMedicineReminderbyself(medicinereminder.get(i1).getMedicineReminderId(), "1", "self");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    Log.e("erroe", error.toString());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        }
+    }
+
+    private void doctor_notification_sync_self() {
+        final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = DbOperations.getDoctorReminderbySelf(this, "1");
+
+        JSONObject data = JsonUtilsObject.toSetDoctorVisitReminderLocal("1", doctorreminder);
+//doctorreminder.get(ilrs).getDoctorName().toString().trim(), doctorreminder.get(ilrs).getRemMedicineName().toString().trim(), doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), isNewReminder, doctorreminder.get(ilrs).getCfuuhId(), doctorreminder.get(ilrs).getStatus(),
+        // final int finalIlrs = ilrs;
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            // this.showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
+                                        DbOperations.clearDoctorReminderbyself(doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "1", "self");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // this.showProgressBar(false);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+
+        }
+    }
+
+    private void lab_notification_sync_self() {
+        final List<Lab_Test_Reminder_SelfListView> labreminder = DbOperations.getLabReminderbySelf(this, "1");
+
+        JSONObject data = JsonUtilsObject.toSetLabTestReminderfromLocal("1", labreminder);//labreminder.get(ilrs).getDoctorName().toString().trim(), labreminder.get(ilrs).getRemMedicineName().toString().trim(), labreminder.get(ilrs).getLabName().toString().trim(), labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, labreminder.get(ilrs).getLabTestReminderId(), isNewReminder, labreminder.get(ilrs).isAfterMeal(), labreminder.get(ilrs).getCfuuhId(), labreminder.get(ilrs).getStatus(),
+
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            // this.showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
+                                        DbOperations.clearLabReminderbyself(labreminder.get(ilrs).getLabTestReminderId(), "1", "self");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        }
+
+    }
+
+
+    private void doctor_notification_sync_digitization() {
+        final List<Doctor_Visit_Reminder_DoctorListView> doctorreminder = DbOperations.getDoctorReminderbyDigitization(this, "1");
+
+        JSONObject data = JsonUtilsObject.toSetDoctorVisitReminderLocalDigitization("0", doctorreminder);//doctorreminder.get(ilrs).getDoctorName().toString().trim(), doctorreminder.get(ilrs).getRemMedicineName().toString().trim(), doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), isNewReminder, doctorreminder.get(ilrs).getCfuuhId(), doctorreminder.get(ilrs).getStatus(),
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_DOCTOR_VISIT_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
+                                        DbOperations.clearDoctorReminderbyself(doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "1", "digitization");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // this.showProgressBar(false);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        }
+
+
+    }
+
+    private void lab_notification_sync_digitization() {
+        final List<Lab_Test_Reminder_DoctorListView> labreminder = DbOperations.getLabReminderbyDigitiation(this, "1");
+
+        JSONObject data = JsonUtilsObject.toSetLabTestReminderfromDigitization("0", labreminder);//labreminder.get(ilrs).getDoctorName().toString().trim(), labreminder.get(ilrs).getRemMedicineName().toString().trim(), labreminder.get(ilrs).getLabName().toString().trim(), labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, labreminder.get(ilrs).getLabTestReminderId(), isNewReminder, labreminder.get(ilrs).isAfterMeal(), labreminder.get(ilrs).getCfuuhId(), labreminder.get(ilrs).getStatus(),
+        if (data.length() > 0) {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.ADD_LAB_TEST_REM_LOCAL_SYNC, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            // this.showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                    for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
+                                        DbOperations.clearLabReminderbyself(labreminder.get(ilrs).getLabTestReminderId(), "1", "digitization");
+                                    }
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    //headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+        }
+
+
+    }
+
+    private void medicine_notification_from_digitization() {
+        final List<Reminder_DoctorListView> medicinereminder = DbOperations.getMedicineReminderbyDigitization(this, "1");
+        for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
+            String hour = "";
+            String minute = "";
+            String monthh = "";
+            String dayy = "";
+
+            if (medicinereminder.get(i1).getMonth() < 10) {
+
+                monthh = "0" + medicinereminder.get(i1).getMonth();
+            } else {
+                monthh = "" + medicinereminder.get(i1).getMonth();
+            }
+
+            if (medicinereminder.get(i1).getDate() < 10) {
+
+                dayy = "0" + medicinereminder.get(i1).getDate();
+            } else {
+                dayy = "" + medicinereminder.get(i1).getDate();
+            }
+            String[] alarm_time = medicinereminder.get(i1).getAlarmTime().split(",");
+
+            int sizee = alarm_time.length;
+
+            for (int y = 0; y < sizee; y++) {
+
+                String[] timee = alarm_time[y].split(":");
+                String hourr = timee[0];
+                String minutee = timee[1];
+                if (Integer.parseInt(hourr) < 10) {
+
+                    hour = "0" + Integer.parseInt(hourr);
+                } else {
+                    hour = "" + Integer.parseInt(hourr);
+                }
+
+                if (Integer.parseInt(minutee) < 10) {
+
+                    minute = "0" + Integer.parseInt(minutee);
+                } else {
+                    minute = "" + Integer.parseInt(minutee);
+                }
+
+                String local_db_date_time = medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
+                String date = Utils.getTodayDate();
+                String time = Utils.getTodayTime();
+                String date_time = date + " " + time;
+                try {
+                    if (local_db_date_time.equals(date_time)) {
+                        if (medicinereminder.get(i1).getStatus().equalsIgnoreCase("activate") || medicinereminder.get(i1).getStatus().equalsIgnoreCase("pending")) {
+                            String txt_detail = preferences.getString("user_name", "") + ", please take your dose of " + medicinereminder.get(i1).getRemMedicineName() + ". Each dose is important.";
+                            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER_CUREFULL", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute);//medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId()
+                        }
+                    }
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+
+            }
+
 
         }
     }
@@ -697,42 +712,109 @@ public class SchedulingService extends IntentService {
             } else {
                 dayy = "" + medicinereminder.get(i1).getDate();
             }
-            for (int z = 0; z < medicinereminder.get(i1).getReminderMedicnceDoagePers().size(); z++) {
-                int sizee = medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().size();
-                for (int y = 0; y < sizee; y++) {
-                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour() < 10) {
+            String[] alarm_time = medicinereminder.get(i1).getAlarmTime().split(",");
 
-                        hour = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour();
-                    } else {
-                        hour = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getHour();
-                    }
+            int sizee = alarm_time.length;
 
-                    if (medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute() < 10) {
+            //  for (int z = 0; z < medicinereminder.get(i1).getReminderMedicnceDoagePers().size(); z++) {
+            //    int sizee = medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().size();
+            for (int y = 0; y < sizee; y++) {
 
-                        minute = "0" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute();
-                    } else {
-                        minute = "" + medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getReminderMedicnceTimes().get(y).getMinute();
-                    }
+                String[] timee = alarm_time[y].split(":");
+                String hourr = timee[0];
+                String minutee = timee[1];
+                if (Integer.parseInt(hourr) < 10) {
 
-                    String local_db_date_time = medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
-                    String date = Utils.getTodayDate();
-                    String time = Utils.getTodayTime();
-                    String date_time = date + " " + time;
-                    try {
-                        if (local_db_date_time.equals(date_time)) {
+                    hour = "0" + Integer.parseInt(hourr);
+                } else {
+                    hour = "" + Integer.parseInt(hourr);
+                }
+
+                if (Integer.parseInt(minutee) < 10) {
+
+                    minute = "0" + Integer.parseInt(minutee);
+                } else {
+                    minute = "" + Integer.parseInt(minutee);
+                }
+
+                String local_db_date_time = medicinereminder.get(i1).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
+                String date = Utils.getTodayDate();
+                String time = Utils.getTodayTime();
+                String date_time = date + " " + time;
+                try {
+                    if (local_db_date_time.equals(date_time)) {
+                        if (medicinereminder.get(i1).getStatus().equalsIgnoreCase("activate") || medicinereminder.get(i1).getStatus().equalsIgnoreCase("pending")) {
                             String txt_detail = preferences.getString("user_name", "") + ", please take your dose of " + medicinereminder.get(i1).getRemMedicineName() + ". Each dose is important.";
                             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute, medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId());
+                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute);//medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId()
                         }
-                    } catch (Exception e) {
-                        e.getMessage();
                     }
-
+                } catch (Exception e) {
+                    e.getMessage();
                 }
 
             }
 
+            //  }
+
         }
+    }
+
+    private void doctor_notification_from_digitization() {
+        final List<Doctor_Visit_Reminder_DoctorListView> doctorreminder = DbOperations.getDoctorReminderbyDigitization(this, "1");
+        for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
+            boolean isNewReminder = false;
+            String monthh = "";
+            String dayy = "";
+            String hour = "";
+            String minute = "";
+            if (doctorreminder.get(ilrs).getMonth() < 10) {
+
+                monthh = "0" + doctorreminder.get(ilrs).getMonth();
+            } else {
+                monthh = "" + doctorreminder.get(ilrs).getMonth();
+            }
+
+            if (doctorreminder.get(ilrs).getDate() < 10) {
+
+                dayy = "0" + doctorreminder.get(ilrs).getDate();
+            } else {
+                dayy = "" + doctorreminder.get(ilrs).getDate();
+            }
+
+            if (doctorreminder.get(ilrs).getHour() < 10) {
+
+                hour = "0" + doctorreminder.get(ilrs).getHour();
+            } else {
+                hour = "" + doctorreminder.get(ilrs).getHour();
+            }
+
+            if (doctorreminder.get(ilrs).getMintue() < 10) {
+
+                minute = "0" + doctorreminder.get(ilrs).getMintue();
+            } else {
+                minute = "" + doctorreminder.get(ilrs).getMintue();
+            }
+
+            String local_db_date_time = doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
+            //Log.e("localdatedoctor",local_db_date_time);
+            String date = Utils.getTodayDate();
+            String time = Utils.getTodayTime();
+
+            String date_time = date + " " + time;
+            try {
+                if (local_db_date_time.equals(date_time)) {
+                    if (doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                        String txt_detail = preferences.getString("user_name", "") + " ,you have a doctor visit on " + doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Plan your day accordingly";
+                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                        notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "DOCTOR_FOLLOWUP_REMINDER_DOCTOR");
+                    }
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }
+
     }
 
     private void doctor_notification_from_sqlite() {
@@ -780,10 +862,65 @@ public class SchedulingService extends IntentService {
             String date_time = date + " " + time;
             try {
                 if (local_db_date_time.equals(date_time)) {
-                    if(doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                    if (doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || doctorreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
                         String txt_detail = preferences.getString("user_name", "") + " ,you have a doctor visit on " + doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Plan your day accordingly";
                         NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                         notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), "DOCTOR_FOLLOWUP_REMINDER");
+                    }
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }
+    }
+
+    //only generate notification in time
+    private void lab_notification_from_digitization() {
+        final List<Lab_Test_Reminder_DoctorListView> labreminder = DbOperations.getLabReminderbyDigitiation(this, "1");
+
+        for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
+
+            String monthh = "";
+            String dayy = "";
+            String hour = "";
+            String minute = "";
+
+            if (labreminder.get(ilrs).getMonth() < 10) {
+                monthh = "0" + labreminder.get(ilrs).getMonth();
+            } else {
+                monthh = "" + labreminder.get(ilrs).getMonth();
+            }
+            if (labreminder.get(ilrs).getDate() < 10) {
+                dayy = "0" + labreminder.get(ilrs).getDate();
+            } else {
+                dayy = "" + labreminder.get(ilrs).getDate();
+            }
+            if (labreminder.get(ilrs).getHour() < 10) {
+                hour = "0" + labreminder.get(ilrs).getHour();
+            } else {
+                hour = "" + labreminder.get(ilrs).getHour();
+            }
+
+            if (labreminder.get(ilrs).getMintue() < 10) {
+
+                minute = "0" + labreminder.get(ilrs).getMintue();
+            } else {
+                minute = "" + labreminder.get(ilrs).getMintue();
+            }
+
+            String local_db_date_time = labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + " " + hour + ":" + minute;
+            Log.e("localdateLAB", local_db_date_time);
+            String date = Utils.getTodayDate();
+            String time = Utils.getTodayTime();
+
+            String date_time = date + " " + time;
+            Log.e("dateLAB", date_time);
+            try {
+                if (local_db_date_time.equals(date_time)) {
+                    if (labreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || labreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                        String txt_detail = preferences.getString("user_name", "") + ", your lab test for " + labreminder.get(ilrs).getLabName() + " is due on " + labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Do Visit. Stay Healthy.";
+                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                        notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, labreminder.get(ilrs).getLabTestReminderId(), "LAB_TEST_REMINDER_DOCTOR");
                     }
                 }
             } catch (Exception e) {
@@ -835,7 +972,7 @@ public class SchedulingService extends IntentService {
             Log.e("dateLAB", date_time);
             try {
                 if (local_db_date_time.equals(date_time)) {
-                    if(labreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || labreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
+                    if (labreminder.get(ilrs).getStatus().equalsIgnoreCase("activate") || labreminder.get(ilrs).getStatus().equalsIgnoreCase("pending")) {
                         String txt_detail = preferences.getString("user_name", "") + ", your lab test for " + labreminder.get(ilrs).getLabName() + " is due on " + labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy + ". Do Visit. Stay Healthy.";
                         NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                         notificationUtils.allGetNotfication(preferences.getString("user_name", ""), txt_detail, labreminder.get(ilrs).getLabTestReminderId(), "LAB_TEST_REMINDER");
@@ -894,7 +1031,7 @@ public class SchedulingService extends IntentService {
                 headers.put("r_t", preferences.getString("r_t", ""));
                 headers.put("user_name", preferences.getString("user_name", ""));
                 headers.put("email_id", preferences.getString("email_id", ""));
-               // headers.put("cf_uuhid", cfuuhidId);
+                // headers.put("cf_uuhid", cfuuhidId);
                 headers.put("user_id", preferences.getString("user_id", ""));
                 headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
                 return headers;
@@ -1078,7 +1215,6 @@ public class SchedulingService extends IntentService {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-
 
 
                 headers.put("a_t", preferences.getString("a_t", ""));
@@ -1350,7 +1486,7 @@ public class SchedulingService extends IntentService {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                       // this.showProgressBar(false);
+                        // this.showProgressBar(false);
                         int responseStatus = 0;
                         JSONObject json = null;
                         try {
@@ -1379,7 +1515,7 @@ public class SchedulingService extends IntentService {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-               // this.showProgressBar(false);
+                // this.showProgressBar(false);
             }
         }) {
             @Override

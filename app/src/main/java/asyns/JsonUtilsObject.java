@@ -14,13 +14,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import item.property.Doctor_Visit_Reminder_DoctorListView;
+import item.property.Doctor_Visit_Reminder_SelfListView;
 import item.property.EduationDetails;
 import item.property.HealthNoteItems;
 import item.property.LabReportImageList;
 import item.property.LabReportImageListView;
+import item.property.Lab_Test_Reminder_DoctorListView;
+import item.property.Lab_Test_Reminder_SelfListView;
 import item.property.MedicineReminderItem;
 import item.property.PrescriptionImageList;
 import item.property.PrescriptionImageListView;
+import item.property.ReminderMedicnceDoagePer;
+import item.property.Reminder_DoctorListView;
+import item.property.Reminder_SelfListView;
 import utils.AppPreference;
 import utils.MyConstants;
 
@@ -363,6 +370,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent1.put("alramTime", alarmTime);
             jsonParent1.put("noOfDosage", doages);
             jsonParent1.put("noOfDayInWeek", noOfDayInweek);
+
             JSONArray obj1 = new JSONArray();
             try {
                 for (int i = 0; i < listCurrent.size(); i++) {
@@ -375,6 +383,8 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("medicineQuantity", listCurrent.get(i).getInterval());
                     list1.put("isAtferMeal", listCurrent.get(i).isBaMealAfter());
                     list1.put("isBeforeMeal", listCurrent.get(i).isBaMealBefore());
+                    list1.put("isSelf", true);
+                    list1.put("status", "pending");///doubt
                     obj1.put(list1);
                 }
             } catch (JSONException e1) {
@@ -390,37 +400,136 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
-    public static JSONObject setRemMedAddLocal(String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval,String cfuuhid) {
+    public static JSONObject setRemMedAddLocal(List<Reminder_SelfListView> medicinereminder,String chk_self_or_digi) {
+//String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval, String cfuuhid, String status, String medicineReminderId, ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePer,
+        boolean isAndroidPrimaryKey = true;
+
         JSONObject jsonParent = new JSONObject();
         try {
-            jsonParent.put("cfuuhId", cfuuhid);
-            JSONObject jsonParent1 = new JSONObject();
-            jsonParent1.put("startDate", startFrom);
-            jsonParent1.put("noOfDays", duration);
-            jsonParent1.put("unitOfInterval", "hours");
-            jsonParent1.put("interval", interval);
-            jsonParent1.put("alramTime", alarmTime);
-            jsonParent1.put("noOfDosage", doages);
-            jsonParent1.put("noOfDayInWeek", noOfDayInweek);
+            jsonParent.put("cfuuhId", medicinereminder.get(0).getCfuuhId());
             JSONArray obj1 = new JSONArray();
             try {
-                for (int i = 0; i < listCurrent.size(); i++) {
+                for (int i = 0; i < medicinereminder.size(); i++) {
+                    if (medicinereminder.get(i).getMedicineReminderId().length() > 7) {
+                        isAndroidPrimaryKey = true;
+                    } else {
+                        isAndroidPrimaryKey = false;
+                    }
+
+
+                    String time = "";
+                    String hour = "";
+                    String minute = "";
+                    String[] alarm_time = medicinereminder.get(i).getAlarmTime().split(",");
+
+                    int sizee = alarm_time.length;
+                    for (int y = 0; y < sizee; y++) {
+                        String[] timee = alarm_time[y].split(":");
+                        String hourr = timee[0];
+                        String minutee = timee[1];
+                        if (Integer.parseInt(hourr) < 10) {
+
+                            hour = "0" + Integer.parseInt(hourr);
+                        } else {
+                            hour = "" + Integer.parseInt(hourr);
+                        }
+
+                        if (Integer.parseInt(minutee) < 10) {
+
+                            minute = "0" + Integer.parseInt(minutee);
+                        } else {
+                            minute = "" + Integer.parseInt(minutee);
+                        }
+
+                        if (y == (sizee - 1)) {
+                            time += hour + ":" + minute;
+                        } else {
+                            time += hour + ":" + minute + ",";
+                        }
+                    }
+                    String monthh = "";
+                    String dayy = "";
+
+                    if (medicinereminder.get(i).getMonth() < 10) {
+
+                        monthh = "0" + medicinereminder.get(i).getMonth();
+                    } else {
+                        monthh = "" + medicinereminder.get(i).getMonth();
+                    }
+
+                    if (medicinereminder.get(i).getDate() < 10) {
+
+                        dayy = "0" + medicinereminder.get(i).getDate();
+                    } else {
+                        dayy = "" + medicinereminder.get(i).getDate();
+                    }
+
+
                     JSONObject list1 = new JSONObject();
-                    list1.put("medicineType", listCurrent.get(i).getType());
-                    list1.put("medicineName", listCurrent.get(i).getMedicineName());
-                    list1.put("doctorName", listCurrent.get(i).getDoctorName());
-                    list1.put("quantityType", "Mg");
+                    list1.put("medicineReminderId", Long.parseLong(medicinereminder.get(i).getMedicineReminderId()));
+                    list1.put("isAndroidPrimaryKey", isAndroidPrimaryKey);
+                    list1.put("status", medicinereminder.get(i).getStatus());
+                    list1.put("medicineType", medicinereminder.get(i).getType());
+                    list1.put("medicineName", medicinereminder.get(i).getRemMedicineName());
+                    list1.put("doctorName", medicinereminder.get(i).getDoctorName());
+                    //list1.put("quantityType", "Mg");
                     list1.put("medicinePotency", "600 mg");
-                    list1.put("medicineQuantity", listCurrent.get(i).getInterval());
-                    list1.put("isAtferMeal", listCurrent.get(i).isBaMealAfter());
-                    list1.put("isBeforeMeal", listCurrent.get(i).isBaMealBefore());
+                    list1.put("medicineQuantity",String.valueOf( medicinereminder.get(i).getInterval()));
+                    list1.put("isAtferMeal", medicinereminder.get(i).isAfterMeal());
+                    list1.put("isBeforeMeal", medicinereminder.get(i).isBeforeMeal());
+
+                    list1.put("alramTime", medicinereminder.get(i).getAlarmTime());
+                    list1.put("noOfDosage", medicinereminder.get(i).getNoOfDosage());
+                    list1.put("noOfDayInWeek", medicinereminder.get(i).getNoOfDaysInWeek());
+                    list1.put("noOfDays", medicinereminder.get(i).getNoOfDays());
+                    list1.put("unitOfInterval", "hours");
+                    list1.put("interval", medicinereminder.get(i).getInterval());
+                    list1.put("startDate", medicinereminder.get(i).getYear() + "-" + monthh + "-" + dayy);
+                    if(chk_self_or_digi.equalsIgnoreCase("1")){
+                        list1.put("isSelf", true);
+                    }else{
+                        list1.put("isSelf", false);
+                    }
+                    JSONArray obj2 = new JSONArray();
+                    JSONObject jsonParent2 = new JSONObject();
+                    if ( medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
+                        JSONArray arrnull=new JSONArray();
+                        /*JSONObject objnull=null;
+                        arrnull.put(objnull);*/
+                        list1.put("dosageDetailsRequest", arrnull);
+
+
+                    } else {
+
+                        for (int sec = 0; sec < medicinereminder.get(i).getReminderMedicnceDoagePers().size(); sec++) {
+                            //SONObject list2 = new JSONObject();
+                            jsonParent2.put("dosageDate", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getDate());
+                            jsonParent2.put("dosageStatus", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getStatus());
+
+                            obj2.put(jsonParent2);
+
+                            JSONArray obj3 = new JSONArray();
+                            for (int thir = 0; thir < medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().size(); thir++) {
+
+                                JSONObject list3 = new JSONObject();
+                                list3.put("status", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getStatus());
+                                list3.put("time", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getHour() + ":" + medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getMinute());
+
+
+                                obj3.put(list3);
+                                jsonParent2.put("perDosageDetailsRequest", obj3);
+                            }
+                            list1.put("dosageDetailsRequest", obj2);
+                        }
+                    }
+
                     obj1.put(list1);
                 }
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-            jsonParent1.put("medicineReminderDetailsRequest", obj1);
-            jsonParent.put("medicineScheduleRequest", jsonParent1);
+
+            jsonParent.put("medicienReminderRequest", obj1);
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -429,7 +538,145 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
-    public static JSONObject setRemMedEdit(String medicineReminderId, String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval) {
+    public static JSONObject setRemMedAddDigitization(List<Reminder_DoctorListView> medicinereminder, String chk_self_or_digi) {
+//String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval, String cfuuhid, String status, String medicineReminderId, ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePer,
+        boolean isAndroidPrimaryKey = true;
+
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("cfuuhId", medicinereminder.get(0).getCfuuhId());
+            JSONArray obj1 = new JSONArray();
+            try {
+                for (int i = 0; i < medicinereminder.size(); i++) {
+                    if (medicinereminder.get(i).getMedicineReminderId().length() > 7) {
+                        isAndroidPrimaryKey = true;
+                    } else {
+                        isAndroidPrimaryKey = false;
+                    }
+
+
+                    String time = "";
+                    String hour = "";
+                    String minute = "";
+                    String[] alarm_time = medicinereminder.get(i).getAlarmTime().split(",");
+
+                    int sizee = alarm_time.length;
+                    for (int y = 0; y < sizee; y++) {
+                        String[] timee = alarm_time[y].split(":");
+                        String hourr = timee[0];
+                        String minutee = timee[1];
+                        if (Integer.parseInt(hourr) < 10) {
+
+                            hour = "0" + Integer.parseInt(hourr);
+                        } else {
+                            hour = "" + Integer.parseInt(hourr);
+                        }
+
+                        if (Integer.parseInt(minutee) < 10) {
+
+                            minute = "0" + Integer.parseInt(minutee);
+                        } else {
+                            minute = "" + Integer.parseInt(minutee);
+                        }
+
+                        if (y == (sizee - 1)) {
+                            time += hour + ":" + minute;
+                        } else {
+                            time += hour + ":" + minute + ",";
+                        }
+                    }
+                    String monthh = "";
+                    String dayy = "";
+
+                    if (medicinereminder.get(i).getMonth() < 10) {
+
+                        monthh = "0" + medicinereminder.get(i).getMonth();
+                    } else {
+                        monthh = "" + medicinereminder.get(i).getMonth();
+                    }
+
+                    if (medicinereminder.get(i).getDate() < 10) {
+
+                        dayy = "0" + medicinereminder.get(i).getDate();
+                    } else {
+                        dayy = "" + medicinereminder.get(i).getDate();
+                    }
+
+
+                    JSONObject list1 = new JSONObject();
+                    list1.put("medicineReminderId",  Long.parseLong(medicinereminder.get(i).getMedicineReminderId()));
+                    list1.put("isAndroidPrimaryKey", isAndroidPrimaryKey);
+                    list1.put("status", medicinereminder.get(i).getStatus());
+                    list1.put("medicineType", medicinereminder.get(i).getType());
+                    list1.put("medicineName", medicinereminder.get(i).getRemMedicineName());
+                    list1.put("doctorName", medicinereminder.get(i).getDoctorName());
+                    //list1.put("quantityType", "Mg");
+                    list1.put("medicinePotency", "600 mg");
+                    list1.put("medicineQuantity",String.valueOf( medicinereminder.get(i).getInterval()));
+                    list1.put("isAtferMeal", medicinereminder.get(i).isAfterMeal());
+                    list1.put("isBeforeMeal", medicinereminder.get(i).isBeforeMeal());
+
+                    list1.put("alramTime", medicinereminder.get(i).getAlarmTime());
+                    list1.put("noOfDosage", medicinereminder.get(i).getNoOfDosage());
+                    list1.put("noOfDayInWeek", medicinereminder.get(i).getNoOfDaysInWeek());
+                    list1.put("noOfDays", medicinereminder.get(i).getNoOfDays());
+                    list1.put("unitOfInterval", "hours");
+                    list1.put("interval", medicinereminder.get(i).getInterval());
+                    list1.put("startDate", medicinereminder.get(i).getYear() + "-" + monthh + "-" + dayy);
+                    if(chk_self_or_digi.equalsIgnoreCase("1")){
+                        list1.put("isSelf", true);
+                    }else{
+                        list1.put("isSelf", false);
+                    }
+                    JSONArray obj2 = new JSONArray();
+                    JSONObject jsonParent2 = new JSONObject();
+                    if ( medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
+
+                        JSONArray arrnull=new JSONArray();
+
+                        list1.put("dosageDetailsRequest", arrnull);
+
+
+                    } else {
+
+                        for (int sec = 0; sec < medicinereminder.get(i).getReminderMedicnceDoagePers().size(); sec++) {
+                            //SONObject list2 = new JSONObject();
+                            jsonParent2.put("dosageDate", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getDate());
+                            jsonParent2.put("dosageStatus", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getStatus());
+
+                            obj2.put(jsonParent2);
+
+                            JSONArray obj3 = new JSONArray();
+                            for (int thir = 0; thir < medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().size(); thir++) {
+
+                                JSONObject list3 = new JSONObject();
+                                list3.put("status", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getStatus());
+                                list3.put("time", medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getHour() + ":" + medicinereminder.get(i).getReminderMedicnceDoagePers().get(sec).getReminderMedicnceTimes().get(thir).getMinute());
+
+
+                                obj3.put(list3);
+                                jsonParent2.put("perDosageDetailsRequest", obj3);
+                            }
+                            list1.put("dosageDetailsRequest", obj2);
+                        }
+                    }
+
+                    obj1.put(list1);
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+
+            jsonParent.put("medicienReminderRequest", obj1);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
+    public static JSONObject setRemMedEdit(String medicineReminderId, String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval, String status) {
         JSONObject jsonParent = new JSONObject();
         try {
             jsonParent.put("medicineReminderId", medicineReminderId);
@@ -447,6 +694,8 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("medicineQuantity", listCurrent.get(0).getInterval());
             jsonParent.put("isAtferMeal", listCurrent.get(0).isBaMealAfter());
             jsonParent.put("isBeforeMeal", listCurrent.get(0).isBaMealBefore());
+            jsonParent.put("status", status);
+            jsonParent.put("isSelf", true);
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
@@ -477,7 +726,8 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("isNewLabTest", isNewLabTest);
             jsonParent.put("isAfterMeal", isAtterMeal);
             jsonParent.put("isSelf", true);
-
+            jsonParent.put("labTestStatus", "pending");
+//
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -485,27 +735,155 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
 
         return jsonParent;
     }
-    public static JSONObject toSetLabTestReminderfromLocal(String doctorName, String testName, String labName, String labTestDate, String labTestTime, String labTestReminderId, boolean isNewLabTest, boolean isAtterMeal,String cfhuuid) {
+
+    public static JSONObject toSetLabTestReminderfromLocal(String chk_self_or_digi, List<Lab_Test_Reminder_SelfListView> labreminder) {
+        //String doctorName, String testName, String labName, String labTestDate, String labTestTime, String labTestReminderId, boolean isNewLabTest, boolean isAtterMeal, String cfhuuid, String status,
         JSONObject jsonParent = new JSONObject();
+        JSONArray arr = new JSONArray();
         try {
-            jsonParent.put("doctorName", doctorName);
-            jsonParent.put("testName", testName);
-            jsonParent.put("labName", labName);
-            jsonParent.put("labTestDate", labTestDate);
-            jsonParent.put("labTestTime", labTestTime);
-            jsonParent.put("cfuuhId", cfhuuid);
-            jsonParent.put("labTestReminderId", labTestReminderId);
-            jsonParent.put("isNewLabTest", isNewLabTest);
-            jsonParent.put("isAfterMeal", isAtterMeal);
-            jsonParent.put("isSelf", true);
 
+            jsonParent.put("cfuuhId", labreminder.get(0).getCfuuhId());
+            for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
+                boolean isNewReminder = false;
+                String monthh = "";
+                String dayy = "";
+                String hour = "";
+                String minute = "";
+
+                if (labreminder.get(ilrs).getLabTestReminderId().length() > 7) {
+                    isNewReminder = true;
+                } else {
+                    isNewReminder = false;
+                }
+
+                if (labreminder.get(ilrs).getMonth() < 10) {
+
+                    monthh = "0" + labreminder.get(ilrs).getMonth();
+                } else {
+                    monthh = "" + labreminder.get(ilrs).getMonth();
+                }
+
+                if (labreminder.get(ilrs).getDate() < 10) {
+
+                    dayy = "0" + labreminder.get(ilrs).getDate();
+                } else {
+                    dayy = "" + labreminder.get(ilrs).getDate();
+                }
+
+                if (labreminder.get(ilrs).getHour() < 10) {
+
+                    hour = "0" + labreminder.get(ilrs).getHour();
+                } else {
+                    hour = "" + labreminder.get(ilrs).getHour();
+                }
+
+                if (labreminder.get(ilrs).getMintue() < 10) {
+
+                    minute = "0" + labreminder.get(ilrs).getMintue();
+                } else {
+                    minute = "" + labreminder.get(ilrs).getMintue();
+                }
+
+//labreminder.get(ilrs).getDoctorName().toString().trim(), labreminder.get(ilrs).getRemMedicineName().toString().trim(), labreminder.get(ilrs).getLabName().toString().trim(), labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, labreminder.get(ilrs).getLabTestReminderId(), isNewReminder, labreminder.get(ilrs).isAfterMeal(), labreminder.get(ilrs).getCfuuhId(), labreminder.get(ilrs).getStatus()
+                JSONObject jsonobjint = new JSONObject();
+                jsonobjint.put("doctorName", labreminder.get(ilrs).getDoctorName().toString().trim());
+                jsonobjint.put("testName", labreminder.get(ilrs).getRemMedicineName().toString().trim());
+                jsonobjint.put("labName", labreminder.get(ilrs).getLabName().toString().trim());
+                jsonobjint.put("labTestDate", labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy);
+                jsonobjint.put("labTestTime", hour + ":" + minute);
+                jsonobjint.put("cfuuhId", labreminder.get(ilrs).getCfuuhId());
+                jsonobjint.put("labTestReminderId", labreminder.get(ilrs).getLabTestReminderId());
+                jsonobjint.put("labTestStatus", labreminder.get(ilrs).getStatus());
+                jsonobjint.put("isNewLabTest", isNewReminder);//edit and medicine id from server side - false and edit and medicine id generated from my side -true
+                jsonobjint.put("isAfterMeal", labreminder.get(ilrs).isAfterMeal());
+                if (chk_self_or_digi.equalsIgnoreCase("1")) {
+                    jsonobjint.put("isSelf", true);//self ya digitization
+                } else {
+                    jsonobjint.put("isSelf", false);
+                }
+                arr.put(jsonobjint);
+            }
+            jsonParent.put("addLabTestReminderRequest", arr);
         } catch (Exception e) {
 
-            e.printStackTrace();
         }
-
         return jsonParent;
     }
+
+    public static JSONObject toSetLabTestReminderfromDigitization(String chk_self_or_digi, List<Lab_Test_Reminder_DoctorListView> labreminder) {
+        //String doctorName, String testName, String labName, String labTestDate, String labTestTime, String labTestReminderId, boolean isNewLabTest, boolean isAtterMeal, String cfhuuid, String status,
+        JSONObject jsonParent = new JSONObject();
+        JSONArray arr = new JSONArray();
+        try {
+
+            jsonParent.put("cfuuhId", labreminder.get(0).getCfuuhId());
+            for (int ilrs = 0; ilrs < labreminder.size(); ilrs++) {
+                boolean isNewReminder = false;
+                String monthh = "";
+                String dayy = "";
+                String hour = "";
+                String minute = "";
+
+                if (labreminder.get(ilrs).getLabTestReminderId().length() > 7) {
+                    isNewReminder = true;
+                } else {
+                    isNewReminder = false;
+                }
+
+                if (labreminder.get(ilrs).getMonth() < 10) {
+
+                    monthh = "0" + labreminder.get(ilrs).getMonth();
+                } else {
+                    monthh = "" + labreminder.get(ilrs).getMonth();
+                }
+
+                if (labreminder.get(ilrs).getDate() < 10) {
+
+                    dayy = "0" + labreminder.get(ilrs).getDate();
+                } else {
+                    dayy = "" + labreminder.get(ilrs).getDate();
+                }
+
+                if (labreminder.get(ilrs).getHour() < 10) {
+
+                    hour = "0" + labreminder.get(ilrs).getHour();
+                } else {
+                    hour = "" + labreminder.get(ilrs).getHour();
+                }
+
+                if (labreminder.get(ilrs).getMintue() < 10) {
+
+                    minute = "0" + labreminder.get(ilrs).getMintue();
+                } else {
+                    minute = "" + labreminder.get(ilrs).getMintue();
+                }
+
+//labreminder.get(ilrs).getDoctorName().toString().trim(), labreminder.get(ilrs).getRemMedicineName().toString().trim(), labreminder.get(ilrs).getLabName().toString().trim(), labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, labreminder.get(ilrs).getLabTestReminderId(), isNewReminder, labreminder.get(ilrs).isAfterMeal(), labreminder.get(ilrs).getCfuuhId(), labreminder.get(ilrs).getStatus()
+                JSONObject jsonobjint = new JSONObject();
+                jsonobjint.put("doctorName", labreminder.get(ilrs).getDoctorName().toString().trim());
+                jsonobjint.put("testName", labreminder.get(ilrs).getRemMedicineName().toString().trim());
+                jsonobjint.put("labName", labreminder.get(ilrs).getLabName().toString().trim());
+                jsonobjint.put("labTestDate", labreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy);
+                jsonobjint.put("labTestTime", hour + ":" + minute);
+                jsonobjint.put("cfuuhId", labreminder.get(ilrs).getCfuuhId());
+                jsonobjint.put("labTestReminderId", labreminder.get(ilrs).getLabTestReminderId());
+                jsonobjint.put("labTestStatus", labreminder.get(ilrs).getStatus());
+                jsonobjint.put("isNewLabTest", isNewReminder);//edit and medicine id from server side - false and edit and medicine id generated from my side -true
+                jsonobjint.put("isAfterMeal", labreminder.get(ilrs).isAfterMeal());
+                if (chk_self_or_digi.equalsIgnoreCase("1")) {
+                    jsonobjint.put("isSelf", true);//self ya digitization
+                } else {
+                    jsonobjint.put("isSelf", false);
+                }
+                arr.put(jsonobjint);
+            }
+            jsonParent.put("addLabTestReminderRequest", arr);
+        } catch (Exception e) {
+
+        }
+        return jsonParent;
+    }
+
     public static JSONObject toSetDoctorVisitReminder(String doctorName, String hospitalName, String follwupDate, String followupTime, String doctorFollowupReminderId, boolean isNewReminder) {
         JSONObject jsonParent = new JSONObject();
         try {
@@ -517,6 +895,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("doctorFollowupReminderId", doctorFollowupReminderId);
             jsonParent.put("isNewReminder", isNewReminder);
             jsonParent.put("isSelf", true);
+            jsonParent.put("status", "pending");
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -525,24 +904,158 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
-    public static JSONObject toSetDoctorVisitReminderLocal(String doctorName, String hospitalName, String follwupDate, String followupTime, String doctorFollowupReminderId, boolean isNewReminder,String cfuuhid) {
+    public static JSONObject toSetDoctorVisitReminderLocal(String chk_self_or_digit, List<Doctor_Visit_Reminder_SelfListView> doctorreminder) {
+        //String doctorName, String hospitalName, String follwupDate, String followupTime, String doctorFollowupReminderId, boolean isNewReminder, String cfuuhid, String status,
+        // doctorreminder.get(ilrs).getDoctorName().toString().trim(), doctorreminder.get(ilrs).getRemMedicineName().toString().trim(), doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), isNewReminder, doctorreminder.get(ilrs).getCfuuhId(), doctorreminder.get(ilrs).getStatus(),
         JSONObject jsonParent = new JSONObject();
+        JSONArray arr = new JSONArray();
         try {
-            jsonParent.put("doctorName", doctorName);
-            jsonParent.put("hospitalName", hospitalName);
-            jsonParent.put("follwupDate", follwupDate);
-            jsonParent.put("followupTime", followupTime);
-            jsonParent.put("cfuuhId", cfuuhid);
-            jsonParent.put("doctorFollowupReminderId", doctorFollowupReminderId);
-            jsonParent.put("isNewReminder", isNewReminder);
-            jsonParent.put("isSelf", true);
+            jsonParent.put("cfuuhId", doctorreminder.get(0).getCfuuhId());
+            for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
+                boolean isNewReminder = false;
+                String monthh = "";
+                String dayy = "";
+                String hour = "";
+                String minute = "";
+
+                if (doctorreminder.get(ilrs).getDoctorFollowupReminderId().length() > 7) {
+                    isNewReminder = true;
+                } else {
+                    isNewReminder = false;
+                }
+
+                if (doctorreminder.get(ilrs).getMonth() < 10) {
+
+                    monthh = "0" + doctorreminder.get(ilrs).getMonth();
+                } else {
+                    monthh = "" + doctorreminder.get(ilrs).getMonth();
+                }
+
+                if (doctorreminder.get(ilrs).getDate() < 10) {
+
+                    dayy = "0" + doctorreminder.get(ilrs).getDate();
+                } else {
+                    dayy = "" + doctorreminder.get(ilrs).getDate();
+                }
+
+                if (doctorreminder.get(ilrs).getHour() < 10) {
+
+                    hour = "0" + doctorreminder.get(ilrs).getHour();
+                } else {
+                    hour = "" + doctorreminder.get(ilrs).getHour();
+                }
+
+                if (doctorreminder.get(ilrs).getMintue() < 10) {
+
+                    minute = "0" + doctorreminder.get(ilrs).getMintue();
+                } else {
+                    minute = "" + doctorreminder.get(ilrs).getMintue();
+                }
+
+
+                JSONObject jsonobjint = new JSONObject();
+
+                jsonobjint.put("doctorName", doctorreminder.get(ilrs).getDoctorName().toString().trim());
+                jsonobjint.put("hospitalName", doctorreminder.get(ilrs).getRemMedicineName().toString().trim());
+                jsonobjint.put("follwupDate", doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy);
+                jsonobjint.put("followupTime", hour + ":" + minute);
+                jsonobjint.put("cfuuhId", doctorreminder.get(ilrs).getCfuuhId());
+                jsonobjint.put("doctorFollowupReminderId", doctorreminder.get(ilrs).getDoctorFollowupReminderId());
+                jsonobjint.put("isNewReminder", isNewReminder);
+                if (chk_self_or_digit.equalsIgnoreCase("1")) {
+                    jsonobjint.put("isSelf", true);
+                } else {
+                    jsonobjint.put("isSelf", false);
+                }
+                jsonobjint.put("status", doctorreminder.get(ilrs).getStatus());
+
+                arr.put(jsonobjint);
+            }
+            jsonParent.put("addDoctorFollowupReminderRequest", arr);
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-
         return jsonParent;
     }
+
+
+    //for doctor reminder digitization
+    public static JSONObject toSetDoctorVisitReminderLocalDigitization(String chk_self_or_digit, List<Doctor_Visit_Reminder_DoctorListView> doctorreminder) {
+        //String doctorName, String hospitalName, String follwupDate, String followupTime, String doctorFollowupReminderId, boolean isNewReminder, String cfuuhid, String status,
+        // doctorreminder.get(ilrs).getDoctorName().toString().trim(), doctorreminder.get(ilrs).getRemMedicineName().toString().trim(), doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy, hour + ":" + minute, doctorreminder.get(ilrs).getDoctorFollowupReminderId(), isNewReminder, doctorreminder.get(ilrs).getCfuuhId(), doctorreminder.get(ilrs).getStatus(),
+        JSONObject jsonParent = new JSONObject();
+        JSONArray arr = new JSONArray();
+        try {
+            jsonParent.put("cfuuhId", doctorreminder.get(0).getCfuuhId());
+            for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
+                boolean isNewReminder = false;
+                String monthh = "";
+                String dayy = "";
+                String hour = "";
+                String minute = "";
+
+                if (doctorreminder.get(ilrs).getDoctorFollowupReminderId().length() > 7) {
+                    isNewReminder = true;
+                } else {
+                    isNewReminder = false;
+                }
+
+                if (doctorreminder.get(ilrs).getMonth() < 10) {
+
+                    monthh = "0" + doctorreminder.get(ilrs).getMonth();
+                } else {
+                    monthh = "" + doctorreminder.get(ilrs).getMonth();
+                }
+
+                if (doctorreminder.get(ilrs).getDate() < 10) {
+
+                    dayy = "0" + doctorreminder.get(ilrs).getDate();
+                } else {
+                    dayy = "" + doctorreminder.get(ilrs).getDate();
+                }
+
+                if (doctorreminder.get(ilrs).getHour() < 10) {
+
+                    hour = "0" + doctorreminder.get(ilrs).getHour();
+                } else {
+                    hour = "" + doctorreminder.get(ilrs).getHour();
+                }
+
+                if (doctorreminder.get(ilrs).getMintue() < 10) {
+
+                    minute = "0" + doctorreminder.get(ilrs).getMintue();
+                } else {
+                    minute = "" + doctorreminder.get(ilrs).getMintue();
+                }
+
+
+                JSONObject jsonobjint = new JSONObject();
+
+                jsonobjint.put("doctorName", doctorreminder.get(ilrs).getDoctorName().toString().trim());
+                jsonobjint.put("hospitalName", doctorreminder.get(ilrs).getRemMedicineName().toString().trim());
+                jsonobjint.put("follwupDate", doctorreminder.get(ilrs).getYear() + "-" + monthh + "-" + dayy);
+                jsonobjint.put("followupTime", hour + ":" + minute);
+                jsonobjint.put("cfuuhId", doctorreminder.get(ilrs).getCfuuhId());
+                jsonobjint.put("doctorFollowupReminderId", doctorreminder.get(ilrs).getDoctorFollowupReminderId());
+                jsonobjint.put("isNewReminder", isNewReminder);
+                if (chk_self_or_digit.equalsIgnoreCase("1")) {
+                    jsonobjint.put("isSelf", true);
+                } else {
+                    jsonobjint.put("isSelf", false);
+                }
+                jsonobjint.put("status", doctorreminder.get(ilrs).getStatus());
+
+                arr.put(jsonobjint);
+            }
+            jsonParent.put("addDoctorFollowupReminderRequest", arr);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+        return jsonParent;
+    }
+
     public static JSONObject toSaveUploadPrescriptionMetadata(String prescriptionDate, String doctorName, String disease) {
         JSONObject jsonParent = new JSONObject();
         try {
@@ -567,10 +1080,11 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             JSONArray obj1 = new JSONArray();
             try {
                 for (int i = 0; i < prescriptionImageList.size(); i++) {
-                        JSONObject list1 = new JSONObject();
-                        list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
-                        list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
-                        obj1.put(list1);
+                    JSONObject list1 = new JSONObject();
+                    list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+                    list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
+                    //add status in this position
+                    obj1.put(list1);
 
                 }
             } catch (JSONException e1) {
@@ -585,6 +1099,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
 
         return jsonParent;
     }
+
     public static JSONObject toSaveUploadedPrescriptionDataToserver(String prescriptionId, String cfuuhidId, ArrayList<PrescriptionImageListView> prescriptionImageList) {
         JSONObject jsonParent = new JSONObject();
         try {
@@ -664,10 +1179,10 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             JSONArray obj1 = new JSONArray();
             try {
                 for (int i = 0; i < prescriptionImageList.size(); i++) {
-                        JSONObject list1 = new JSONObject();
-                        list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
-                        list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
-                        obj1.put(list1);
+                    JSONObject list1 = new JSONObject();
+                    list1.put("imageNumber", prescriptionImageList.get(i).getImageNumber());
+                    list1.put("imageUrl", prescriptionImageList.get(i).getPrescriptionImage());
+                    obj1.put(list1);
 
                 }
             } catch (JSONException e1) {

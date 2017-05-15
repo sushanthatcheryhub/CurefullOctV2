@@ -191,10 +191,7 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
 
                 } else {
                     commonid = String.valueOf(System.currentTimeMillis());
-                    //edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder
                     insertRemiderDoctorDetailsLocal(edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, doctorFollowupReminderId, isNewReminder, commonid);
-
-
                 }
 
                 break;
@@ -246,12 +243,25 @@ public class FragmentDoctorVisitSetReminder extends Fragment implements View.OnC
         } else {
             values.put("doctorFollowupReminderId", commonid);
         }
-        values.put("status","pending");//isNewReminder   changes after reminder notification
+        values.put("status", "pending");//isNewReminder   changes after reminder notification
 
         values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
         values.put("isUploaded", "1");
 
         DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid);
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put("doctorName", doctorname);
+            cv.put("isUploaded", "0");
+            cv.put("cfuuhid", AppPreference.getInstance().getcf_uuhid());
+            cv.put("common_id", commonid);
+            cv.put("case_id", "2");   //1-medicine reminder doctor name   2-doctor reminder doctor name  3-lab reminder doctor name
+
+            DbOperations.insertDoctorName(CureFull.getInstanse().getActivityIsntanse(), cv, commonid, AppPreference.getInstance().getcf_uuhid(), "2");
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
         CureFull.getInstanse().getActivityIsntanse().onBackPressed();
 
 

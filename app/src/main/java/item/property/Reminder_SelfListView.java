@@ -44,6 +44,25 @@ public class Reminder_SelfListView implements Parcelable {
     private String cfuuhId;
     private String currentdate;
     private String edit;
+    private String enddate;
+    private String alarmTime;
+
+    public String getEnddate() {
+        return enddate;
+    }
+
+    public String getAlarmTime() {
+        return alarmTime;
+    }
+
+    public void setEnddate(String enddate) {
+
+        this.enddate = enddate;
+    }
+
+    public void setAlarmTime(String alarmTime) {
+        this.alarmTime = alarmTime;
+    }
 
     public String getCfuuhId() {
         return cfuuhId;
@@ -78,13 +97,16 @@ public class Reminder_SelfListView implements Parcelable {
 
         this.currentdate = currentdate;
     }
+
     public void setEdit(String edit) {
 
         this.edit = edit;
     }
+
     public String getEdit() {
         return edit;
     }
+
     public Reminder_SelfListView(Cursor cur) {
         if (cur == null) {
             return;
@@ -119,21 +141,78 @@ public class Reminder_SelfListView implements Parcelable {
             setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
             setCfuuhId(cur.getString(cur.getColumnIndex("cfuuhId")));
             setCommonID(cur.getString(cur.getColumnIndex("common_id")));
-            setCurrentDate(cur.getString(cur.getColumnIndex("currentdate")));
+            try {
+                setCurrentDate(cur.getString(cur.getColumnIndex("currentdate")));
+            } catch (Exception e) {
+                e.getMessage();
+            }
             setEdit(cur.getString(cur.getColumnIndex("edit")));
-           // setReminderMedicnceTimes(jsonObject.getJSONArray("dosagePerDateResponse")));
+            //add after disscusion to ashwani sir
+            setEnddate(cur.getString(cur.getColumnIndex("enddate")));
+            setAlarmTime(cur.getString(cur.getColumnIndex("alarmTime")));
 
-                reminderMedicnceDoagePers = DbOperations.setReminderMedicineDosageLocal(CureFull.getInstanse().getActivityIsntanse(), cur.getString(cur.getColumnIndex(COMMON_ID)), cur.getString(cur.getColumnIndex("currentdate")));
+            // reminderMedicnceDoagePers = DbOperations.setReminderMedicineDosageLocal(CureFull.getInstanse().getActivityIsntanse(), cur.getString(cur.getColumnIndex(COMMON_ID)), cur.getString(cur.getColumnIndex("currentdate")));
 
 
-
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
     }
+
+
+    public Reminder_SelfListView(Cursor cur, String NIU) {
+        if (cur == null) {
+            return;
+        }
+        try {
+
+            setRemMedicineName(cur.getString(cur.getColumnIndex("medicineName")));
+            setDoctorName(cur.getString(cur.getColumnIndex("doctorName")));
+            setQuantity(cur.getInt(cur.getColumnIndex("quantity")));
+            setNoOfDays(cur.getInt(cur.getColumnIndex("noOfDays")));
+            setInterval(cur.getInt(cur.getColumnIndex("interval")));
+            setNoOfDosage(cur.getInt(cur.getColumnIndex("noOfDosage")));
+            setType(cur.getString(cur.getColumnIndex("type")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setNoOfDaysInWeek(cur.getString(cur.getColumnIndex("noOfDaysInWeek")));
+            setMedicineReminderId(cur.getString(cur.getColumnIndex("medicineReminderId")));
+            if (cur.getInt(cur.getColumnIndex("beforeMeal")) == 1) {
+                setBeforeMeal(true);
+            } else {
+                setBeforeMeal(false);
+            }
+
+            if (cur.getInt(cur.getColumnIndex("afterMeal")) == 1) {
+                setAfterMeal(true);
+            } else {
+                setAfterMeal(false);
+            }
+            setYear(cur.getInt(cur.getColumnIndex("year")));
+            setDate(cur.getInt(cur.getColumnIndex("dayOfMonth")));
+            setMonth(cur.getInt(cur.getColumnIndex("monthValue")));
+
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setCfuuhId(cur.getString(cur.getColumnIndex("cfuuhId")));
+            setCommonID(cur.getString(cur.getColumnIndex("common_id")));
+            try {
+                setCurrentDate(cur.getString(cur.getColumnIndex("currentdate")));
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            setEdit(cur.getString(cur.getColumnIndex("edit")));
+            //add after disscusion to ashwani sir
+            setEnddate(cur.getString(cur.getColumnIndex("enddate")));
+            setAlarmTime(cur.getString(cur.getColumnIndex("alarmTime")));
+
+            reminderMedicnceDoagePers = DbOperations.setReminderMedicineDosageSelfLocal(CureFull.getInstanse().getActivityIsntanse(), cur.getString(cur.getColumnIndex(COMMON_ID)), cur.getString(cur.getColumnIndex("currentdate")));
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+    }
+
 
     public String getCommonID() {
         return common_id;
@@ -170,7 +249,14 @@ public class Reminder_SelfListView implements Parcelable {
             setYear(jsonObject3.getInt("year"));
             setDate(jsonObject3.getInt("dayOfMonth"));
             setMonth(jsonObject3.getInt("monthValue"));
-            setCurrentDate(jsonObject.getString("date"));
+            try {
+                setCurrentDate(jsonObject.getString("date"));
+            } catch (Exception e) {
+                e.getMessage();
+                setCurrentDate("0000-00-00");
+            }
+            setEnddate(jsonObject.getString("enddate"));
+            setAlarmTime(jsonObject.getString("alarmTime"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -398,14 +484,23 @@ public class Reminder_SelfListView implements Parcelable {
 
             values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
             values.put("isUploaded", "0");//card.getInsertingValue(symptomslistArray.getJSONObject(i));
-            values.put("currentdate", jsonObject.getString("date"));
+            try {
+                values.put("currentdate", jsonObject.getString("date"));
+            } catch (Exception e) {
+                e.getMessage();
+                values.put("currentdate", "0000-00-00");
+            }
             values.put("edit", "0");
             setCommonID(jsonObject.getString("medicineReminderId"));
             values.put(COMMON_ID, getCommonID());
-
-            DbOperations.insertMedicineRemiderReport(CureFull.getInstanse().getActivityIsntanse(), values, jsonObject.getString("medicineReminderId"),jsonObject.getString("date"));
-
-            setReminderMedicnceTimesLocal(jsonObject.getJSONArray("dosagePerDateResponse"), getCommonID());
+            values.put("enddate", jsonObject.getString("enddate"));
+            values.put("alarmTime", jsonObject.getString("alarmTime"));
+            try {
+                DbOperations.insertMedicineRemiderReport(CureFull.getInstanse().getActivityIsntanse(), values, jsonObject.getString("medicineReminderId"), jsonObject.getString("date"));
+            }catch (Exception e){
+                DbOperations.insertMedicineRemiderReport(CureFull.getInstanse().getActivityIsntanse(), values, jsonObject.getString("medicineReminderId"), "");
+            }
+            //setReminderMedicnceTimesLocal(jsonObject.getJSONArray("dosagePerDateResponse"), getCommonID());
 
         } catch (Exception e) {
             e.printStackTrace();

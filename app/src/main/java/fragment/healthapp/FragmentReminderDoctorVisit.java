@@ -93,8 +93,10 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
     private String date = "N/A", reminder = "N/A", status = "N/A", doctorName = "N/A";
     private ArrayList<LabDoctorName> LabDoctorName;
     private TextView btn_history, btn_next;
-    private boolean apply_flag=false;
+    private boolean apply_flag = false;
+    private boolean doctor_name_flag = false;
 
+    private List<LabDoctorName> LabDoctorNameLocal = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -219,20 +221,36 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         (rootView.findViewById(R.id.txt_doctor_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (LabDoctorName != null && LabDoctorName.size() > 0) {
-                    rotatePhoneClockwise(img_user_name);
-                    listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorName)));
-                    listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
-                    listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow4.setModal(true);
-                    listPopupWindow4.setOnDismissListener(FragmentReminderDoctorVisit.this);
-                    listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
-                    listPopupWindow4.show();
-                }
 
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (LabDoctorName != null && LabDoctorName.size() > 0) {
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorName)));
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentReminderDoctorVisit.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
+                } else {
+                    if (LabDoctorNameLocal != null && LabDoctorNameLocal.size() > 0) {
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorNameLocal)));
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentReminderDoctorVisit.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
+                }
             }
         });
         txt_date_dialog.setPaintFlags(txt_date_dialog.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -246,14 +264,27 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
-            if (LabDoctorName != null && LabDoctorName.size() > 0) {
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (LabDoctorName != null && LabDoctorName.size() > 0) {
 //                realtive_today.setVisibility(View.GONE);
-                doctorName = LabDoctorName.get(position).getDoctorName();
-                txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
-                date = "N/A";
-                reminder = "N/A";
-                status = "N/A";
-                getReminderMedicine();
+                    doctorName = LabDoctorName.get(position).getDoctorName();
+                    txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
+                    date = "N/A";
+                    reminder = "N/A";
+                    status = "N/A";
+                    getReminderMedicine();
+                }
+            } else {
+                if (LabDoctorNameLocal != null && LabDoctorNameLocal.size() > 0) {
+//                realtive_today.setVisibility(View.GONE);
+                    doctorName = LabDoctorNameLocal.get(position).getDoctorName();
+                    txt_doctor_name_txt.setText("" + LabDoctorNameLocal.get(position).getDoctorName());
+                    date = "N/A";
+                    reminder = "N/A";
+                    status = "N/A";
+                    doctor_name_flag = true;
+                    getReminderMedicine();
+                }
             }
         }
     };
@@ -349,7 +380,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 if (isReset) {
                     isChecked = false;
                     isReset = false;
-                    apply_flag=false;
+                    apply_flag = false;
                     realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
                     radioPending.setChecked(false);
@@ -375,7 +406,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
 //                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
-                apply_flag=true;
+                apply_flag = true;
                 launchTwitterShort(rootView);
                 getReminderMedicine();
                 break;
@@ -383,15 +414,14 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
 
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        txt_no_medicine.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterShort(rootView);
-                            }
-                        });
-                    }
-
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    txt_no_medicine.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
+                }
 
 
                 break;
@@ -560,10 +590,64 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else if (doctor_name_flag) {
+
+            DoctorVistReminderListView response = DbOperations.getDoctorReportReminderBasedDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), doctorName);
+            if (response != null) {
+                if (response.getReminder_selfListViews() != null) {
+                    if (response.getReminder_selfListViews().size() > 0) {
+                        txt_self.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                        setSelfMedAdpter(response.getReminder_selfListViews());
+                        recyclerView_self.setVisibility(View.VISIBLE);
+
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Doctor Visit! Add a reminder");
+
+                        txt_no_medicine.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            } else {
+
+                txt_self.setVisibility(View.GONE);
+                recyclerView_self.setVisibility(View.GONE);
+            }
+
+            DoctorVistReminderListView response_curefull = DbOperations.getDoctorReportReminderCurefullBasedDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), doctorName);
+            if (response_curefull != null) {
+                if (response_curefull.getReminderDoctorNamesLocal() != null) {
+                    if (response_curefull.getReminderDoctorNamesLocal().size() > 0) {
+
+                        setDoctorAdpterLocal(response_curefull.getReminderDoctorNamesLocal());
+                        recyclerView_doctor.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Doctor Visit! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
+                    }
+                }
+            } else {
+                recyclerView_doctor.setVisibility(View.GONE);
+                txt_self.setVisibility(View.GONE);
+            }
+            doctor_name_flag = false;
+
         } else {
             if (apply_flag) {
                 //filter
-                if(reminder.equalsIgnoreCase("self")) {
+                if (reminder.equalsIgnoreCase("self")) {
                     DoctorVistReminderListView response = DbOperations.getDoctorReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
                     if (response != null) {
                         if (response.getReminder_selfListViews() != null) {
@@ -589,9 +673,10 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
                         txt_self.setVisibility(View.GONE);
                         recyclerView_self.setVisibility(View.GONE);
+                        recyclerView_doctor.setVisibility(View.GONE);
                     }
 
-                }else if(reminder.equalsIgnoreCase("curefull")){
+                } else if (reminder.equalsIgnoreCase("curefull")) {
                     DoctorVistReminderListView response_curefull = DbOperations.getDoctorReportReminderCurefullAftreSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
                     if (response_curefull != null) {
                         if (response_curefull.getReminderDoctorNamesLocal() != null) {
@@ -601,6 +686,7 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                                 recyclerView_doctor.setVisibility(View.VISIBLE);
                                 txt_no_medicine.setVisibility(View.GONE);
                                 recyclerView_self.setVisibility(View.GONE);
+                                txt_self.setVisibility(View.GONE);
                             } else {
                                 recyclerView_doctor.setVisibility(View.GONE);
                                 if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
@@ -613,11 +699,12 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                         }
                     } else {
                         recyclerView_doctor.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
                         txt_self.setVisibility(View.GONE);
                     }
 
 
-                }else{
+                } else {
                     //for status pending ya complete
                     DoctorVistReminderListView response = DbOperations.getDoctorReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
                     if (response != null) {
@@ -671,11 +758,9 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
                     }
 
 
-
-
                 }
-                apply_flag=false;
-                isReset=true;
+                apply_flag = false;
+                isReset = true;
 
             } else {
                 DoctorVistReminderListView response = DbOperations.getDoctorReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
@@ -855,36 +940,40 @@ public class FragmentReminderDoctorVisit extends Fragment implements View.OnClic
 
 
     private void getDoctorName() {
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_DOCTOR_VISIT + "" + AppPreference.getInstance().getcf_uuhid(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            LabDoctorName = ParseJsonData.getInstance().getLabDoctorName(response);
-                        } else {
-                        }
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_DOCTOR_VISIT + "" + AppPreference.getInstance().getcf_uuhid(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                LabDoctorName = ParseJsonData.getInstance().getDoc_DoctorName(response);
+                            } else {
+                            }
 
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-        };
+            ) {
+            };
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            LabDoctorNameLocal = DbOperations.getLabDoctorReminderListLocal(CureFull.getInstanse().getActivityIsntanse(),"2");
+        }
     }
 
     private void rotatePhoneClockwise(ImageView imageView) {

@@ -360,13 +360,63 @@ public class ParseJsonData implements MyConstants.JsonUtils {
                     //insert local
 
                 }
-                details.getInsertingValue(detailListing);
+                details.getInsertingValue(detailListing,"3");
             } catch (Exception e) {
 
             }
         }
         return detailListing;
     }
+       public ArrayList<LabDoctorName> getDoc_DoctorName(String response) {
+        LabDoctorName details = null;
+        ArrayList<LabDoctorName> detailListing = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                JSONArray jord = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
+                detailListing = new ArrayList<LabDoctorName>();
+                for (int i = 0; i < jord.length(); i++) {
+
+                    details = new LabDoctorName(jord.get(i).toString());
+                    detailListing.add(details);
+                    //insert local
+
+                }
+                details.getInsertingValue(detailListing,"2");
+            } catch (Exception e) {
+
+            }
+        }
+        return detailListing;
+    }
+
+    public ArrayList<LabDoctorName> getMed_DoctorName(String response) {
+        LabDoctorName details = null;
+        ArrayList<LabDoctorName> detailListing = null;
+
+        if (response != null) {
+            try {
+                JSONObject json = new JSONObject(response);
+                setHttp_code(json.getString(MyConstants.JsonUtils.HTTP_CODE));
+                JSONArray jord = new JSONArray(json.getString(JSON_KEY_PAYLOAD));
+                detailListing = new ArrayList<LabDoctorName>();
+                for (int i = 0; i < jord.length(); i++) {
+
+                    details = new LabDoctorName(jord.get(i).toString());
+                    detailListing.add(details);
+                    //insert local
+
+                }
+                details.getInsertingValue(detailListing,"1");
+            } catch (Exception e) {
+
+            }
+        }
+        return detailListing;
+    }
+
 
 
     public List<LabTestName> getLabTestName(String response) {
@@ -443,7 +493,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
     }
 
 
-    public MedicineReminderListView getReminderMedicineList(String response) {
+    public MedicineReminderListView  getReminderMedicineList(String response) {
         MedicineReminderListView details = null;
 
         if (response != null) {

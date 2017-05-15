@@ -49,9 +49,11 @@ public class LabDoctorName implements MyConstants.JsonUtils {
         this.doctorName = doctorName;
     }
 
-    // insert through online
-    public void getInsertingValue(ArrayList<LabDoctorName> json) throws JSONException {
+    // insert doctor name in reminder module through online
+    public void getInsertingValue(ArrayList<LabDoctorName> json,String case_id) throws JSONException {
         try {
+
+            DbOperations.clearDoctorName(case_id);
             for (int i1=0;i1<json.size();i1++) {
                 String common_id = String.valueOf(System.currentTimeMillis());
                 ContentValues values = new ContentValues();
@@ -59,9 +61,9 @@ public class LabDoctorName implements MyConstants.JsonUtils {
                 values.put("isUploaded", "0");
                 values.put("cfuuhid", AppPreference.getInstance().getcf_uuhid());
                 values.put("common_id", common_id);
-                values.put("case_id", "3");//not in use   //1-medicine reminder doctor name   2-doctor reminder doctor name  3-lab reminder doctor name
+                values.put("case_id", case_id);   //1-medicine reminder doctor name   2-doctor reminder doctor name  3-lab reminder doctor name
 
-                DbOperations.insertDoctorName(CureFull.getInstanse().getActivityIsntanse(), values, common_id, AppPreference.getInstance().getcf_uuhid());
+                DbOperations.insertDoctorName(CureFull.getInstanse().getActivityIsntanse(), values, common_id, AppPreference.getInstance().getcf_uuhid(),case_id);
                 //DbOperations.insertLabReminderDoctorName(CureFull.getInstanse().getActivityIsntanse(), values,common_id, AppPreference.getInstance().getcf_uuhid());
             }
         } catch (Exception e) {

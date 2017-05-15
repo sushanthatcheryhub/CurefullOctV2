@@ -106,15 +106,13 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
         img_editm_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                         ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                     DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab doctor visit ?", "Doctor Visit", position);
                     dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Visit_Self_ListAdpter.this);
                     dialogDeleteAll.show();
-                }else{
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-                }
+
             }
         });
 
@@ -159,13 +157,25 @@ public class Reminder_Visit_Self_ListAdpter extends RecyclerView.Adapter<Reminde
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), pos, true, false);
-            //delete from local also
-            try {
-                DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), healthNoteItemses.get(pos).getDoctorName(), "doctorreminder");
-            }catch (Exception e){
-                e.getMessage();
+            if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                getDoctorVisitDelete(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), pos, true, false);
+                //delete from local also
+                try {
+                    DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getDoctorFollowupReminderId(), healthNoteItemses.get(pos).getDoctorName(), "doctorreminder");
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }else{
+                ContentValues cv = new ContentValues();
+                cv.put("doctorFollowupReminderId", healthNoteItemses.get(pos).getDoctorFollowupReminderId());
+                cv.put("status", "delete");
+                cv.put("isUploaded","1");
+                DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(pos).getDoctorFollowupReminderId());
+                healthNoteItemses.remove(pos);
+                notifyDataSetChanged();
+
             }
+
         }
     }
 

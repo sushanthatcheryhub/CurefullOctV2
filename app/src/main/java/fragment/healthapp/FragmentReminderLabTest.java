@@ -93,6 +93,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
     private String startFrom = "";
     List<LabDoctorName> LabDoctorNamelocal = null;
     private boolean apply_flag = false;
+    private boolean doctor_name_flag=false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -283,6 +284,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                     date = "N/A";
                     reminder = "N/A";
                     status = "N/A";
+                    doctor_name_flag=true;
                     getReminderLabTest();
                 }
             }
@@ -560,7 +562,59 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
-        } else {
+        }else if(doctor_name_flag){
+
+
+            try {
+                LabTestReminderListView response = DbOperations.getLabTestReportReminderBasedDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), doctorName);
+                if (response != null) {
+                    if (response.getReminder_selfListViews().size() > 0) {
+                        txt_self.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                        setSelfMedAdpter(response.getReminder_selfListViews());
+                        recyclerView_self.setVisibility(View.VISIBLE);
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+
+                        txt_no_medicine.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    txt_self.setVisibility(View.GONE);
+                    recyclerView_self.setVisibility(View.GONE);
+
+                }
+                LabTestReminderListView response_doctor = DbOperations.getLabTestReportReminderDoctorBasedDoctorName(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+                if (response_doctor != null) {
+                    if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+                            setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal());
+                            recyclerView_doctor.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                        } else {
+                            recyclerView_doctor.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Lab Test! Add a reminder");
+                            txt_self.setVisibility(View.GONE);
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+                    }
+                } else {
+                    recyclerView_doctor.setVisibility(View.GONE);
+                    txt_self.setVisibility(View.GONE);
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            doctor_name_flag=false;
+        }
+        else {
 
             if(apply_flag){
                 //date,reminder,status,doctorName;
@@ -586,7 +640,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                     } else {
                         txt_self.setVisibility(View.GONE);
                         recyclerView_self.setVisibility(View.GONE);
-
+                        recyclerView_doctor.setVisibility(View.GONE);
                     }
 
                 }else if(reminder.equalsIgnoreCase("curefull")){
@@ -611,6 +665,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
                     } else {
                         recyclerView_doctor.setVisibility(View.GONE);
                         txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
                     }
                 }else{
                     //for status
@@ -866,7 +921,7 @@ public class FragmentReminderLabTest extends Fragment implements View.OnClickLis
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
         } else {
-            LabDoctorNamelocal = DbOperations.getLabDoctorReminderListLocal(CureFull.getInstanse().getActivityIsntanse());
+            LabDoctorNamelocal = DbOperations.getLabDoctorReminderListLocal(CureFull.getInstanse().getActivityIsntanse(),"3");
 
         }
     }

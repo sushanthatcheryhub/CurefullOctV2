@@ -28,6 +28,7 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
     private ArrayList<Reminder_SelfListView> reminder_selfListViews;
 
     private ArrayList<ReminderDoctorName> reminderDoctorNames;
+    private ArrayList<Reminder_DoctorListView> reminderDoctorNamesLocal;
   //  private ArrayList<Reminder_SelfListView> medicineReminderBySelf;
   //  Reminder_SelfListView  reminder_selfListViews1;
     public MedicineReminderListView() {
@@ -53,23 +54,130 @@ public class MedicineReminderListView implements MyConstants.JsonUtils {
         try{
             reminder_selfListViews= DbOperations.getMedicineReportReminder11(CureFull.getInstanse().getActivityIsntanse(),datee);//,datee,commonid_from_innerquery
             Log.e("test",reminder_selfListViews.toString());
-            //setReminder_selfListViews(labReportImageListViews);
 
-            //JSONObject jsonObject1 = new JSONObject(jsonObject.getString("listOfFollowupRemiderByDoctor"));
-            //setReminderDoctorNames(jsonToMap(jsonObject1));
         }catch (Exception e){
             e.getMessage();
         }
 
     }
 
+
+    public MedicineReminderListView(String currentdatee,String previousdate,Cursor cursorprivate) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminder_selfListViews= DbOperations.getMedicineReportHistoryReminder11(CureFull.getInstanse().getActivityIsntanse(),currentdatee,previousdate);//,datee,commonid_from_innerquery
+            Log.e("test",reminder_selfListViews.toString());
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    public MedicineReminderListView(Cursor cursorprivate,String status,String NIU,String NIU1) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminder_selfListViews= DbOperations.getMedicineReportReminder11AfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);//,datee,commonid_from_innerquery
+            Log.e("test",reminder_selfListViews.toString());
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    public MedicineReminderListView(Cursor cursorprivate,String doctorName,String NIU,String NIU1,String NIU2,String NIU3) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminder_selfListViews= DbOperations.getMedicineReportReminder11BasedDoctor(CureFull.getInstanse().getActivityIsntanse(),doctorName);
+            Log.e("test",reminder_selfListViews.toString());
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+   /* public void setReminderDoctorNamesLocal(ArrayList<Reminder_DoctorListView> reminderDoctorNamesLocal) {
+        this.reminderDoctorNamesLocal = reminderDoctorNamesLocal;
+    }*/
+
+    public ArrayList<Reminder_DoctorListView> getReminderDoctorNamesLocal() {
+        return reminderDoctorNamesLocal;
+    }
+
+    public MedicineReminderListView(Cursor cursorprivate, String datee, String NIU) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminderDoctorNamesLocal= DbOperations.getMedicineReportReminder11Doctor(CureFull.getInstanse().getActivityIsntanse(),datee);//,datee,commonid_from_innerquery
+            Log.e("testDoctor",reminderDoctorNames.toString());
+           // setReminderDoctorNamesLocal(reminderDoctorNamesLocal);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    public MedicineReminderListView(String currentdate, String previousdate,Cursor cursorprivate,String NIU1,String NIU2,String NIU3,String NIU4,String NIU5) {
+        //, String datee,String commonid_from_innerquery
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminderDoctorNamesLocal= DbOperations.getMedicineReportHistoryReminder11ByDoctor(CureFull.getInstanse().getActivityIsntanse(),currentdate,previousdate);//,datee,commonid_from_innerquery
+            Log.e("testDoctor",reminderDoctorNames.toString());
+            // setReminderDoctorNamesLocal(reminderDoctorNamesLocal);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+    public MedicineReminderListView(Cursor cursorprivate, String status, String NIU,String NIU1,String NIU2) {
+
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminderDoctorNamesLocal= DbOperations.getMedicineReportReminder11DoctorAfterSelection(CureFull.getInstanse().getActivityIsntanse(),status);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+
+    public MedicineReminderListView(Cursor cursorprivate, String doctorName, String NIU,String NIU1,String NIU2,String NIU3,String NIU4) {
+
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            reminderDoctorNamesLocal= DbOperations.getMedicineReportReminder11DoctorBasedDoctorName(CureFull.getInstanse().getActivityIsntanse(),doctorName);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
+
+
     public ArrayList<Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
     }
-
-  /*  public void setReminder_selfListViews(ArrayList<Reminder_SelfListView> reminder_selfListViews) {
-        this.reminder_selfListViews1 = reminder_selfListViews1;
-    }*/
 
 
     public void setReminder_selfListViews(JSONArray symptomslistArray) {

@@ -68,7 +68,19 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
         }
 
     }
+    public DoctorVistReminderListView(Cursor cursorprivate, String doctorName,String NIU,String NIU1,String NIU2,String NIU3) {
+        if(cursorprivate==null){
+            return;
+        }
+        try{
+            ArrayList<Doctor_Visit_Reminder_SelfListView> labReportImageListViews= DbOperations.getDoctorReportReminder11BasedDoctor(CureFull.getInstanse().getActivityIsntanse(),doctorName);
+            setReminder_selfListViews(labReportImageListViews);
 
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+    }
 
     public DoctorVistReminderListView(Cursor cur,String datee,String doctor) {
         if (cur == null)
@@ -94,7 +106,18 @@ public class DoctorVistReminderListView implements MyConstants.JsonUtils {
             e.printStackTrace();
         }
     }
+    public DoctorVistReminderListView(Cursor cur,String doctor,String NIUU,String NIU,String NIU1,String NIU2,String NIU3) {
+        if (cur == null)
+            return;
+        try {
 
+            ArrayList<Doctor_Visit_Reminder_DoctorListView> labReportImageListViews= DbOperations.getDoctorReportReminderCurefull11BasedDoctor(CureFull.getInstanse().getActivityIsntanse(),doctor);
+
+            setReminderDoctorNamesLocal(labReportImageListViews);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public ArrayList<Doctor_Visit_Reminder_SelfListView> getReminder_selfListViews() {
         return reminder_selfListViews;
     }

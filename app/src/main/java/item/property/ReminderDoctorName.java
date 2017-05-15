@@ -48,6 +48,8 @@ public class ReminderDoctorName implements MyConstants.JsonUtils {
             try {
                 card = new Reminder_DoctorListView(value.get(i));
                 this.reminder_doctorListViews.add(card);
+                //local
+                card.getInsertingValue(value.get(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }

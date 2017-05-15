@@ -73,8 +73,9 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
     private String firstTime = "";
     private String labTestReminderId = "";
     private boolean isNewReminder = true;
-    private boolean chklabreminderid=false;
-    private String commonid="";
+    private boolean chklabreminderid = false;
+    private String commonid = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
             firstTime = newTime[0];
             isNewReminder = false;
             labTestReminderId = vBundle.getString("labTestReminderId");
-            chklabreminderid=true;
+            chklabreminderid = true;
             if (vBundle.getBoolean("isAfterMeal")) {
                 isAfterMeal = true;
                 radioAfterMeal.setChecked(true);
@@ -193,15 +194,15 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
                     }
 
                 } else {
-                    commonid=String.valueOf(System.currentTimeMillis());
-                    insertRemiderLabDetailsLocal(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal,commonid);
+                    commonid = String.valueOf(System.currentTimeMillis());
+                    insertRemiderLabDetailsLocal(edt_doctor_name.getText().toString().trim(), edt_test_name.getText().toString().trim(), edt_lab_name.getText().toString().trim(), startFrom, firstTime, labTestReminderId, isNewReminder, isAfterMeal, commonid);
                     //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
                 break;
         }
     }
 
-    private void insertRemiderLabDetailsLocal(String st_doctor_name, String st_test_name, String st_lab_name, String startFrom, String firstTime, String labTestReminderId, boolean NewReminder, boolean AfterMeal,String commonid) {
+    private void insertRemiderLabDetailsLocal(String st_doctor_name, String st_test_name, String st_lab_name, String startFrom, String firstTime, String labTestReminderId, boolean NewReminder, boolean AfterMeal, String commonid) {
         if (!validateTestName()) {
             btnClick = true;
             return;
@@ -226,37 +227,52 @@ public class FragmentLabTestSetReminder extends Fragment implements View.OnClick
             return;
         }
 
-        String[] datee=startFrom.split("-");
-        String dayy=datee[2];
-        String monthh=datee[1];
-        String yearr=datee[0];
+        String[] datee = startFrom.split("-");
+        String dayy = datee[2];
+        String monthh = datee[1];
+        String yearr = datee[0];
 
-        String[] timee=firstTime.split(":");
-        String hourr=timee[0];
-        String minute=timee[1];
+        String[] timee = firstTime.split(":");
+        String hourr = timee[0];
+        String minute = timee[1];
         ContentValues values = new ContentValues();
 
         values.put("doctorName", st_doctor_name);
         values.put("testName", st_test_name);
-        values.put("labName",st_lab_name);
+        values.put("labName", st_lab_name);
         values.put("dayOfMonth", dayy);
         values.put("monthValue", monthh);
         values.put("year", yearr);
         values.put("hour", hourr);
         values.put("minute", minute);
         if (chklabreminderid == true) {
-            commonid=labTestReminderId;
+            commonid = labTestReminderId;
             values.put("labTestReminderId", commonid);//
-            chklabreminderid=false;
-        }else{
+            chklabreminderid = false;
+        } else {
             values.put("labTestReminderId", commonid);//labTestReminderId
         }
-        values.put("labTestStatus","pending");//NewReminder   changes after reminder notification
+        values.put("labTestStatus", "pending");//NewReminder   changes after reminder notification
         values.put("afterMeal", AfterMeal);
-        values.put("cfuuhId",AppPreference.getInstance().getcf_uuhid());
-        values.put("isUploaded","1");
+        values.put("cfuuhId", AppPreference.getInstance().getcf_uuhid());
+        values.put("isUploaded", "1");
 
-        DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values,commonid);
+        DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), values, commonid);
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put("doctorName", st_doctor_name);
+            cv.put("isUploaded", "0");
+            cv.put("cfuuhid", AppPreference.getInstance().getcf_uuhid());
+            cv.put("common_id", commonid);
+            cv.put("case_id", "3");   //1-medicine reminder doctor name   2-doctor reminder doctor name  3-lab reminder doctor name
+
+            DbOperations.insertDoctorName(CureFull.getInstanse().getActivityIsntanse(), cv, commonid, AppPreference.getInstance().getcf_uuhid(), "3");
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+
         CureFull.getInstanse().getActivityIsntanse().onBackPressed();
 
 

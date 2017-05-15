@@ -40,9 +40,9 @@ public class NotificationUtils {
 
     }
 
-    public void allGetNotficationMedicine(String name, String text, String typeId, String type, String startDate, String time,String dosagePerDayDetailsId) {
+    public void allGetNotficationMedicine(String name, String text, String typeId, String type, String startDate, String time) {
 
-        notificationMedicineReminder(name, text, typeId, type, startDate, time,dosagePerDayDetailsId);
+        notificationMedicineReminder(name, text, typeId, type, startDate, time);
 
     }
 
@@ -156,7 +156,7 @@ public class NotificationUtils {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    public void notificationMedicineReminder(String name, String text, String id, String type, String startDate, String time,String dosagePerDayDetailsId) {
+    public void notificationMedicineReminder(String name, String text, String id, String type, String startDate, String time) {
 
         Intent intent = new Intent();
         intent.setAction("complete");
@@ -164,7 +164,7 @@ public class NotificationUtils {
         intent.putExtra("type", type);
         intent.putExtra("currentdate", startDate);
         intent.putExtra("time", time);
-        intent.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+      //  intent.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
         PendingIntent pIntent = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intent1 = new Intent();
@@ -173,7 +173,7 @@ public class NotificationUtils {
         intent1.putExtra("type", type);
         intent1.putExtra("currentdate", startDate);
         intent1.putExtra("time", time);
-        intent1.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+       // intent1.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
         PendingIntent pIntent2 = PendingIntent.getBroadcast(_context, (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -183,7 +183,7 @@ public class NotificationUtils {
         intent11.putExtra("type", type);
         intent11.putExtra("currentdate", startDate);
         intent11.putExtra("time", time);
-        intent11.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
+       // intent11.putExtra("dosagePerDayDetailsId", dosagePerDayDetailsId);
         intent11.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         intent11.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);

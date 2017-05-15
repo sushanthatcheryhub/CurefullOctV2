@@ -332,9 +332,61 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         if (stepsStatus.getStatus() == 0 && stepsStatus.getDateTime().equalsIgnoreCase(Utils.getTodayDate())) {
             Log.e("check Status", " " + stepsStatus.getStatus());
         }*/
-
-
+        try {
+            getUserList();
+        }catch (Exception e){
+            e.getMessage();
+        }
         return rootView;
+    }
+
+    private void getUserList() {
+
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.CfUuhidList,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                ParseJsonData.getInstance().getUHID(response);
+
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+
+                        }
+                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                    return headers;
+                }
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        }
     }
 
 

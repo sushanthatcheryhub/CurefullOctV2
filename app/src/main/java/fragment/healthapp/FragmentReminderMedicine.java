@@ -46,7 +46,9 @@ import java.util.Map;
 
 import ElasticVIews.ElasticAction;
 import adpter.Reminder_medicine_Docotr_child_ListAdpter;
+import adpter.Reminder_medicine_Docotr_child_ListAdpter_Local;
 import adpter.Reminder_medicine_Self_ListAdpter;
+import adpter.Reminder_medicine_Self_ListAdpter_Local;
 import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
@@ -55,6 +57,7 @@ import item.property.DoctorVistReminderListView;
 import item.property.LabDoctorName;
 import item.property.MedicineReminderListView;
 import item.property.ReminderDoctorName;
+import item.property.Reminder_DoctorListView;
 import item.property.Reminder_SelfListView;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -75,6 +78,7 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
     private RecyclerView recyclerView_doctor, recyclerView_self;
     private Reminder_medicine_Docotr_child_ListAdpter reminder_medicine_docotr_child_listAdpter;
     private Reminder_medicine_Self_ListAdpter reminder_medicine_self_listAdpter;
+    private Reminder_medicine_Docotr_child_ListAdpter_Local reminder_medicine_docotr_child_listAdpter_local;
     private TextView text_date, txt_date_dialog, txt_self, txt_no_medicine, txt_reminder, txt_status, txt_doctor_name_txt;
     boolean flagShort = true, isReset = true, isChecked = true;
     private LinearLayout liner_dialog, revealViewShort, layoutButtonsShort, txt_filter_reminder, txt_filter_status, btn_reset, btn_apply;
@@ -90,7 +94,10 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
     private ArrayList<LabDoctorName> LabDoctorName;
     private TextView btn_history, btn_next;
     private int pageNo = 0;
-
+    List<LabDoctorName> LabDoctorNamelocal = null;
+    private boolean apply_flag = false;
+    private boolean doctor_name_flag = false;
+    private Reminder_medicine_Self_ListAdpter_Local reminder_medicine_self_listAdpter_local;
 //    @Override
 //    public boolean onBackPressed() {
 //        CureFull.getInstanse().cancel();
@@ -237,20 +244,37 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
         (rootView.findViewById(R.id.txt_doctor_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (LabDoctorName != null && LabDoctorName.size() > 0) {
-                    rotatePhoneClockwise(img_user_name);
-                    listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
-                    listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
-                            R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorName)));
-                    listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
-                    listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
-//                listPopupWindow.setHeight(400);
-                    listPopupWindow4.setModal(true);
-                    listPopupWindow4.setOnDismissListener(FragmentReminderMedicine.this);
-                    listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
-                    listPopupWindow4.show();
-                }
 
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (LabDoctorName != null && LabDoctorName.size() > 0) {
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorName)));
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentReminderMedicine.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
+                } else {
+                    //LabDoctorNamelocal
+                    if (LabDoctorNamelocal != null && LabDoctorNamelocal.size() > 0) {
+                        rotatePhoneClockwise(img_user_name);
+                        listPopupWindow4 = new ListPopupWindow(CureFull.getInstanse().getActivityIsntanse());
+                        listPopupWindow4.setAdapter(new ArrayAdapter(CureFull.getInstanse().getActivityIsntanse(),
+                                R.layout.adapter_list_doctor_data, getUserAsStringList(LabDoctorNamelocal)));
+                        listPopupWindow4.setAnchorView(rootView.findViewById(R.id.txt_doctor_name_txt));
+                        listPopupWindow4.setWidth((int) getResources().getDimension(R.dimen._70dp));
+//                listPopupWindow.setHeight(400);
+                        listPopupWindow4.setModal(true);
+                        listPopupWindow4.setOnDismissListener(FragmentReminderMedicine.this);
+                        listPopupWindow4.setOnItemClickListener(popUpItemClickUserList);
+                        listPopupWindow4.show();
+                    }
+                }
             }
         });
         txt_date_dialog.setPaintFlags(txt_date_dialog.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -263,14 +287,26 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             rotatePhoneAntiClockwise(img_user_name);
             listPopupWindow4.dismiss();
-            if (LabDoctorName != null && LabDoctorName.size() > 0) {
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (LabDoctorName != null && LabDoctorName.size() > 0) {
 //                realtive_today.setVisibility(View.GONE);
-                doctorName = LabDoctorName.get(position).getDoctorName();
-                txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
-                date = "N/A";
-                reminder = "N/A";
-                status = "N/A";
-                getReminderMedicine();
+                    doctorName = LabDoctorName.get(position).getDoctorName();
+                    txt_doctor_name_txt.setText("" + LabDoctorName.get(position).getDoctorName());
+                    date = "N/A";
+                    reminder = "N/A";
+                    status = "N/A";
+                    getReminderMedicine();
+                }
+            } else {
+                if (LabDoctorNamelocal != null && LabDoctorNamelocal.size() > 0) {
+                    doctorName = LabDoctorNamelocal.get(position).getDoctorName();
+                    txt_doctor_name_txt.setText("" + LabDoctorNamelocal.get(position).getDoctorName());
+                    date = "N/A";
+                    reminder = "N/A";
+                    status = "N/A";
+                    doctor_name_flag = true;
+                    getReminderMedicine();
+                }
             }
         }
     };
@@ -352,7 +388,7 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                     text_date.setVisibility(View.VISIBLE);
                 } else {
                     btn_history.setText("Previous");
-                   // btn_history.setVisibility(View.VISIBLE);
+                    // btn_history.setVisibility(View.VISIBLE);
                 }
 
                 break;
@@ -379,6 +415,8 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                 if (isReset) {
                     isChecked = false;
                     isReset = false;
+                    apply_flag = false;
+
                     realtive_today.setVisibility(View.VISIBLE);
                     launchTwitterShort(rootView);
                     radioPending.setChecked(false);
@@ -399,6 +437,7 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
 //                realtive_today.setVisibility(View.GONE);
                 date = "N/A";
+                apply_flag = true;
                 launchTwitterShort(rootView);
                 getReminderMedicine();
                 break;
@@ -411,20 +450,15 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
             case R.id.liner_filter_by:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        txt_no_medicine.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitterShort(rootView);
-                            }
-                        });
-                    }
-                } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
 
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    txt_no_medicine.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitterShort(rootView);
+                        }
+                    });
                 }
-
 
                 break;
         }
@@ -545,35 +579,17 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
-        } else {
-            isReset = true;
-
-            MedicineReminderListView response = DbOperations.getMedicineReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
-            if(response!=null){
-
-                if (response.getReminderDoctorNames() != null) {
-                    if (response.getReminderDoctorNames().size() > 0) {
-
-                        setDoctorAdpter(response.getReminderDoctorNames(),"No");
-                        recyclerView_doctor.setVisibility(View.VISIBLE);
-                        txt_no_medicine.setVisibility(View.GONE);
-                    } else {
-                        recyclerView_doctor.setVisibility(View.GONE);
-                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                            relative_bottom_next.setVisibility(View.GONE);
-                        }
-                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
-                        txt_self.setVisibility(View.GONE);
-                        txt_no_medicine.setVisibility(View.VISIBLE);
-                    }
-                }
-
+        } else if (doctor_name_flag) {
+            //based on doctor name start
+            MedicineReminderListView response = DbOperations.getMedicineReportReminderBasedDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), doctorName);
+            if (response != null) {
                 if (response.getReminder_selfListViews() != null) {
                     if (response.getReminder_selfListViews().size() > 0) {
                         txt_self.setVisibility(View.VISIBLE);
                         txt_no_medicine.setVisibility(View.GONE);
-                        setSelfMedAdpter(response.getReminder_selfListViews(),"No");
+                        setSelfMedAdpter(response.getReminder_selfListViews(), "No");
                         recyclerView_self.setVisibility(View.VISIBLE);
+
                     } else {
                         txt_self.setVisibility(View.GONE);
                         recyclerView_self.setVisibility(View.GONE);
@@ -586,20 +602,220 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
                     }
 
                 }
+            } else {
 
-            }else{
-                recyclerView_self.setVisibility(View.GONE);
-                recyclerView_doctor.setVisibility(View.GONE);
-                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                    relative_bottom_next.setVisibility(View.GONE);
-                }
                 txt_self.setVisibility(View.GONE);
-                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
-                txt_no_medicine.setVisibility(View.VISIBLE);
+                recyclerView_self.setVisibility(View.GONE);
             }
+            //
+            MedicineReminderListView response_doctor = DbOperations.getMedicineReportReminderByDoctorBasedDoctorName(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), doctorName);
+
+            if (response_doctor != null) {
+                if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                    if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+
+                        setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal(), "No");
+                        recyclerView_doctor.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
+                    }
+                }
+            } else {
+
+                txt_self.setVisibility(View.GONE);
+                recyclerView_doctor.setVisibility(View.GONE);
+            }
+            doctor_name_flag = false;
 
 
-            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+//based on doctor name end
+        } else {
+            isReset = true;
+            //filter start
+            if (apply_flag) {
+                if (reminder.equalsIgnoreCase("self")) {
+
+                    MedicineReminderListView response = DbOperations.getMedicineReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response != null) {
+                        if (response.getReminder_selfListViews() != null) {
+                            if (response.getReminder_selfListViews().size() > 0) {
+                                txt_self.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                                setSelfMedAdpter(response.getReminder_selfListViews(), "No");
+                                recyclerView_self.setVisibility(View.VISIBLE);
+                                recyclerView_doctor.setVisibility(View.GONE);
+                            } else {
+                                txt_self.setVisibility(View.GONE);
+                                recyclerView_self.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+
+                        }
+                    } else {
+
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                        recyclerView_doctor.setVisibility(View.GONE);
+                    }
+
+
+                } else if (reminder.equalsIgnoreCase("curefull")) {
+                    MedicineReminderListView response_doctor = DbOperations.getMedicineReportReminderByDoctorAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+
+                    if (response_doctor != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                            if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+
+                                setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal(), "No");
+                                recyclerView_doctor.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                                recyclerView_self.setVisibility(View.GONE);
+                                txt_self.setVisibility(View.GONE);
+                            } else {
+                                recyclerView_doctor.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                    }
+
+
+                } else {
+                    MedicineReminderListView response = DbOperations.getMedicineReportReminderAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+                    if (response != null) {
+                        if (response.getReminder_selfListViews() != null) {
+                            if (response.getReminder_selfListViews().size() > 0) {
+                                txt_self.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+                                setSelfMedAdpter(response.getReminder_selfListViews(), "No");
+                                recyclerView_self.setVisibility(View.VISIBLE);
+                            } else {
+                                txt_self.setVisibility(View.GONE);
+                                recyclerView_self.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+
+                        }
+                    } else {
+
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                    }
+                    //doctor
+                    MedicineReminderListView response_doctor = DbOperations.getMedicineReportReminderByDoctorAfterSelection(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), status);
+
+                    if (response_doctor != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                            if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+
+                                setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal(), "No");
+                                recyclerView_doctor.setVisibility(View.VISIBLE);
+                                txt_no_medicine.setVisibility(View.GONE);
+
+                            } else {
+                                recyclerView_doctor.setVisibility(View.GONE);
+                                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                    relative_bottom_next.setVisibility(View.GONE);
+                                }
+                                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                                txt_self.setVisibility(View.GONE);
+                                txt_no_medicine.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_doctor.setVisibility(View.GONE);
+                    }
+
+
+                }
+                apply_flag = false;
+                //filter end
+            } else {
+
+                MedicineReminderListView response = DbOperations.getMedicineReportReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+                if (response != null) {
+                    if (response.getReminder_selfListViews() != null) {
+                        if (response.getReminder_selfListViews().size() > 0) {
+                            txt_self.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                            setSelfMedAdpterLocal(response.getReminder_selfListViews(), "No");
+                            //setSelfMedAdpter(response.getReminder_selfListViews(), "No");
+                            recyclerView_self.setVisibility(View.VISIBLE);
+                        } else {
+                            txt_self.setVisibility(View.GONE);
+                            recyclerView_self.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                            txt_self.setVisibility(View.GONE);
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+
+                    }
+                } else {
+
+                    txt_self.setVisibility(View.GONE);
+                    recyclerView_self.setVisibility(View.GONE);
+                }
+
+                MedicineReminderListView response_doctor = DbOperations.getMedicineReportReminderByDoctor(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+
+                if (response_doctor != null) {
+                    if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                        if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+
+                            setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal(), "No");
+                            recyclerView_doctor.setVisibility(View.VISIBLE);
+                            txt_no_medicine.setVisibility(View.GONE);
+                        } else {
+                            recyclerView_doctor.setVisibility(View.GONE);
+                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                                relative_bottom_next.setVisibility(View.GONE);
+                            }
+                            txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                            txt_self.setVisibility(View.GONE);
+                            txt_no_medicine.setVisibility(View.VISIBLE);
+                        }
+                    }
+                } else {
+
+                    txt_self.setVisibility(View.GONE);
+                    recyclerView_doctor.setVisibility(View.GONE);
+                }
+                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+
+
+            }
         }
 
     }
@@ -610,12 +826,23 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
         reminder_medicine_docotr_child_listAdpter.notifyDataSetChanged();
     }
 
+    public void setDoctorAdpterLocal(ArrayList<Reminder_DoctorListView> reminder_doctorListViews, String no) {
+        reminder_medicine_docotr_child_listAdpter_local = new Reminder_medicine_Docotr_child_ListAdpter_Local(CureFull.getInstanse().getActivityIsntanse(), reminder_doctorListViews, no);
+        recyclerView_doctor.setAdapter(reminder_medicine_docotr_child_listAdpter_local);
+        reminder_medicine_docotr_child_listAdpter_local.notifyDataSetChanged();
+    }
+
     public void setSelfMedAdpter(ArrayList<Reminder_SelfListView> reminder_doctorListViews, String no) {
         reminder_medicine_self_listAdpter = new Reminder_medicine_Self_ListAdpter(CureFull.getInstanse().getActivityIsntanse(), reminder_doctorListViews, no);
         recyclerView_self.setAdapter(reminder_medicine_self_listAdpter);
         reminder_medicine_self_listAdpter.notifyDataSetChanged();
     }
 
+    public void setSelfMedAdpterLocal(ArrayList<Reminder_SelfListView> reminder_doctorListViews, String no) {
+        reminder_medicine_self_listAdpter_local = new Reminder_medicine_Self_ListAdpter_Local(CureFull.getInstanse().getActivityIsntanse(), reminder_doctorListViews, no);
+        recyclerView_self.setAdapter(reminder_medicine_self_listAdpter_local);
+        reminder_medicine_self_listAdpter_local.notifyDataSetChanged();
+    }
 
     public void launchTwitterShort(View view) {
         /*
@@ -719,36 +946,41 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
 
 
     private void getDoctorName() {
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_MEDICINE + "" + AppPreference.getInstance().getcf_uuhid(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                            LabDoctorName = ParseJsonData.getInstance().getLabDoctorName(response);
-                        } else {
-                        }
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_LIST_DOCTOR_NAME_MEDICINE + "" + AppPreference.getInstance().getcf_uuhid(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                LabDoctorName = ParseJsonData.getInstance().getMed_DoctorName(response);
+                            } else {
+                            }
 
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-        };
+            ) {
+            };
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            LabDoctorNamelocal = DbOperations.getLabDoctorReminderListLocal(CureFull.getInstanse().getActivityIsntanse(), "1");
+
+        }
     }
 
     private void rotatePhoneClockwise(ImageView imageView) {
@@ -807,8 +1039,6 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
     }
 
 
-
-
     public String getNextPrevious(String date) {
         String dt = date;  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -825,7 +1055,7 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
 
 
     private void getHistoryMedicine() {
-        if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
             StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.MEDICINCE_HISTORY_API + "" + AppPreference.getInstance().getcf_uuhid() + "&pageNo=" + pageNo + "&noOfRecord=10&historyDays=7",
                     new Response.Listener<String>() {
                         @Override
@@ -927,60 +1157,116 @@ public class FragmentReminderMedicine extends BaseBackHandlerFragment implements
             };
 
             CureFull.getInstanse().getRequestQueue().add(postRequest);
-        }else{
-
-
-                MedicineReminderListView response = DbOperations.getMedicineReportHistoryReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
-                if(response!=null){
-
-                    if (response.getReminderDoctorNames() != null) {
-                        if (response.getReminderDoctorNames().size() > 0) {
-
-                            setDoctorAdpter(response.getReminderDoctorNames(),"No");
-                            recyclerView_doctor.setVisibility(View.VISIBLE);
-                            txt_no_medicine.setVisibility(View.GONE);
-                        } else {
-                            recyclerView_doctor.setVisibility(View.GONE);
-                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                relative_bottom_next.setVisibility(View.GONE);
-                            }
-                            txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
-                            txt_self.setVisibility(View.GONE);
-                            txt_no_medicine.setVisibility(View.VISIBLE);
+        } else {
+        try {
+            MedicineReminderListView response = DbOperations.getMedicineReportHistoryReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+            if (response != null) {
+                if (response.getReminder_selfListViews() != null) {
+                    if (response.getReminder_selfListViews().size() > 0) {
+                        txt_self.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                        setSelfMedAdpterLocal(response.getReminder_selfListViews(), "No");
+                        //setSelfMedAdpter(response.getReminder_selfListViews(), "No");
+                        recyclerView_self.setVisibility(View.VISIBLE);
+                    } else {
+                        txt_self.setVisibility(View.GONE);
+                        recyclerView_self.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
                         }
+                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
                     }
 
-                    if (response.getReminder_selfListViews() != null) {
-                        if (response.getReminder_selfListViews().size() > 0) {
-                            txt_self.setVisibility(View.VISIBLE);
-                            txt_no_medicine.setVisibility(View.GONE);
-                            setSelfMedAdpter(response.getReminder_selfListViews(),"No");
-                            recyclerView_self.setVisibility(View.VISIBLE);
-                        } else {
-                            recyclerView_self.setVisibility(View.GONE);
-                            if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                                relative_bottom_next.setVisibility(View.GONE);
-                            }
-                            txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
-                            txt_self.setVisibility(View.GONE);
-                            txt_no_medicine.setVisibility(View.VISIBLE);
+                }
+            } else {
+
+                txt_self.setVisibility(View.GONE);
+                recyclerView_self.setVisibility(View.GONE);
+            }
+        }catch (Exception e){
+            e.getMessage();
+        }
+//for medicine history reminder by doctor list
+            try{
+            MedicineReminderListView response_doctor = DbOperations.getMedicineReportHistoryReminderByDoctorList(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid());
+            if (response_doctor != null) {
+                if (response_doctor.getReminderDoctorNamesLocal() != null) {
+                    if (response_doctor.getReminderDoctorNamesLocal().size() > 0) {
+
+                        setDoctorAdpterLocal(response_doctor.getReminderDoctorNamesLocal(), "No");
+                        recyclerView_doctor.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
                         }
-
+                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
                     }
+                }
+            } else {
 
-                }else{
-                    recyclerView_self.setVisibility(View.GONE);
-                    recyclerView_doctor.setVisibility(View.GONE);
-                    if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
-                        relative_bottom_next.setVisibility(View.GONE);
+                txt_self.setVisibility(View.GONE);
+                recyclerView_doctor.setVisibility(View.GONE);
+            }
+        }catch (Exception e){
+            e.getMessage();
+        }
+           /* MedicineReminderListView response = DbOperations.getMedicineReportHistoryReminder(CureFull.getInstanse().getActivityIsntanse(), AppPreference.getInstance().getcf_uuhid(), date);
+            if (response != null) {
+
+                if (response.getReminderDoctorNames() != null) {
+                    if (response.getReminderDoctorNames().size() > 0) {
+
+                        setDoctorAdpter(response.getReminderDoctorNames(), "No");
+                        recyclerView_doctor.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                    } else {
+                        recyclerView_doctor.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
                     }
-                    txt_self.setVisibility(View.GONE);
-                    txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
-                    txt_no_medicine.setVisibility(View.VISIBLE);
                 }
 
+                if (response.getReminder_selfListViews() != null) {
+                    if (response.getReminder_selfListViews().size() > 0) {
+                        txt_self.setVisibility(View.VISIBLE);
+                        txt_no_medicine.setVisibility(View.GONE);
+                        setSelfMedAdpterLocal(response.getReminder_selfListViews(), "Yes");
+                        recyclerView_self.setVisibility(View.VISIBLE);
+                    } else {
+                        recyclerView_self.setVisibility(View.GONE);
+                        if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                            relative_bottom_next.setVisibility(View.GONE);
+                        }
+                        txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                        txt_self.setVisibility(View.GONE);
+                        txt_no_medicine.setVisibility(View.VISIBLE);
+                    }
 
-                CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                }
+
+            } else {
+                recyclerView_self.setVisibility(View.GONE);
+                recyclerView_doctor.setVisibility(View.GONE);
+                if (!btn_history.getText().toString().equalsIgnoreCase("Previous")) {
+                    relative_bottom_next.setVisibility(View.GONE);
+                }
+                txt_self.setVisibility(View.GONE);
+                txt_no_medicine.setText("Help us remind you of Medicine! Add a reminder");
+                txt_no_medicine.setVisibility(View.VISIBLE);
+            }
+*/
+
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
 
         }
     }

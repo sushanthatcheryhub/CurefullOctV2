@@ -125,16 +125,36 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     ContentValues cv = new ContentValues();
                     cv.put("labTestReminderId", id);
                     cv.put("labTestStatus", action);
+                    cv.put("isUploaded", "1");
                     DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id);
 
 
-                        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-                        try {
-                            manager.cancel((int) Long.parseLong(id));
-                        } catch (Exception e) {
-                            manager.cancel(Integer.parseInt(id));
-                        }
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    } catch (Exception e) {
+                        manager.cancel(Integer.parseInt(id));
+                    }
+//
+                }
+            } else if (type.equalsIgnoreCase("LAB_TEST_REMINDER_DOCTOR")) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
 
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("labTestReminderId", id);
+                    cv.put("labTestStatus", action);
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertLabTestRemiderReportbyDoctor(CureFull.getInstanse().getActivityIsntanse(), cv, id);
+
+
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    } catch (Exception e) {
+                        manager.cancel(Integer.parseInt(id));
+                    }
+//
                 }
             } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER")) {
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
@@ -143,6 +163,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     ContentValues cv = new ContentValues();
                     cv.put("doctorFollowupReminderId", id);
                     cv.put("status", action);
+                    cv.put("isUploaded", "1");
                     DbOperations.insertDoctorRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id);
                     NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
                     try {
@@ -151,50 +172,70 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                         manager.cancel(Integer.parseInt(id));
                     }
                 }
-            } else {
-                //for medicine
+            } else if (type.equalsIgnoreCase("DOCTOR_FOLLOWUP_REMINDER_DOCTOR")) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("doctorFollowupReminderId", id);
+                    cv.put("status", action);
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertDoctorRemiderByCurefull(CureFull.getInstanse().getActivityIsntanse(), cv, id);
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    } catch (Exception e) {
+                        manager.cancel(Integer.parseInt(id));
+                    }
+                }
+            } else if(type.equalsIgnoreCase("MEDICINE_REMINDER")){
+
+                //for medicine reminder done or skip handling
                 if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     jsonUploadMedicine(context, id, action);
                 } else {
                     //medicineReminderId
+                    //start : only update main table for isUploaded update because perform action (DONE or SKIP)
+                    ContentValues cv = new ContentValues();
+                    cv.put("medicineReminderId", id);
+                    cv.put("isUploaded", "1");
+
+                    DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id);
+                    //end : only update main table for isUploaded update because perform action (DONE or SKIP)
+                    //sub table of medicine reminder
                     String date = intent.getExtras().getString("currentdate");
                     String time = intent.getExtras().getString("time");
-                    String dosagePerDayDetailsId = intent.getExtras().getString("dosagePerDayDetailsId");
                     ReminderMedicnceDoagePer imageListView = new ReminderMedicnceDoagePer();
-                    try {
-                        imageListView.setInsertingValueNotificationDoneSkip(context, time, id, date, action, dosagePerDayDetailsId);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-//for main table status update
-                    DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
-                            .getDatabaseHelperInstance(context);
-                    Cursor cursor;
-                    Cursor cursor1;
-                    if (dbhelperShopCart == null)
-                        return;
-                    SQLiteDatabase database = null;
-                    try {
-                        dbhelperShopCart.createDataBase();
-                    } catch (Exception e) {
-                        e.getMessage();
-                    }
-                    database = DatabaseHelper.openDataBase();
-                    String query = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + id + "' and status='complete'";
-                    cursor = database.rawQuery(query, null);
-                    if (cursor.getCount() > 0) {
-                        String query1 = "SELECT * FROM " + TABLE_MEDICINE_REMINDER_SELF_DOSAGEPERDATERESPONSE + " where common_id='" + id + "'";
-                        cursor1 = database.rawQuery(query1, null);
-                        if (cursor1.getCount() == cursor.getCount()) {
-                            ContentValues cv = new ContentValues();
-                            cv.put("doctorFollowupReminderId", id);
-                            cv.put("status", "complete");
-                            cv.put("currentdate", date);
-                            cv.put("time", time);
-                            DbOperations.insertMedicineRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv, id, date);
-                        }
-                    }
 
+                    imageListView.setInsertingValueLab(time, date, id, context, action);//i1=dosagePerDayDetailsId
+
+                    NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    try {
+                        manager.cancel((int) Long.parseLong(id));
+                    } catch (Exception e) {
+                        manager.cancel(Integer.parseInt(id));
+                    }
+                }
+            }else if(type.equalsIgnoreCase("MEDICINE_FOLLOWUP_REMINDER_CUREFULL")){
+
+                //for medicine reminder done or skip handling
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+
+                } else {
+                    //medicineReminderId
+                    //start : only update main table for isUploaded update because perform action (DONE or SKIP)
+                    ContentValues cv = new ContentValues();
+                    cv.put("medicineReminderId", id);
+                    cv.put("isUploaded", "1");
+
+                    DbOperations.insertMedicineRemiderByCurefull(CureFull.getInstanse().getActivityIsntanse(), cv, id);
+                    //end : only update main table for isUploaded update because perform action (DONE or SKIP)
+                    //sub table of medicine reminder
+                    String date = intent.getExtras().getString("currentdate");
+                    String time = intent.getExtras().getString("time");
+                    ReminderMedicnceDoagePer imageListView = new ReminderMedicnceDoagePer();
+
+                    imageListView.setInsertingValueLab(time, date, id, context, action);//i1=dosagePerDayDetailsId
 
                     NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
                     try {

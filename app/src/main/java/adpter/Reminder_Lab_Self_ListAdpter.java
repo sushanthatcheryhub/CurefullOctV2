@@ -95,15 +95,14 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
             @Override
             public void onClick(View v) {
 
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                         ElasticAction.doAction(img_editm_delete, 400, 0.9f, 0.9f);
                     DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected lab test reminder ?", "Lab Test", position);
                     dialogDeleteAll.setiOnOtpDoneDelete(Reminder_Lab_Self_ListAdpter.this);
                     dialogDeleteAll.show();
-                }else{
+                /*}else{
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-                }
+                }*/
             }
         });
         img_edit_rem.setOnClickListener(new View.OnClickListener() {
@@ -160,12 +159,26 @@ public class Reminder_Lab_Self_ListAdpter extends RecyclerView.Adapter<Reminder_
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getDoctorVisitDelete(healthNoteItemses.get(pos).getLabTestReminderId(), pos, true, false);
-            try {
-                DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getLabTestReminderId(), healthNoteItemses.get(pos).getDoctorName(), "labreminder");
-            }catch (Exception e){
-                e.getMessage();
+            if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                getDoctorVisitDelete(healthNoteItemses.get(pos).getLabTestReminderId(), pos, true, false);
+                try {
+                    DbOperations.clearDoctorReminderFromLocal(healthNoteItemses.get(pos).getLabTestReminderId(), healthNoteItemses.get(pos).getDoctorName(), "labreminder");
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }else{
+
+                ContentValues cv = new ContentValues();
+                cv.put("labTestReminderId", healthNoteItemses.get(pos).getLabTestReminderId());
+                cv.put("labTestStatus", "delete");
+                cv.put("isUploaded","1");
+                DbOperations.insertLabTestRemiderLocal(CureFull.getInstanse().getActivityIsntanse(), cv,  healthNoteItemses.get(pos).getLabTestReminderId());
+                healthNoteItemses.remove(pos);
+                notifyDataSetChanged();
+
+
             }
+
         }
     }
 
