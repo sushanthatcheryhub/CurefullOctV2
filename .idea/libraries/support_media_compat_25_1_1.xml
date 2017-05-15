@@ -1,16 +1,11 @@
 <component name="libraryTable">
   <library name="support-media-compat-25.1.1">
-    <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.1/annotations.zip!/" />
-      <root url="jar://$PROJECT_DIR$/sandriosCamera/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.1/annotations.zip!/" />
-    </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/163897adfe631886ec52137ecb2811a27d67c969/output/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/163897adfe631886ec52137ecb2811a27d67c969/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/a95ed7b4e5b35b45d2a35dd9cbe0a8c8b096a74d/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/a95ed7b4e5b35b45d2a35dd9cbe0a8c8b096a74d/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-media-compat/25.1.1/support-media-compat-25.1.1-sources.jar!/" />
       <root url="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-media-compat/25.1.1/support-media-compat-25.1.1-sources.jar!/" />
     </SOURCES>
   </library>

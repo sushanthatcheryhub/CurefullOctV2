@@ -1,12 +1,9 @@
 <component name="libraryTable">
   <library name="support-compat-25.0.1">
-    <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/imagepicker/build/intermediates/exploded-aar/com.android.support/support-compat/25.0.1/annotations.zip!/" />
-    </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/f49cc7aa852bae341ea9b5f67a09122a3fd45ff5/output/jars/libs/internal_impl-25.0.1.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/f49cc7aa852bae341ea9b5f67a09122a3fd45ff5/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/f49cc7aa852bae341ea9b5f67a09122a3fd45ff5/output/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/ebb3a6e637cc4ad1e9840df49ded5fa648561438/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/ebb3a6e637cc4ad1e9840df49ded5fa648561438/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/ebb3a6e637cc4ad1e9840df49ded5fa648561438/output/jars/libs/internal_impl-25.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
