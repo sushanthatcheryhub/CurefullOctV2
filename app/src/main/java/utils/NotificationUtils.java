@@ -34,12 +34,17 @@ public class NotificationUtils {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void allGetNotfication(String name, String text, String typeId, String type) {
 
         notificationMedicine(name, text, typeId, type);
 
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void birthdayNotification(String msg){
+        notificationBirthday(msg);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void allGetNotficationMedicine(String name, String text, String typeId, String type, String startDate, String time) {
 
         notificationMedicineReminder(name, text, typeId, type, startDate, time);
@@ -318,6 +323,33 @@ public class NotificationUtils {
         notificationManager.notify(0, noti);
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void notificationBirthday(String msg) {
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent intent = new Intent();
+        PendingIntent pIntent = PendingIntent.getActivity(_context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+
+
+        // Build notification
+        // Actions are just fake
+
+        Notification noti = new Notification.Builder(_context)
+                .setContentTitle("Birthday Notification")
+                .setContentText(msg)
+                .setSmallIcon(R.mipmap.app_icons)
+                .setAutoCancel(true)
+                .setContentIntent(pIntent).build();
+//                .setStyle(new Notification.BigTextStyle().bigText(contentText + "\n" + bigText)).build();
+        NotificationManager notificationManager = (NotificationManager) _context.getSystemService(NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+        noti.defaults |= Notification.DEFAULT_SOUND;
+        notificationManager.notify(0, noti);
+
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
     public void startNotif() {

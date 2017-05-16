@@ -11,9 +11,11 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -61,6 +63,7 @@ import item.property.Reminder_DoctorListView;
 import item.property.Reminder_SelfListView;
 import operations.DbOperations;
 
+import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.NotificationUtils;
@@ -80,6 +83,7 @@ public class SchedulingService extends IntentService {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onHandleIntent(Intent intent) {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -227,7 +231,7 @@ public class SchedulingService extends IntentService {
 
             medicine_notification_sync_self();
             medicine_notification_sync_digitization();
-
+            birthdaynotificaion();
         } else {
             //for sqlite notification
             lab_notification_from_sqlite();
@@ -239,8 +243,40 @@ public class SchedulingService extends IntentService {
             medicine_notification_from_sqlite();
             medicine_notification_from_digitization();
 
+            birthdaynotificaion();
 
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void birthdaynotificaion() {
+        String[] today_date = Utils.getTodayDate().split("-");
+        String year = today_date[0];
+        String month = today_date[1];
+        String day = today_date[2];
+        String day_month_current = day + "-" + month;
+
+        String getDOB_from_preference[] = preferences.getString("Age", "0").split("-");//2006-12-11
+        String month_dob = getDOB_from_preference[1];
+        String day_dob = getDOB_from_preference[2];
+        String day_month_dob = day_dob + "-" + month_dob;
+
+        if (day_month_current.equalsIgnoreCase(day_month_dob)) {
+
+            if (preferences.getString("yearr", year).equalsIgnoreCase(year)) {
+
+            } else {
+                preferences.edit().putString("chk_Birthday_notification", "0").commit();
+            }
+
+            if (preferences.getString("chk_Birthday_notification", "0").equalsIgnoreCase("0")) {
+                NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                notificationUtils.birthdayNotification("Hii buddy, Today is your birthday");
+                preferences.edit().putString("chk_Birthday_notification", "1").commit();
+                preferences.edit().putString("yearr", year).commit();
+            }
+        }
+
     }
 
     private void medicine_notification_sync_digitization() {
@@ -625,6 +661,7 @@ public class SchedulingService extends IntentService {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void medicine_notification_from_digitization() {
         final List<Reminder_DoctorListView> medicinereminder = DbOperations.getMedicineReminderbyDigitization(this, "1");
         for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
@@ -691,6 +728,7 @@ public class SchedulingService extends IntentService {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void medicine_notification_from_sqlite() {
         final List<Reminder_SelfListView> medicinereminder = DbOperations.getMedicineReminderbySelf(this, "1");
         for (int i1 = 0; i1 < medicinereminder.size(); i1++) {
@@ -760,6 +798,7 @@ public class SchedulingService extends IntentService {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void doctor_notification_from_digitization() {
         final List<Doctor_Visit_Reminder_DoctorListView> doctorreminder = DbOperations.getDoctorReminderbyDigitization(this, "1");
         for (int ilrs = 0; ilrs < doctorreminder.size(); ilrs++) {
@@ -817,6 +856,7 @@ public class SchedulingService extends IntentService {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void doctor_notification_from_sqlite() {
         //doctor reminder notification from local db;
         final List<Doctor_Visit_Reminder_SelfListView> doctorreminder = DbOperations.getDoctorReminderbySelf(this, "1");
@@ -875,6 +915,7 @@ public class SchedulingService extends IntentService {
     }
 
     //only generate notification in time
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void lab_notification_from_digitization() {
         final List<Lab_Test_Reminder_DoctorListView> labreminder = DbOperations.getLabReminderbyDigitiation(this, "1");
 
@@ -929,6 +970,7 @@ public class SchedulingService extends IntentService {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void lab_notification_from_sqlite() {
         //lab reminder notification from local db;
         final List<Lab_Test_Reminder_SelfListView> labreminder = DbOperations.getLabReminderbySelf(this, "1");

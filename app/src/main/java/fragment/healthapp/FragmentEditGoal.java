@@ -307,6 +307,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 final int year, day;
                 int month1;
                 final Calendar c1 = Calendar.getInstance();
+
                 if (AppPreference.getInstance().getGoalAge().equalsIgnoreCase("0")) {
                     year = c1.get(Calendar.YEAR);
                     month1 = c1.get(Calendar.MONTH);
@@ -1488,7 +1489,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         if (isMale) {
             getBmrForMale();
         }
-
+        preferences.edit().putString("chk_Birthday_notification", "0").commit();
         AppPreference.getInstance().setGoalAge("" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + year);
         String age = dayOfMonth + "/" + mnt + "/" + year;
