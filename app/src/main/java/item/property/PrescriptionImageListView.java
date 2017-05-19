@@ -21,6 +21,54 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
     private String imageNumber;
     private String prescriptionImage;
     private String prescriptionImagePartId;
+    private String status;
+    private String isUploaded;
+    private String common_id;
+    private String prescriptonImageFollowupId;//only get for delete time.
+    private String doctorName;
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
+
+    public void setCommon_id(String common_id) {
+        this.common_id = common_id;
+    }
+
+    public String getCommon_id() {
+
+        return common_id;
+    }
+
+    public void setPrescriptonImageFollowupId(String prescriptonImageFollowupId) {
+        this.prescriptonImageFollowupId = prescriptonImageFollowupId;
+    }
+
+    public String getPrescriptonImageFollowupId() {
+
+        return prescriptonImageFollowupId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getIsUploaded() {
+        return isUploaded;
+    }
+
+    public void setStatus(String status) {
+
+        this.status = status;
+    }
+
+    public void setIsUploaded(String isUploaded) {
+        this.isUploaded = isUploaded;
+    }
 
     public PrescriptionImageListView() {
 
@@ -45,11 +93,29 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
             setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
             setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
             setPrescriptionImagePartId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEPARTID)));
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setCommon_id(cur.getString(cur.getColumnIndex("common_id")));
         } catch (Exception e) {
             e.getMessage();
         }
     }
-
+    public PrescriptionImageListView(Cursor cur,String NIU) {
+        if (cur == null)
+            return;
+        try {
+            setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
+            setPrescriptionImage(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGE)));
+            setPrescriptionImagePartId(cur.getString(cur.getColumnIndex(PRESCRIPTION_IMAGEPARTID)));
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setCommon_id(cur.getString(cur.getColumnIndex("common_id")));
+            setPrescriptonImageFollowupId(cur.getString(cur.getColumnIndex("prescriptonImageFollowupId")));
+            setDoctorName(cur.getString(cur.getColumnIndex("doctorName")));
+        } catch (Exception e) {
+            e.getMessage();
+        }
+    }
 
     public String getImageNumber() {
         return imageNumber;
@@ -118,24 +184,28 @@ public class PrescriptionImageListView implements Parcelable, MyConstants.JsonUt
             values2.put(PRESCRIPTION_IMAGE, jsonobject1.getString(PRESCRIPTION_IMAGE));
             values2.put(PRESCRIPTION_IMAGEPARTID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
             values2.put(COMMON_ID, commonID);
+            values2.put("isUploaded", "0");
+            values2.put("status", "pending");
             DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), values2, commonID, jsonobject1.getString(PRESCRIPTION_IMAGEPARTID));
         } catch (Exception e) {
 
         }
     }
 
-//data from local
-    public void setInsertingValue(List<PrescriptionImageList> imageFile,String commonid) {
+    //data from local
+    public void setInsertingValue(List<PrescriptionImageList> imageFile, String commonid) {
         try {
 
-            for (int ii=0;ii<imageFile.size();ii++) {
+            for (int ii = 0; ii < imageFile.size(); ii++) {
                 String imagenum = String.valueOf(imageFile.get(ii).getImageNumber());
                 ContentValues values2 = new ContentValues();
                 values2.put(IMAGE_NUMBER, imagenum);
                 values2.put(PRESCRIPTION_IMAGE, imageFile.get(ii).getPrescriptionImage());
                 values2.put(PRESCRIPTION_IMAGEPARTID, commonid);
                 values2.put(COMMON_ID, commonid);
-                DbOperations.insertPrescriptionResponseListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid,imagenum);
+                values2.put("isUploaded", "0");
+                values2.put("status", "pending");
+                DbOperations.insertPrescriptionResponseListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid, imagenum);
 
             }
         } catch (Exception e) {

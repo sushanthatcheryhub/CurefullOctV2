@@ -48,6 +48,16 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
     private String common_id;
     private String isUploaded;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+
+        this.status = status;
+    }
+
+    private String status;
     public String getIsUploaded() {
         return isUploaded;
     }
@@ -134,6 +144,7 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
             setUploadedBy(cur.getString(cur.getColumnIndex(UPLOAD_BY)));
             setCommonID(cur.getString(cur.getColumnIndex(COMMON_ID)));
             setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
             ArrayList<PrescriptionImageFollowUpListView> prescriptionImageFollowUpListViews=DbOperations.setPrescriptionImageFollowUpListViewsLocal(CureFull.getInstanse().getActivityIsntanse(),cur.getString(cur.getColumnIndex(COMMON_ID)));
             setPrescriptionImageFollowUpListViews(prescriptionImageFollowUpListViews);
             //setPrescriptionImageFollowUpListViewsLocal(prescriptionImageFollowUpListViews);
@@ -172,6 +183,7 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
                 values.put("isUploaded", "1");
                 values.put(COMMON_ID,commonid);
                 values.put(PRESCRIPTION_ID,commonid);
+                values.put("status","pending");
                 DbOperations.insertPrescriptionImage(CureFull.getInstanse().getActivityIsntanse(), values,"1",commonid);
 
                 ArrayList<PrescriptionImageFollowUpListView> followup=new ArrayList<>();
@@ -210,7 +222,7 @@ public class PrescriptionListView implements MyConstants.JsonUtils {
             setCommonID(json.getString(PRESCRIPTION_ID));
             values.put(COMMON_ID, getCommonID());
             values.put("isUploaded", "0");
-
+            values.put("status", "pending");
             DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew(),getCommonID());
 
             setPrescriptionImageFollowUpListViewsLocal(json.getJSONArray(PRESCRIPTION_FOLLOWUPLIST),getCommonID());

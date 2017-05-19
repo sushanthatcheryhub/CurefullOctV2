@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.android.volley.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import item.property.FilterDataReports;
 import item.property.GoalInfo;
 import item.property.HealthNoteItems;
 import item.property.LabDoctorName;
+import item.property.LabReportImageList;
 import item.property.LabReportImageListView;
 import item.property.LabReportListView;
 import item.property.LabTestReminderListView;
@@ -369,7 +372,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "'";
+            String query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "' and  pm.status <>'deleted'";
 
             cursorprivate = database.rawQuery(query, null);
             if (cursorprivate.getCount() > 0) {
@@ -402,9 +405,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         List<LabReportListView> listApps = new ArrayList<>();
         SQLiteDatabase database = null;
         try {
-            String isupload = "0";
+
             database = DatabaseHelper.openDataBase();
-            String query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' ";
+            String query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' and pm.status <>'deleted'";
             cursorprivate = database.rawQuery(query, null);
             if (cursorprivate.getCount() > 0) {
                 cursorprivate.moveToFirst();
@@ -1108,7 +1111,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             cursorprivate = database.rawQuery(query, null);//
             int aa = cursorprivate.getCount();
             if (cursorprivate.getCount() > 0) {
-                content = new MedicineReminderListView(currentdate, previousdate, cursorprivate,"","","","","");
+                content = new MedicineReminderListView(currentdate, previousdate, cursorprivate, "", "", "", "", "");
 
             }
             cursorprivate.close();
@@ -1952,9 +1955,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             String isupload = "0";
             database = DatabaseHelper.openDataBase();
             if (clickShortBy.equalsIgnoreCase("DESC")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' order by pm.reportDate DESC";//where pm.reportDate='"+ Utils.getTodayDate()+"'and pm.isUploaded='"+isupload+"'
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' and pm.status <>'deleted' order by pm.reportDate DESC";//where pm.reportDate='"+ Utils.getTodayDate()+"'and pm.isUploaded='"+isupload+"'
             } else {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' order by pm.reportDate ASC";//where pm.reportDate='"+ Utils.getTodayDate()+"'
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.cfUuhid='" + cf_uuhid + "' and pm.status <>'deleted' order by pm.reportDate ASC";//where pm.reportDate='"+ Utils.getTodayDate()+"'
             }
             cursorprivate = database.rawQuery(query, null);
             if (cursorprivate.getCount() > 0) {
@@ -2147,28 +2150,28 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             preferences = PreferenceManager.getDefaultSharedPreferences(context);
             database = DatabaseHelper.openDataBase();
             if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm";//GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status  from tbl_prescription_main as pm where pm.status <>'deleted'";//GROUP BY " + date;
             }
             if (!clickDates.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "'";// GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.status <>'deleted'";// GROUP BY " + date;
             }
             if (!clickDoctorName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.doctorName='" + clickDoctorName + "'"; //GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.status <>'deleted'"; //GROUP BY " + date;
             }
             if (!clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "'"; //GROUP BY " + date; ///chhh new wala
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "' and pm.status <>'deleted'"; //GROUP BY " + date; ///chhh new wala
             }
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "'";// GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.status <>'deleted'";// GROUP BY " + date;
             }
             if (!clickDates.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.prescriptionDate='" + clickDates + "'";//  GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.prescriptionDate='" + clickDates + "' and pm.status <>'deleted'";//  GROUP BY " + date;
             }
             if (!clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "'";//  GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";//  GROUP BY " + date;
             }
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "'";// GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.prescriptionDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";// GROUP BY " + date;
             }
 
             cursorprivate = database.rawQuery(query, null);
@@ -2207,61 +2210,61 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database = DatabaseHelper.openDataBase();
             //0
             if (clickDoctorName.equalsIgnoreCase("") && clickDates.equalsIgnoreCase("") && clickUploadBy.equalsIgnoreCase("") && clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where and pm.status <>'deleted'";
             }
             //1
             if (!clickDates.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.status <>'deleted'";
             }
             if (!clickDoctorName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.status <>'deleted'";
             }
             if (!clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "'";  //newwchfuuid
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.cfUuhid='" + preferences.getString("cf_uuhid", "") + "' and pm.status <>'deleted'";  //newwchfuuid
             }
 
             if (!clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
             //2
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "'";// GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.status <>'deleted'";// GROUP BY " + date;
             }
 
             if (!clickDates.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.reportDate='" + clickDates + "'";//  GROUP BY " + date;
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.reportDate='" + clickDates + "' and pm.status <>'deleted'";//  GROUP BY " + date;
             }
 
             if (!clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";
             }
             if (!clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.doctorName='" + clickDoctorName + "' and pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
             if (!clickUploadBy.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.uploadedBy='" + clickUploadBy + "' and pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
             if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
             //3
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";
             }
 
             if (!clickDates.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.testName='" + clickDiseaseName + "' and pm.uploadedBy='" + clickUploadBy + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.testName='" + clickDiseaseName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";
             }
 
             if (!clickDiseaseName.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.testName='" + clickDiseaseName + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.testName='" + clickDiseaseName + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.status <>'deleted'";
             }
             //4
             if (!clickDates.equalsIgnoreCase("") && !clickDoctorName.equalsIgnoreCase("") && !clickUploadBy.equalsIgnoreCase("") && !clickDiseaseName.equalsIgnoreCase("")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.testName='" + clickDiseaseName + "'";
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.reportDate,pm.reportId,pm.testName,pm.uploadedBy,pm.dateOfUpload,pm.common_id,pm.isUploaded,pm.status from tbl_labtestreprort_main as pm where pm.reportDate='" + clickDates + "' and pm.doctorName='" + clickDoctorName + "' and pm.uploadedBy='" + clickUploadBy + "' and pm.testName='" + clickDiseaseName + "' and pm.status <>'deleted'";
             }
 
             cursorprivate = database.rawQuery(query, null);
@@ -2297,9 +2300,9 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {
             database = DatabaseHelper.openDataBase();
             if (clickShortBy.equalsIgnoreCase("DESC")) {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "' order by pm.prescriptionDate DESC";//where pm.prescriptionDate='"+ Utils.getTodayDate()+"'
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "' and pm.status <>'deleted' order by pm.prescriptionDate DESC";//where pm.prescriptionDate='"+ Utils.getTodayDate()+"'
             } else {
-                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "' order by pm.prescriptionDate ASC";//where pm.prescriptionDate='"+ Utils.getTodayDate()+"'
+                query = "select pm.cfUuhid,pm.countOfFiles,pm.doctorName,pm.prescriptionDate,pm.prescriptionId,pm.uploadedBy,pm.common_id,pm.isUploaded,pm.status from tbl_prescription_main as pm where pm.cfUuhid='" + cf_uuhid + "' and pm.status <>'deleted' order by pm.prescriptionDate ASC";//where pm.prescriptionDate='"+ Utils.getTodayDate()+"'
             }
             //select * from table name where  prescriptionDate order by desc/asc(this is varialble) limit 0,10;
             cursorprivate = database.rawQuery(query, null);
@@ -2365,7 +2368,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "select prl.imageNumber,prl.prescriptionImage,prl.prescriptionImagePartId from tbl_prescription_response_list as prl where prl.common_id ='" + common_id + "'";
+            String query = "select prl.imageNumber,prl.prescriptionImage,prl.prescriptionImagePartId,prl.isUploaded,prl.status,prl.common_id from tbl_prescription_response_list as prl where prl.common_id ='" + common_id + "' and  prl.status <>'deleted'";
 
             cursorprivate2 = database.rawQuery(query, null);
             if (cursorprivate2.getCount() > 0) {
@@ -2398,7 +2401,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "select prl.imageNumber,prl.reportImage,prl.reportImageId from tbl_labtestreport_response_list as prl where prl.common_id ='" + common_id + "'";
+            String query = "select prl.imageNumber,prl.reportImage,prl.reportImageId,prl.status,prl.isUploaded,prl.common_id from tbl_labtestreport_response_list as prl where prl.common_id ='" + common_id + "' and status <>'deleted'";
 
             cursorprivate2 = database.rawQuery(query, null);
             if (cursorprivate2.getCount() > 0) {
@@ -3047,7 +3050,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where isUploaded ='" + isUploaded + "'" + "";
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where isUploaded ='" + isUploaded + "' and status <> 'deleted'";
 
 
             cursor = database.rawQuery(query, null);
@@ -3071,6 +3074,72 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return listApps;
     }
 
+    public static ArrayList<PrescriptionListView> getPrescriptionDataDelete(Context context, String isUploaded) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionListView>();
+        ArrayList<PrescriptionListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT * FROM " + TABLE_PRESCRIPTION_MAIN + " Where isUploaded ='" + isUploaded + "' and status='deleted' ";
+
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    PrescriptionListView list = new PrescriptionListView(cursor);
+                    listApps.add(list);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<PrescriptionImageListView> getPrescriptionResponseListDataDelete(Context context, String isUploaded) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<PrescriptionImageListView>();
+        ArrayList<PrescriptionImageListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {//tbl_prescription_response_list    tbl_prescription_followuplist  tbl_prescription_main
+            database = DatabaseHelper.openDataBase();
+            //String query = "SELECT * FROM " + TABLE_PRESCRIPTION_RESPONSELIST + " Where isUploaded ='" + isUploaded + "' and status='deleted' ";
+           // String query="Select tbl_prescription_response_list.imageNumber,tbl_prescription_response_list.prescriptionImage,tbl_prescription_response_list.prescriptionImagePartId,tbl_prescription_response_list.common_id,tbl_prescription_response_list.isUploaded,tbl_prescription_response_list.status,tbl_prescription_followuplist.prescriptonImageFollowupId from tbl_prescription_response_list INNER JOIN tbl_prescription_followuplist Where isUploaded ='" + isUploaded + "' and status='deleted' ";
+            String query="Select l.imageNumber,l.prescriptionImage,l.prescriptionImagePartId,l.common_id,l.isUploaded,l.status,f.prescriptonImageFollowupId,m.doctorName from tbl_prescription_response_list as l LEFT JOIN tbl_prescription_followuplist as f on l.common_id=f.common_id LEFT JOIN tbl_prescription_main as m on l.common_id=m.common_id Where l.isUploaded ='" + isUploaded + "' and l.status='deleted' ";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    PrescriptionImageListView list = new PrescriptionImageListView(cursor,"");
+                    listApps.add(list);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+
     public static ArrayList<LabReportListView> getLabData(Context context, String isUploaded) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -3079,7 +3148,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         SQLiteDatabase database = null;
         try {
             database = DatabaseHelper.openDataBase();
-            String query = "SELECT * FROM " + TABLE_LABTESTREPORT_MAIN + " Where isUploaded ='" + isUploaded + "'" + "";
+            String query = "SELECT * FROM " + TABLE_LABTESTREPORT_MAIN + " Where isUploaded ='" + isUploaded + "' and status<>'deleted'";
 
 
             cursor = database.rawQuery(query, null);
@@ -3102,6 +3171,72 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
         return listApps;
     }
+
+    public static ArrayList<LabReportListView> getLabDataDelete(Context context, String isUploaded) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<LabReportListView>();
+        ArrayList<LabReportListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT * FROM " + TABLE_LABTESTREPORT_MAIN + " Where isUploaded ='" + isUploaded + "' and status='deleted'";
+
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    LabReportListView list = new LabReportListView(cursor);
+                    listApps.add(list);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
+    public static ArrayList<LabReportImageListView> getLabDataResponseListDelete(Context context, String isUploaded) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new ArrayList<LabReportImageListView>();
+        ArrayList<LabReportImageListView> listApps = new ArrayList<>();
+        SQLiteDatabase database = null;
+        try {
+            //tbl_labtestreport_response_list,tbl_labtestreprort_main
+            database = DatabaseHelper.openDataBase();
+            //String query = "SELECT * FROM " + TABLE_LABTESTREPORT_RESPONSELIST + " Where isUploaded ='" + isUploaded + "' and status='deleted'";
+            String query ="Select l.imageNumber,l.reportImage,l.reportImageId,l.common_id,l.isUploaded,l.status,m.doctorName from tbl_labtestreport_response_list as l LEFT JOIN tbl_labtestreprort_main as m ON l.common_id=m.common_id where l.isUploaded ='" + isUploaded + "' and l.status='deleted'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    LabReportImageListView list = new LabReportImageListView(cursor,"");
+                    listApps.add(list);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
+
 
     //lab reminder
     public static ArrayList<Lab_Test_Reminder_SelfListView> getLabReminderbySelf(Context context, String isUploaded) {
@@ -3843,7 +3978,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
                 if (date.equalsIgnoreCase("")) {
                     database.update(TABLE_MEDICINE_REMINDER_SELF, cv, "medicineReminderId" + "='" + medicineReminderId + "'",
                             null);
-                }else{
+                } else {
                     database.update(TABLE_MEDICINE_REMINDER_SELF, cv, "medicineReminderId" + "='" + medicineReminderId + "' and currentdate" + "='" + date + "'",
                             null);
                 }
@@ -3990,7 +4125,6 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         database.close();
     }
 
-
     public static GoalInfo getGoalList(Context context) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
         if (dbhelperShopCart == null)
@@ -4021,6 +4155,35 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         return listApps;
     }
 
+    public static GoalInfo getGoalListSync(Context context) {
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(context);
+        if (dbhelperShopCart == null)
+            return new GoalInfo();
+        GoalInfo listApps = null;
+        SQLiteDatabase database = null;
+        try {
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            database = DatabaseHelper.openDataBase();
+            String query = "SELECT L.* FROM " + TABLE_EDIT_GOAL
+                    + " L WHERE L.edit_id = '" + preferences.getString("cf_uuhid", "") + "' and isUploaded='1'";
+
+            cursor = database.rawQuery(query, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    listApps = new GoalInfo(cursor);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+            database.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseHelper.closedatabase();
+        }
+        return listApps;
+    }
 
     public static void clearUserDB() {
         SQLiteDatabase database = null;
@@ -4214,6 +4377,55 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
     }
 
+    public static void clearPrescriptionResponseDataFromLocal(String common_id, String imageNumber, String check_text) {
+        SQLiteDatabase database = null;
+//common means prescriptionID
+        try {
+            database = DatabaseHelper.openDataBase();
+            if (check_text.equalsIgnoreCase("pres")) {
+                database.delete(TABLE_PRESCRIPTION_RESPONSELIST, "common_id " + "=? AND " + "imageNumber" + "=?", new String[]{common_id, imageNumber});
+            } else if (check_text.equalsIgnoreCase("labreport")) {
+                database.delete(TABLE_LABTESTREPORT_RESPONSELIST, "common_id " + "=? AND " + "imageNumber" + "=?", new String[]{common_id, imageNumber});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.close();
+        }
+    }
+
+    public static void clearPrescriptionResponseDataFromSync(String common_id, String prescriptionFollowupId, String prescriptionImagePartId, String isUploaded, Context cnt) {
+        SQLiteDatabase database = null;
+//common means prescriptionID
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(cnt);
+        try {
+            database = dbhelperShopCart.openDataBase();
+
+                database.delete(TABLE_PRESCRIPTION_RESPONSELIST, "common_id " + "=? AND " + "prescriptionImagePartId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, prescriptionImagePartId,isUploaded});
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.close();
+        }
+    }
+
+
+    public static void clearLabReportResponseDataFromSync(String common_id,String reportImageId, String isUploaded, Context cnt) {
+        SQLiteDatabase database = null;
+//common means prescriptionID
+        DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(cnt);
+        try {
+            database = dbhelperShopCart.openDataBase();
+
+            database.delete(TABLE_LABTESTREPORT_RESPONSELIST, "common_id " + "=? AND " + "reportImageId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, reportImageId,isUploaded});
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.close();
+        }
+    }
     public static void insertLabTestRemiderLocal(Context context, ContentValues cv, String commonid) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);

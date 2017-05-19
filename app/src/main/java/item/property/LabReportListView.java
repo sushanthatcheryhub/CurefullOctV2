@@ -43,6 +43,16 @@ public class LabReportListView {
     private String commonID;
     private String isUploaded;
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    private String status;
+
     public String getIsUploaded() {
         return isUploaded;
     }
@@ -67,6 +77,7 @@ public class LabReportListView {
             setDateOfUpload(cur.getString(cur.getColumnIndex(DATE_OF_UPLOAD)));
             setCommonID(cur.getString(cur.getColumnIndex(COMMON_ID)));
             setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
             ArrayList<LabReportImageListView> labReportImageListViews= DbOperations.setLabTestReportResponseListViewsLocal(CureFull.getInstanse().getActivityIsntanse(),cur.getString(cur.getColumnIndex(COMMON_ID)));
             setLabReportList(labReportImageListViews);
 
@@ -94,6 +105,7 @@ public class LabReportListView {
             setCommonID(json.getString(REPORT_ID));
             values.put(COMMON_ID, getCommonID());
             values.put("isUploaded", "0");
+            values.put("status", "pending");
             DbOperations.insertLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew(),getCommonID());
 
             setLabReprtListViewsLocal(json.getJSONArray(REPORT_IMAGELIST),getCommonID());
@@ -125,6 +137,7 @@ public class LabReportListView {
             values.put("isUploaded", "1");
             values.put(COMMON_ID,commonid);
             values.put(REPORT_ID,commonid);
+            values.put("status","pending");
             DbOperations.insertLabReportImage(CureFull.getInstanse().getActivityIsntanse(), values,"1",commonid);
 
             LabReportImageListView  imageListView=new LabReportImageListView();

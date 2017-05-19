@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -44,7 +45,9 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentPrescriptionImageFullView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.PrescriptionImageListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
@@ -150,6 +153,7 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
                 bundle.putString("uploadedBy", uploadedBys);
                 bundle.putString("date", dates);
                 bundle.putString("imageList", prescriptionListViews.get(position).getPrescriptionImage());
+                bundle.putString("imageNumber", prescriptionListViews.get(position).getImageNumber());
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentPrescriptionImageFullView(), bundle, true);
             }
@@ -161,7 +165,33 @@ public class PrescriptionImageViewAdpter extends RecyclerView.Adapter<Prescripti
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(id, prescriptionFollowupId, doctorName, pos, prescriptionListViews.get(pos).getPrescriptionImagePartId());
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                DbOperations.clearPrescriptionResponseDataFromLocal(id, prescriptionListViews.get(pos).getImageNumber(), "pres");
+                getPrescriptionDelete(id, prescriptionFollowupId, doctorName, pos, prescriptionListViews.get(pos).getPrescriptionImagePartId());
+            }else{
+                if (id.length() > 9) {
+                    //create in offline mode and not sync to server and delete from local
+                    DbOperations.clearPrescriptionResponseDataFromLocal(id, prescriptionListViews.get(pos).getImageNumber(), "pres");
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                } else {
+                    //create in offline mode and sync to server and then insert into local db and delete from local and sync deleted data with status deleted
+                    ContentValues cv = new ContentValues();//common_id, String
+                    cv.put("common_id", id);
+                    cv.put("prescriptionImagePartId", prescriptionListViews.get(pos).getPrescriptionImagePartId());
+                    cv.put("status", "deleted");
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), prescriptionListViews.get(pos).getPrescriptionImagePartId());
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                }
+                if (prescriptionListViews.size() == 0) {
+                    CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                }
+
+            }
         }
 
     }

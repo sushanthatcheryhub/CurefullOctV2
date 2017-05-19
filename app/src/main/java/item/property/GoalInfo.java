@@ -84,6 +84,7 @@ public class GoalInfo implements MyConstants.JsonUtils {
             values.put("targetWaterInTake", jsonResponse1.getString("targetWaterInTake"));
             values.put("glassSize", jsonResponse1.getString("glassSize"));
             values.put("glassNumber", jsonResponse1.getString("glassNumber"));
+            values.put("isUploaded", "0");
             return values;
         } catch (Exception e) {
             e.printStackTrace();

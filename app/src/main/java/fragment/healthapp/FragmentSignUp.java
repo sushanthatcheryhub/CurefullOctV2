@@ -84,6 +84,12 @@ public class FragmentSignUp extends AppCompatActivity implements View.OnClickLis
         return super.onBackPressed();
     }*/
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentLogin.class));
+        finish();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -340,6 +346,7 @@ public class FragmentSignUp extends AppCompatActivity implements View.OnClickLis
                         intent_otpchk.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent_otpchk.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent_otpchk);
+                        finish();
                        /* CureFull.getInstanse().getFlowInstanse()
                                 .addWithBottomTopAnimation(new FragmentOTPCheck(), bundle, true);*/
                     }

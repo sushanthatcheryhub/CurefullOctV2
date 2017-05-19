@@ -13,6 +13,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
@@ -44,14 +45,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ElasticVIews.ElasticAction;
 import asyns.JsonUtilsObject;
+import dialog.DialogEditGoal;
+import fragment.healthapp.FragmentEditGoal;
 import item.property.Doctor_Visit_Reminder_DoctorListView;
 import item.property.Doctor_Visit_Reminder_SelfListView;
+import item.property.GoalInfo;
 import item.property.LabReportImageListView;
 import item.property.LabReportListView;
 import item.property.Lab_Test_Reminder_DoctorListView;
@@ -75,7 +81,6 @@ import utils.Utils;
  */
 
 public class SchedulingService extends IntentService {
-    private int valueUpload = 0;
     SharedPreferences preferences;
 
     public SchedulingService() {
@@ -89,6 +94,13 @@ public class SchedulingService extends IntentService {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (CheckNetworkState.isNetworkAvailable(this)) {
             DbOperations db = new DbOperations();
+            //for prescription delete
+            prescriptionDelete();
+            prescriptionResponseListDelete();
+            labReportResponseListDelete();
+            //for lab report delete
+            labReportDelete();
+
             //for prescription
             final List<PrescriptionListView> prescriptionData = db.getPrescriptionData(this, "1");
             for (int i = 0; i < prescriptionData.size(); i++) {
@@ -232,6 +244,8 @@ public class SchedulingService extends IntentService {
             medicine_notification_sync_self();
             medicine_notification_sync_digitization();
             birthdaynotificaion();
+            getGoalData();
+
         } else {
             //for sqlite notification
             lab_notification_from_sqlite();
@@ -248,6 +262,281 @@ public class SchedulingService extends IntentService {
         }
     }
 
+    private void labReportResponseListDelete() {
+        final List<LabReportImageListView> labDataDelete = DbOperations.getLabDataResponseListDelete(this, "1");
+        for (int pos = 0; pos < labDataDelete.size(); pos++) {
+            getLabReportResponseListDelete(labDataDelete.get(pos).getCommonID(), labDataDelete.get(pos).getReportImageId(), labDataDelete.get(pos).getDoctorName(), labDataDelete.get(pos).getIsUploaded());
+        }
+
+    }
+
+
+    private void labReportDelete() {
+        final List<LabReportListView> labDataDelete = DbOperations.getLabDataDelete(this, "1");
+        for (int pos = 0; pos < labDataDelete.size(); pos++) {
+            getLabReportDelete(labDataDelete.get(pos).getReportId(), labDataDelete.get(pos).getDoctorName(), pos, labDataDelete.get(pos).getIsUploaded());
+
+        }
+    }
+
+    private void getLabReportResponseListDelete(final String id, final String realId, String name, final String isUploaded) {
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_LAB_REPORT + id + "&iReportId=" + realId + "&doctor_name=" + name.replace(" ", "%20"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            DbOperations dbOperations = new DbOperations();
+                            dbOperations.clearLabReportResponseDataFromSync(id, realId, isUploaded, SchedulingService.this);
+                        } else {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    private void getLabReportDelete(final String reportId, String doctorName, int pos, final String isUploaded) {
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.Delete_Report + reportId + "&doctor_name=" + doctorName.replace(" ", "%20"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            //delete
+                            DbOperations.clearLabData(reportId, isUploaded);
+                        } else {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                return headers;
+            }
+        };
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    private void prescriptionResponseListDelete() {
+        final List<PrescriptionImageListView> prescriptionDelete = DbOperations.getPrescriptionResponseListDataDelete(this, "1");
+        for (int pos = 0; pos < prescriptionDelete.size(); pos++) {
+            getPrescriptionResponseListDelete(prescriptionDelete.get(pos).getCommon_id(), prescriptionDelete.get(pos).getPrescriptonImageFollowupId(), prescriptionDelete.get(pos).getPrescriptionImagePartId(), prescriptionDelete.get(pos).getDoctorName(), prescriptionDelete.get(pos).getIsUploaded());
+
+        }
+    }
+
+    private void prescriptionDelete() {
+        final List<PrescriptionListView> prescriptionDelete = DbOperations.getPrescriptionDataDelete(this, "1");
+        for (int pos = 0; pos < prescriptionDelete.size(); pos++) {
+            getPrescriptionDelete(prescriptionDelete.get(pos).getPrescriptionId(), prescriptionDelete.get(pos).getDoctorName(), pos, prescriptionDelete.get(pos).getIsUploaded());
+
+        }
+    }
+
+    private void getPrescriptionResponseListDelete(final String id, final String prescriptionFollowupId, final String prescriptionPartId, String doctorName, final String isUploaded) {
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_SUB_PRESCRIPTION + id + "&prescriptionFollowupId=" + prescriptionFollowupId + "&prescriptionPartId=" + prescriptionPartId + "&doctor_name=" + doctorName.replace(" ", "%20"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                            DbOperations dbOperations = new DbOperations();
+                            dbOperations.clearPrescriptionResponseDataFromSync(id, prescriptionFollowupId, prescriptionPartId, isUploaded, SchedulingService.this);
+                        } else {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                headers.put("user_id", preferences.getString("user_id", ""));
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    private void getPrescriptionDelete(final String id, String name, final int pos, final String isUploaded) {
+
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, MyConstants.WebUrls.DELETE_PRESCRIPTION + id + "&doctor_name=" + name.replace(" ", "%20"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+
+                            DbOperations.clearPrescriptionData(id, isUploaded);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", preferences.getString("a_t", ""));
+                headers.put("r_t", preferences.getString("r_t", ""));
+                headers.put("user_name", preferences.getString("user_name", ""));
+                headers.put("email_id", preferences.getString("email_id", ""));
+                headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
+    private void getGoalData() {
+
+        GoalInfo userInfo = DbOperations.getGoalListSync(CureFull.getInstanse().getActivityIsntanse());
+        if (userInfo != null) {
+            JSONObject data = null;//JsonUtilsObject.toSetGoalsDetails(userInfo.getHeight(),userInfo.getWeight(), userInfo.getDateOfBirth(), userInfo.getGender());
+
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                                if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+
+
+                                } else {
+                                    try {
+                                        JSONObject json1 = new JSONObject(json.getString("errorInfo"));
+                                        JSONObject json12 = new JSONObject(json1.getString("errorDetails"));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", preferences.getString("a_t", ""));
+                    headers.put("r_t", preferences.getString("r_t", ""));
+                    headers.put("user_name", preferences.getString("user_name", ""));
+                    headers.put("email_id", preferences.getString("email_id", ""));
+                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));
+                    return headers;
+                }
+            };
+            CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+
+        }
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void birthdaynotificaion() {
         String[] today_date = Utils.getTodayDate().split("-");
@@ -256,27 +545,28 @@ public class SchedulingService extends IntentService {
         String day = today_date[2];
         String day_month_current = day + "-" + month;
 
-        String getDOB_from_preference[] = preferences.getString("Age", "0").split("-");//2006-12-11
-        String month_dob = getDOB_from_preference[1];
-        String day_dob = getDOB_from_preference[2];
-        String day_month_dob = day_dob + "-" + month_dob;
+        String getDOB_from_preference[] = preferences.getString("Age", "0").split("-");
+        if (!getDOB_from_preference[0].equalsIgnoreCase("0")) {
+            String month_dob = getDOB_from_preference[1];
+            String day_dob = getDOB_from_preference[2];
+            String day_month_dob = day_dob + "-" + month_dob;
 
-        if (day_month_current.equalsIgnoreCase(day_month_dob)) {
+            if (day_month_current.equalsIgnoreCase(day_month_dob)) {
 
-            if (preferences.getString("yearr", year).equalsIgnoreCase(year)) {
+                if (preferences.getString("yearr", year).equalsIgnoreCase(year)) {
 
-            } else {
-                preferences.edit().putString("chk_Birthday_notification", "0").commit();
-            }
+                } else {
+                    preferences.edit().putString("chk_Birthday_notification", "0").commit();
+                }
 
-            if (preferences.getString("chk_Birthday_notification", "0").equalsIgnoreCase("0")) {
-                NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                notificationUtils.birthdayNotification("Hii buddy, Today is your birthday");
-                preferences.edit().putString("chk_Birthday_notification", "1").commit();
-                preferences.edit().putString("yearr", year).commit();
+                if (preferences.getString("chk_Birthday_notification", "0").equalsIgnoreCase("0")) {
+                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                    notificationUtils.birthdayNotification("Hii buddy, Today is your birthday");
+                    preferences.edit().putString("chk_Birthday_notification", "1").commit();
+                    preferences.edit().putString("yearr", year).commit();
+                }
             }
         }
-
     }
 
     private void medicine_notification_sync_digitization() {
@@ -1044,7 +1334,6 @@ public class SchedulingService extends IntentService {
                                     String secretAccessKey = json1.getString("secretAccessKey");
                                     String sessionToken = json1.getString("sessionToken");
                                     if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
-                                        valueUpload = 0;
                                         uploadFile(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + MyConstants.AWSType.FOLDER_PRECREPTION_NAME, file, commonID, isUploaded);
                                     }
                                 }
@@ -1084,7 +1373,7 @@ public class SchedulingService extends IntentService {
 
     public void uploadFile(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final ArrayList<PrescriptionImageListView> imageFile, final String commonID, final String isUploaded) {
         String imageUploadUrl = null;
-
+        final int[] valueUpload = {0};
         BasicSessionCredentials credentials =
                 new BasicSessionCredentials(accessKeyID,
                         secretAccessKey,
@@ -1126,11 +1415,12 @@ public class SchedulingService extends IntentService {
                     public void onStateChanged(int id, TransferState state) {
                         switch (state.name()) {
                             case "COMPLETED":
-                                valueUpload += 1;
+                                valueUpload[0] += 1;
 //                                Log.e("check", " - " + finalI + " size " + imageFile.size() + "value " + valueUpload);
                                 imageFile.get(finalI).setPrescriptionImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + "/prescription/" + observer.getKey());
-                                if (valueUpload == (imageFile.size())) {
+                                if (valueUpload[0] == (imageFile.size())) {
 //                                    Log.e("call ", "call ");
+                                    valueUpload[0] = 0;
                                     if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         jsonSaveUploadedPrescriptionData(prescriptionId, cfUuhidId, imageFile, commonID, isUploaded);
                                     }
@@ -1233,7 +1523,6 @@ public class SchedulingService extends IntentService {
                                     String secretAccessKey = json1.getString("secretAccessKey");
                                     String sessionToken = json1.getString("sessionToken");
                                     if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
-                                        valueUpload = 0;
                                         uploadFileLab(prescriptionId, cfUuhidId, accessKeyID, secretAccessKey, sessionToken, MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + MyConstants.AWSType.FOLDER_LAB_REPORT_NAME, file, commomID, isUploaded);
                                     }
                                 }
@@ -1275,6 +1564,8 @@ public class SchedulingService extends IntentService {
 
     public void uploadFileLab(final String prescriptionId, final String cfUuhidId, String accessKeyID, String secretAccessKey, String sessionToken, String bucketName, final ArrayList<LabReportImageListView> imageFile, final String commomID, final String isUploaded) {
 
+
+        final int[] valueUpload = {0};
         BasicSessionCredentials credentials =
                 new BasicSessionCredentials(accessKeyID,
                         secretAccessKey,
@@ -1316,11 +1607,12 @@ public class SchedulingService extends IntentService {
                     public void onStateChanged(int id, TransferState state) {
                         switch (state.name()) {
                             case "COMPLETED":
-                                valueUpload += 1;
+                                valueUpload[0] += 1;
 //
                                 imageFile.get(finalI).setReportImage("https://s3.ap-south-1.amazonaws.com/" + MyConstants.AWSType.BUCKET_NAME + "/" + preferences.getString("cf_uuhid", "") + "/labReport/" + observer.getKey());
-                                if (valueUpload == (imageFile.size())) {
+                                if (valueUpload[0] == (imageFile.size())) {
 //                                    Log.e("call ", "call ");
+                                    valueUpload[0] = 0;
                                     if (CheckNetworkState.isNetworkAvailable(SchedulingService.this)) {
                                         jsonSaveUploadedLabData(prescriptionId, cfUuhidId, imageFile, commomID, isUploaded);
                                     }
@@ -1576,4 +1868,6 @@ public class SchedulingService extends IntentService {
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
     }
+
+
 }

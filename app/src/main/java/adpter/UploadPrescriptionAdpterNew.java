@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -77,12 +78,13 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     int size = 1;
     int pos;
     private View rootView;
+
     public UploadPrescriptionAdpterNew(FragmentPrescriptionCheckNew fragmentPrescriptionCheck, Context applicationContexts,
-                                       List<PrescriptionListView> prescriptionListViews,View rootView) {
+                                       List<PrescriptionListView> prescriptionListViews, View rootView) {
         this.prescriptionListViews = prescriptionListViews;
         this.applicationContext = applicationContexts;
         this.prescriptionCheck = fragmentPrescriptionCheck;
-        this.rootView=rootView;
+        this.rootView = rootView;
     }
 
     @Override
@@ -108,11 +110,11 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
         TextView txt_count_file = holder.txt_count_file;
         RelativeLayout relative_card_view = holder.relative_card_view;
 
-    if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
-        img_delete.setVisibility(View.GONE);
-    } else {
-        img_delete.setVisibility(View.VISIBLE);
-    }
+        if (prescriptionListViews.get(position).getUploadedBy().equalsIgnoreCase("curefull")) {
+            img_delete.setVisibility(View.GONE);
+        } else {
+            img_delete.setVisibility(View.VISIBLE);
+        }
 
         String date = prescriptionListViews.get(position).getPrescriptionDate();
         if (!date.equalsIgnoreCase("")) {
@@ -159,28 +161,28 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
 //
 //            }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
-                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
-                    dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
-                    dialogDeleteAll.show();
-                }else{
+                //  if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected prescription ?", "Prescription", position);
+                dialogDeleteAll.setiOnOtpDoneDelete(UploadPrescriptionAdpterNew.this);
+                dialogDeleteAll.show();
+                /*}else{
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-                }
+                }*/
             }
         });
         img_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
                     size = 1;
                     if (prescriptionListViews.get(position).getPrescriptionImageFollowUpListViews().get(0).getPrescriptionImageListViews().size() > 0) {
@@ -202,7 +204,7 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
                         }
 
                     }
-                }else{
+                } else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
                 }
 
@@ -268,8 +270,33 @@ public class UploadPrescriptionAdpterNew extends RecyclerView.Adapter<UploadPres
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            DbOperations.clearLabDataFromLocal(prescriptionListViews.get(pos).getPrescriptionId(),prescriptionListViews.get(pos).getDoctorName(),"pres");
-            getPrescriptionDelete(prescriptionListViews.get(pos).getPrescriptionId(), prescriptionListViews.get(pos).getDoctorName(), pos);
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                DbOperations.clearLabDataFromLocal(prescriptionListViews.get(pos).getPrescriptionId(), prescriptionListViews.get(pos).getDoctorName(), "pres");
+                getPrescriptionDelete(prescriptionListViews.get(pos).getPrescriptionId(), prescriptionListViews.get(pos).getDoctorName(), pos);
+            } else {
+
+                if (prescriptionListViews.get(pos).getPrescriptionId().length() > 9) {
+                    //create in offline mode and not sync to server and delete from local
+                    DbOperations.clearLabDataFromLocal(prescriptionListViews.get(pos).getPrescriptionId(), prescriptionListViews.get(pos).getDoctorName(), "pres");
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                } else {
+                    //create in offline mode and sync to server and then insert into local db and delete from local and sync deleted data with status deleted
+                    ContentValues cv = new ContentValues();
+                    cv.put("prescriptionId", prescriptionListViews.get(pos).getPrescriptionId());
+                    cv.put("status", "deleted");
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertPrescriptionList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), prescriptionListViews.get(pos).getPrescriptionId());
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                }
+                if (prescriptionListViews.size() == 0) {
+                    prescriptionCheck.checkList();
+                }
+
+            }
         }
 
     }

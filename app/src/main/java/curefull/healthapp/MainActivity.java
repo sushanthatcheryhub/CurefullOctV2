@@ -1,5 +1,6 @@
 package curefull.healthapp;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -131,7 +132,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     private LinearLayout liner_medincine, liner_doctor_visit, liner_lab_test;
     private TextView txt_med, txt_doctor_visit, txt_lab_test;
     private ImageView img_medicine, img_doctor_visit, img_lab_test, img_health_app, img_health_note, img_health_home, img_health_pre, img_health_report;
-
+    private static ArrayList<Activity> activities=new ArrayList<Activity>();
     // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -796,6 +797,11 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
     public void clickImage(final View view12) {
         view1 = view12;
+    }
+    public static void finishAll()
+    {
+        for(Activity activity:activities)
+            activity.finish();
     }
 
     public void shareClick() {

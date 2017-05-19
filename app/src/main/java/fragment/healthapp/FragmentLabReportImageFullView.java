@@ -59,7 +59,7 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView image_item;
-    private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy;
+    private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy,imageNumber;
     private String images;
 
     @Override
@@ -88,6 +88,11 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
             prescriptionId = bundle.getString("prescriptionId");
             iPrescriptionId = bundle.getString("iPrescriptionId");
             uploadedBy = bundle.getString("uploadedBy");
+            try {
+                imageNumber = bundle.getString("imageNumber");
+            }catch (Exception e){
+                e.getMessage();
+            }
             if (uploadedBy.equalsIgnoreCase("curefull")) {
                 img_delete.setVisibility(View.INVISIBLE);
             } else {

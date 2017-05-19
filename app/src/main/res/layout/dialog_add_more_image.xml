@@ -34,7 +34,7 @@
                 android:elevation="@dimen/_10dp"
                 android:gravity="center"
                 android:padding="@dimen/_2dp"
-                android:text="You added 2 file in this prescription please add detail for better experince"
+                android:text="You added 2 file in this prescription please add detail for better experience"
                 android:textColor="@color/health_yellow" />
 
             <LinearLayout

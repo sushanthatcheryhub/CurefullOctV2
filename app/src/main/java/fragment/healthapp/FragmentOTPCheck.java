@@ -54,7 +54,9 @@ import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import awsgcm.MessageReceivingService;
 import curefull.healthapp.CureFull;
+import curefull.healthapp.MainActivity;
 import curefull.healthapp.R;
+import curefull.healthapp.SplashScreen;
 import interfaces.SmsListener;
 import item.property.UserInfo;
 import operations.DbOperations;
@@ -242,7 +244,18 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
 
 
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentSignUp.class));
+        finish();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
 
     @Override
     public void onClick(View view) {
@@ -349,6 +362,12 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
         if (OTP == Integer.parseInt(edt_otp_password.getText().toString().trim())) {
             if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                 CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+
+                /*FragmentOTPCheck.this.finish();
+                CureFull.getInstanse().getFlowInstanse()
+                        .replaceLoss(new FragmentLandingPage(), false);*/
+                //finish();
+
                 jsonLoginCheck();
             } else {
                 CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
@@ -444,6 +463,7 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
 
                                     AppPreference.getInstance().setAt(userInfo.getA_t());
                                     AppPreference.getInstance().setRt(userInfo.getR_t());
+                                    //AppPreference.getInstance().setIsLogin(true);//add by sourav
 //                                Log.e("name", " " + userInfo.getA_t());
 
                                     String token_Id = sharedPreferencesUserLogin.getString("tokenid",
@@ -451,8 +471,9 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
                                     String device_Id = sharedPreferencesUserLogin.getString("android_id",
                                             "123");
                                     jsonSaveNotification(token_Id, device_Id);
-                                 /*   CureFull.getInstanse().getFlowInstanse().clearBackStack();*/
-                                    CureFull.getInstanse().getFlowInstanse()
+
+                                 //   CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                                   CureFull.getInstanse().getFlowInstanse()
                                             .replaceLoss(new FragmentLandingPage(), false);
                                     finish();
                                 } else {

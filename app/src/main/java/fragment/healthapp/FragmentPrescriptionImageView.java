@@ -28,7 +28,7 @@ import utils.Utils;
  */
 public class FragmentPrescriptionImageView extends BaseBackHandlerFragment {
 
-
+//2 level
     private View rootView;
     private RecyclerView prescriptionItemView;
     private GridLayoutManager lLayout;

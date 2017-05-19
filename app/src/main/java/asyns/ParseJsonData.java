@@ -2,6 +2,7 @@ package asyns;
 
 import android.content.ContentValues;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -234,6 +235,7 @@ public class ParseJsonData implements MyConstants.JsonUtils {
 
             } catch (Exception e) {
             e.getMessage();
+                Log.e("eeexception",e.getMessage());
             }
         }
         return detailListing;

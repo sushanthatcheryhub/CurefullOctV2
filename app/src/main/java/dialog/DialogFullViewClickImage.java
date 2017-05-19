@@ -96,10 +96,10 @@ public class DialogFullViewClickImage extends Dialog implements View.OnClickList
         if (type.equalsIgnoreCase("lab")) {
             txt_pre_date.setText("Report Date");
             input_disease.setHint("Test Name");
-            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this Lab test please add detail for better experince");
+            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this Lab test please add detail for better experience");
         } else {
             input_disease.setHint("Disease Name");
-            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this prescription please add detail for better experince");
+            txt_health_text.setText("You added " + (prescriptionImageListss.size()) + " file in this prescription please add detail for better experience");
 
         }
 

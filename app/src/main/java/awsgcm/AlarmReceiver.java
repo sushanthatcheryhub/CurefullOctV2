@@ -72,11 +72,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             String caloriesBurnt = "" + preferences.getString("CaloriesCount", "");
             String waterin = preferences.getString("waterTake", "");
 //            String newTime = intent.getExtras().getString("newTime");
-            preferences.edit().putInt("stepsIn", 0).commit();
-            preferences.edit().putString("waterTake", "0").commit();
-            preferences.edit().putString("CaloriesCount", "0").commit();
-            preferences.edit().putInt("percentage", 0).commit();
-            preferences.edit().putInt("firstLogin", 0).commit();
+
             if (preferences.getBoolean("resetStepReboot", true)) {
             } else {
                 preferences.edit().putBoolean("resetStepReboot", true).commit();
@@ -89,7 +85,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 cv1.put("date", "" + Utils.getTodayDate());
                 DbOperations operations1 = new DbOperations();
                 operations1.insertStepStaus(context, cv1, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
-
+                preferences.edit().putInt("stepsIn", 0).commit();
+                preferences.edit().putString("waterTake", "0").commit();
+                preferences.edit().putString("CaloriesCount", "0").commit();
+                preferences.edit().putInt("percentage", 0).commit();
+                preferences.edit().putInt("firstLogin", 0).commit();
                 if (CheckNetworkState.isNetworkAvailable(context)) {
                     jsonUploadTargetSteps(context, stepsCount, caloriesBurnt, waterin);
                 } else {

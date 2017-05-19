@@ -37,6 +37,17 @@ public class LabReportImageListView implements Parcelable, Comparable<LabReportI
     private String reportImage;
     private String reportImageId;
     private String commonID;
+    private String status;
+    private String isUploaded;
+    private String doctorName;
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
 
     public String getCommonID() {
         return commonID;
@@ -45,6 +56,22 @@ public class LabReportImageListView implements Parcelable, Comparable<LabReportI
     public void setCommonID(String commonID) {
 
         this.commonID = commonID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getIsUploaded() {
+        return isUploaded;
+    }
+
+    public void setIsUploaded(String isUploaded) {
+        this.isUploaded = isUploaded;
     }
 
     public LabReportImageListView() {
@@ -71,6 +98,9 @@ public class LabReportImageListView implements Parcelable, Comparable<LabReportI
             values.put(REPORT_IMAGE, jsonobject1.getString(REPORT_IMAGE));
             values.put("reportImageId", jsonobject1.getString("reportImageId"));
             values.put(COMMON_ID, commonID);
+            values.put("isUploaded", "0");
+            values.put("status", "pending");
+
             DbOperations.insertLabTestReportResponseList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhidNeew(), jsonobject1.getString("reportImageId"));
 
         } catch (Exception e) {
@@ -90,6 +120,9 @@ public class LabReportImageListView implements Parcelable, Comparable<LabReportI
                 values2.put("reportImage", imageFile.get(ii).getPrescriptionImage());
                 values2.put("reportImageId", commonid);
                 values2.put(COMMON_ID, commonid);
+                values2.put("isUploaded", "0");
+                values2.put("status", "pending");
+
                 DbOperations.insertLabReportResponseListLocal(CureFull.getInstanse().getActivityIsntanse(), values2, commonid, imagenum);
 
             }
@@ -105,6 +138,25 @@ public class LabReportImageListView implements Parcelable, Comparable<LabReportI
             setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
             setReportImage(cur.getString(cur.getColumnIndex(REPORT_IMAGE)));
             setReportImageId(cur.getString(cur.getColumnIndex("reportImageId")));
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setCommonID(cur.getString(cur.getColumnIndex("common_id")));
+        } catch (Exception e) {
+            e.getMessage();
+        }
+    }
+
+    public LabReportImageListView(Cursor cur,String NIU) {
+        if (cur == null)
+            return;
+        try {
+            setImageNumber(cur.getString(cur.getColumnIndex(IMAGE_NUMBER)));
+            setReportImage(cur.getString(cur.getColumnIndex(REPORT_IMAGE)));
+            setReportImageId(cur.getString(cur.getColumnIndex("reportImageId")));
+            setIsUploaded(cur.getString(cur.getColumnIndex("isUploaded")));
+            setStatus(cur.getString(cur.getColumnIndex("status")));
+            setCommonID(cur.getString(cur.getColumnIndex("common_id")));
+            setDoctorName(cur.getString(cur.getColumnIndex("doctorName")));
         } catch (Exception e) {
             e.getMessage();
         }

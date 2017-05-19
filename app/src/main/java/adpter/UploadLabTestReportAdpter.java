@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -163,15 +164,15 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
         img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
-                    DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
-                    dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
-                    dialogDeleteAll.show();
-                } else {
+                // if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                    ElasticAction.doAction(img_delete, 400, 0.9f, 0.9f);
+                DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Test Report ?", "Test Report", position);
+                dialogDeleteAll.setiOnOtpDoneDelete(UploadLabTestReportAdpter.this);
+                dialogDeleteAll.show();
+                /*} else {
                     CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
-                }
+                }*/
             }
         });
         img_share.setOnClickListener(new View.OnClickListener() {
@@ -247,9 +248,30 @@ public class UploadLabTestReportAdpter extends RecyclerView.Adapter<UploadLabTes
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            DbOperations.clearLabDataFromLocal(labReportListViews.get(pos).getReportId(),labReportListViews.get(pos).getDoctorName(),"labreport");
-            getPrescriptionDelete(labReportListViews.get(pos).getReportId(), labReportListViews.get(pos).getDoctorName(), pos);
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                DbOperations.clearLabDataFromLocal(labReportListViews.get(pos).getReportId(), labReportListViews.get(pos).getDoctorName(), "labreport");
+                getPrescriptionDelete(labReportListViews.get(pos).getReportId(), labReportListViews.get(pos).getDoctorName(), pos);
+            } else {
+                if (labReportListViews.get(pos).getReportId().length() > 9) {
+                    //create in offline mode and not sync to server and delete from local
+                    DbOperations.clearLabDataFromLocal(labReportListViews.get(pos).getReportId(), labReportListViews.get(pos).getDoctorName(), "labreport");
+                    labReportListViews.remove(pos);
+                    notifyDataSetChanged();
 
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put("reportId", labReportListViews.get(pos).getReportId());
+                    cv.put("status", "deleted");
+                    cv.put("isUploaded", "1");
+
+                    DbOperations.insertLabTestReportList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), labReportListViews.get(pos).getReportId());
+                    labReportListViews.remove(pos);
+                    notifyDataSetChanged();
+                }
+                if (labReportListViews.size() == 0) {
+                    fragmentLabTestReports.checkList();
+                }
+            }
         }
     }
 

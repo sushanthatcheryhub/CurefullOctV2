@@ -175,7 +175,7 @@
                                                 android:paddingLeft="@dimen/_5dp"
                                                 android:paddingTop="@dimen/_5dp"
                                                 android:singleLine="true"
-                                                android:text="Clear hear to Add more details"
+                                                android:text="Click hear to Add more details"
                                                 android:textColor="@color/health_mid_gray"
                                                 android:visibility="visible" />
 

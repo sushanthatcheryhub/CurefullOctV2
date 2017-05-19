@@ -19,19 +19,23 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import awsgcm.AlarmReceiver;
 import curefull.healthapp.R;
 import fragment.healthapp.FragmentLandingPage;
+import item.property.StepsCountsStatus;
 import operations.DbOperations;
+import utils.CheckNetworkState;
 import utils.Utils;
 
 public class MessengerService extends Service implements StepListener, SensorEventListener {
@@ -200,20 +204,28 @@ public class MessengerService extends Service implements StepListener, SensorEve
         numSteps = preferences.getInt("stepsIn", 0);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        if (accel != null) {
-//            Toast.makeText(MessengerService.this, "" + "true ", Toast.LENGTH_SHORT).show();
-            issenor = true;
-            simpleStepDetector = new SimpleStepDetector();
-            simpleStepDetector.registerListener(this, MessengerService.this);
-            sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_UI);
-        } else {
-//            Toast.makeText(MessengerService.this, "" + "false ", Toast.LENGTH_SHORT).show();
+        String manufacturer = "HTC";
+        if (manufacturer.equalsIgnoreCase(Build.MANUFACTURER)) {
             issenor = false;
             accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             simpleStepDetector = new SimpleStepDetector();
             simpleStepDetector.registerListener(this, MessengerService.this);
             sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            if (accel != null) {
+                issenor = true;
+                simpleStepDetector = new SimpleStepDetector();
+                simpleStepDetector.registerListener(this, MessengerService.this);
+                sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_UI);
+            } else {
+                issenor = false;
+                accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                simpleStepDetector = new SimpleStepDetector();
+                simpleStepDetector.registerListener(this, MessengerService.this);
+                sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+            }
         }
+
 
     }
 
@@ -241,10 +253,10 @@ public class MessengerService extends Service implements StepListener, SensorEve
             }
         };
         newSteps++;
-        if (newSteps > 5) {
+        if (newSteps > 7) {
             stepsReal = true;
-            if (newSteps == 6) {
-                preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 6)).commit();
+            if (newSteps == 8) {
+                preferences.edit().putInt("stepsIn", (preferences.getInt("stepsIn", 0) + 7)).commit();
                 updateTimeOnEachSecond();
             }
         }
@@ -263,6 +275,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
             preferences.edit().putString("CaloriesCount", "0").commit();
             preferences.edit().putInt("percentage", 0).commit();
             preferences.edit().putBoolean("logout", false).commit();
+            numSteps = 0;
         }
 
         if (stepsReal) {
@@ -283,17 +296,6 @@ public class MessengerService extends Service implements StepListener, SensorEve
                 e.printStackTrace();
             }
             setStoreStepsStatus();
-           /* ContentValues cv = new ContentValues();
-            cv.put("steps_count", preferences.getInt("stepsIn", 0));
-            cv.put("runing", 0);
-            cv.put("cycling", 0);
-            cv.put("calories", "" + preferences.getString("CaloriesCount", ""));
-            cv.put("date", "" + Utils.getTodayDate());
-            cv.put("waterTake", preferences.getString("waterTake", ""));
-            cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-            cv.put("status", 0);
-            DbOperations operations = new DbOperations();
-            operations.insertStepStaus(this, cv, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());*/
         }
 
     }
@@ -304,10 +306,40 @@ public class MessengerService extends Service implements StepListener, SensorEve
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-//                            Toast.makeText(MessengerService.this, "" + "num " + numSteps, Toast.LENGTH_SHORT).show();
         Calendar c1 = Calendar.getInstance();
         final int hrs1 = c1.get(Calendar.HOUR_OF_DAY);
         final int min1 = c1.get(Calendar.MINUTE);
+
+        if (updateTime(hrs1, min1).equalsIgnoreCase("11:59 pm")) {
+            StepsCountsStatus stepsStatus = DbOperations.getStepStatusList(this, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+            if (stepsStatus != null) {
+                if (stepsStatus.getStatus() == 0 && stepsStatus.getDateTime().equalsIgnoreCase(Utils.getTodayDate())) {
+                    ContentValues cv1 = new ContentValues();
+                    cv1.put("status", 1);
+                    cv1.put("date", "" + Utils.getTodayDate());
+                    DbOperations operations1 = new DbOperations();
+                    operations1.insertStepStaus(this, cv1, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+                    ContentValues cv = new ContentValues();
+                    cv.put("steps_count", preferences.getInt("stepsIn", 0));
+                    cv.put("runing", 0);
+                    cv.put("cycling", 0);
+                    cv.put("calories", "" + preferences.getString("CaloriesCount", ""));
+                    cv.put("waterTake", preferences.getString("waterTake", ""));
+                    cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    cv.put("dateTime", "" + getTodayDateTime());
+                    DbOperations operations = new DbOperations();
+                    operations.insertStepsCounts(this, cv);
+
+                    numSteps = 0;
+                    preferences.edit().putInt("stepsIn", 0).commit();
+                    preferences.edit().putString("waterTake", "0").commit();
+                    preferences.edit().putString("CaloriesCount", "0").commit();
+                    preferences.edit().putInt("percentage", 0).commit();
+                    preferences.edit().putInt("firstLogin", 0).commit();
+                }
+            }
+
+        }
 
         if (updateTime(hrs1, min1).equalsIgnoreCase("12:05 am")) {
             numSteps = 0;
@@ -315,15 +347,16 @@ public class MessengerService extends Service implements StepListener, SensorEve
             preferences.edit().putString("waterTake", "0").commit();
             preferences.edit().putString("CaloriesCount", "0").commit();
             preferences.edit().putInt("percentage", 0).commit();
+            preferences.edit().putInt("firstLogin", 0).commit();
         }
 
         if (preferences.getBoolean("logout", false)) {
             numSteps = preferences.getInt("stepsIn", 0);
             preferences.edit().putString("waterTake", "0").commit();
-            preferences.edit().putInt("percentage", 0).commit();
             preferences.edit().putString("CaloriesCount", "0").commit();
+            preferences.edit().putInt("percentage", 0).commit();
+            preferences.edit().putInt("firstLogin", 0).commit();
             preferences.edit().putBoolean("logout", false).commit();
-
         }
 
         if (issenor) {
@@ -340,6 +373,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
                     preferences.edit().putString("waterTake", "0").commit();
                     preferences.edit().putString("CaloriesCount", "0").commit();
                     preferences.edit().putInt("percentage", 0).commit();
+                    preferences.edit().putInt("firstLogin", 0).commit();
                 }
 
                 if (preferences.getBoolean("logout", false)) {
@@ -348,6 +382,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
                     preferences.edit().putString("waterTake", "0").commit();
                     preferences.edit().putString("CaloriesCount", "0").commit();
                     preferences.edit().putInt("percentage", 0).commit();
+                    preferences.edit().putInt("firstLogin", 0).commit();
                     preferences.edit().putBoolean("logout", false).commit();
                 }
 
@@ -456,18 +491,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
                         e.printStackTrace();
                     }
                 }
+
                 setStoreStepsStatus();
-                /*ContentValues cv = new ContentValues();
-                cv.put("steps_count", preferences.getString("stepsIn", ""));
-                cv.put("runing", 0);
-                cv.put("cycling", 0);
-                cv.put("calories", "" + preferences.getString("CaloriesCount", ""));
-                cv.put("date", "" + Utils.getTodayDate());
-                cv.put("waterTake", preferences.getString("waterTake", ""));
-                cv.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-                cv.put("status", 0);
-                DbOperations operations = new DbOperations();
-                operations.insertStepStaus(this, cv, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());*/
             }
         } else {
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -487,8 +512,8 @@ public class MessengerService extends Service implements StepListener, SensorEve
 //            preferences.edit().putBoolean("stepFirstTime", false).commit();
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 55);
-        calendar.set(Calendar.SECOND, 05);
+        calendar.set(Calendar.MINUTE, 58);
+        calendar.set(Calendar.SECOND, 10);
 //            Toast.makeText(MessengerService.this, "set hua" + calendar.getTimeInMillis(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.setAction("steps");
@@ -529,6 +554,7 @@ public class MessengerService extends Service implements StepListener, SensorEve
                             preferences.edit().putString("waterTake", "0").commit();
                             preferences.edit().putString("CaloriesCount", "0").commit();
                             preferences.edit().putInt("percentage", 0).commit();
+                            preferences.edit().putInt("firstLogin", 0).commit();
 
                         }
 
@@ -573,6 +599,38 @@ public class MessengerService extends Service implements StepListener, SensorEve
         return aTime;
     }
 
+    private String updateTimeSec(int hours, int mins, int sec) {
+
+
+        int selctHour = hours;
+
+        String timeSet = "";
+        if (selctHour > 12) {
+            selctHour -= 12;
+            timeSet = "pm";
+        } else if (selctHour == 0) {
+            selctHour += 12;
+            timeSet = "am";
+        } else if (selctHour == 12) {
+            timeSet = "pm";
+        } else {
+            timeSet = "am";
+        }
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        // Append in a StringBuilder
+        String aTime = new StringBuilder().append(selctHour).append(':')
+                .append(minutes).append(':')
+                .append(sec).append(" ").append(timeSet).toString();
+
+        return aTime;
+    }
+
     private String getDateTime() {
         // get date time in custom format
         SimpleDateFormat sdf = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
@@ -591,5 +649,18 @@ public class MessengerService extends Service implements StepListener, SensorEve
         cv.put("status", 0);
         DbOperations operations = new DbOperations();
         operations.insertStepStaus(this, cv, preferences.getString("cf_uuhid", ""), Utils.getTodayDate());
+    }
+
+    public static String getTodayDateTime() {
+        String formattedDate = null;
+        try {
+            SimpleDateFormat initialformatter = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm", Locale.getDefault());
+            Date today = Calendar.getInstance().getTime();
+            formattedDate = initialformatter.format(today);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
     }
 }

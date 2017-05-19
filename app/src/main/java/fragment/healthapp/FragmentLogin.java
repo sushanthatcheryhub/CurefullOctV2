@@ -300,6 +300,7 @@ public class FragmentLogin extends AppCompatActivity implements
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);
                 CureFull.getInstanse().getActivityIsntanse().startActivity(new Intent(this, FragmentSignUp.class));
+                finish();
                 /*CureFull.getInstanse().getFlowInstanse()
                         .addWithBottomTopAnimation(new FragmentSignUp(), null, true);
                */
@@ -411,11 +412,11 @@ public class FragmentLogin extends AppCompatActivity implements
                                     if (sharedPreferencesUserLogin.getString("tokenid",
                                             "123").equalsIgnoreCase("123")) {
                                         sharedPreferencesUserLogin.edit().putBoolean(getString(R.string.first_launch), true).commit();
+                                        CureFull.getInstanse().getActivityIsntanse().stopService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
                                         CureFull.getInstanse().getActivityIsntanse().startService(new Intent(CureFull.getInstanse().getActivityIsntanse(), MessageReceivingService.class));
-                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.ISSUES_WITH_SERVER);
+                                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(coordinatorLayout, MyConstants.CustomMessages.No_INTERNET_USAGE);
                                         return;
                                     }
-
                                     if (AppPreference.getInstance().getUserName().equalsIgnoreCase(userInfo.getUser_id())) {
                                         AppPreference.getInstance().setIsLoginFirst(false);
                                     } else {

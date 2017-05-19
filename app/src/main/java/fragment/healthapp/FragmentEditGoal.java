@@ -4,10 +4,12 @@ package fragment.healthapp;
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
@@ -39,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.ExecutorDelivery;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.AuthFailureError;
@@ -63,6 +66,8 @@ import asyns.ParseJsonData;
 import curefull.healthapp.BaseBackHandlerFragment;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogEditGoal;
+import interfaces.IOnOtpDoneDelete;
 import item.property.GoalInfo;
 import operations.DbOperations;
 import utils.AppPreference;
@@ -74,9 +79,9 @@ import utils.Utils;
 /**
  * Created by Sushant Hatcheryhub on 19-07-2016.
  */
-public class FragmentEditGoal extends BaseBackHandlerFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class FragmentEditGoal extends BaseBackHandlerFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, IOnOtpDoneDelete {
 
-
+    private Handler handler;
     private View rootView;
     private ListPopupWindow listPopupWindow;
     private ImageView img_select_height, img_200ml, img_100ml, img_300ml, img_500ml;
@@ -1194,6 +1199,108 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
+    public void jsonGlassTargetLocal(int glassInTake, int glassNumber) {
+
+        if (glassNumber == 1) {
+            if (!water_100.getText().toString().trim().equalsIgnoreCase("")) {
+                glassInTake = Integer.parseInt(water_100.getText().toString().trim());
+            } else {
+                glassInTake = 0;
+            }
+        } else if (glassNumber == 2) {
+            if (!water_200.getText().toString().trim().equalsIgnoreCase("")) {
+                glassInTake = Integer.parseInt(water_200.getText().toString().trim());
+            } else {
+                glassInTake = 0;
+            }
+
+        } else if (glassNumber == 3) {
+            if (!water_300.getText().toString().trim().equalsIgnoreCase("")) {
+                glassInTake = Integer.parseInt(water_300.getText().toString().trim());
+            } else {
+                glassInTake = 0;
+            }
+
+        } else if (glassNumber == 4) {
+            if (!water_500.getText().toString().trim().equalsIgnoreCase("")) {
+                glassInTake = Integer.parseInt(water_500.getText().toString().trim());
+            } else {
+                glassInTake = 0;
+            }
+
+        }
+
+        ContentValues values = new ContentValues();
+        values.put("glassSize", glassInTake);
+        values.put("glassNumber", glassNumber);
+        values.put("isUploaded", "1");
+
+        DbOperations.insertEditGoalList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhid());
+
+        AppPreference.getInstance().setGlass("" + glassInTake);
+        AppPreference.getInstance().setIsLoginFirst(false);
+        AppPreference.getInstance().setStepStarts(true);
+
+
+        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECT_GLASS + glassInTake + "&glassNumber=" + glassNumber,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        int responseStatus = 0;
+                        JSONObject json = null;
+                        try {
+                            json = new JSONObject(response.toString());
+                            responseStatus = json.getInt("responseStatus");
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                JSONObject json1 = new JSONObject(json.getString("payload"));
+                                String galssSize = json1.getString("glassSize");
+                                String glassNumber = json1.getString("glassNumber");
+                                AppPreference.getInstance().setGlass("" + galssSize);
+                                AppPreference.getInstance().setIsLoginFirst(false);
+                                AppPreference.getInstance().setStepStarts(true);
+                                btn_edit_goal.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        launchTwitter(rootView);
+                                    }
+                                });
+//                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                            } else {
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("a_t", AppPreference.getInstance().getAt());
+                headers.put("r_t", AppPreference.getInstance().getRt());
+                headers.put("user_name", AppPreference.getInstance().getUserName());
+                headers.put("email_id", AppPreference.getInstance().getUserID());
+                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                return headers;
+            }
+        };
+
+        CureFull.getInstanse().getRequestQueue().add(postRequest);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -1253,7 +1360,19 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                         CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select glass for water Intake");
                     }
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                    String gender = "";
+                    if (AppPreference.getInstance().getMale() == true) {
+                        gender = "MALE";
+                    } else {
+                        gender = "FEMALE";
+                    }
+                    if (glassNumber != 0) {
+                        doubleback = true;
+                        jsonGlassTargetLocal(glassInTake, glassNumber);
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please select glass for water Intake");
+                    }
+                    //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
 
                 }
 
@@ -1296,7 +1415,60 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
                     }
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+
+                    edt_water.setEnabled(true);
+                    edt_water.setFocusable(true);
+                    edt_water.setFocusableInTouchMode(true);
+                    edt_steps.setEnabled(true);
+
+                    edt_steps.setFocusableInTouchMode(true);
+                    edt_steps.setFocusable(true);
+                    edt_steps.setActivated(true);
+                    edt_calories.setEnabled(true);
+                    edt_calories.setFocusable(true);
+                    edt_calories.setFocusableInTouchMode(true);
+                    if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Done")) {
+                        String steps = edt_steps.getText().toString().trim();
+                        String calories = edt_calories.getText().toString().trim();
+                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("") && !edt_steps.getText().toString().trim().equalsIgnoreCase("") && !edt_calories.getText().toString().trim().equalsIgnoreCase("")) {
+                            double water = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+
+
+                            ContentValues values = new ContentValues();
+                            values.put("targetStepCount", steps);
+                            values.put("targetCaloriesToBurn", calories);
+                            values.put("targetWaterInTake", Utils.getLiterToMl(water));
+                            values.put("isUploaded", "1");
+
+                            DbOperations.insertEditGoalList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhid());
+
+                            edt_water.setEnabled(false);
+                            edt_water.setFocusable(false);
+                            edt_steps.setEnabled(false);
+                            edt_steps.setFocusable(false);
+                            edt_calories.setEnabled(false);
+                            edt_calories.setFocusable(false);
+                            AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(steps));
+                            AppPreference.getInstance().setWaterInTakeTarget(String.valueOf(Utils.getLiterToMl(water)));
+                            //edt_water.setText(new DecimalFormat("###.##").format(Utils.getMlToLiter(Integer.parseInt(targetWaterInTake))) + " L");
+                            btn_edit_goal.setText("Edit Goal");
+
+                        } else {
+                            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Please fill all recommended daily exercise");
+
+                        }
+
+                    }
+                    if (btn_edit_goal.getText().toString().trim().equalsIgnoreCase("Edit Goal")) {
+                        btn_edit_goal.setText("Done");
+                        if (!edt_water.getText().toString().trim().equalsIgnoreCase("")) {
+                            double change = Double.parseDouble(edt_water.getText().toString().trim().replace("L", ""));
+                            edt_water.setText("" + change);
+                        }
+
+                    }
+
+                    //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
 
                 break;
@@ -1382,7 +1554,16 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                     CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
                     setRecommededDetails();
                 } else {
-                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
+                    edt_cm.clearFocus();
+                    edt_feet.clearFocus();
+                    edt_pounds.clearFocus();
+                    edt_inchs.clearFocus();
+                    edt_kgs.clearFocus();
+                    edt_grams.clearFocus();
+                    CureFull.getInstanse().getActivityIsntanse().hideVirtualKeyboard();
+                    setRecommededDetailsLocal();
+                    getAllDetails();
+                    //CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.No_INTERNET_USAGE);
                 }
 
                 break;
@@ -1482,13 +1663,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         int mnt = (monthOfYear + 1);
-        bmiCalculator();
-        if (isFemale) {
-            getBmrForFeMale();
-        }
-        if (isMale) {
-            getBmrForMale();
-        }
+//        bmiCalculator();
+//        if (isFemale) {
+//            getBmrForFeMale();
+//        }
+//        if (isMale) {
+//            getBmrForMale();
+//        }
         preferences.edit().putString("chk_Birthday_notification", "0").commit();
         AppPreference.getInstance().setGoalAge("" + year + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth));
         edt_years.setText("" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "-" + (mnt < 10 ? "0" + mnt : mnt) + "-" + year);
@@ -1597,6 +1778,27 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                                     AppPreference.getInstance().setWaterInTakeTarget(targetWaterInTake);
                                 }
 
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                    ElasticAction.doAction(txt_BMI, 5000, 1.2f, 1.2f);
+                                    ElasticAction.doAction(txt_BMR, 5000, 1.2f, 1.2f);
+                                    ElasticAction.doAction(txt_ideal_weight, 5000, 1.2f, 1.2f);
+                                    ElasticAction.doAction(edt_steps, 5000, 1.1f, 1.1f);
+                                    ElasticAction.doAction(edt_calories, 5000, 1.1f, 1.1f);
+                                    ElasticAction.doAction(edt_water, 5000, 1.1f, 1.1f);
+                                    handler = new Handler();
+                                    handler.removeCallbacksAndMessages(null);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            DialogEditGoal dialogEditGoal = new DialogEditGoal(CureFull.getInstanse().getActivityIsntanse(), "", "Set Glass", 0);
+                                            dialogEditGoal.setiOnOtpDoneDelete(FragmentEditGoal.this);
+                                            dialogEditGoal.show();
+                                        }
+                                    }, 2000);
+
+                                }
+
                             } else {
                                 try {
                                     JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -1633,6 +1835,223 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
             }
         };
         CureFull.getInstanse().getRequestQueue().add(jsonObjectRequest);
+    }
+
+    public void setRecommededDetailsLocal() {
+
+        if (!validateAge()) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "DOB can not be blank");
+            return;
+        }
+
+        if (isCm) {
+            if (!validateHeightCM()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height CM can not be blank");
+                return;
+            }
+        } else {
+            if (!validateHeightFeetBMI()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Height Feet can not be blank");
+                return;
+            }
+
+        }
+
+
+        if (isPounds) {
+            if (!validateWeightPounds()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Pound can not be blank");
+                return;
+            }
+        } else {
+            if (!validateWeightKgsBMI()) {
+                CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Weight kg can not be blank");
+                return;
+            }
+        }
+        String feet = String.valueOf(heightfeet);
+        String inches = String.valueOf(heightInch);
+        double totalHeight;
+        if (isCm) {
+            totalHeight = Double.parseDouble(edt_cm.getText().toString().trim());
+        } else {
+            totalHeight = Utils.convertFeetandInchesToCentimeter(feet, inches);
+        }
+
+        double totalWeight;
+
+        if (isPounds) {
+            totalWeight = Double.parseDouble(edt_pounds.getText().toString().trim());
+        } else {
+            if (!edt_grams.getText().toString().trim().equalsIgnoreCase("")) {
+                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg() + "." + AppPreference.getInstance().getGoalWeightGrams()));
+            } else {
+                totalWeight = Utils.getConvertingKilogramsIntoPounds(Double.parseDouble(AppPreference.getInstance().getGoalWeightKg()));
+            }
+        }
+        String gender = "MALE";
+        if (!isMale && !isFemale) {
+            CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, "Select Gender can not be blank");
+            return;
+        }
+        if (isMale) {
+            gender = "MALE";
+        } else {
+            gender = "FEMALE";
+        }
+        String dateOfBirth = AppPreference.getInstance().getGoalAge();
+
+//java code from pavitra
+        String genderStr = gender;
+        String dateOfBirthStr = dateOfBirth;
+        String heightInCmStr = String.valueOf(new DecimalFormat("###.###").format(totalHeight));
+        String weightStr = String.valueOf(new DecimalFormat("###.###").format(totalWeight));
+
+        // GenderEnum gender = GenderEnum.valueOf(genderStr);
+        // LocalDate dateOfBirth = BasicUtils.convertStringToLocalDateObj(dateOfBirthStr, BasicConstants.DATE_FORMAT_yyyy_MM_dd);
+        Double heightInCm = Double.valueOf(heightInCmStr);
+        Double weightInPounds = Double.valueOf(weightStr);
+
+        double heightInFeet = heightInCm / 30.48;
+        double heightInInches = (heightInCm / 2.54) - ((int) heightInFeet * 12);
+
+
+        double weightInKg = Math.round((weightInPounds * 0.453592) * 100) / 100.0d;
+
+        Double idealWeight = null;
+        Long targetStepCount = null;
+        Double targetCaloriesToBurn = null;
+        Long targetWaterIntake = null;
+
+        //calculate ideal weight
+        if (genderStr.equalsIgnoreCase("FEMALE")) {
+
+            if (heightInFeet == 5) {
+
+                idealWeight = 45.50;
+
+            } else if (heightInFeet < 5) {
+
+                double heightInInchesBeforeTheshold = (5 - Math.floor(heightInFeet)) * 12;
+                idealWeight = 45.50 - (heightInInchesBeforeTheshold + (Math.round(heightInInches * 10) / 10.0d) * 2.3);
+
+            } else if (heightInFeet > 5) {
+
+                //double heightInInchesAfterTheshold = (Math.floor(heightInFeet) - 5) * 12;
+                idealWeight = 45.50 + ((Math.round(heightInInches * 10) / 10.0d) * 2.3);
+
+            }
+
+            //target steps and calories to burn
+            if (weightInKg <= idealWeight) {
+
+                targetStepCount = (long) 6000;
+                targetCaloriesToBurn = (double) 1750;
+
+            } else if (weightInKg > idealWeight) {
+
+                double overWeight = (weightInKg - idealWeight) > 10 ? 10 : weightInKg - idealWeight;
+
+                targetStepCount = (long) (6000 + (overWeight) * 500);
+                targetCaloriesToBurn = (double) (1750 + (overWeight) * 25);
+
+            }
+
+            //target water intake
+            if (weightInKg <= 45) {
+                targetWaterIntake = (long) (2.25 * 1000);
+            } else if (weightInKg > 45) {
+                targetWaterIntake = (long) ((2.25 + ((weightInKg - 45) / 20)) * 1000);
+            }
+
+        } else if (genderStr.equalsIgnoreCase("MALE")) {
+            if (heightInFeet == 5) {
+
+                idealWeight = 50.0;
+
+            } else if (heightInFeet < 5) {
+
+                double heightInInchesBeforeTheshold = (5 - Math.floor(heightInFeet)) * 12;
+                idealWeight = 50.0 - (heightInInchesBeforeTheshold + (Math.round(heightInInches * 10) / 10.0d) * 2.3);
+
+            } else if (heightInFeet > 5) {
+
+                //double heightInInchesAfterTheshold = (Math.floor(heightInFeet) - 5) * 12;
+                idealWeight = 50.0 + ((Math.round(heightInInches * 10) / 10.0d) * 2.3);
+
+            }
+
+            //target steps and calories to burn
+            if (weightInKg <= idealWeight) {
+
+                targetStepCount = (long) 6000;
+                targetCaloriesToBurn = 2250.0;
+
+            } else if (weightInKg > idealWeight) {
+
+                double overWeight = (weightInKg - idealWeight) > 10 ? 10 : weightInKg - idealWeight;
+
+                targetStepCount = (long) (6000 + (overWeight) * 500);
+                targetCaloriesToBurn = (2250.0 + (overWeight) * 25);
+
+
+            }
+
+            //target water intake
+            if (weightInKg <= 65) {
+
+                targetWaterIntake = (long) (3.25 * 1000);
+
+            } else if (weightInKg > 65) {
+
+                targetWaterIntake = (long) ((3.25 + ((weightInKg - 65) / 20)) * 1000);
+
+            }
+
+        }
+
+        //format calories toburn to 2 decimal digits
+        targetCaloriesToBurn = Math.round(targetCaloriesToBurn * 100) / 100.0d;
+        AppPreference.getInstance().setStepsCountTarget(Integer.parseInt(String.valueOf(targetStepCount)));
+        AppPreference.getInstance().setWaterInTakeTarget(String.valueOf(targetWaterIntake));
+
+        //working on local
+        ContentValues values = new ContentValues();
+
+        values.put("edit_id", AppPreference.getInstance().getcf_uuhid());
+        values.put("dateOfBirth", dateOfBirth);
+        values.put("gender", gender);
+        values.put("height", String.valueOf(new DecimalFormat("###.###").format(totalHeight)));
+        values.put("weight", String.valueOf(new DecimalFormat("###.###").format(totalWeight)));
+        values.put("targetStepCount", targetStepCount);
+        values.put("targetCaloriesToBurn", targetCaloriesToBurn);
+        values.put("targetWaterInTake", targetWaterIntake);
+        values.put("glassSize", glassInTake);
+        values.put("glassNumber", glassNumber);
+        values.put("isUploaded", "1");
+
+        DbOperations.insertEditGoalList(CureFull.getInstanse().getActivityIsntanse(), values, AppPreference.getInstance().getcf_uuhid());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            ElasticAction.doAction(txt_BMI, 5000, 1.2f, 1.2f);
+            ElasticAction.doAction(txt_BMR, 5000, 1.2f, 1.2f);
+            ElasticAction.doAction(txt_ideal_weight, 5000, 1.2f, 1.2f);
+            ElasticAction.doAction(edt_steps, 5000, 1.1f, 1.1f);
+            ElasticAction.doAction(edt_calories, 5000, 1.1f, 1.1f);
+            ElasticAction.doAction(edt_water, 5000, 1.1f, 1.1f);
+            handler = new Handler();
+            handler.removeCallbacksAndMessages(null);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    DialogEditGoal dialogEditGoal = new DialogEditGoal(CureFull.getInstanse().getActivityIsntanse(), "", "Set Glass", 0);
+                    dialogEditGoal.setiOnOtpDoneDelete(FragmentEditGoal.this);
+                    dialogEditGoal.show();
+                }
+            }, 2000);
+
+        }
+
     }
 
 
@@ -1704,7 +2123,15 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         }
 
         if (!userInfo.getTargetWaterInTake().equalsIgnoreCase("null")) {
-            edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(userInfo.getTargetWaterInTake()))) + " L");
+            try {
+                edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(userInfo.getTargetWaterInTake()))) + " L");
+            }catch (Exception e){
+                e.getMessage();//error come from local  update water in take
+                double aa= Double.parseDouble(userInfo.getTargetWaterInTake());
+                int waterintake_integer= (int) aa;
+
+                edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(waterintake_integer)) + " L");
+            }
             AppPreference.getInstance().setWaterInTakeTarget(userInfo.getTargetWaterInTake());
         }
 
@@ -1935,4 +2362,30 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     }
 
 
+    @Override
+    public void optDoneDelete(String messsage, String dialogName, int pos) {
+        if (dialogName.equalsIgnoreCase("Set Glass")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                ElasticAction.doAction(txt_btn_set_glass, 400, 0.9f, 0.9f);
+
+            isUploadClick = true;
+            launchTwitter(rootView);
+        }
+        if (messsage.equalsIgnoreCase("OK")) {
+
+        } else {
+            CureFull.getInstanse().getFlowInstanse().clearBackStack();
+            CureFull.getInstanse().getFlowInstanse()
+                    .replace(new FragmentLandingPage(), false);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
+        super.onDestroy();
+    }
 }

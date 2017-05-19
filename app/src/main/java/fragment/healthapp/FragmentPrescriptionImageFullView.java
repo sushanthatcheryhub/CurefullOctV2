@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -43,7 +44,9 @@ import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
 import image.zoom.GestureImageView;
 import interfaces.IOnOtpDoneDelete;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 import utils.Utils;
 
@@ -53,12 +56,12 @@ import utils.Utils;
  */
 public class FragmentPrescriptionImageFullView extends Fragment implements IOnOtpDoneDelete {
 
-
+//3rd level
     private View rootView;
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView gestureImageView;
-    private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date, uploadedBy;
+    private String doctoreName, prescriptionId, prescriptionFollowupId, prescriptionPartId, date, uploadedBy,imageNumber;
     private Bundle bundle;
     private String images;
 
@@ -106,6 +109,11 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
             prescriptionFollowupId = bundle.getString("prescriptionFollowupId");
             prescriptionPartId = bundle.getString("prescriptionPartId");
             images = bundle.getString("imageList");
+            try{
+                imageNumber=bundle.getString("imageNumber");
+            }catch (Exception e){
+                e.getMessage();
+            }
 //            Glide.with(this).load(images)
 //                    .thumbnail(0.5f)
 //                    .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -257,7 +265,34 @@ public class FragmentPrescriptionImageFullView extends Fragment implements IOnOt
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(prescriptionId, prescriptionFollowupId, doctoreName, prescriptionPartId);
+
+
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    DbOperations.clearPrescriptionResponseDataFromLocal(prescriptionId, imageNumber, "pres");
+                    getPrescriptionDelete(prescriptionId, prescriptionFollowupId, doctoreName, prescriptionPartId);
+
+                }else{
+                    if (prescriptionId.length() > 9) {
+                        //create in offline mode and not sync to server and delete from local
+                        DbOperations.clearPrescriptionResponseDataFromLocal(prescriptionId, imageNumber, "pres");
+
+                    } else {
+                        //create in offline mode and sync to server and then insert into local db and delete from local and sync deleted data with status deleted
+                        ContentValues cv = new ContentValues();//common_id, String
+                        cv.put("common_id", prescriptionId);
+                        cv.put("prescriptionImagePartId", prescriptionPartId);
+                        cv.put("status", "deleted");
+                        cv.put("isUploaded", "1");
+                        DbOperations.insertPrescriptionResponseList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), prescriptionPartId);
+
+
+                    }
+                    AppPreference.getInstance().setDelete(true);
+                    CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+
+                }
+
+
         }
 
     }

@@ -776,6 +776,8 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
             date = mYear + "-" + (mMonth < 10 ? "0" + mMonth : mMonth) + "-" + (mDay < 10 ? "0" + mDay : mDay);
         } else {
             date = firstDate;
+            String getYear[]=date.split("-");
+            dbYear = Integer.parseInt(getYear[0]);
         }
         String time = "";
         if (firstTime.equalsIgnoreCase("")) {

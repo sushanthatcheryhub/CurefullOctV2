@@ -1,5 +1,6 @@
 package adpter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,7 +48,9 @@ import dialog.DialogDeleteAll;
 import fragment.healthapp.FragmentLabReportImageFullView;
 import interfaces.IOnOtpDoneDelete;
 import item.property.LabReportImageListView;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 /**
@@ -171,6 +174,7 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
                 bundle.putString("date", dates);
                 bundle.putString("uploadedBy", uploadedBys);
                 bundle.putString("imageList", prescriptionListViews.get(position).getReportImage());
+                bundle.putString("imageNumber", prescriptionListViews.get(position).getImageNumber());
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLabReportImageFullView(), bundle, true);
             }
@@ -182,7 +186,34 @@ public class LabReportImageViewAdpter extends RecyclerView.Adapter<LabReportImag
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(id, prescriptionListViews.get(pos).getReportImageId(), doctorName, pos);
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                DbOperations.clearPrescriptionResponseDataFromLocal(id, prescriptionListViews.get(pos).getImageNumber(), "labreport");
+                getPrescriptionDelete(id, prescriptionListViews.get(pos).getReportImageId(), doctorName, pos);
+            } else {
+                if (id.length() > 9) {
+                    //create in offline mode and not sync to server and delete from local
+                    DbOperations.clearPrescriptionResponseDataFromLocal(id, prescriptionListViews.get(pos).getImageNumber(), "labreport");
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                } else {
+                    //create in offline mode and sync to server and then insert into local db and delete from local and sync deleted data with status deleted
+                    ContentValues cv = new ContentValues();//common_id, String
+                    cv.put("common_id", id);
+                    cv.put("reportImageId", prescriptionListViews.get(pos).getReportImageId());
+                    cv.put("status", "deleted");
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertLabTestReportResponseList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), prescriptionListViews.get(pos).getReportImageId());
+                    prescriptionListViews.remove(pos);
+                    notifyDataSetChanged();
+
+                }
+                if (prescriptionListViews.size() == 0) {
+                    CureFull.getInstanse().getActivityIsntanse().onBackPressed();
+                }
+
+
+            }
         }
 
     }

@@ -38,11 +38,11 @@
                         style="@style/textView_medium_grey_bold_small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_5dp"
                         android:layout_marginTop="@dimen/_5dp"
                         android:elevation="@dimen/_10dp"
                         android:gravity="center"
                         android:padding="@dimen/_2dp"
-                        android:layout_marginLeft="@dimen/_5dp"
                         android:text="Today's status"
                         android:textColor="@color/health_dark_gray" />
 
@@ -534,7 +534,7 @@
                                                 android:paddingLeft="@dimen/_5dp"
                                                 android:paddingTop="@dimen/_5dp"
                                                 android:singleLine="true"
-                                                android:text="Clear here to Add more details"
+                                                android:text="Click here to add more details"
                                                 android:textColor="@color/health_mid_gray"
                                                 android:visibility="visible" />
 
@@ -880,8 +880,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_toRightOf="@+id/txt_ehr"
-                                />
+                                android:layout_toRightOf="@+id/txt_ehr" />
 
                             <customsTextViews.CustomTextViewOpenSanBold
                                 style="@style/textView_dark_grey_normal_micro"
