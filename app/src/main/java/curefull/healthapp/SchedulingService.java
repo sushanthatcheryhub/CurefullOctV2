@@ -481,9 +481,9 @@ public class SchedulingService extends IntentService {
 
     private void getGoalData() {
 
-        GoalInfo userInfo = DbOperations.getGoalListSync(CureFull.getInstanse().getActivityIsntanse());
+        final GoalInfo userInfo = DbOperations.getGoalListSync(CureFull.getInstanse().getActivityIsntanse());
         if (userInfo != null) {
-            JSONObject data = null;//JsonUtilsObject.toSetGoalsDetails(userInfo.getHeight(),userInfo.getWeight(), userInfo.getDateOfBirth(), userInfo.getGender());
+            JSONObject data = JsonUtilsObject.toSetGoalsDetailsFromSync(userInfo.getHeight(),userInfo.getWeight(), userInfo.getDateOfBirth(), userInfo.getGender(),userInfo.getTargetStepCount(),userInfo.getTargetCaloriesToBurn(),userInfo.getTargetWaterInTake(),userInfo.getGlassNumber(),userInfo.getGlassSize());
 
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
                     new Response.Listener<JSONObject>() {
@@ -496,7 +496,7 @@ public class SchedulingService extends IntentService {
                                 responseStatus = json.getInt("responseStatus");
                                 if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
 
-
+                                    DbOperations.clearGoalSetData(preferences.getString("cf_uuhid", ""),"1");
                                 } else {
                                     try {
                                         JSONObject json1 = new JSONObject(json.getString("errorInfo"));

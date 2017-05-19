@@ -757,15 +757,15 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
 
-                    if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
-                        isUploadClick = true;
-                        liner_upload_new.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                launchTwitter(rootView);
-                            }
-                        });
-                    }
+                if (HandlePermission.checkPermissionWriteExternalStorage(CureFull.getInstanse().getActivityIsntanse())) {
+                    isUploadClick = true;
+                    liner_upload_new.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchTwitter(rootView);
+                        }
+                    });
+                }
 
                 break;
             case R.id.liner_camera:
@@ -1551,9 +1551,9 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                         jsonSaveUploadPrescriptionMetadata(prescriptionDate, doctorName, dieaseName, prescriptionImageListss);
                     } else {
-                       //work offline
-                        LabReportListView imagelist=new LabReportListView();
-                        imagelist.uploadFilelocal(prescriptionDate, doctorName, dieaseName, AppPreference.getInstance().getcf_uuhidNeew(),prescriptionImageListss,prescriptionImageListss.size(),"self");
+                        //work offline
+                        LabReportListView imagelist = new LabReportListView();
+                        imagelist.uploadFilelocal(prescriptionDate, doctorName, dieaseName, AppPreference.getInstance().getcf_uuhidNeew(), prescriptionImageListss, prescriptionImageListss.size(), "self");
                         getLabReportList();
                         dialogLoader.hide();
                     }

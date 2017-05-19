@@ -1,6 +1,7 @@
 package fragment.healthapp;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -45,7 +46,9 @@ import curefull.healthapp.R;
 import dialog.DialogDeleteAll;
 import image.zoom.GestureImageView;
 import interfaces.IOnOtpDoneDelete;
+import operations.DbOperations;
 import utils.AppPreference;
+import utils.CheckNetworkState;
 import utils.MyConstants;
 
 
@@ -59,7 +62,7 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
     private TextView txt_doctor_name, txt_diease_name, txt_date;
     private ImageView img_delete, img_share;
     private GestureImageView image_item;
-    private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy,imageNumber;
+    private String doctoreName, prescriptionId, iPrescriptionId, date, uploadedBy, imageNumber;
     private String images;
 
     @Override
@@ -90,7 +93,7 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
             uploadedBy = bundle.getString("uploadedBy");
             try {
                 imageNumber = bundle.getString("imageNumber");
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.getMessage();
             }
             if (uploadedBy.equalsIgnoreCase("curefull")) {
@@ -230,7 +233,32 @@ public class FragmentLabReportImageFullView extends Fragment implements IOnOtpDo
     @Override
     public void optDoneDelete(String messsage, String dialogName, int pos) {
         if (messsage.equalsIgnoreCase("OK")) {
-            getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
+
+            if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                DbOperations.clearPrescriptionResponseDataFromLocal(prescriptionId, imageNumber, "labreport");
+                getPrescriptionDelete(prescriptionId, iPrescriptionId, doctoreName);
+            } else {
+                if (prescriptionId.length() > 9) {
+                    //create in offline mode and not sync to server and delete from local
+                    DbOperations.clearPrescriptionResponseDataFromLocal(prescriptionId, imageNumber, "labreport");
+
+
+                } else {
+                    //create in offline mode and sync to server and then insert into local db and delete from local and sync deleted data with status deleted
+                    ContentValues cv = new ContentValues();//common_id, String
+                    cv.put("common_id", prescriptionId);
+                    cv.put("reportImageId", iPrescriptionId);
+                    cv.put("status", "deleted");
+                    cv.put("isUploaded", "1");
+                    DbOperations.insertLabTestReportResponseList(CureFull.getInstanse().getActivityIsntanse(), cv, AppPreference.getInstance().getcf_uuhid(), iPrescriptionId);
+                }
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse()
+                        .replace(new FragmentLabTestReport(), false);
+
+
+            }
+
         }
     }
 }

@@ -3115,14 +3115,14 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {//tbl_prescription_response_list    tbl_prescription_followuplist  tbl_prescription_main
             database = DatabaseHelper.openDataBase();
             //String query = "SELECT * FROM " + TABLE_PRESCRIPTION_RESPONSELIST + " Where isUploaded ='" + isUploaded + "' and status='deleted' ";
-           // String query="Select tbl_prescription_response_list.imageNumber,tbl_prescription_response_list.prescriptionImage,tbl_prescription_response_list.prescriptionImagePartId,tbl_prescription_response_list.common_id,tbl_prescription_response_list.isUploaded,tbl_prescription_response_list.status,tbl_prescription_followuplist.prescriptonImageFollowupId from tbl_prescription_response_list INNER JOIN tbl_prescription_followuplist Where isUploaded ='" + isUploaded + "' and status='deleted' ";
-            String query="Select l.imageNumber,l.prescriptionImage,l.prescriptionImagePartId,l.common_id,l.isUploaded,l.status,f.prescriptonImageFollowupId,m.doctorName from tbl_prescription_response_list as l LEFT JOIN tbl_prescription_followuplist as f on l.common_id=f.common_id LEFT JOIN tbl_prescription_main as m on l.common_id=m.common_id Where l.isUploaded ='" + isUploaded + "' and l.status='deleted' ";
+            // String query="Select tbl_prescription_response_list.imageNumber,tbl_prescription_response_list.prescriptionImage,tbl_prescription_response_list.prescriptionImagePartId,tbl_prescription_response_list.common_id,tbl_prescription_response_list.isUploaded,tbl_prescription_response_list.status,tbl_prescription_followuplist.prescriptonImageFollowupId from tbl_prescription_response_list INNER JOIN tbl_prescription_followuplist Where isUploaded ='" + isUploaded + "' and status='deleted' ";
+            String query = "Select l.imageNumber,l.prescriptionImage,l.prescriptionImagePartId,l.common_id,l.isUploaded,l.status,f.prescriptonImageFollowupId,m.doctorName from tbl_prescription_response_list as l LEFT JOIN tbl_prescription_followuplist as f on l.common_id=f.common_id LEFT JOIN tbl_prescription_main as m on l.common_id=m.common_id Where l.isUploaded ='" + isUploaded + "' and l.status='deleted' ";
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    PrescriptionImageListView list = new PrescriptionImageListView(cursor,"");
+                    PrescriptionImageListView list = new PrescriptionImageListView(cursor, "");
                     listApps.add(list);
                     cursor.moveToNext();
                 }
@@ -3214,13 +3214,13 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             //tbl_labtestreport_response_list,tbl_labtestreprort_main
             database = DatabaseHelper.openDataBase();
             //String query = "SELECT * FROM " + TABLE_LABTESTREPORT_RESPONSELIST + " Where isUploaded ='" + isUploaded + "' and status='deleted'";
-            String query ="Select l.imageNumber,l.reportImage,l.reportImageId,l.common_id,l.isUploaded,l.status,m.doctorName from tbl_labtestreport_response_list as l LEFT JOIN tbl_labtestreprort_main as m ON l.common_id=m.common_id where l.isUploaded ='" + isUploaded + "' and l.status='deleted'";
+            String query = "Select l.imageNumber,l.reportImage,l.reportImageId,l.common_id,l.isUploaded,l.status,m.doctorName from tbl_labtestreport_response_list as l LEFT JOIN tbl_labtestreprort_main as m ON l.common_id=m.common_id where l.isUploaded ='" + isUploaded + "' and l.status='deleted'";
 
             cursor = database.rawQuery(query, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    LabReportImageListView list = new LabReportImageListView(cursor,"");
+                    LabReportImageListView list = new LabReportImageListView(cursor, "");
                     listApps.add(list);
                     cursor.moveToNext();
                 }
@@ -4311,6 +4311,19 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         }
     }
 
+    public static void clearGoalSetData(String cf_uuhid, String isUploaded) {
+        SQLiteDatabase database = null;
+
+        try {
+            database = DatabaseHelper.openDataBase();
+            database.delete(TABLE_EDIT_GOAL, "edit_id " + "=? AND " + "isUploaded" + "=?", new String[]{cf_uuhid, isUploaded});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.close();
+        }
+    }
+
     public static void clearLabReminderbyself(String labTestReminderId, String isUploaded, String chk_self_ya_digiti) {
         SQLiteDatabase database = null;
         try {
@@ -4401,7 +4414,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
         try {
             database = dbhelperShopCart.openDataBase();
 
-                database.delete(TABLE_PRESCRIPTION_RESPONSELIST, "common_id " + "=? AND " + "prescriptionImagePartId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, prescriptionImagePartId,isUploaded});
+            database.delete(TABLE_PRESCRIPTION_RESPONSELIST, "common_id " + "=? AND " + "prescriptionImagePartId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, prescriptionImagePartId, isUploaded});
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -4411,14 +4424,14 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
     }
 
 
-    public static void clearLabReportResponseDataFromSync(String common_id,String reportImageId, String isUploaded, Context cnt) {
+    public static void clearLabReportResponseDataFromSync(String common_id, String reportImageId, String isUploaded, Context cnt) {
         SQLiteDatabase database = null;
 //common means prescriptionID
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse().getDatabaseHelperInstance(cnt);
         try {
             database = dbhelperShopCart.openDataBase();
 
-            database.delete(TABLE_LABTESTREPORT_RESPONSELIST, "common_id " + "=? AND " + "reportImageId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, reportImageId,isUploaded});
+            database.delete(TABLE_LABTESTREPORT_RESPONSELIST, "common_id " + "=? AND " + "reportImageId" + "=? AND " + "isUploaded" + "=?", new String[]{common_id, reportImageId, isUploaded});
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -4426,6 +4439,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
             database.close();
         }
     }
+
     public static void insertLabTestRemiderLocal(Context context, ContentValues cv, String commonid) {
         DatabaseHelper dbhelperShopCart = CureFull.getInstanse()
                 .getDatabaseHelperInstance(context);

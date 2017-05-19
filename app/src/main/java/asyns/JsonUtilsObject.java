@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -252,6 +253,29 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
+    public static JSONObject toSetGoalsDetailsFromSync(String height, String weight, String dateOfBirth, String gender, String targetStepCount, String targetCaloriesToBurn, String targetWaterInTake, String glassNumber, String glassSize) {
+        JSONObject jsonParent = new JSONObject();
+        try {
+            jsonParent.put("height", height.trim());
+            jsonParent.put("weight", weight.trim());
+            jsonParent.put("dateOfBirth", dateOfBirth.trim());
+            jsonParent.put("gender", gender.trim());
+
+            jsonParent.put("targetStepCount", targetStepCount);
+            jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn);
+            jsonParent.put("targetWaterInTake", targetWaterInTake);
+
+            jsonParent.put("glassNumber", glassNumber);//glassNumber
+            jsonParent.put("glassSize", glassSize);//glassInTake
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return jsonParent;
+    }
+
 
     public static JSONObject toSaveHealthAppDetails(String steps, String running, String cycling, String waterIntake, String caloriesBurnt, String date, String time) {
         JSONObject jsonParent = new JSONObject();
@@ -400,7 +424,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
         return jsonParent;
     }
 
-    public static JSONObject setRemMedAddLocal(List<Reminder_SelfListView> medicinereminder,String chk_self_or_digi) {
+    public static JSONObject setRemMedAddLocal(List<Reminder_SelfListView> medicinereminder, String chk_self_or_digi) {
 //String startFrom, String duration, String doages, String noOfDayInweek, ArrayList<MedicineReminderItem> listCurrent, String alarmTime, double interval, String cfuuhid, String status, String medicineReminderId, ArrayList<ReminderMedicnceDoagePer> reminderMedicnceDoagePer,
         boolean isAndroidPrimaryKey = true;
 
@@ -474,7 +498,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("doctorName", medicinereminder.get(i).getDoctorName());
                     //list1.put("quantityType", "Mg");
                     list1.put("medicinePotency", "600 mg");
-                    list1.put("medicineQuantity",String.valueOf( medicinereminder.get(i).getInterval()));
+                    list1.put("medicineQuantity", String.valueOf(medicinereminder.get(i).getInterval()));
                     list1.put("isAtferMeal", medicinereminder.get(i).isAfterMeal());
                     list1.put("isBeforeMeal", medicinereminder.get(i).isBeforeMeal());
 
@@ -485,15 +509,15 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("unitOfInterval", "hours");
                     list1.put("interval", medicinereminder.get(i).getInterval());
                     list1.put("startDate", medicinereminder.get(i).getYear() + "-" + monthh + "-" + dayy);
-                    if(chk_self_or_digi.equalsIgnoreCase("1")){
+                    if (chk_self_or_digi.equalsIgnoreCase("1")) {
                         list1.put("isSelf", true);
-                    }else{
+                    } else {
                         list1.put("isSelf", false);
                     }
                     JSONArray obj2 = new JSONArray();
                     JSONObject jsonParent2 = new JSONObject();
-                    if ( medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
-                        JSONArray arrnull=new JSONArray();
+                    if (medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
+                        JSONArray arrnull = new JSONArray();
                         /*JSONObject objnull=null;
                         arrnull.put(objnull);*/
                         list1.put("dosageDetailsRequest", arrnull);
@@ -604,7 +628,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
 
 
                     JSONObject list1 = new JSONObject();
-                    list1.put("medicineReminderId",  Long.parseLong(medicinereminder.get(i).getMedicineReminderId()));
+                    list1.put("medicineReminderId", Long.parseLong(medicinereminder.get(i).getMedicineReminderId()));
                     list1.put("isAndroidPrimaryKey", isAndroidPrimaryKey);
                     list1.put("status", medicinereminder.get(i).getStatus());
                     list1.put("medicineType", medicinereminder.get(i).getType());
@@ -612,7 +636,7 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("doctorName", medicinereminder.get(i).getDoctorName());
                     //list1.put("quantityType", "Mg");
                     list1.put("medicinePotency", "600 mg");
-                    list1.put("medicineQuantity",String.valueOf( medicinereminder.get(i).getInterval()));
+                    list1.put("medicineQuantity", String.valueOf(medicinereminder.get(i).getInterval()));
                     list1.put("isAtferMeal", medicinereminder.get(i).isAfterMeal());
                     list1.put("isBeforeMeal", medicinereminder.get(i).isBeforeMeal());
 
@@ -623,16 +647,16 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
                     list1.put("unitOfInterval", "hours");
                     list1.put("interval", medicinereminder.get(i).getInterval());
                     list1.put("startDate", medicinereminder.get(i).getYear() + "-" + monthh + "-" + dayy);
-                    if(chk_self_or_digi.equalsIgnoreCase("1")){
+                    if (chk_self_or_digi.equalsIgnoreCase("1")) {
                         list1.put("isSelf", true);
-                    }else{
+                    } else {
                         list1.put("isSelf", false);
                     }
                     JSONArray obj2 = new JSONArray();
                     JSONObject jsonParent2 = new JSONObject();
-                    if ( medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
+                    if (medicinereminder.get(i).getReminderMedicnceDoagePers().size() == 0) {
 
-                        JSONArray arrnull=new JSONArray();
+                        JSONArray arrnull = new JSONArray();
 
                         list1.put("dosageDetailsRequest", arrnull);
 
