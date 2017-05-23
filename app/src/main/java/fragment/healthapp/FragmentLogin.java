@@ -107,13 +107,13 @@ public class FragmentLogin extends AppCompatActivity implements
         txt_term_conditions = (TextView) findViewById(R.id.txt_term_conditions);
         edtInputEmail = (AutoCompleteTextView) findViewById(R.id.input_email);
         edtInputPassword = (EditText) findViewById(R.id.input_password);
-        sign_out_button_facebook = (TextView) findViewById(R.id.sign_out_button_facebook);
+//        sign_out_button_facebook = (TextView) findViewById(R.id.sign_out_button_facebook);
         btn_create_new = (TextView) findViewById(R.id.btn_create_new);
         btn_click_forgot = (TextView) findViewById(R.id.btn_click_forgot);
         login_button = (TextView) findViewById(R.id.btn_login);
         progress_bar=(ProgressBar)findViewById(R.id.progress_bar);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        sign_out_button_facebook.setOnClickListener(this);
+       // sign_out_button_facebook.setOnClickListener(this);
         login_button.setOnClickListener(this);
 
         btn_create_new.setOnClickListener(this);
@@ -139,12 +139,12 @@ public class FragmentLogin extends AppCompatActivity implements
                 meassgeTxt.indexOf(gameName) + gameName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new RelativeSizeSpan(1.1f), 11, 19, 0);
-        sign_out_button_facebook.setText(sb);
+//        sign_out_button_facebook.setText(sb);
 
 
-        String you = "You agree to ";
+        String you = "I agree ";
         String termCondtiions = "Term and Conditions";
-        String submit = " of Curefull. After clicking submit";
+        String submit = " by log in the app.";//of Curefull. After clicking submit
 
         String meassgeNew = you + termCondtiions + submit;
 
@@ -293,9 +293,9 @@ public class FragmentLogin extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_out_button_facebook:
+            /*case R.id.sign_out_button_facebook:
 
-                break;
+                break;*/
             case R.id.btn_create_new:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(v, 400, 0.9f, 0.9f);

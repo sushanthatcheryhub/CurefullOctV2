@@ -1,4 +1,5 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <RelativeLayout
                 android:id="@+id/relative_logo"
                 android:layout_width="match_parent"
@@ -48,9 +50,20 @@
                     android:layout_gravity="left"
                     android:gravity="left"
                     android:padding="@dimen/_5dp"
-                    android:text="Please enter OTP which we have sent your mobile number."
+                    android:text="Please enter OTP received to your mobile number."
                     android:textColor="@color/health_yellow" />
 
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/btn_click_resend_otp"
+                    style="@style/textView_dark_grey_normal_micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:padding="@dimen/_5dp"
+                    android:text="Click here to resend OTP"
+                    android:textColor="@color/health_yellow" />
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_otp"
@@ -124,7 +137,7 @@
                 </android.support.design.widget.TextInputLayout>
 
 
-                <LinearLayout
+                <!--<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5dp"
@@ -142,7 +155,7 @@
                         android:text="Resend OTP"
                         android:textColor="@color/health_yellow" />
 
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <LinearLayout
                     android:layout_width="match_parent"

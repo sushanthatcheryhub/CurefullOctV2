@@ -1241,64 +1241,13 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         AppPreference.getInstance().setIsLoginFirst(false);
         AppPreference.getInstance().setStepStarts(true);
 
-
-        CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
-        StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.SELECT_GLASS + glassInTake + "&glassNumber=" + glassNumber,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        int responseStatus = 0;
-                        JSONObject json = null;
-                        try {
-                            json = new JSONObject(response.toString());
-                            responseStatus = json.getInt("responseStatus");
-                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
-                                JSONObject json1 = new JSONObject(json.getString("payload"));
-                                String galssSize = json1.getString("glassSize");
-                                String glassNumber = json1.getString("glassNumber");
-                                AppPreference.getInstance().setGlass("" + galssSize);
-                                AppPreference.getInstance().setIsLoginFirst(false);
-                                AppPreference.getInstance().setStepStarts(true);
-                                btn_edit_goal.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        launchTwitter(rootView);
-                                    }
-                                });
-//                                CureFull.getInstanse().getActivityIsntanse().onBackPressed();
-                            } else {
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-
+        btn_edit_goal.post(new Runnable() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("a_t", AppPreference.getInstance().getAt());
-                headers.put("r_t", AppPreference.getInstance().getRt());
-                headers.put("user_name", AppPreference.getInstance().getUserName());
-                headers.put("email_id", AppPreference.getInstance().getUserID());
-                headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
-                headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
-                return headers;
+            public void run() {
+                launchTwitter(rootView);
             }
-        };
+        });
 
-        CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
 
 

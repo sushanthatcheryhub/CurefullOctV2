@@ -235,7 +235,7 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
             }
 
             public void onFinish() {
-                btn_click_resend_otp.setText("Resend OTP");
+                btn_click_resend_otp.setText("Click here to resend OTP");
                 isCancel = false;
                 isSending = false;
             }
@@ -285,7 +285,7 @@ public class FragmentOTPCheck extends AppCompatActivity implements View.OnClickL
 
                         public void onFinish() {
 
-                            btn_click_resend_otp.setText("Resend OTP");
+                            btn_click_resend_otp.setText("Click here to resend OTP");
                             isCancel = false;
                             isSending = false;
                         }

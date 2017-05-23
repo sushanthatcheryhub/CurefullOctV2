@@ -49,7 +49,7 @@
                 android:layout_marginRight="@dimen/_10dp"
                 android:elevation="@dimen/_10dp"
                 android:padding="@dimen/_2dp"
-                android:text="We have found matching recodrs with .Please select if recods to you otherwise skip."
+                android:text="We have found matching records with .Please select if records related to you otherwise skip."
                 android:textColor="@color/health_yellow" />
 
             <android.support.v7.widget.RecyclerView

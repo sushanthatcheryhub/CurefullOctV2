@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_30dp"
                 android:layout_marginRight="@dimen/_30dp"
-                android:layout_marginTop="@dimen/_5dp"
+                android:layout_marginTop="@dimen/_25dp"
                 android:orientation="vertical">
 
                 <android.support.design.widget.TextInputLayout
@@ -160,7 +160,7 @@
                         android:textColor="@color/health_yellow" />
 
                 </LinearLayout>
-
+<!--
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -184,7 +184,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:src="@drawable/button_shadow" />
-                </LinearLayout>
+                </LinearLayout>-->
 
 
                 <LinearLayout
@@ -198,8 +198,20 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-
                         <customsTextViews.CustomTextViewOpenSanRegular
+                            android:id="@+id/btn_login"
+                            style="@style/textView_dark_grey_normal_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/white_patient_button_selector"
+                            android:gravity="center"
+                            android:padding="@dimen/_10dp"
+                            android:text="Log in"
+                            android:layout_weight="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/white" />
+                        <!--<customsTextViews.CustomTextViewOpenSanRegular
                             android:id="@+id/sign_out_button_facebook"
                             style="@style/textView_dark_grey_normal_micro"
                             android:layout_width="0dp"
@@ -212,7 +224,7 @@
                             android:text="Log in via Facebook"
                             android:textColor="@color/health_login_text"
                             android:textStyle="bold"
-                            android:visibility="gone" />
+                            android:visibility="gone" />-->
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             android:id="@+id/btn_create_new"

@@ -261,9 +261,9 @@ public class JsonUtilsObject implements MyConstants.JsonUtils {
             jsonParent.put("dateOfBirth", dateOfBirth.trim());
             jsonParent.put("gender", gender.trim());
 
-            jsonParent.put("targetStepCount", targetStepCount);
+            jsonParent.put("targetSteps", targetStepCount);
             jsonParent.put("targetCaloriesToBurn", targetCaloriesToBurn);
-            jsonParent.put("targetWaterInTake", targetWaterInTake);
+            jsonParent.put("targetWaterIntake", targetWaterInTake);
 
             jsonParent.put("glassNumber", glassNumber);//glassNumber
             jsonParent.put("glassSize", glassSize);//glassInTake

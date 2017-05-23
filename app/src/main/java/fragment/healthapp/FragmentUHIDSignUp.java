@@ -77,7 +77,7 @@ public class FragmentUHIDSignUp extends AppCompatActivity implements View.OnClic
             health_email = getIntent().getExtras().getString("EMAIL");
             health_mobile = getIntent().getExtras().getString("MOBILE");
             uhidItemsChecks = getIntent().getExtras().getParcelableArrayList("UHID");
-            txt_we.setText("We have found matching recodrs with " + health_mobile + ".Please select if recods to you otherwise skip.");
+            txt_we.setText("We have found matching records with " + health_mobile + ".Please select if records related to you otherwise skip.");
             showAdpter();
         }
         AppPreference.getInstance().setcf_uuhidSignUp("");

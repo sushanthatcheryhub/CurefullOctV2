@@ -33,6 +33,7 @@ public class MyConstants {
         String HEALTH_LIST_DELETE = URL + "endUser/healthNote/deleteHealthNote?id=";
         String SET_GOALS = URL + "endUser/healthapp/updateRecommendedTarget";
         String SET_GOALS_DEATILS = URL + "endUser/healthapp/setHealthappProfileDetailsAndgetRecommendedTarget";
+        String SET_GOALS_DEATILS_FROM_OFFLINE = URL + "endUser/healthapp/updateHealthappDetailsOffline";
         String GET_SET_GOALS_DEATILS = URL + "endUser/healthapp/getgoal";
         String SAVE_HELTHAPP_DETALS = URL + "endUser/healthapp/savehealthappDailyDetails";
         String UPLOAD_PRESCRIPTION = URL + "endUser/ehr/uploadPrescription";

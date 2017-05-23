@@ -214,7 +214,7 @@ public class FragmentOTPCheckForgot extends AppCompatActivity implements View.On
                 public void onFinish() {
 //                Log.e("k", "k");
                     isResendPassword = false;
-                    btn_click_resend_otp.setText("Resend OTP");
+                    btn_click_resend_otp.setText("Click here to resend OTP");
                     isCancel = false;
                 }
 
@@ -252,7 +252,7 @@ public class FragmentOTPCheckForgot extends AppCompatActivity implements View.On
 
                         public void onFinish() {
                             isResendPassword = false;
-                            btn_click_resend_otp.setText("Resend OTP");
+                            btn_click_resend_otp.setText("Click here to resend OTP");
                             isCancel = false;
                         }
 

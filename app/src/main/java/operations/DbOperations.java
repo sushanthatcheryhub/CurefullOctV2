@@ -4316,7 +4316,7 @@ public class DbOperations implements MyConstants.IDataBaseTableNames, MyConstant
 
         try {
             database = DatabaseHelper.openDataBase();
-            database.delete(TABLE_EDIT_GOAL, "edit_id " + "=? AND " + "isUploaded" + "=?", new String[]{cf_uuhid, isUploaded});
+             database.delete(TABLE_EDIT_GOAL, "edit_id " + "=? AND " + "isUploaded" + "=?", new String[]{cf_uuhid, isUploaded});
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

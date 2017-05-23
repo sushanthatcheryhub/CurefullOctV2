@@ -483,9 +483,10 @@ public class SchedulingService extends IntentService {
 
         final GoalInfo userInfo = DbOperations.getGoalListSync(CureFull.getInstanse().getActivityIsntanse());
         if (userInfo != null) {
-            JSONObject data = JsonUtilsObject.toSetGoalsDetailsFromSync(userInfo.getHeight(),userInfo.getWeight(), userInfo.getDateOfBirth(), userInfo.getGender(),userInfo.getTargetStepCount(),userInfo.getTargetCaloriesToBurn(),userInfo.getTargetWaterInTake(),userInfo.getGlassNumber(),userInfo.getGlassSize());
+            int targetwaterintake=(int)Float.parseFloat(userInfo.getTargetWaterInTake());
+            JSONObject data = JsonUtilsObject.toSetGoalsDetailsFromSync(userInfo.getHeight(), userInfo.getWeight(), userInfo.getDateOfBirth(), userInfo.getGender(), userInfo.getTargetStepCount(), userInfo.getTargetCaloriesToBurn(), String.valueOf(targetwaterintake), userInfo.getGlassNumber(), userInfo.getGlassSize());
 
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS, data,
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, MyConstants.WebUrls.SET_GOALS_DEATILS_FROM_OFFLINE, data,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
@@ -496,7 +497,7 @@ public class SchedulingService extends IntentService {
                                 responseStatus = json.getInt("responseStatus");
                                 if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
 
-                                    DbOperations.clearGoalSetData(preferences.getString("cf_uuhid", ""),"1");
+                                    DbOperations.clearGoalSetData(preferences.getString("cf_uuhid", ""), "1");
                                 } else {
                                     try {
                                         JSONObject json1 = new JSONObject(json.getString("errorInfo"));
@@ -516,7 +517,7 @@ public class SchedulingService extends IntentService {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    Log.e("error",error.getMessage());
                 }
             }) {
                 @Override
@@ -526,8 +527,8 @@ public class SchedulingService extends IntentService {
                     headers.put("r_t", preferences.getString("r_t", ""));
                     headers.put("user_name", preferences.getString("user_name", ""));
                     headers.put("email_id", preferences.getString("email_id", ""));
-                    headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
-                    headers.put("user_id", preferences.getString("user_id", ""));
+                    /*headers.put("cf_uuhid", preferences.getString("cf_uuhid", ""));
+                    headers.put("user_id", preferences.getString("user_id", ""));*/
                     return headers;
                 }
             };
