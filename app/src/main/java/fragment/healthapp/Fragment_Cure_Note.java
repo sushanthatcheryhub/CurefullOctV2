@@ -57,6 +57,7 @@ public class Fragment_Cure_Note extends BaseBackHandlerFragment implements View.
 
         rootView = inflater.inflate(R.layout.fragment_curenote_main,
                 container, false);
+        //hi
         CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
         CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "Note");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
