@@ -86,8 +86,8 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:src="@drawable/button_shadow" />
+                    android:src="@drawable/button_shadow"
+                    android:visibility="invisible" />
             </LinearLayout>
 
             <LinearLayout
@@ -112,9 +112,9 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:visibility="invisible"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/button_shadow" />
+                    android:src="@drawable/button_shadow"
+                    android:visibility="invisible" />
             </LinearLayout>
 
         </LinearLayout>

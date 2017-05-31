@@ -80,8 +80,9 @@ import awsgcm.AlarmReceiver;
 import awsgcm.MessageReceivingService;
 import dialog.DialogEmailMessage;
 import dialog.DialogRedmiMessage;
+import fragment.healthapp.Activity_Today_Trends_Home;
 import fragment.healthapp.FragmentEditGoal;
-import fragment.healthapp.FragmentHealthAppNewProgress;
+
 import fragment.healthapp.FragmentHealthNote;
 import fragment.healthapp.FragmentLabTestReport;
 import fragment.healthapp.FragmentLandingPage;
@@ -91,12 +92,11 @@ import fragment.healthapp.FragmentProfile;
 import fragment.healthapp.FragmentReminderDoctorVisit;
 import fragment.healthapp.FragmentReminderLabTest;
 import fragment.healthapp.FragmentReminderMedicine;
-import fragment.healthapp.FragmentSignUp;
-import stepcounter.MessengerService;
+
 import utils.AppPreference;
 import utils.CheckNetworkState;
 import utils.CircularImageView;
-import utils.HandlePermission;
+
 import utils.MyConstants;
 
 public class MainActivity extends BaseMainActivity implements View.OnClickListener {
@@ -132,7 +132,8 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     private LinearLayout liner_medincine, liner_doctor_visit, liner_lab_test;
     private TextView txt_med, txt_doctor_visit, txt_lab_test;
     private ImageView img_medicine, img_doctor_visit, img_lab_test, img_health_app, img_health_note, img_health_home, img_health_pre, img_health_report;
-    private static ArrayList<Activity> activities=new ArrayList<Activity>();
+    private static ArrayList<Activity> activities = new ArrayList<Activity>();
+
     // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +166,6 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         txt_bottom_prescription = (LinearLayout) findViewById(R.id.txt_bottom_prescription);
         txt_bottom_reports = (LinearLayout) findViewById(R.id.txt_bottom_reports);
 
-        liner_bottom_view = (RelativeLayout) findViewById(R.id.liner_bottom_view);
         txt_med = (TextView) findViewById(R.id.txt_med);
         txt_doctor_visit = (TextView) findViewById(R.id.txt_doctor_visit);
         txt_lab_test = (TextView) findViewById(R.id.txt_lab_test);
@@ -195,7 +195,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
         relative_action_bar = (RelativeLayout) findViewById(R.id.relative_action_bar);
-       // relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);  by sourav
+        // relative_logo = (RelativeLayout) findViewById(R.id.relative_logo);  by sourav
 //        setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -273,7 +273,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             } else {
                 //startActivity(new Intent(MainActivity.this, FragmentLogin.class));
 
-                Intent intent=new Intent(MainActivity.this,FragmentLogin.class);
+                Intent intent = new Intent(MainActivity.this, FragmentLogin.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -295,7 +295,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                 CureFull.getInstanse().getFlowInstanse()
                         .replace(new FragmentLandingPage(), false);
             } else {
-                Intent intent=new Intent(MainActivity.this,FragmentLogin.class);
+                Intent intent = new Intent(MainActivity.this, FragmentLogin.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -631,7 +631,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
                 if (!action.equalsIgnoreCase("steps")) {
                     if (AppPreference.getInstance().isLogin()) {
-                       // showLogo(false);
+                        // showLogo(false);
                         String id = intent.getExtras().getString("perDayDosageDetailsId");
                         String type = intent.getExtras().getString("type");
                         if (type.equalsIgnoreCase("LAB_TEST_REMINDER")) {
@@ -798,9 +798,9 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     public void clickImage(final View view12) {
         view1 = view12;
     }
-    public static void finishAll()
-    {
-        for(Activity activity:activities)
+
+    public static void finishAll() {
+        for (Activity activity : activities)
             activity.finish();
     }
 
@@ -875,7 +875,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
                             ElasticAction.doAction(view, 400, 0.9f, 0.9f);
                         if (AppPreference.getInstance().isEditGoal()) {
                             CureFull.getInstanse().getFlowInstanse()
-                                    .replace(new FragmentHealthAppNewProgress(), false);
+                                    .replace(new Activity_Today_Trends_Home(), false);//FragmentHealthAppNewProgress
                         } else {
                             CureFull.getInstanse().getFlowInstanse()
                                     .replace(new FragmentEditGoal(), false);
@@ -951,7 +951,6 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     }
 
 
-
     private class LongOperation extends AsyncTask<String, Void, String> {
 
 
@@ -1018,30 +1017,51 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
             liner_bottom_view.setVisibility(View.GONE);
         } else {
             if (check.equalsIgnoreCase("Prescription")) {
-                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_curehealth);
+                img_health_note.setImageResource(R.drawable.footer_curenotes);
+                img_health_pre.setImageResource(R.drawable.footer_cureerecords_active);
+                img_health_report.setImageResource(R.drawable.footer_curechannel);
+
+                /*txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendinic_click);
-                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);*/
             } else if (check.equalsIgnoreCase("Lab Reports")) {
-                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_curehealth);
+                img_health_note.setImageResource(R.drawable.footer_curenotes);
+                img_health_pre.setImageResource(R.drawable.footer_cureerecords);
+                img_health_report.setImageResource(R.drawable.footer_curechannel_active);
+               /* txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendinic_click);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendinic_click);*/
             } else if (check.equalsIgnoreCase("Health App")) {
-                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendinic_click);
+                img_health_app.setImageResource(R.drawable.footer_curehealth_active);
+                img_health_note.setImageResource(R.drawable.footer_curenotes);
+                img_health_pre.setImageResource(R.drawable.footer_cureerecords);
+                img_health_report.setImageResource(R.drawable.footer_curechannel);
+                /*txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendinic_click);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);*/
             } else if (check.equalsIgnoreCase("Note")) {
-                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_curehealth);
+                img_health_note.setImageResource(R.drawable.footer_curenotes_active);
+                img_health_pre.setImageResource(R.drawable.footer_cureerecords);
+                img_health_report.setImageResource(R.drawable.footer_curechannel);
+             /*   txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendinic_click);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);*/
             } else {
-                txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                img_health_app.setImageResource(R.drawable.footer_curehealth);
+                img_health_note.setImageResource(R.drawable.footer_curenotes);
+                img_health_pre.setImageResource(R.drawable.footer_cureerecords);
+                img_health_report.setImageResource(R.drawable.footer_curechannel);
+                /*txt_bottom_heath_app.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_health_note.setBackgroundResource(R.drawable.button_mendicine_unclick);
                 txt_bottom_prescription.setBackgroundResource(R.drawable.button_mendicine_unclick);
-                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);
+                txt_bottom_reports.setBackgroundResource(R.drawable.button_mendicine_unclick);*/
             }
             liner_bottom_view.setVisibility(View.VISIBLE);
         }
@@ -1269,13 +1289,13 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
     public void startServiceFromAlarm() {
 
-            long interval = 10000 * 5;
-            Intent intent = new Intent(this, AlarmReceiver.class);
-            intent.setAction("stepsService");
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    this.getApplicationContext(), 234324243, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        long interval = 10000 * 5;
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("stepsService");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(), 234324243, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
 
     }
 

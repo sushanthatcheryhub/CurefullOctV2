@@ -90,6 +90,14 @@
             android:screenOrientation="portrait"
             >
         </activity>
+
+       <!-- <activity
+            android:name="fragment.healthapp.Activity_Today_Trends_Home"
+            android:configChanges="keyboardHidden|orientation|screenLayout|touchscreen"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified|adjustPan">
+        </activity>-->
         <activity
             android:name="fragment.healthapp.FragmentSignUp"
             android:configChanges="keyboardHidden|orientation|screenLayout|touchscreen"

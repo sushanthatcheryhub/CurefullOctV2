@@ -126,6 +126,7 @@
     <color name="dateTimeColorAccent">#494949</color>
     <color name="scrim">#99323232</color>
     <color name="health_dark_gray">#151515</color>
+
     <color name="health_mid_gray">#555555</color>
     <color name="health_light_gray">#a5a5a5</color>
     <color name="health_light_bg">#e7ebee</color>

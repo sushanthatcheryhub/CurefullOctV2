@@ -176,14 +176,14 @@ public class FragmentHealthAppNewProgress extends Fragment implements View.OnCli
                 listPopupWindow.setOnItemClickListener(popUpItemClickDoctor);
                 listPopupWindow.show();
             }
-        });
+        });//not in use
 
 
         txt_steps_counter.setText("" + preferences.getInt("stepsIn", 0));
 //        txt_steps_counter.setText("" + AppPreference.getInstance().getStepsCount());
         tickerTotal.setText("" + preferences.getInt("stepsIn", 0));
         text_calories_count.setText("" + preferences.getString("CaloriesCount", "0") + " kcal");
-        ticker1.setText("" +preferences.getInt("percentage", 0) + "%");
+        ticker1.setText("" + preferences.getInt("percentage", 0) + "%");
         seekArcComplete.setProgress(preferences.getInt("percentage", 0));
         CureFull.getInstanse().getActivityIsntanse().clickImage(rootView);
 

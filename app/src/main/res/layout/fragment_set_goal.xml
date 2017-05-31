@@ -3,10 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:background="@color/white"
+    android:background="#ededed"
     android:clickable="true"
-    android:focusableInTouchMode="true"
->
+    android:focusableInTouchMode="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,20 +20,30 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/_15dp"
+                android:layout_marginTop="@dimen/_3dp"
+                android:background="#ededed"
                 android:orientation="vertical">
+
 
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10dp"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="@dimen/_3dp"
 
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                   >
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1dp"
+                        android:background="@color/health_light_gray" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_10dp"
                         android:orientation="horizontal">
 
 
@@ -101,6 +110,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_10dp"
                         android:orientation="horizontal">
 
@@ -147,6 +157,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_5dp"
                         android:orientation="horizontal">
 
@@ -268,6 +279,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10dp"
                         android:layout_marginTop="@dimen/_5dp"
                         android:orientation="horizontal">
 
@@ -392,7 +404,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
                         android:layout_marginTop="@dimen/_5dp"
-                        android:gravity="right">
+                        android:layout_marginBottom="@dimen/_10dp"
+                        android:gravity="center">
 
                         <customsTextViews.CustomTextViewOpenSanRegular
                             android:id="@+id/btn_edit_done"
@@ -411,19 +424,33 @@
                             android:textColor="@color/white"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1dp"
+                        android:background="@color/health_light_gray" />
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1dp"
+
+                    android:background="@color/health_light_gray" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_10dp"
-                    android:layout_marginRight="@dimen/_10dp"
+
+                    android:background="@color/white"
+
                     android:orientation="vertical">
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_3dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -473,7 +500,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5dp"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_3dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -518,7 +546,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5dp"
+                        android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_3dp"
+                        android:layout_marginBottom="@dimen/_10dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -564,16 +594,31 @@
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1dp"
+
+                    android:background="@color/health_light_gray" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginTop="@dimen/_3dp"
+                    android:background="@color/white"
                     android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1dp"
+
+                        android:background="@color/health_light_gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_5dp"
+                        android:weightSum="2"
                         android:orientation="horizontal">
 
                         <customsTextViews.CustomTextViewOpenSanRegular
@@ -581,7 +626,29 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Recommended Daily Exercise"
+                            android:layout_weight="0.8"
                             android:textColor="@color/health_dark_gray" />
+
+
+                            <customsTextViews.CustomTextViewOpenSanRegular
+                                android:id="@+id/btn_edit_goal"
+                                style="@style/textView_dark_grey_normal_small"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:layout_marginRight="@dimen/_10dp"
+                                android:background="@drawable/yellow_button_selector"
+                                android:gravity="center"
+                                android:paddingBottom="@dimen/_2dp"
+                                android:paddingLeft="@dimen/_5dp"
+                                android:paddingRight="@dimen/_5dp"
+                                android:paddingTop="@dimen/_2dp"
+                                android:text="Edit Goal"
+                                android:layout_weight="1.2"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+
+
 
                     </LinearLayout>
 
@@ -589,7 +656,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginTop="@dimen/_20dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -612,7 +679,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
-                                    android:src="@drawable/step_count_yellow" />
+                                    android:src="@drawable/step_popup_blue" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -638,6 +705,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:enabled="false"
+
                                     android:focusable="false"
                                     android:gravity="left"
                                     android:inputType="number"
@@ -681,7 +749,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
-                                    android:src="@drawable/calories_burnt_yellow" />
+                                    android:src="@drawable/calorie_popup_blue" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -729,6 +797,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10dp"
+                        android:layout_marginBottom="@dimen/_10dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -751,7 +820,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
-                                    android:src="@drawable/water_bottel_yellow" />
+                                    android:src="@drawable/set_glass_small_active" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -806,7 +875,7 @@
                             android:orientation="horizontal">
 
                             <customsTextViews.CustomTextViewOpenSanRegular
-                                android:id="@+id/btn_edit_goal"
+                                android:id="@+id/btn_lets_start"
                                 style="@style/textView_dark_grey_normal_small"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -818,7 +887,7 @@
                                 android:paddingLeft="@dimen/_10dp"
                                 android:paddingRight="@dimen/_10dp"
                                 android:paddingTop="@dimen/_2dp"
-                                android:text="Edit Goal"
+                                android:text="Let's Start"
                                 android:textColor="@color/white"
                                 android:textStyle="bold" />
 
@@ -830,12 +899,18 @@
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1dp"
+                    android:background="@color/health_light_gray" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_10dp"
                     android:layout_marginTop="@dimen/_5dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <customsTextViews.CustomTextViewOpenSanRegular
                         android:id="@+id/txt_btn_set_glass"

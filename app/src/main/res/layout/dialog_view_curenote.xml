@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:minWidth="300dp"
+    android:orientation="vertical"
+    android:padding="1dp">
+
+
+    <LinearLayout
+        android:layout_width="@dimen/_300dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/_20dp">
+
+        <LinearLayout
+            android:id="@+id/topbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:orientation="horizontal">
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_header_date"
+                style="@style/textView_dark_grey_normal_small_one"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="07 jan 2017  04:30pm-05:30pm"
+                android:textColor="@color/health_dark_gray" />
+            <!-- <customsTextViews.CustomTextViewOpenSanRegular
+                 android:id="@+id/txt_header_time"
+                 style="@style/textView_dark_grey_normal_small_one"
+                 android:layout_width="0dp"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="left"
+                 android:layout_weight="1"
+                 android:text="04:30pm-05:30pm"
+                 android:textColor="@color/health_dark_gray" />-->
+            <ImageView
+                android:id="@+id/dialog_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:gravity="right"
+                android:src="@drawable/cancel_black"
+
+
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_20dp"
+
+            android:orientation="horizontal">
+
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/edt_deatils"
+                style="@style/textView_dark_grey_normal_micro"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:layout_marginRight="@dimen/_3dp"
+                android:background="@android:color/transparent"
+                android:ellipsize="end"
+                android:gravity="top"
+                android:hint="Breathless :Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing.Coughing a lot and difficulty in breathing."
+
+                android:inputType="textMultiLine"
+
+                android:padding="@dimen/_4dp"
+                android:singleLine="true"
+
+                android:textColor="@color/health_mid_gray"
+                android:textColorHint="@color/health_mid_gray" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10dp"
+           >
+            <LinearLayout
+                android:id="@+id/lay_delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginRight="@dimen/_20dp"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="left">
+                <ImageView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_gravity="bottom"
+                    android:src="@drawable/delete_icon"
+
+
+                    />
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/btn_delete"
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/_2dp"
+                    android:paddingLeft="@dimen/_10dp"
+                    android:paddingRight="@dimen/_10dp"
+                    android:paddingTop="@dimen/_2dp"
+                    android:text="Delete"
+                    android:gravity="left"
+                    android:layout_weight="1"
+                    android:textColor="@color/health_blue"
+                    android:textStyle="bold" />
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lay_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/_40dp"
+                android:gravity="right">
+                <ImageView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_gravity="bottom"
+                    android:src="@drawable/edit_yellow_large"
+
+
+                    />
+                <customsTextViews.CustomTextViewOpenSanRegular
+                    android:id="@+id/btn_edit"
+                    style="@style/textView_dark_grey_normal_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/_2dp"
+                    android:paddingLeft="@dimen/_10dp"
+                    android:paddingRight="@dimen/_10dp"
+                    android:paddingTop="@dimen/_2dp"
+                    android:text="Edit"
+                    android:gravity="left"
+                    android:layout_weight="1"
+                    android:textColor="@color/health_blue"
+                    android:textStyle="bold" />
+
+                </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
+
+

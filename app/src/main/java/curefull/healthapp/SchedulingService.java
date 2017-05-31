@@ -1075,7 +1075,7 @@ public class SchedulingService extends IntentService {
                         if (medicinereminder.get(i1).getStatus().equalsIgnoreCase("activate") || medicinereminder.get(i1).getStatus().equalsIgnoreCase("pending")) {
                             String txt_detail = preferences.getString("user_name", "") + ", please take your dose of " + medicinereminder.get(i1).getRemMedicineName() + ". Each dose is important.";
                             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_FOLLOWUP_REMINDER", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute);//medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId()
+                            notificationUtils.allGetNotficationMedicine(preferences.getString("user_name", ""), txt_detail, medicinereminder.get(i1).getMedicineReminderId(), "MEDICINE_REMINDER", medicinereminder.get(i1).getCurrentDate(), hour + ":" + minute);//medicinereminder.get(i1).getReminderMedicnceDoagePers().get(z).getDosagePerDayDetailsId()
                         }
                     }
                 } catch (Exception e) {

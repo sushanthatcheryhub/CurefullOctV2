@@ -438,14 +438,14 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
                 break;
             case R.id.liner_camera:
 
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
 
-                if (HandlePermission.checkPermissionCamera(CureFull.getInstanse().getActivityIsntanse())) {
-
-                    new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
-                            .setShowPicker(false)
-                            .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                            .enableImageCropping(true)
-                            .launchCamera();
+                        new SandriosCamera(CureFull.getInstanse().getActivityIsntanse(), CAPTURE_MEDIA)
+                                .setShowPicker(false)
+                                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                                .enableImageCropping(true)
+                                .launchCamera();
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 //                        ElasticAction.doAction(img_camera, 400, 0.9f, 0.9f);
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -463,7 +463,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
 //                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
 //                        startActivityForResult(intent, CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE_KIT);
 //                    }
-
+                    } else {
+                        CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                    }
 
                 }
 
@@ -472,7 +474,11 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, I
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(img_gallery, 400, 0.9f, 0.9f);
                 images = new ArrayList<>();
-                start();
+                if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+                    start();
+                } else {
+                    CureFull.getInstanse().getActivityIsntanse().showSnackbar(rootView, MyConstants.CustomMessages.OFFLINE_MODE);
+                }
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 //                    photoPickerIntent.setType("image/*");

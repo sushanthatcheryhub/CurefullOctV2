@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_5dp"
+        android:orientation="horizontal">
+
+        <!--<ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/line_left" />-->
+
+        <customsTextViews.CustomTextViewOpenSanRegular
+            android:id="@+id/recent_date"
+            style="@style/textView_dark_grey_normal_micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_5dp"
+            android:layout_marginRight="@dimen/_5dp"
+            android:elevation="@dimen/_10dp"
+            android:gravity="center"
+            android:background="@drawable/presc_bar_add"
+            android:padding="@dimen/_6dp"
+            android:text="Jan 2016 "
+            android:textColor="@color/health_yellow" />
+
+       <!-- <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/line_right" />-->
+    </LinearLayout>
+</RelativeLayout>

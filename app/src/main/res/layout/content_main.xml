@@ -160,9 +160,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/health_yellow"
+        android:background="@color/background"
         android:elevation="@dimen/_15dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -186,7 +186,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/footer_healthapp_yellow" />
+                    android:src="@drawable/footer_curehealth" />
             </LinearLayout>
 
 
@@ -207,7 +207,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_healthnote_yellow" />
+                    android:src="@drawable/footer_curenotes" />
             </LinearLayout>
 
 
@@ -228,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_home_yellow" />
+                    android:src="@drawable/footer_home" />
             </LinearLayout>
 
 
@@ -250,7 +250,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/_5dp"
-                    android:src="@drawable/footer_ehr_yellow" />
+                    android:src="@drawable/footer_cureerecords" />
             </LinearLayout>
 
             <LinearLayout

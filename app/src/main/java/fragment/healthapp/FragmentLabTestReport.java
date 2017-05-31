@@ -686,6 +686,7 @@ public class FragmentLabTestReport extends BaseBackHandlerFragment implements Vi
                     AppPreference.getInstance().setFilterDateReports("");
                     AppPreference.getInstance().setFilterDoctorReports("");
                     AppPreference.getInstance().setFilterDieseReports("");
+                    AppPreference.getInstance().setFilterUploadBy("");
                     getAllFilterData();
                     getLabReportList();
                     liner_filter_date.setBackgroundResource(R.color.health_yellow);

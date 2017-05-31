@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -145,7 +146,6 @@ public class FragmentHealthNote extends Fragment implements View.OnClickListener
         //custom expand/collapse animation
         mListView.setAnimationCacheEnabled(false);
         mListView.setFastScrollEnabled(true);
-
         txt_date_time.setText("     ");
         txt_time.setText("      ");
         txt_to_time.setText("      ");

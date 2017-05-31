@@ -69,12 +69,16 @@ import asyns.JsonUtilsObject;
 import asyns.ParseJsonData;
 import curefull.healthapp.CureFull;
 import curefull.healthapp.R;
+import dialog.DialogFullViewClickImage;
 import dialog.DialogHintScreenaLanding;
 import dialog.DialogHintScreenaLandingQution;
 import dialog.DialogHintScreenaPrescriptions;
+import dialog.DialogSetGoal;
+import item.property.GoalInfo;
 import item.property.HealthNoteItems;
 import item.property.StepsCountsItems;
 import item.property.StepsCountsStatus;
+import item.property.UserInfo;
 import operations.DbOperations;
 import stepcounter.MessengerService;
 import ticker.TickerUtils;
@@ -147,6 +151,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
     int dbYear = 0;
     private ImageView imgg_question_white, imgg_question_red;
     private List<StepsCountsItems> stepsCountsItemses;
+    private GoalInfo userInfo;
 
     @Override
     public void onDestroyView() {
@@ -337,9 +342,76 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
         }catch (Exception e){
             e.getMessage();
         }
+
+        getAllDetails();
         return rootView;
     }
+    private void getAllDetails() {
+        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
+            CureFull.getInstanse().getActivityIsntanse().showProgressBar(true);
+            StringRequest postRequest = new StringRequest(Request.Method.GET, MyConstants.WebUrls.GET_SET_GOALS_DEATILS,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            int responseStatus = 0;
+                            JSONObject json = null;
+                            try {
+                                json = new JSONObject(response.toString());
+                                responseStatus = json.getInt("responseStatus");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (responseStatus == MyConstants.IResponseCode.RESPONSE_SUCCESS) {
+                                ParseJsonData.getInstance().getGoalDeatils(response.toString());
+                                userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                                if (userInfo == null)
+                                    return;
 
+                            } else {
+                                userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                                if (userInfo == null)
+                                    return;
+
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                            if (userInfo == null)
+                                return;
+
+                            CureFull.getInstanse().getActivityIsntanse().showProgressBar(false);
+                            error.printStackTrace();
+
+                        }
+                    }
+            ) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put("a_t", AppPreference.getInstance().getAt());
+                    headers.put("r_t", AppPreference.getInstance().getRt());
+                    headers.put("user_name", AppPreference.getInstance().getUserName());
+                    headers.put("email_id", AppPreference.getInstance().getUserID());
+                    headers.put("cf_uuhid", AppPreference.getInstance().getcf_uuhid());
+                    headers.put("user_id", AppPreference.getInstance().getUserIDProfile());
+                    return headers;
+                }
+            };
+
+            CureFull.getInstanse().getRequestQueue().add(postRequest);
+        } else {
+            userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+            if (userInfo == null)
+                return;
+
+        }
+
+    }
     private void getUserList() {
 
         if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
@@ -442,7 +514,7 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
 //                requestQueue.cancelAll(requestQueue);
                 if (AppPreference.getInstance().isEditGoal()) {
                     CureFull.getInstanse().getFlowInstanse()
-                            .replace(new FragmentHealthAppNewProgress(), false);
+                            .replace(new Activity_Today_Trends_Home(), false);//FragmentHealthAppNewProgress
                 } else {
                     CureFull.getInstanse().getFlowInstanse()
                             .replace(new FragmentEditGoal(), false);
@@ -453,10 +525,17 @@ public class FragmentLandingPage extends Fragment implements MyConstants.JsonUti
                 CureFull.getInstanse().cancel();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     ElasticAction.doAction(view, 400, 0.9f, 0.9f);
-//                DialogFullViewClickImage dialogFullViewPrescription = new DialogFullViewClickImage(CureFull.getInstanse().getActivityIsntanse());
-//                dialogFullViewPrescription.show();
-                CureFull.getInstanse().getFlowInstanse()
-                        .replace(new FragmentEditGoal(), true);
+
+                GoalInfo userInfo = DbOperations.getGoalList(CureFull.getInstanse().getActivityIsntanse());
+                if(userInfo==null){
+                    DialogSetGoal dialogFullViewPrescription = new DialogSetGoal(CureFull.getInstanse().getActivityIsntanse());
+                    dialogFullViewPrescription.show();
+                }else{
+                    CureFull.getInstanse().getFlowInstanse()
+                            .replace(new FragmentEditGoal(), true);
+                }
+
+                /**/
 
 
                 break;

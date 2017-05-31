@@ -93,6 +93,7 @@
                         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
                         android:inputType="textCapWords"
                         android:paddingBottom="@dimen/_12dp"
+                        android:maxLength="35"
                         android:textColor="@color/health_light_gray"
                         android:textColorHint="@color/health_light_gray" />
                 </android.support.design.widget.TextInputLayout>

@@ -340,4 +340,18 @@ public class Utils {
         }
         return dt;
     }
+
+    public static String getPreviousDatebyOne(String date) {
+        String dt = date;  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+            c.add(Calendar.DATE, -1);  // number of days to subtract by 1
+            dt = sdf.format(c.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dt;
+    }
 }

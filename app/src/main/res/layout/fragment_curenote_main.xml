@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="2">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_1dp"
+        android:layout_weight="0.2">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <sticky.header.ExpandableStickyListHeadersListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:drawSelectorOnTop="true"
+                android:fastScrollEnabled="true"
+                android:overScrollMode="never"
+                android:scrollbarStyle="outsideOverlay"
+                android:visibility="visible" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floating_action_button_fab_with_listview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="@dimen/_50dp"
+                android:layout_marginRight="@dimen/_15dp"
+                android:clickable="true"
+                android:src="@drawable/footer_curenotes_active"
+                app:elevation="4dp" />
+        </RelativeLayout>
+    </LinearLayout>
+    <View
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1dp"
+        android:background="@color/health_light_gray" />
+
+
+
+    <LinearLayout
+        android:id="@+id/lay_bottom_cancel_share"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.8"
+        android:visibility="gone"
+        android:background="@color/background"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+
+            >
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_cancel"
+                style="@style/textView_dark_grey_normal_medium"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center|left"
+                android:text="Cancel"
+
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/_15dp"
+                android:textColor="@color/black"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                android:id="@+id/txt_share"
+                style="@style/textView_dark_grey_normal_medium"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right|center"
+                android:text="Share"
+                android:layout_marginRight="@dimen/_15dp"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/lay_bottom_sort_filter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.8"
+
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+
+            >
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                style="@style/textView_dark_grey_normal_medium"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="Sort by"
+                android:layout_weight="1"
+                android:textColor="@color/black" />
+            <ImageView
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/_5dp"
+                android:layout_weight="1"
+                android:src="@drawable/sorting_yellow" />
+        </LinearLayout>
+
+        <View
+
+            android:layout_width="@dimen/_1dp"
+            android:layout_height="match_parent"
+            android:background="@color/health_light_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <customsTextViews.CustomTextViewOpenSanRegular
+                style="@style/textView_dark_grey_normal_medium"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right|center"
+                android:text="Filter"
+                android:textColor="@color/black" />
+            <ImageView
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/_5dp"
+                android:layout_weight="1"
+                android:src="@drawable/filter_yellow" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>

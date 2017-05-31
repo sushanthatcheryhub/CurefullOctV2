@@ -6,11 +6,13 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
@@ -18,6 +20,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +61,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ElasticVIews.ElasticAction;
@@ -87,7 +91,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
     private ImageView img_select_height, img_200ml, img_100ml, img_300ml, img_500ml;
     private LinearLayout liner_100ml, liner_200ml, liner_300ml, liner_500ml, linearView;
     private EditText water_100, water_200, water_300, water_500;
-    private TextView txt_ideal_weight, txt_height, txt_weight, txt_BMR, txt_BMI, btn_edit_goal, btn_done, edt_years;
+    private TextView txt_ideal_weight, txt_height, txt_weight, txt_BMR, txt_BMI, btn_edit_goal, btn_done, edt_years, btn_lets_start;
     private EditText edt_feet, edt_inchs, edt_cm, edt_kgs, edt_grams, edt_pounds;
     private LinearLayout revealView, layoutButtons, liner_upload_new, liner_animation_upload;
     private EditText edt_water, edt_steps, edt_calories;
@@ -114,6 +118,20 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
     @Override
     public boolean onBackPressed() {
+
+        List<Fragment> framentList = getFragmentManager().getFragments();
+        if (framentList != null) {
+            for (Fragment f : framentList) {
+                if (f != null) {
+                    Log.e("ss", "f name:" + f.getClass().getName());
+                    if (f.getClass().getName().equalsIgnoreCase("fragment.healthapp.Activity_Today_Trends_Home")) {
+                        CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                        CureFull.getInstanse().getFlowInstanse().replace(new FragmentLandingPage(), false);
+                        return false;
+                    }
+                }
+            }
+        }
         if (AppPreference.getInstance().isEditGoal()) {
             if (doubleback) {
                 AppPreference.getInstance().setIsEditGoalPage(false);
@@ -157,7 +175,7 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
                 container, false);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(CureFull.getInstanse().getActivityIsntanse());
-        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(true, "");
+        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
         CureFull.getInstanse().getActivityIsntanse().isTobBarButtonVisible(true, "");
 //        CureFull.getInstanse().getActivityIsntanse().isbackButtonVisible(false, "");
 //        if (AppPreference.getInstance().isEditGoal()) {
@@ -223,8 +241,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         radioGender = (RadioGroup) rootView.findViewById(R.id.radioGender);
         radioMale = (RadioButton) rootView.findViewById(R.id.radioMale);
         radioFemale = (RadioButton) rootView.findViewById(R.id.radioFemale);
+        btn_lets_start = (TextView) rootView.findViewById(R.id.btn_lets_start);
         btn_edit_goal.setOnClickListener(this);
         btn_edit_done.setOnClickListener(this);
+        btn_lets_start.setOnClickListener(this);
         txt_BMI.setSelected(true);
         revealView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1522,6 +1542,12 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
 
                 break;
 
+            case R.id.btn_lets_start:
+                CureFull.getInstanse().getFlowInstanse().clearBackStack();
+                CureFull.getInstanse().getFlowInstanse().replace(new Activity_Today_Trends_Home(), false);
+               /* Intent i=new Intent(getActivity(),Activity_Today_Trends_Home.class);
+                startActivity(i);*/
+                break;
         }
     }
 
@@ -2074,10 +2100,10 @@ public class FragmentEditGoal extends BaseBackHandlerFragment implements View.On
         if (!userInfo.getTargetWaterInTake().equalsIgnoreCase("null")) {
             try {
                 edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(Integer.parseInt(userInfo.getTargetWaterInTake()))) + " L");
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.getMessage();//error come from local  update water in take
-                double aa= Double.parseDouble(userInfo.getTargetWaterInTake());
-                int waterintake_integer= (int) aa;
+                double aa = Double.parseDouble(userInfo.getTargetWaterInTake());
+                int waterintake_integer = (int) aa;
 
                 edt_water.setText("" + new DecimalFormat("###.#").format(Utils.getMlToLiter(waterintake_integer)) + " L");
             }
