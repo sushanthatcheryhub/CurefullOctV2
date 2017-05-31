@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,12 +81,7 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
         return position;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.widget.Adapter#getView(int, android.view.View,
-     * android.view.ViewGroup)
-     */
+
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
 
@@ -102,10 +98,12 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
                     .findViewById(R.id.txt_date_time);
             holder.txt_title = (TextView) convertView
                     .findViewById(R.id.txt_title);
-//            holder.txt_deatils=(TextView)convertView.findViewById(R.id.txt_deatils);
-//            holder.txt_deatils = (TextView) convertView
-//                    .findViewById(R.id.txt_deatils);
-            holder.img_delete = (LinearLayout) convertView.findViewById(R.id.img_delete);
+            holder.txt_time=(TextView)convertView.findViewById(R.id.txt_time);
+            holder.txt_details = (TextView) convertView
+                   .findViewById(R.id.txt_details);
+            holder.checkBox_share=(CheckBox)convertView.findViewById(R.id.checkBox_share);
+
+          //  holder.img_delete = (LinearLayout) convertView.findViewById(R.id.img_delete);
             convertView.setTag(holder);
 
         } else {
@@ -121,11 +119,6 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
         String[] dateParts1 = times.split(":");
         String hrs = dateParts1[0];
         String mins = dateParts1[1];
-//        try {
-//            holder.txt_date_time.setText("" + CureFull.getInstanse().getActivityIsntanse().formatMonth(months) + " " + days + "-" + CureFull.getInstanse().getActivityIsntanse().updateTime(Integer.parseInt(hrs), Integer.parseInt(mins)));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
 
         if (healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("null") || healthNoteItemses.get(position).getNote_to_time().equalsIgnoreCase("")) {
             try {
@@ -148,46 +141,11 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
         String text = "<font color=#151515>" + healthNoteItemses.get(position).getNote_heading() + ":" + "</font> <font color=#555555>" + healthNoteItemses.get(position).getDeatils() + "</font>";
         holder.txt_title.setText(Html.fromHtml(text));
 
-        holder.img_delete.setOnClickListener(new View.OnClickListener() {
+      /*  holder.img_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
                     if (healthNoteItemses.get(position).getIs_offline() == 1) {
-
-//                        new SweetAlertDialog(CureFull.getInstanse().getActivityIsntanse(), SweetAlertDialog.WARNING_TYPE)
-//                                .setTitleText("Health Note")
-//                                .setContentText("Do you want to remove selected Health Note ?")
-//                                .setConfirmText("Yes")
-//                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                                    @Override
-//                                    public void onClick(SweetAlertDialog sDialog) {
-//
-//                                        if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-//                                            getAllHealthListRemove(healthNoteItemses.get(position).getNote_id(), position, sDialog);
-//                                        } else {
-//                                            sDialog
-//                                                    .setTitleText("Deleted!")
-//                                                    .setContentText("Your note has been deleted!")
-//                                                    .setConfirmText("OK")
-//                                                    .showCancelButton(false)
-//                                                    .setConfirmClickListener(null)
-//                                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-//                                            DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
-//                                            healthNoteItemses.remove(position);
-//                                            notifyDataSetChanged();
-//                                            fragmentHealthNotes.checkSize();
-//                                        }
-//
-//                                    }
-//                                })
-//                                .setCancelText("No")
-//                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                                    @Override
-//                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-//                                        sweetAlertDialog.dismissWithAnimation();
-//                                    }
-//                                })
-//                                .show();
                         DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
                         dialogDeleteAll.setiOnOtpDoneDelete(Cure_Note_ListAdpter.this);
                         dialogDeleteAll.show();
@@ -198,49 +156,13 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
                     DialogDeleteAll dialogDeleteAll = new DialogDeleteAll(CureFull.getInstanse().getActivityIsntanse(), "Do you want to remove selected Health Note ?", "Health Note", position);
                     dialogDeleteAll.setiOnOtpDoneDelete(Cure_Note_ListAdpter.this);
                     dialogDeleteAll.show();
-//                    DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
-//                                        healthNoteItemses.remove(position);
-//                                        notifyDataSetChanged();
-//                                        fragmentHealthNotes.checkSize();
 
-//                    new SweetAlertDialog(CureFull.getInstanse().getActivityIsntanse(), SweetAlertDialog.WARNING_TYPE)
-//                            .setTitleText("Health Note")
-//                            .setContentText("Do you want to remove selected Health Note ?")
-//                            .setConfirmText("Yes")
-//                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                                @Override
-//                                public void onClick(SweetAlertDialog sDialog) {
-//                                    if (CheckNetworkState.isNetworkAvailable(CureFull.getInstanse().getActivityIsntanse())) {
-//                                        getAllHealthListRemove(healthNoteItemses.get(position).getNote_id(), position, sDialog);
-//                                    } else {
-//                                        sDialog
-//                                                .setTitleText("Deleted!")
-//                                                .setContentText("Your note has been deleted!")
-//                                                .setConfirmText("OK")
-//                                                .showCancelButton(false)
-//                                                .setConfirmClickListener(null)
-//                                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-//                                        DbOperations.deleteNoteListing(healthNoteItemses.get(position).getNote_id());
-//                                        healthNoteItemses.remove(position);
-//                                        notifyDataSetChanged();
-//                                        fragmentHealthNotes.checkSize();
-//                                    }
-//                                }
-//                            })
-//                            .setCancelText("No")
-//                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                                @Override
-//                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-//                                    sweetAlertDialog.dismissWithAnimation();
-//                                }
-//                            })
-//                            .show();
                 }
 
 
             }
         });
-
+*/
 
         if (position == healthNoteItemses.size() - 1) {
             fragmentHealthNotes.callWebServiceAgain(healthNoteItemses.size());
@@ -256,7 +178,7 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
             holder = new HeaderViewHolder();
-            convertView = mInflater.inflate(R.layout.header, parent, false);
+            convertView = mInflater.inflate(R.layout.header_new_ver, parent, false);
             holder.text = (TextView) convertView.findViewById(R.id.recent_date);
             convertView.setTag(holder);
         } else {
@@ -290,9 +212,10 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
     }
 
     public static class ViewHolder {
-        public TextView txt_date_time;
-        public TextView txt_title, txt_deatils;
-        public LinearLayout img_delete;
+        public TextView txt_date_time,txt_time;
+        public TextView txt_title, txt_details;
+        //public LinearLayout img_delete;
+        public CheckBox checkBox_share;
 
     }
 
@@ -339,13 +262,6 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
                             healthNoteItemses.remove(postis);
                             notifyDataSetChanged();
                             fragmentHealthNotes.checkSize();
-//                            sDialog
-//                                    .setTitleText("Deleted!")
-//                                    .setContentText("Your note has been deleted!")
-//                                    .setConfirmText("OK")
-//                                    .showCancelButton(false)
-//                                    .setConfirmClickListener(null)
-//                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
 
                         }
                     }
@@ -373,27 +289,5 @@ public class Cure_Note_ListAdpter extends BaseAdapter implements
 
         CureFull.getInstanse().getRequestQueue().add(postRequest);
     }
-
-    private class MyAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
 
 }
